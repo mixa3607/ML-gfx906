@@ -1,0 +1,134 @@
+# llama.cpp build manual for deprecated GFX906 arch
+
+## Build
+
+Use https://archlinux.org/packages/extra/x86_64/rocblas/ for TensileLibrary bins. 
+
+
+> Note: If you do not remove `--push`, then builder will try to send the image to the `BASE_LLAMA_IMAGE` registry.
+
+> Note: Arg `--builder=remote` used for select builder. You must remove it if don't know what it is.
+
+```shell
+# Use for 6.3.4
+ROCM_VERSION=6.3.4
+ROCM_ARCH=gfx906
+ROCBLAS_PACKAGE_URL=""
+BASE_LLAMA_IMAGE=registry.arkprojects.space/apps/llama.cpp
+BASE_LLAMA_TAG=full-rocm-${ROCM_VERSION}-${ROCM_ARCH}
+
+# Use for 6.4.1
+ROCM_VERSION=6.4.1
+ROCM_ARCH=gfx906
+ROCBLAS_PACKAGE_URL=https://cdnmirror.com/archlinux/extra/os/x86_64/rocblas-${ROCM_VERSION}-1-x86_64.pkg.tar.zst
+BASE_LLAMA_IMAGE=registry.arkprojects.space/apps/llama.cpp
+BASE_LLAMA_TAG=full-rocm-${ROCM_VERSION}-${ROCM_ARCH}
+
+docker buildx build --builder=remote \
+  --build-arg ROCM_VERSION=$ROCM_VERSION \
+  --build-arg AMDGPU_VERSION=$ROCM_VERSION \
+  --build-arg ROCM_DOCKER_ARCH=$ROCM_ARCH \
+  -t ${BASE_LLAMA_IMAGE}:${BASE_LLAMA_TAG} \
+  --target full -f ./llama.cpp/.devops/rocm.Dockerfile --push ./llama.cpp
+
+docker buildx build --builder=remote \
+  --build-arg BASE_LLAMA_IMAGE=$BASE_LLAMA_IMAGE \
+  --build-arg BASE_LLAMA_TAG=$BASE_LLAMA_TAG \
+  --build-arg ROCM_VERSION=$ROCM_VERSION \
+  --build-arg ROCBLAS_PACKAGE_URL=$ROCBLAS_PACKAGE_URL \
+  --build-arg ROCM_DOCKER_ARCH=$ROCM_ARCH \
+  -t ${BASE_LLAMA_IMAGE}:${BASE_LLAMA_TAG}-patch1 \
+  --target full -f ./patch/rocm-patch.Dockerfile --push ./patch
+```
+
+## Kubernetes
+Sample manifests placed in `./Kubernetes`
+
+## Benchmarks
+
+```shell
+MODEL=/root/.cache/huggingface/hub/models--ggml-org--gemma-3n-E4B-it-GGUF/snapshots/ee0f0cb58a4b9d5b48dd55b576db22eeeeecdd7e/gemma-3n-E4B-it-Q8_0.gguf
+MODEL=/root/.cache/huggingface/hub/models--unsloth--gemma-3-12b-it-GGUF/snapshots/a5592d885c8a933e824f80d2eeda84db95ad2712/gemma-3-12b-it-Q8_0.gguf
+MODEL=/root/.cache/huggingface/hub/models--bartowski--Qwen_Qwen3-14B-GGUF/snapshots/bd080f768a6401c2d5a7fa53a2e50cd8218a9ce2/Qwen_Qwen3-14B-Q4_K_S.gguf
+MODEL=/root/.cache/huggingface/hub/models--bartowski--Qwen_Qwen3-14B-GGUF/snapshots/bd080f768a6401c2d5a7fa53a2e50cd8218a9ce2/Qwen_Qwen3-14B-Q4_0.gguf
+MODEL=/root/.cache/huggingface/hub/models--bartowski--Qwen_Qwen3-14B-GGUF/snapshots/bd080f768a6401c2d5a7fa53a2e50cd8218a9ce2/Qwen_Qwen3-14B-bf16.gguf
+
+/app/llama-bench --model $MODEL -t 16 --flash-attn 0
+```
+
+### ROCM 6.3.4 / LLAMA.CPP [982e3472]
+```
+ggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no
+ggml_cuda_init: GGML_CUDA_FORCE_CUBLAS: no
+ggml_cuda_init: found 2 ROCm devices:
+  Device 0: AMD Radeon Graphics, gfx906:sramecc+:xnack- (0x906), VMM: no, Wave Size: 64
+  Device 1: AMD Radeon Graphics, gfx906:sramecc+:xnack- (0x906), VMM: no, Wave Size: 64
+load_backend: loaded ROCm backend from /app/libggml-hip.so
+load_backend: loaded CPU backend from /app/libggml-cpu-haswell.so
+| model                          |       size |     params | backend    | ngl |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | --------------: | -------------------: |
+| gemma3n E4B Q8_0               |   6.84 GiB |     6.87 B | ROCm       |  99 |           pp512 |        483.29 ± 0.68 |
+| gemma3n E4B Q8_0               |   6.84 GiB |     6.87 B | ROCm       |  99 |           tg128 |         33.48 ± 0.43 |
+| gemma3 12B Q8_0                |  11.64 GiB |    11.77 B | ROCm       |  99 |           pp512 |        246.66 ± 0.07 |
+| gemma3 12B Q8_0                |  11.64 GiB |    11.77 B | ROCm       |  99 |           tg128 |         28.41 ± 0.12 |
+| qwen3 14B Q4_K - Small         |   7.98 GiB |    14.77 B | ROCm       |  99 |           pp512 |        242.34 ± 0.15 |
+| qwen3 14B Q4_K - Small         |   7.98 GiB |    14.77 B | ROCm       |  99 |           tg128 |         35.87 ± 0.15 |
+| qwen3 14B Q4_0                 |   7.95 GiB |    14.77 B | ROCm       |  99 |           pp512 |        574.13 ± 0.28 |
+| qwen3 14B Q4_0                 |   7.95 GiB |    14.77 B | ROCm       |  99 |           tg128 |         39.02 ± 0.23 |
+| qwen3 14B BF16                 |  27.51 GiB |    14.77 B | ROCm       |  99 |           pp512 |        118.01 ± 0.24 |
+| qwen3 14B BF16                 |  27.51 GiB |    14.77 B | ROCm       |  99 |           tg128 |         19.33 ± 0.08 |
+```
+
+### ROCM 6.4.1 / LLAMA.CPP [982e3472]
+```
+ggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no
+ggml_cuda_init: GGML_CUDA_FORCE_CUBLAS: no
+ggml_cuda_init: found 2 ROCm devices:
+  Device 0: AMD Radeon Graphics, gfx906:sramecc+:xnack- (0x906), VMM: no, Wave Size: 64
+  Device 1: AMD Radeon Graphics, gfx906:sramecc+:xnack- (0x906), VMM: no, Wave Size: 64
+load_backend: loaded ROCm backend from /app/libggml-hip.so
+load_backend: loaded CPU backend from /app/libggml-cpu-haswell.so
+| model                          |       size |     params | backend    | ngl |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | --------------: | -------------------: |
+| gemma3n E4B Q8_0               |   6.84 GiB |     6.87 B | ROCm       |  99 |           pp512 |        606.83 ± 0.97 |
+| gemma3n E4B Q8_0               |   6.84 GiB |     6.87 B | ROCm       |  99 |           tg128 |         33.36 ± 0.23 |
+| gemma3 12B Q8_0                |  11.64 GiB |    11.77 B | ROCm       |  99 |           pp512 |        329.70 ± 0.30 |
+| gemma3 12B Q8_0                |  11.64 GiB |    11.77 B | ROCm       |  99 |           tg128 |         28.58 ± 0.15 |
+| qwen3 14B Q4_K - Small         |   7.98 GiB |    14.77 B | ROCm       |  99 |           pp512 |        286.58 ± 0.15 |
+| qwen3 14B Q4_K - Small         |   7.98 GiB |    14.77 B | ROCm       |  99 |           tg128 |         36.48 ± 0.11 |
+| qwen3 14B Q4_0                 |   7.95 GiB |    14.77 B | ROCm       |  99 |           pp512 |        570.15 ± 0.23 |
+| qwen3 14B Q4_0                 |   7.95 GiB |    14.77 B | ROCm       |  99 |           tg128 |         38.94 ± 0.16 |
+| qwen3 14B BF16                 |  27.51 GiB |    14.77 B | ROCm       |  99 |           pp512 |        119.03 ± 0.31 |
+| qwen3 14B BF16                 |  27.51 GiB |    14.77 B | ROCm       |  99 |           tg128 |         19.46 ± 0.10 |
+```
+
+## RVS
+```shell
+cd /opt/rocm-6.4.1/bin
+apt update
+apt install -y rocm-validation-suite
+echo 'actions:
+- name: gst-581Tflops-4K4K8K-rand-bf16
+  device: all
+  module: gst
+  log_interval: 3000
+  ramp_interval: 5000
+  duration: 15000
+  hot_calls: 1000
+  copy_matrix: false
+  target_stress: 581000
+  matrix_size_a: 4864
+  matrix_size_b: 4096
+  matrix_size_c: 8192
+  matrix_init: rand
+  data_type: bf16_r
+  lda: 8320
+  ldb: 8320
+  ldc: 4992
+  ldd: 4992
+  transa: 1
+  transb: 0
+  alpha: 1
+  beta: 0' > ~/gst-581Tflops-4K4K8K-rand-bf16.conf
+./rvs -c ~/gst-581Tflops-4K4K8K-rand-bf16.conf
+```
