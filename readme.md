@@ -47,13 +47,17 @@ Sample manifests placed in `./Kubernetes`
 ## Benchmarks
 
 ```shell
+export PATH="/app:$PATH"
+export LD_LIBRARY_PATH="/app:$LD_LIBRARY_PATH"
+
 MODEL=/root/.cache/huggingface/hub/models--ggml-org--gemma-3n-E4B-it-GGUF/snapshots/ee0f0cb58a4b9d5b48dd55b576db22eeeeecdd7e/gemma-3n-E4B-it-Q8_0.gguf
 MODEL=/root/.cache/huggingface/hub/models--unsloth--gemma-3-12b-it-GGUF/snapshots/a5592d885c8a933e824f80d2eeda84db95ad2712/gemma-3-12b-it-Q8_0.gguf
 MODEL=/root/.cache/huggingface/hub/models--bartowski--Qwen_Qwen3-14B-GGUF/snapshots/bd080f768a6401c2d5a7fa53a2e50cd8218a9ce2/Qwen_Qwen3-14B-Q4_K_S.gguf
 MODEL=/root/.cache/huggingface/hub/models--bartowski--Qwen_Qwen3-14B-GGUF/snapshots/bd080f768a6401c2d5a7fa53a2e50cd8218a9ce2/Qwen_Qwen3-14B-Q4_0.gguf
 MODEL=/root/.cache/huggingface/hub/models--bartowski--Qwen_Qwen3-14B-GGUF/snapshots/bd080f768a6401c2d5a7fa53a2e50cd8218a9ce2/Qwen_Qwen3-14B-bf16.gguf
+MODEL=/root/.cache/huggingface/hub/models--ggml-org--gemma-3-27b-it-GGUF/snapshots/f94c25afed0072339c5fa3b705a7b4222afe5f62/gemma-3-27b-it-f16-00001-of-00002.gguf
 
-/app/llama-bench --model $MODEL -t 16 --flash-attn 0
+llama-bench --model $MODEL -t 16 --flash-attn 0
 ```
 
 ### ROCM 6.3.4 / LLAMA.CPP [982e3472]
@@ -77,6 +81,8 @@ load_backend: loaded CPU backend from /app/libggml-cpu-haswell.so
 | qwen3 14B Q4_0                 |   7.95 GiB |    14.77 B | ROCm       |  99 |           tg128 |         39.02 ± 0.23 |
 | qwen3 14B BF16                 |  27.51 GiB |    14.77 B | ROCm       |  99 |           pp512 |        118.01 ± 0.24 |
 | qwen3 14B BF16                 |  27.51 GiB |    14.77 B | ROCm       |  99 |           tg128 |         19.33 ± 0.08 |
+| gemma3 27B F16                 |  50.31 GiB |    27.01 B | ROCm       |  99 |           pp512 |        236.51 ± 0.14 |
+| gemma3 27B F16                 |  50.31 GiB |    27.01 B | ROCm       |  99 |           tg128 |         10.37 ± 0.04 |
 ```
 
 ### ROCM 6.4.1 / LLAMA.CPP [982e3472]
@@ -100,6 +106,8 @@ load_backend: loaded CPU backend from /app/libggml-cpu-haswell.so
 | qwen3 14B Q4_0                 |   7.95 GiB |    14.77 B | ROCm       |  99 |           tg128 |         38.94 ± 0.16 |
 | qwen3 14B BF16                 |  27.51 GiB |    14.77 B | ROCm       |  99 |           pp512 |        119.03 ± 0.31 |
 | qwen3 14B BF16                 |  27.51 GiB |    14.77 B | ROCm       |  99 |           tg128 |         19.46 ± 0.10 |
+| gemma3 27B F16                 |  50.31 GiB |    27.01 B | ROCm       |  99 |           pp512 |        238.38 ± 0.26 |
+| gemma3 27B F16                 |  50.31 GiB |    27.01 B | ROCm       |  99 |           tg128 |         10.41 ± 0.03 |
 ```
 
 ## RVS
