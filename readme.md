@@ -1,10 +1,10 @@
-# llama.cpp build manual for deprecated GFX906 arch
+# llama.cpp and rocm for deprecated GFX906 arch
 
 ## Prebuild images
 
 See packages in repo:
-- ghcr.io/mixa3607/llama.cpp-gfx906/rocm - patched github.io/rocm images
-- ghcr.io/mixa3607/llama.cpp-gfx906/llama - llama.cpp builds
+- `ghcr.io/mixa3607/llama.cpp-gfx906/rocm` - patched github.io/rocm images
+- `ghcr.io/mixa3607/llama.cpp-gfx906/llama` - llama.cpp builds
 
 ## Build
 
