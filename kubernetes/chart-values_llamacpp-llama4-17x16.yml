@@ -1,0 +1,31 @@
+modelBasePath: '/root/.cache/huggingface/hub/models--unsloth--Llama-4-Scout-17B-16E-Instruct-GGUF/snapshots/72a6853f56a66dc13a3a4b6bdc9cf7ee4c364b47'
+extraEnvVars:
+  - name: LLAMA_ARG_MODEL
+    value: '{{ .Values.modelBasePath }}/Q3_K_M/Llama-4-Scout-17B-16E-Instruct-Q3_K_M-00001-of-00002.gguf'
+  - name: LLAMA_ARG_ALIAS
+    value: 'Llama 4 Scout'
+  - name: LLAMA_ARG_THREADS
+    value: "32"
+  - name: LLAMA_ARG_CTX_SIZE
+    value: "16384"
+
+  - name: LLAMA_ARG_N_PARALLEL
+    value: "1"
+  - name: LLAMA_ARG_THREADS_HTTP
+    value: "-1"
+  - name: LLAMA_ARG_N_GPU_LAYERS
+    value: "99"
+  - name: LLAMA_ARG_ENDPOINT_METRICS
+    value: "true"
+  - name: LLAMA_ARG_ENDPOINT_SLOTS
+    value: "true"
+  - name: LLAMA_ARG_ENDPOINT_PROPS
+    value: "true"
+  - name: LLAMA_ARG_NO_MMAP
+    value: "true"
+  - name: LLAMA_ARG_NO_CONTEXT_SHIFT
+    value: "true"
+  - name: LLAMA_ARG_JINJA
+    value: "true"
+args:
+#- -v

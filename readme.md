@@ -10,19 +10,22 @@ Use https://archlinux.org/packages/extra/x86_64/rocblas/ for TensileLibrary bins
 > Note: Arg `--builder=remote` used for select builder. You must remove it if don't know what it is.
 
 ```shell
-# Use for 6.3.4
-ROCM_VERSION=6.3.4
+ROCM_VERSION=6.4.2
 ROCM_ARCH=gfx906
-ROCBLAS_PACKAGE_URL=""
+PATCH_GIT_SHA="$(git rev-parse --short HEAD)"
+LLAMA_GIT_SHA="$(cd llama.cpp; git rev-parse --short HEAD)"
 BASE_LLAMA_IMAGE=registry.arkprojects.space/apps/llama.cpp
-BASE_LLAMA_TAG=full-rocm-${ROCM_VERSION}-${ROCM_ARCH}
+BASE_LLAMA_TAG=full-rocm-${ROCM_VERSION}-${ROCM_ARCH}-${LLAMA_GIT_SHA}
 
-# Use for 6.4.1
-ROCM_VERSION=6.4.1
-ROCM_ARCH=gfx906
-ROCBLAS_PACKAGE_URL=https://cdnmirror.com/archlinux/extra/os/x86_64/rocblas-${ROCM_VERSION}-1-x86_64.pkg.tar.zst
-BASE_LLAMA_IMAGE=registry.arkprojects.space/apps/llama.cpp
-BASE_LLAMA_TAG=full-rocm-${ROCM_VERSION}-${ROCM_ARCH}
+docker buildx build --builder=remote \
+  --build-arg BASE_LLAMA_IMAGE=$BASE_LLAMA_IMAGE \
+  --build-arg BASE_LLAMA_TAG=$BASE_LLAMA_TAG \
+  --build-arg ROCM_VERSION=$ROCM_VERSION \
+  --build-arg ROCBLAS_PACKAGE_URL=$ROCBLAS_PACKAGE_URL \
+  --build-arg ROCM_DOCKER_ARCH=$ROCM_ARCH \
+  -t ${BASE_LLAMA_IMAGE}:${BASE_LLAMA_TAG}-patch-${PATCH_GIT_SHA} \
+  --target full -f ./patch/rocm-patch.Dockerfile --push ./patch
+
 
 docker buildx build --builder=remote \
   --build-arg ROCM_VERSION=$ROCM_VERSION \
@@ -31,14 +34,6 @@ docker buildx build --builder=remote \
   -t ${BASE_LLAMA_IMAGE}:${BASE_LLAMA_TAG} \
   --target full -f ./llama.cpp/.devops/rocm.Dockerfile --push ./llama.cpp
 
-docker buildx build --builder=remote \
-  --build-arg BASE_LLAMA_IMAGE=$BASE_LLAMA_IMAGE \
-  --build-arg BASE_LLAMA_TAG=$BASE_LLAMA_TAG \
-  --build-arg ROCM_VERSION=$ROCM_VERSION \
-  --build-arg ROCBLAS_PACKAGE_URL=$ROCBLAS_PACKAGE_URL \
-  --build-arg ROCM_DOCKER_ARCH=$ROCM_ARCH \
-  -t ${BASE_LLAMA_IMAGE}:${BASE_LLAMA_TAG}-patch1 \
-  --target full -f ./patch/rocm-patch.Dockerfile --push ./patch
 ```
 
 ## Kubernetes

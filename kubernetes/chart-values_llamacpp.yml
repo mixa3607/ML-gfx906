@@ -1,0 +1,55 @@
+image:
+  registry: registry.arkprojects.space
+  repository: apps/llama.cpp
+  tag: full-rocm-6.4.2-gfx906-bf78f543-patch-3afa962
+
+replicaCount: 1
+
+terminationGracePeriodSeconds: 2
+containerSecurityContext:
+  seccompProfile:
+    type: Unconfined
+  capabilities:
+    add:
+      - SYS_PTRACE
+
+ingress:
+  enabled: true
+  hostname: llamacpp.arkprojects.space
+  extraTls:
+    - hosts:
+        - "llamacpp.arkprojects.space"
+      secretName: arkprojects.space-cert-prod
+
+podAnnotations:
+  prometheus.io/scrape: 'true'
+  prometheus.io/path: /metrics
+  prometheus.io/port: '8080'
+
+nodeSelector:
+  feature.node.kubernetes.io/amd-gpu: 'true'
+
+resources:
+  limits:
+    memory: 80G
+  requests:
+    cpu: 2
+    memory: 4G
+
+persistence:
+  enabled: true
+  storageClass: nfs-ssd-2
+  size: 200G
+
+extraVolumeMounts:
+  - name: dev-kfd
+    mountPath: /dev/kfd
+  - name: dev-dri
+    mountPath: /dev/dri
+extraVolumes:
+  - name: dev-kfd
+    hostPath:
+      path: /dev/kfd
+  - name: dev-dri
+    hostPath:
+      path: /dev/dri

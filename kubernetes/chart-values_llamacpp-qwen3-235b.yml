@@ -1,0 +1,164 @@
+modelBasePath: '/root/.cache/huggingface/hub/models--unsloth--Qwen3-235B-A22B-Instruct-2507-GGUF/snapshots/89f31d5df05109fa1c4a2966d62b0707ff950523'
+extraEnvVars:
+  - name: LLAMA_ARG_MODEL
+    value: '{{ .Values.modelBasePath }}/UD-Q3_K_XL/Qwen3-235B-A22B-Instruct-2507-UD-Q3_K_XL-00001-of-00003.gguf'
+  - name: LLAMA_ARG_ALIAS
+    value: '48'
+  - name: LLAMA_ARG_THREADS
+    value: "32"
+  - name: LLAMA_ARG_CTX_SIZE
+    value: "16384"
+
+  - name: LLAMA_ARG_N_PARALLEL
+    value: "1"
+  - name: LLAMA_ARG_THREADS_HTTP
+    value: "-1"
+  - name: LLAMA_ARG_N_GPU_LAYERS
+    value: "99"
+  - name: LLAMA_ARG_ENDPOINT_METRICS
+    value: "true"
+  - name: LLAMA_ARG_ENDPOINT_SLOTS
+    value: "true"
+  - name: LLAMA_ARG_ENDPOINT_PROPS
+    value: "true"
+  - name: LLAMA_ARG_NO_MMAP
+    value: "true"
+  - name: LLAMA_ARG_NO_CONTEXT_SHIFT
+    value: "true"
+  - name: LLAMA_ARG_JINJA
+    value: "true"
+args:
+  - '--tensor-split'
+  - '46,48'
+  #- '-v'
+modelTensorsOverride:
+  - name: CPU
+    tensors:
+      - blk.0.ffn_down_exps.weight
+      - blk.0.ffn_up_exps.weight
+      - blk.1.ffn_down_exps.weight
+      - blk.1.ffn_up_exps.weight
+      - blk.2.ffn_down_exps.weight
+      - blk.2.ffn_up_exps.weight
+      - blk.3.ffn_down_exps.weight
+      - blk.3.ffn_up_exps.weight
+      - blk.4.ffn_down_exps.weight
+      - blk.4.ffn_up_exps.weight
+      - blk.5.ffn_down_exps.weight
+      - blk.5.ffn_up_exps.weight
+      - blk.6.ffn_down_exps.weight
+      - blk.6.ffn_up_exps.weight
+      - blk.7.ffn_down_exps.weight
+      - blk.7.ffn_up_exps.weight
+      - blk.8.ffn_down_exps.weight
+      - blk.8.ffn_up_exps.weight
+      - blk.9.ffn_down_exps.weight
+      - blk.9.ffn_up_exps.weight
+      - blk.10.ffn_down_exps.weight
+      - blk.10.ffn_up_exps.weight
+      - blk.11.ffn_down_exps.weight
+      - blk.11.ffn_up_exps.weight
+      - blk.12.ffn_down_exps.weight
+      - blk.12.ffn_up_exps.weight
+      - blk.13.ffn_down_exps.weight
+      - blk.13.ffn_up_exps.weight
+      - blk.14.ffn_down_exps.weight
+      - blk.14.ffn_up_exps.weight
+      - blk.15.ffn_down_exps.weight
+      - blk.15.ffn_up_exps.weight
+      - blk.16.ffn_down_exps.weight
+      - blk.16.ffn_up_exps.weight
+      - blk.17.ffn_down_exps.weight
+      - blk.17.ffn_up_exps.weight
+      - blk.18.ffn_down_exps.weight
+      - blk.18.ffn_up_exps.weight
+      - blk.19.ffn_down_exps.weight
+      - blk.19.ffn_up_exps.weight
+      - blk.20.ffn_down_exps.weight
+      - blk.20.ffn_up_exps.weight
+      - blk.21.ffn_down_exps.weight
+      - blk.21.ffn_up_exps.weight
+      - blk.22.ffn_down_exps.weight
+      - blk.22.ffn_up_exps.weight
+      - blk.23.ffn_down_exps.weight
+      - blk.23.ffn_up_exps.weight
+      - blk.24.ffn_down_exps.weight
+      - blk.24.ffn_up_exps.weight
+      - blk.25.ffn_down_exps.weight
+      - blk.25.ffn_up_exps.weight
+      - blk.26.ffn_down_exps.weight
+      - blk.26.ffn_up_exps.weight
+      - blk.27.ffn_down_exps.weight
+      - blk.27.ffn_up_exps.weight
+      - blk.28.ffn_down_exps.weight
+      - blk.28.ffn_up_exps.weight
+      - blk.29.ffn_down_exps.weight
+      - blk.29.ffn_up_exps.weight
+      - blk.30.ffn_down_exps.weight
+      - blk.30.ffn_up_exps.weight
+      - blk.31.ffn_down_exps.weight
+      - blk.47.ffn_down_exps.weight
+      - blk.47.ffn_up_exps.weight
+      - blk.48.ffn_down_exps.weight
+      - blk.48.ffn_up_exps.weight
+      - blk.49.ffn_down_exps.weight
+      - blk.49.ffn_up_exps.weight
+      - blk.50.ffn_down_exps.weight
+      - blk.50.ffn_up_exps.weight
+      - blk.51.ffn_down_exps.weight
+      - blk.51.ffn_up_exps.weight
+      - blk.52.ffn_down_exps.weight
+      - blk.52.ffn_up_exps.weight
+      - blk.53.ffn_down_exps.weight
+      - blk.53.ffn_up_exps.weight
+      - blk.54.ffn_down_exps.weight
+      - blk.54.ffn_up_exps.weight
+      - blk.55.ffn_down_exps.weight
+      - blk.55.ffn_up_exps.weight
+      - blk.56.ffn_down_exps.weight
+      - blk.56.ffn_up_exps.weight
+      - blk.57.ffn_down_exps.weight
+      - blk.57.ffn_up_exps.weight
+      - blk.58.ffn_down_exps.weight
+      - blk.58.ffn_up_exps.weight
+      - blk.59.ffn_down_exps.weight
+      - blk.59.ffn_up_exps.weight
+      - blk.60.ffn_down_exps.weight
+      - blk.60.ffn_up_exps.weight
+      - blk.61.ffn_down_exps.weight
+      - blk.61.ffn_up_exps.weight
+      - blk.62.ffn_down_exps.weight
+      - blk.62.ffn_up_exps.weight
+      - blk.63.ffn_down_exps.weight
+      - blk.63.ffn_up_exps.weight
+      - blk.64.ffn_down_exps.weight
+      - blk.64.ffn_up_exps.weight
+      - blk.65.ffn_down_exps.weight
+      - blk.65.ffn_up_exps.weight
+      - blk.66.ffn_down_exps.weight
+      - blk.66.ffn_up_exps.weight
+      - blk.67.ffn_down_exps.weight
+      - blk.67.ffn_up_exps.weight
+      - blk.68.ffn_down_exps.weight
+      - blk.68.ffn_up_exps.weight
+      - blk.69.ffn_down_exps.weight
+      - blk.69.ffn_up_exps.weight
+      - blk.70.ffn_down_exps.weight
+      - blk.70.ffn_up_exps.weight
+      - blk.71.ffn_down_exps.weight
+      - blk.71.ffn_up_exps.weight
+      - blk.72.ffn_down_exps.weight
+      - blk.72.ffn_up_exps.weight
+      - blk.73.ffn_down_exps.weight
+      - blk.73.ffn_up_exps.weight
+      - blk.74.ffn_down_exps.weight
+      - blk.74.ffn_up_exps.weight
+      - blk.75.ffn_down_exps.weight
+      - blk.75.ffn_up_exps.weight
+      - blk.76.ffn_down_exps.weight
+      - blk.76.ffn_up_exps.weight
+      - blk.77.ffn_down_exps.weight
+      - blk.77.ffn_up_exps.weight
+      - blk.78.ffn_down_exps.weight
+      - blk.78.ffn_up_exps.weight
+      - blk.79.ffn_down_exps.weight
