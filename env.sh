@@ -7,7 +7,7 @@ if [ "$ROCM_ARCH" == "" ]; then
 fi
 
 if [ "$BASE_ROCM_REGISTRY" == "" ]; then
-  BASE_ROCM_REGISTRY=docker.io/rocm
+  BASE_ROCM_REGISTRY=docker.io
 fi
 if [ "$PATCHED_ROCM_REGISTRY" == "" ]; then
   PATCHED_ROCM_REGISTRY=ghcr.io/mixa3607/llama.cpp-gfx906/rocm

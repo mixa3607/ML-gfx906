@@ -1,5 +1,5 @@
-ARG ROCM_ARCH
-ARG BASE_ROCM_IMAGE
+ARG ROCM_ARCH=gfx906
+ARG BASE_ROCM_IMAGE=rocm/dev-ubuntu-24.04:latest
 
 ############# Build rocBLAS #############
 FROM ${BASE_ROCM_IMAGE} AS rocblas
