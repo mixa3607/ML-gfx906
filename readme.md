@@ -1,43 +1,22 @@
 # llama.cpp build manual for deprecated GFX906 arch
 
+## Prebuild images
+
+See packages in repo:
+- ghcr.io/mixa3607/llama.cpp-gfx906/rocm - patched github.io/rocm images
+- ghcr.io/mixa3607/llama.cpp-gfx906/llama - llama.cpp builds
+
 ## Build
 
-Use https://archlinux.org/packages/extra/x86_64/rocblas/ for TensileLibrary bins. 
-
-
-> Note: If you do not remove `--push`, then builder will try to send the image to the `BASE_LLAMA_IMAGE` registry.
-
-> Note: Arg `--builder=remote` used for select builder. You must remove it if don't know what it is.
-
-```shell
-ROCM_VERSION=6.4.2
-ROCM_ARCH=gfx906
-PATCH_GIT_SHA="$(git rev-parse --short HEAD)"
-LLAMA_GIT_SHA="$(cd llama.cpp; git rev-parse --short HEAD)"
-BASE_LLAMA_IMAGE=registry.arkprojects.space/apps/llama.cpp
-BASE_LLAMA_TAG=full-rocm-${ROCM_VERSION}-${ROCM_ARCH}-${LLAMA_GIT_SHA}
-
-docker buildx build --builder=remote \
-  --build-arg BASE_LLAMA_IMAGE=$BASE_LLAMA_IMAGE \
-  --build-arg BASE_LLAMA_TAG=$BASE_LLAMA_TAG \
-  --build-arg ROCM_VERSION=$ROCM_VERSION \
-  --build-arg ROCBLAS_PACKAGE_URL=$ROCBLAS_PACKAGE_URL \
-  --build-arg ROCM_DOCKER_ARCH=$ROCM_ARCH \
-  -t ${BASE_LLAMA_IMAGE}:${BASE_LLAMA_TAG}-patch-${PATCH_GIT_SHA} \
-  --target full -f ./patch/rocm-patch.Dockerfile --push ./patch
-
-
-docker buildx build --builder=remote \
-  --build-arg ROCM_VERSION=$ROCM_VERSION \
-  --build-arg AMDGPU_VERSION=$ROCM_VERSION \
-  --build-arg ROCM_DOCKER_ARCH=$ROCM_ARCH \
-  -t ${BASE_LLAMA_IMAGE}:${BASE_LLAMA_TAG} \
-  --target full -f ./llama.cpp/.devops/rocm.Dockerfile --push ./llama.cpp
-
-```
+See `rocm.build-and-push.sh` and `llama.build-and-push.sh`. 
 
 ## Kubernetes
-Sample manifests placed in `./Kubernetes`
+Helm chart and samples `./kubernetes`
+
+```shell
+cd kubernetes
+helmfile apply --skip-deps
+```
 
 ## Benchmarks
 
