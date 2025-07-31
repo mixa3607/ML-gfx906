@@ -7,13 +7,13 @@ if [ "$ROCM_ARCH" == "" ]; then
 fi
 
 if [ "$BASE_ROCM_REGISTRY" == "" ]; then
-  BASE_ROCM_REGISTRY=registry.arkprojects.space/dockerio-proxy/rocm
+  BASE_ROCM_REGISTRY=docker.io/rocm
 fi
 if [ "$PATCHED_ROCM_REGISTRY" == "" ]; then
-  PATCHED_ROCM_REGISTRY=registry.arkprojects.space/apps/rocm
+  PATCHED_ROCM_REGISTRY=ghcr.io/mixa3607/llama.cpp-gfx906/rocm
 fi
 if [ "$PATCHED_LLAMA_REGISTRY" == "" ]; then
-  PATCHED_LLAMA_REGISTRY=registry.arkprojects.space/apps
+  PATCHED_LLAMA_REGISTRY=ghcr.io/mixa3607/llama.cpp-gfx906/llama
 fi
 
 
