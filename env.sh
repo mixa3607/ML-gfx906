@@ -15,6 +15,9 @@ fi
 if [ "$PATCHED_LLAMA_REGISTRY" == "" ]; then
   PATCHED_LLAMA_REGISTRY=ghcr.io/mixa3607/llama.cpp-gfx906/llama
 fi
+if [ "$PATCHED_COMFYUI_REGISTRY" == "" ]; then
+  PATCHED_COMFYUI_REGISTRY=ghcr.io/mixa3607/llama.cpp-gfx906/comfyui
+fi
 
 
 if [ "$REPO_GIT_REF" == "" ]; then
@@ -29,4 +32,11 @@ if [ "$LLAMA_GIT_REF" == "" ]; then
 fi
 if [ "$LLAMA_GIT_REF" == "" ]; then
   LLAMA_GIT_REF="$(cd llama.cpp; git rev-parse --short HEAD)"
+fi
+
+if [ "$COMFYUI_GIT_REF" == "" ]; then
+  COMFYUI_GIT_REF="$(cd llama.cpp; git tag --points-at HEAD)"
+fi
+if [ "$COMFYUI_GIT_REF" == "" ]; then
+  COMFYUI_GIT_REF="$(cd llama.cpp; git rev-parse --short HEAD)"
 fi
