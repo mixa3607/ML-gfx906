@@ -1,4 +1,9 @@
+#/bin/bash
+set -e
+
+cd $(dirname $0)
 source ../env.sh
+
 echo | docker buildx build --builder=remote \
   --build-arg BASE_ROCM_IMAGE=$BASE_ROCM_REGISTRY/rocm/dev-ubuntu-24.04:${ROCM_VERSION}-complete \
   --build-arg ROCM_ARCH=$ROCM_ARCH \

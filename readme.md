@@ -1,22 +1,20 @@
-# llama.cpp and rocm for deprecated GFX906 arch
+# ML software for deprecated GFX906 arch
 
 ## Prebuild images
 
-See packages in repo:
-- `ghcr.io/mixa3607/llama.cpp-gfx906/rocm` - patched github.io/rocm images
-- `ghcr.io/mixa3607/llama.cpp-gfx906/llama` - llama.cpp builds
+Packages and status
+| Name | Source | Repo | Status |
+| ---- | ------ | ---- | ------ |
+| ROCm | [ROCm](https://github.com/ROCm/ROCm), [rocBLAS](https://github.com/ROCm/rocBLAS) | `ghcr.io/mixa3607/ml-gfx906/rocm` | OK |
+| llama.cpp | [llama.cpp](https://github.com/ggml-org/llama.cpp) | `ghcr.io/mixa3607/ml-gfx906/llama` | OK |
+| ComfyUI | [llama.cpp](https://github.com/comfyanonymous/ComfyUI) | `ghcr.io/mixa3607/ml-gfx906/comfyui` | WIP |
 
 ## Build
 
-See `rocm.build-and-push.sh` and `llama.build-and-push.sh`. 
+See `*/*.build-and-push.sh`. 
 
 ## Kubernetes
-Helm chart and samples `./kubernetes`
-
-```shell
-cd kubernetes
-helmfile apply --skip-deps
-```
+Helm chart and samples [mixa3607 charts](https://github.com/mixa3607/charts)
 
 ## Benchmarks
 
