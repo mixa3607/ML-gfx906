@@ -7,7 +7,7 @@ Packages and status
 | ---- | ------ | ---- | ------ |
 | ROCm | [ROCm](https://github.com/ROCm/ROCm), [rocBLAS](https://github.com/ROCm/rocBLAS) | `ghcr.io/mixa3607/ml-gfx906/rocm` | OK |
 | llama.cpp | [llama.cpp](https://github.com/ggml-org/llama.cpp) | `ghcr.io/mixa3607/ml-gfx906/llama` | OK |
-| ComfyUI | [llama.cpp](https://github.com/comfyanonymous/ComfyUI) | `ghcr.io/mixa3607/ml-gfx906/comfyui` | WIP |
+| ComfyUI | [ComfyUI](https://github.com/comfyanonymous/ComfyUI) | `ghcr.io/mixa3607/ml-gfx906/comfyui` | WIP |
 
 ## Build
 
