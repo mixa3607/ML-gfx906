@@ -3,7 +3,7 @@
 pushd $(dirname ${BASH_SOURCE[0]})
 
 if [ "$ROCM_VERSION" == "" ]; then
-  ROCM_VERSION=6.4.2
+  ROCM_VERSION=6.4.3
 fi
 
 if [ "$ROCM_ARCH" == "" ]; then
