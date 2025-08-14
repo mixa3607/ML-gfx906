@@ -1,0 +1,10 @@
+GgufFile: "\
+  \\\\TRUENAS/trash3/kube-volumes/pvc-38077fbf-f7fa-46d8-9ad0-17c2ba5bf869/hub\
+  /models--unsloth--gpt-oss-120b-GGUF/snapshots/91daeef64d6b1e1078ad1d007f9efa98526d7bf1\
+  /gpt-oss-120b-F16.gguf"
+
+Devices:
+  ROCm0:
+    ReservedMemoryMb: 9300
+  ROCm1:
+    ReservedMemoryMb: 8500

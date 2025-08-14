@@ -1,0 +1,1 @@
+bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-IQ2_M.gguf

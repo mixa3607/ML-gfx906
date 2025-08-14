@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "GLM-4.5-Air-UD-Q6_K_XL": {
+      "commandName": "Project",
+      "commandLineArgs": "-e GLM-4.5-Air-UD-Q6_K_XL"
+    },
+    "gpt-oss-120b-F16": {
+      "commandName": "Project",
+      "commandLineArgs": "-e gpt-oss-120b-F16"
+    }
+  }
+}

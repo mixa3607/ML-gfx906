@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArkProjects.LlamaOffloadCalc", "ArkProjects.LlamaOffloadCalc\ArkProjects.LlamaOffloadCalc.csproj", "{AB281ECC-61B1-4575-B34D-F14DEB3814FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GGUFSharp", "GGUFSharp\src\GGUFSharp\GGUFSharp\GGUFSharp.csproj", "{A3A53FDD-DA1B-68F2-CAB6-5800C258B19E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB281ECC-61B1-4575-B34D-F14DEB3814FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB281ECC-61B1-4575-B34D-F14DEB3814FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB281ECC-61B1-4575-B34D-F14DEB3814FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB281ECC-61B1-4575-B34D-F14DEB3814FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3A53FDD-DA1B-68F2-CAB6-5800C258B19E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3A53FDD-DA1B-68F2-CAB6-5800C258B19E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3A53FDD-DA1B-68F2-CAB6-5800C258B19E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3A53FDD-DA1B-68F2-CAB6-5800C258B19E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C06FD4ED-87AF-4232-9D9E-D5D6EA618808}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,36 @@
+PrintCmdConfig: true
+PrintHelmCharConfig: true
+PrintTensorsSize: false
+
+# list from 'llama-server --list-devices' + CPU
+Devices:
+  ROCm0:
+    Id: 1
+    Type: GPU
+    TotalSizeMb: 32768
+    PciBus: 0000:01:00.0
+  ROCm1:
+    Id: 2
+    Type: GPU
+    TotalSizeMb: 32768
+    PciBus: 0000:02:00.0
+  CPU:
+    Id: 3
+    Type: CPU
+    TotalSizeMb: 131072
+    ReservedMemory: 0
+
+# offloading rules
+OffloadRules:
+  ffn_gate_exps:
+    Id: 1
+    Regex: '^blk\.\d+\.ffn_gate_exps.weight'
+    Priority: 10
+  ffn_up_exps:
+    Id: 2
+    Regex: '^blk\.\d+\.ffn_up_exps.weight'
+    Priority: 20
+  ffn_down_exps:
+    Id: 3
+    Regex: '^blk\.\d+\.ffn_down_exps.weight'
+    Priority: 20

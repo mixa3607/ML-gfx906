@@ -1,0 +1,10 @@
+GgufFile: "\
+  \\\\TRUENAS/trash3/kube-volumes/pvc-38077fbf-f7fa-46d8-9ad0-17c2ba5bf869/hub\
+  /models--unsloth--GLM-4.5-Air-GGUF/snapshots/a5133889a6e29d42a1e71784b2ae8514fb28156f\
+  /UD-Q6_K_XL/GLM-4.5-Air-UD-Q6_K_XL-00001-of-00003.gguf"
+
+Devices:
+  ROCm0:
+    ReservedMemoryMb: 1024
+  ROCm1:
+    ReservedMemory: 3584
