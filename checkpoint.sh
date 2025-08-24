@@ -8,7 +8,7 @@ if ! [ -z "$(git status --porcelain)" ]; then
 fi
 
 TAG_NAME=$(git_get_current_tag)
-if [ "$TAG_NAME" != "" ]; then
+if [ "$TAG_NAME" == "" ]; then
   TAG_NAME="$(date +%Y%m%d%H%M%S)"
   TAG_COMMENT="$(
     echo "Release $TAG_NAME"
@@ -24,7 +24,7 @@ else
 fi
 
 git push origin "$TAG_NAME"
-git push origin
+#git push origin
 
 pushd llama.cpp
 ./build-and-push.rocm.sh
