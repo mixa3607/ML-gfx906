@@ -8,10 +8,10 @@ if [ "$PATCHED_COMFYUI_REGISTRY" == "" ]; then
 fi
 
 if [ "$COMFYUI_GIT_REF" == "" ]; then
-  COMFYUI_GIT_REF="$(cd submodules/ComfyUI; git tag --points-at HEAD)"
+  COMFYUI_GIT_REF="$(git_get_current_tag submodules/ComfyUI)"
 fi
 if [ "$COMFYUI_GIT_REF" == "" ]; then
-  COMFYUI_GIT_REF="$(cd submodules/ComfyUI; git rev-parse --short HEAD)"
+  COMFYUI_GIT_REF="$(git_get_current_sha submodules/ComfyUI)"
 fi
 
 popd

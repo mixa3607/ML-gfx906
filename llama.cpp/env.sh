@@ -7,10 +7,10 @@ if [ "$PATCHED_LLAMA_REGISTRY" == "" ]; then
 fi
 
 if [ "$LLAMA_GIT_REF" == "" ]; then
-  LLAMA_GIT_REF="$(cd submodules/llama.cpp; git tag --points-at HEAD)"
+  LLAMA_GIT_REF="$(git_get_current_tag submodules/llama.cpp)"
 fi
 if [ "$LLAMA_GIT_REF" == "" ]; then
-  LLAMA_GIT_REF="$(cd submodules/llama.cpp; git rev-parse --short HEAD)"
+  LLAMA_GIT_REF="$(git_get_current_sha submodules/llama.cpp)"
 fi
 
 popd
