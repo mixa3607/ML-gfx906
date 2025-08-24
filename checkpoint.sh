@@ -26,6 +26,10 @@ fi
 git push origin "$TAG_NAME"
 #git push origin
 
+pushd rocm
+./build-and-push.rocm.sh
+popd
+
 pushd llama.cpp
 ./build-and-push.rocm.sh
 ./build-and-push.vulkan.sh

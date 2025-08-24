@@ -15,6 +15,6 @@ if docker_image_pushed ${IMAGE_TAGS[0]}; then
   exit 0
 fi
 
-docker buildx build --builder=remote ${IMAGE_TAGS[@]/#/-t } \
+docker buildx build ${IMAGE_TAGS[@]/#/-t } \
   --build-arg UBUNTU_VERSION="24.04" \
   --progress=plain --target full -f ./submodules/llama.cpp/.devops/vulkan.Dockerfile --push ./submodules/llama.cpp
