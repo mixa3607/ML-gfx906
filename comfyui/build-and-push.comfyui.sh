@@ -5,9 +5,9 @@ cd $(dirname $0)
 source ../env.sh
 
 IMAGE_TAGS=(
-  "$PATCHED_COMFYUI_REGISTRY/comfyui:${COMFYUI_GIT_REF}-rocm-${COMFYUI_ROCM_VERSION}"
-  "$PATCHED_COMFYUI_REGISTRY/comfyui:${COMFYUI_GIT_REF}-rocm-${COMFYUI_ROCM_VERSION}-patch-${REPO_GIT_REF}"
-  "$PATCHED_COMFYUI_REGISTRY/comfyui:latest-rocm"
+  "$PATCHED_COMFYUI_IMAGE:${COMFYUI_GIT_REF}-rocm-${COMFYUI_ROCM_VERSION}"
+  "$PATCHED_COMFYUI_IMAGE:${COMFYUI_GIT_REF}-rocm-${COMFYUI_ROCM_VERSION}-patch-${REPO_GIT_REF}"
+  "$PATCHED_COMFYUI_IMAGE:latest-rocm"
 )
 
 if docker_image_pushed ${IMAGE_TAGS[0]}; then
@@ -16,6 +16,6 @@ if docker_image_pushed ${IMAGE_TAGS[0]}; then
 fi
 
 docker buildx build ${IMAGE_TAGS[@]/#/-t } \
-  --build-arg BASE_ROCM_IMAGE=$PATCHED_ROCM_REGISTRY/dev-ubuntu-24.04:${COMFYUI_ROCM_VERSION}-complete \
+  --build-arg BASE_ROCM_IMAGE=$PATCHED_ROCM_IMAGE:${COMFYUI_ROCM_VERSION}-complete \
   --build-arg BASE_COMFY_IMAGE=$BASE_UBUNTU_REGISTRY/ubuntu:24.04 \
   --progress=plain --target final -f ./comfyui.Dockerfile --push ./submodules/ComfyUI

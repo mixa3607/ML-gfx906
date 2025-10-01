@@ -4,10 +4,10 @@
 Packages and status
 | Name | Source | OCI registry | app ver | ROCm ver | Status |
 | ---- | ------ | ------------ | ------- | -------- | ------ |
-| ROCm | [ROCm](https://github.com/ROCm/ROCm), [rocBLAS](https://github.com/ROCm/rocBLAS) | `docker.io/mixa3607/rocm-gfx906` | 7.0 | 7.0 | OK |
-| llama.cpp | [llama.cpp](https://github.com/ggml-org/llama.cpp) | `docker.io/mixa3607/llama.cpp-gfx906` | b6653 | 7.0.0 | OK |
-| ComfyUI | [ComfyUI](https://github.com/comfyanonymous/ComfyUI) | `docker.io/mixa3607/comfyui-gfx906` | v0.3.62 | 6.4.4 | OK |
-| VLLM | [VLLM](https://github.com/nlzy/vllm-gfx906), [triton](https://github.com/nlzy/triton-gfx906) | `docker.io/mixa3607/vllm-gfx906` | 3c5caec9e + v3.3.0gfx906 | 6.3.3 | OK |
+| ROCm | [ROCm](https://github.com/ROCm/ROCm), [rocBLAS](https://github.com/ROCm/rocBLAS) | `${PATCHED_ROCM_IMAGE}` | ${ROCM_IMAGE_VER} | ${ROCM_IMAGE_VER} | OK |
+| llama.cpp | [llama.cpp](https://github.com/ggml-org/llama.cpp) | `${PATCHED_LLAMA_IMAGE}` | ${LLAMA_GIT_REF} | ${LLAMA_ROCM_VERSION} | OK |
+| ComfyUI | [ComfyUI](https://github.com/comfyanonymous/ComfyUI) | `${PATCHED_COMFYUI_IMAGE}` | ${COMFYUI_GIT_REF} | ${COMFYUI_ROCM_VERSION} | OK |
+| VLLM | [VLLM](https://github.com/nlzy/vllm-gfx906), [triton](https://github.com/nlzy/triton-gfx906) | `${PATCHED_VLLM_IMAGE}` | ${VLLM_GIT_REF} + ${TRITON_GIT_REF} | ${VLLM_ROCM_VERSION} | OK |
 
 ## Environment
 All software tested on Lenovo RD450X with 256G mem and 2x MI50 32G. For cooling gpus used [AMD Instinct MI50 blower fan adapter (thingiverse)](https://www.thingiverse.com/thing:7153218).

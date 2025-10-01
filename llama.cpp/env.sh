@@ -2,8 +2,8 @@
 
 pushd $(dirname ${BASH_SOURCE[0]})
 
-if [ "$PATCHED_LLAMA_REGISTRY" == "" ]; then
-  PATCHED_LLAMA_REGISTRY=ghcr.io/mixa3607/ml-gfx906/llama
+if [ "$PATCHED_LLAMA_IMAGE" == "" ]; then
+  PATCHED_LLAMA_IMAGE=docker.io/mixa3607/llama.cpp-gfx906
 fi
 
 if [ "$LLAMA_ROCM_VERSION" == "" ]; then

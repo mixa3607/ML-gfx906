@@ -2,9 +2,8 @@
 
 pushd $(dirname ${BASH_SOURCE[0]})
 
-if [ "$PATCHED_COMFYUI_REGISTRY" == "" ]; then
-  PATCHED_COMFYUI_REGISTRY=ghcr.io/mixa3607/ml-gfx906/comfyui
-  #PATCHED_COMFYUI_REGISTRY=registry.arkprojects.space/apps
+if [ "$PATCHED_COMFYUI_IMAGE" == "" ]; then
+  PATCHED_COMFYUI_IMAGE=docker.io/mixa3607/comfyui-gfx906
 fi
 
 if [ "$COMFYUI_ROCM_VERSION" == "" ]; then

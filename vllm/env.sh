@@ -2,9 +2,8 @@
 
 pushd $(dirname ${BASH_SOURCE[0]})
 
-if [ "$PATCHED_VLLM_REGISTRY" == "" ]; then
-  PATCHED_VLLM_REGISTRY=ghcr.io/mixa3607/ml-gfx906/vllm
-  #PATCHED_VLLM_REGISTRY=registry.arkprojects.space/apps/vllm
+if [ "$PATCHED_VLLM_IMAGE" == "" ]; then
+  PATCHED_VLLM_IMAGE=docker.io/mixa3607/vllm-gfx906
 fi
 
 if [ "$VLLM_ROCM_VERSION" == "" ]; then

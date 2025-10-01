@@ -1,0 +1,6 @@
+[submodule "rocm/submodules/rocBLAS"]
+	path = rocm/submodules/rocBLAS
+	url = https://github.com/ROCm/rocBLAS.git
+[submodule "rocm/submodules/Tensile"]
+	path = rocm/submodules/Tensile
+	url = https://github.com/ROCm/Tensile.git
