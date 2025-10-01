@@ -6,8 +6,8 @@ Packages and status
 | Name | Source | OCI registry | app ver | ROCm ver | Status |
 | ---- | ------ | ------------ | ------- | -------- | ------ |
 | ROCm | [ROCm](https://github.com/ROCm/ROCm), [rocBLAS](https://github.com/ROCm/rocBLAS) | `ghcr.io/mixa3607/ml-gfx906/rocm` | 7.0.0 | 7.0.0 | OK |
-| llama.cpp | [llama.cpp](https://github.com/ggml-org/llama.cpp) | `ghcr.io/mixa3607/ml-gfx906/llama` | b6569 | 7.0.0 | OK |
-| ComfyUI | [ComfyUI](https://github.com/comfyanonymous/ComfyUI) | `ghcr.io/mixa3607/ml-gfx906/comfyui` | v0.3.60 | 6.4.4 | OK |
+| llama.cpp | [llama.cpp](https://github.com/ggml-org/llama.cpp) | `ghcr.io/mixa3607/ml-gfx906/llama` | b6653 | 7.0.0 | OK |
+| ComfyUI | [ComfyUI](https://github.com/comfyanonymous/ComfyUI) | `ghcr.io/mixa3607/ml-gfx906/comfyui` | v0.3.62 | 6.4.4 | OK |
 | VLLM | [VLLM](https://github.com/nlzy/vllm-gfx906), [triton](https://github.com/nlzy/triton-gfx906) | `ghcr.io/mixa3607/ml-gfx906/vllm` | v0.10.1 + v3.3.0 | 6.3.3 | OK |
 
 ## Environment
