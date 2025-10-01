@@ -38,3 +38,7 @@ popd
 pushd comfyui
 ./build-and-push.comfyui.sh
 popd
+
+pushd vllm
+./build-and-push.vllm.sh
+popd

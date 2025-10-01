@@ -10,9 +10,16 @@ function docker_image_pushed {
 
 function git_get_current_tag {
   if [ "$1" != "" ]; then pushd "$1" > /dev/null; fi
-  git tag --points-at HEAD
+  git tag --points-at HEAD | sed 's|+||g'
   if [ "$1" != "" ]; then popd > /dev/null; fi
 }
+
+function git_get_origin {
+  if [ "$1" != "" ]; then pushd "$1" > /dev/null; fi
+  git config --get remote.origin.url
+  if [ "$1" != "" ]; then popd > /dev/null; fi
+}
+
 
 function git_get_current_sha {
   if [ "$1" != "" ]; then pushd "$1" > /dev/null; fi
@@ -34,3 +41,4 @@ fi
 source $(dirname ${BASH_SOURCE[0]})/rocm/env.sh
 source $(dirname ${BASH_SOURCE[0]})/llama.cpp/env.sh
 source $(dirname ${BASH_SOURCE[0]})/comfyui/env.sh
+source $(dirname ${BASH_SOURCE[0]})/vllm/env.sh

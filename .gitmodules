@@ -1,7 +1,0 @@
-[submodule "llama.cpp/submodules/llama.cpp"]
-	path = llama.cpp/submodules/llama.cpp
-	url = ../../ggml-org/llama.cpp.git
-[submodule "comfyui/submodules/ComfyUI"]
-	path = comfyui/submodules/ComfyUI
-	url = ../../comfyanonymous/ComfyUI.git
-	branch = master
