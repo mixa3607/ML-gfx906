@@ -7,6 +7,10 @@ if [ "$PATCHED_COMFYUI_REGISTRY" == "" ]; then
   #PATCHED_COMFYUI_REGISTRY=registry.arkprojects.space/apps
 fi
 
+if [ "$COMFYUI_ROCM_VERSION" == "" ]; then
+  COMFYUI_ROCM_VERSION="6.4.4"
+fi
+
 if [ "$COMFYUI_GIT_REF" == "" ]; then
   COMFYUI_GIT_REF="$(git_get_current_tag submodules/ComfyUI)"
 fi
