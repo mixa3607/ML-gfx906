@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ResultsConverter": {
+      "commandName": "Project",
+      "commandLineArgs": "gen-table -i \\\\wsl.localhost\\Ubuntu\\home\\mixa3607\\REPOS\\mixa3607\\llama.cpp-gfx906\\vllm\\benchmark\\results"
+    }
+  }
+}

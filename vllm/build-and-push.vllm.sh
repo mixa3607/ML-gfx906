@@ -5,8 +5,8 @@ cd $(dirname $0)
 source ../env.sh
 
 IMAGE_TAGS=(
-  "$PATCHED_VLLM_IMAGE:${VLLM_GIT_REF}-triton-${TRITON_GIT_REF}-rocm-${VLLM_ROCM_VERSION}"
-  "$PATCHED_VLLM_IMAGE:${VLLM_GIT_REF}-triton-${TRITON_GIT_REF}-rocm-${VLLM_ROCM_VERSION}-patch-${REPO_GIT_REF}"
+  "$VLLM_IMAGE:${VLLM_PRESET_NAME}-${REPO_GIT_REF}"
+  "$VLLM_IMAGE:${VLLM_PRESET_NAME}"
 )
 
 if docker_image_pushed ${IMAGE_TAGS[0]}; then
@@ -14,10 +14,17 @@ if docker_image_pushed ${IMAGE_TAGS[0]}; then
   exit 0
 fi
 
+DOCKER_EXTRA_ARGS=()
 for (( i=0; i<${#IMAGE_TAGS[@]}; i++ )); do
-  IMAGE_TAGS[$i]="-t ${IMAGE_TAGS[$i]}"
+  DOCKER_EXTRA_ARGS+=("-t" "${IMAGE_TAGS[$i]}")
 done
 
-docker buildx build ${IMAGE_TAGS[@]} --push \
+mkdir ./logs || true
+docker buildx build ${DOCKER_EXTRA_ARGS[@]} --push \
   --build-arg BASE_ROCM_IMAGE=$PATCHED_ROCM_IMAGE:${VLLM_ROCM_VERSION}-complete \
-  --progress=plain --target final -f ./vllm.Dockerfile ./submodules
+  --build-arg ROCM_ARCH=$ROCM_ARCH \
+  --build-arg VLLM_BRANCH=$VLLM_BRANCH \
+  --build-arg TRITON_BRANCH=$VLLM_TRITON_BRANCH \
+  --build-arg PYTORCH_BRANCH=$VLLM_PYTORCH_BRANCH \
+  --build-arg PYTORCH_VISION_BRANCH=$VLLM_PYTORCH_VISION_BRANCH \
+  --progress=plain --target final -f ./vllm.Dockerfile ./submodules 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log

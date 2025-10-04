@@ -3,10 +3,10 @@
 pushd $(dirname ${BASH_SOURCE[0]})
 
 if [ "$ROCM_VERSION" == "" ]; then
-  ROCM_VERSION=7.0.0
+  ROCM_VERSION=6.3.3
 fi
 if [ "$ROCM_IMAGE_VER" == "" ]; then
-  ROCM_IMAGE_VER=7.0
+  ROCM_IMAGE_VER=6.3.3
 fi
 
 if [ "$ROCM_ARCH" == "" ]; then
@@ -18,6 +18,7 @@ if [ "$BASE_ROCM_REGISTRY" == "" ]; then
 fi
 if [ "$PATCHED_ROCM_IMAGE" == "" ]; then
   PATCHED_ROCM_IMAGE=docker.io/mixa3607/rocm-gfx906
+  #PATCHED_ROCM_IMAGE=registry.arkprojects.space/apps/rocm-gfx906
 fi
 
 popd

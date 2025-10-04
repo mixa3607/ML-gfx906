@@ -4,59 +4,34 @@ Used forks by https://github.com/nlzy:
 - https://github.com/nlzy/triton-gfx906
 
 ## Benchmarks
-```bash
-$ amd-smi set --power-cap 190
-$ vllm bench serve --model gaunernst/gemma-3-27b-it-qat-autoawq --host 127.0.0.1 --num-prompts 10 --max-concurrency 1 --dataset-name random --random-input-len 6144 --random-output-len 16
-============ Serving Benchmark Result ============
-Successful requests:                     10
-Maximum request concurrency:             1
-Benchmark duration (s):                  148.72
-Total input tokens:                      61430
-Total generated tokens:                  104
-Request throughput (req/s):              0.07
-Output token throughput (tok/s):         0.70
-Total Token throughput (tok/s):          413.75
----------------Time to First Token----------------
-Mean TTFT (ms):                          14391.39
-Median TTFT (ms):                        16005.28
-P99 TTFT (ms):                           16044.94
------Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          51.44
-Median TPOT (ms):                        51.31
-P99 TPOT (ms):                           52.42
----------------Inter-token Latency----------------
-Mean ITL (ms):                           51.09
-Median ITL (ms):                         50.92
-P99 ITL (ms):                            52.98
-==================================================
 
-$ amd-smi set --power-cap 190
-$ vllm bench serve --model gaunernst/gemma-3-27b-it-qat-autoawq --host 127.0.0.1 --num-prompts 20 --max-concurrency 2 --dataset-name random --random-input-len 6144 --random-output-len 16
-============ Serving Benchmark Result ============
-Successful requests:                     20
-Maximum request concurrency:             2
-Benchmark duration (s):                  307.73
-Total input tokens:                      122860
-Total generated tokens:                  296
-Request throughput (req/s):              0.06
-Output token throughput (tok/s):         0.96
-Total Token throughput (tok/s):          400.21
----------------Time to First Token----------------
-Mean TTFT (ms):                          16477.15
-Median TTFT (ms):                        15875.39
-P99 TTFT (ms):                           29815.70
------Time per Output Token (excl. 1st token)------
-Mean TPOT (ms):                          933.92
-Median TPOT (ms):                        1081.86
-P99 TPOT (ms):                           1963.74
----------------Inter-token Latency----------------
-Mean ITL (ms):                           1010.66
-Median ITL (ms):                         50.86
-P99 ITL (ms):                            6172.13
-==================================================
-```
+Methodology [benchmark](./benchmark/readme.md)
+> At this moment results with 150 watt limit only
+
+  date            | rocm  | torch              | vllm                        | triton            | TP | PwrCap | Model                                | Prompts | Threads | Duration         | Output TPS | Total TPS | About                                    
+ -----------------|-------|--------------------|-----------------------------|-------------------|----|--------|--------------------------------------|---------|---------|------------------|------------|-----------|----------------------------------------- 
+  20251005-210513 | 6.4.4 | 2.7.1a0+gite2d141d | 0.1.dev1+gceec3eaf6.rocm644 | 3.3.0+git2b5c6ef9 | 2  | 150    | gaunernst/gemma-3-27b-it-qat-autoawq | 150     | 4       | 00:20:10.3265325 | 58.77      | 186.03    | tested on rd450x 256G inside k3s in lxc  
+  20251005-212640 | 6.4.4 | 2.7.1a0+gite2d141d | 0.1.dev1+gceec3eaf6.rocm644 | 3.3.0+git2b5c6ef9 | 2  | 150    | gaunernst/gemma-3-27b-it-qat-autoawq | 125     | 3       | 00:20:00.2988691 | 48.18      | 154.96    | tested on rd450x 256G inside k3s in lxc  
+  20251005-214604 | 6.4.4 | 2.7.1a0+gite2d141d | 0.1.dev1+gceec3eaf6.rocm644 | 3.3.0+git2b5c6ef9 | 2  | 150    | gaunernst/gemma-3-27b-it-qat-autoawq | 100     | 2       | 00:18:05.4545212 | 41.81      | 136.23    | tested on rd450x 256G inside k3s in lxc  
+  20251005-221837 | 6.4.4 | 2.7.1a0+gite2d141d | 0.1.dev1+gceec3eaf6.rocm644 | 3.3.0+git2b5c6ef9 | 2  | 150    | gaunernst/gemma-3-27b-it-qat-autoawq | 75      | 1       | 00:27:37.0155547 | 21.18      | 67.61     | tested on rd450x 256G inside k3s in lxc  
+  20251006-130816 | 6.3.3 | 2.7.1a0+gite2d141d | 0.1.dev1+gceec3eaf6.rocm633 | 3.3.0+git2b5c6ef9 | 2  | 150    | gaunernst/gemma-3-27b-it-qat-autoawq | 75      | 1       | 00:19:16.0905731 | 19.44      | 86.00     | tested on rd450x 256G inside k3s in lxc  
+  20251006-132621 | 6.3.3 | 2.7.1a0+gite2d141d | 0.1.dev1+gceec3eaf6.rocm633 | 3.3.0+git2b5c6ef9 | 2  | 150    | gaunernst/gemma-3-27b-it-qat-autoawq | 100     | 2       | 00:17:29.1542989 | 41.52      | 139.21    | tested on rd450x 256G inside k3s in lxc  
+  20251006-134724 | 6.3.3 | 2.7.1a0+gite2d141d | 0.1.dev1+gceec3eaf6.rocm633 | 3.3.0+git2b5c6ef9 | 2  | 150    | gaunernst/gemma-3-27b-it-qat-autoawq | 125     | 3       | 00:20:06.5979349 | 48.32      | 154.54    | tested on rd450x 256G inside k3s in lxc  
+  20251006-140759 | 6.3.3 | 2.7.1a0+gite2d141d | 0.1.dev1+gceec3eaf6.rocm633 | 3.3.0+git2b5c6ef9 | 2  | 150    | gaunernst/gemma-3-27b-it-qat-autoawq | 150     | 4       | 00:19:38.5187576 | 57.69      | 188.37    | tested on rd450x 256G inside k3s in lxc 
+
 
 ## Run
+
+## DockerHub images
+> ghcr.io registry is deprecated. Use https://hub.docker.com/r/mixa3607/vllm-gfx906 instead
+
+Tags:
+- `jena` based on `rocm-6.3.3`. See more in `preset.setup-jena.sh`
+- `ella` based on `rocm-6.4.4`. See more in `preset.setup-ella.sh`
+- ~~`eva` based on `rocm-7.0.0`. See more in `preset.setup-ella.sh`~~
+
+Recommend use `docker.io/mixa3607/vllm-gfx906:ella`
+
 ### Docker
 Basics from amd https://github.com/ROCm/vllm/blob/main/docs/deployment/docker.md
 
@@ -125,8 +100,7 @@ spec:
       hostIPC: false
       containers:
         - name: vllm
-          #image: docker.io/nalanzeyu/vllm-gfx906:latest
-          image: registry.arkprojects.space/apps/vllm/vllm:eb009084a-triton-v3.3.0gfx906-rocm-6.3.3
+          image: docker.io/mixa3607/vllm-gfx906:ella
           imagePullPolicy: Always
           securityContext:
             privileged: true
@@ -163,6 +137,8 @@ spec:
             - name: dev-dri
               mountPath: /dev/dri
 ```
+
+
 
 ## Build
 Export env vars or use defaults defined in `./env.sh`:
