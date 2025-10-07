@@ -19,7 +19,6 @@ Methodology [benchmark](./benchmark/readme.md)
   20251006-134724 | 6.3.3 | 2.7.1a0+gite2d141d | 0.1.dev1+gceec3eaf6.rocm633 | 3.3.0+git2b5c6ef9 | 2  | 150    | gaunernst/gemma-3-27b-it-qat-autoawq | 125     | 3       | 00:20:06.5979349 | 48.32      | 154.54    | tested on rd450x 256G inside k3s in lxc  
   20251006-140759 | 6.3.3 | 2.7.1a0+gite2d141d | 0.1.dev1+gceec3eaf6.rocm633 | 3.3.0+git2b5c6ef9 | 2  | 150    | gaunernst/gemma-3-27b-it-qat-autoawq | 150     | 4       | 00:19:38.5187576 | 57.69      | 188.37    | tested on rd450x 256G inside k3s in lxc 
 
-
 ## Run
 
 ## DockerHub images
@@ -28,7 +27,7 @@ Methodology [benchmark](./benchmark/readme.md)
 Tags:
 - `jena` based on `rocm-6.3.3`. See more in `preset.setup-jena.sh`
 - `ella` based on `rocm-6.4.4`. See more in `preset.setup-ella.sh`
-- ~~`eva` based on `rocm-7.0.0`. See more in `preset.setup-ella.sh`~~
+- ~~`eva` based on `rocm-7.0.0`. See more in `preset.setup-eva.sh`~~ error on build pytorch with llvm 20 in rocm 7.0.0
 
 Recommend use `docker.io/mixa3607/vllm-gfx906:ella`
 
@@ -70,18 +69,7 @@ spec:
     metadata:
       labels:
         app: vllm
-      annotations:
-        prometheus.io/scrape: 'true'
     spec:
-      tolerations:
-        - key: feature.node.kubernetes.io/amd-gpu
-          operator: Equal
-          value: 'true'
-          effect: NoExecute
-      nodeSelector:
-        feature.node.kubernetes.io/amd-gpu: 'true'
-      imagePullSecrets:
-        - name: harbor-registry-pull-secret
       volumes:
         - name: models-volume
           persistentVolumeClaim:
@@ -96,8 +84,6 @@ spec:
           emptyDir:
             medium: Memory
             sizeLimit: 32G
-      hostNetwork: false
-      hostIPC: false
       containers:
         - name: vllm
           image: docker.io/mixa3607/vllm-gfx906:ella
@@ -141,12 +127,9 @@ spec:
 
 
 ## Build
-Export env vars or use defaults defined in `./env.sh`:
-- `VLLM_ROCM_VERSION` to required ROCm ver
-- `PATCHED_VLLM_REGISTRY` to your regisry addr
-
-Exec `./build-and-push.vllm.sh`
+See build vars in `./env.sh`. You also may use presetis `./preset.setup-*.sh`. Exec `./build-and-push.vllm.sh`:
 ```bash
+$ . preset.setup-ella.sh
 $ ./build-and-push.vllm.sh
 ~/REPOS/mixa3607/llama.cpp-gfx906/rocm ~/REPOS/mixa3607/llama.cpp-gfx906/rocm
 ~/REPOS/mixa3607/llama.cpp-gfx906/rocm

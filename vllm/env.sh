@@ -8,12 +8,15 @@ if [ "$VLLM_IMAGE" == "" ]; then
 fi
 
 if [ "$VLLM_PRESET_NAME" == "" ];           then VLLM_PRESET_NAME=default; fi
+# vllm git checkpoint
 if [ "$VLLM_BRANCH" == "" ];                then VLLM_BRANCH="v0.10.2"; fi
+# triton git checkpoint
 if [ "$VLLM_TRITON_BRANCH" == "" ];         then VLLM_TRITON_BRANCH="v3.4.x"; fi
+# rocm version
 if [ "$VLLM_ROCM_VERSION" == "" ];          then VLLM_ROCM_VERSION=6.4.4; fi
-if [ "$VLLM_PYTORCH_REPO" == "" ];          then VLLM_PYTORCH_REPO="https://github.com/pytorch/pytorch.git"; fi
+# torch git checkpoint
 if [ "$VLLM_PYTORCH_BRANCH" == "" ];        then VLLM_PYTORCH_BRANCH="v2.7.1"; fi
-if [ "$VLLM_PYTORCH_VISION_REPO" == "" ];   then VLLM_PYTORCH_VISION_REPO="https://github.com/pytorch/vision.git"; fi
+# vision git checkpoint
 if [ "$VLLM_PYTORCH_VISION_BRANCH" == "" ]; then VLLM_PYTORCH_VISION_BRANCH="v0.21.0"; fi
 
 popd

@@ -34,7 +34,7 @@ static void GenerateTable(string resultsDir)
     var table = new MarkdownTable.MarkdownTableBuilder();
     table.WithHeader("date", "rocm", "torch", "vllm",
         "triton", "TP", "PwrCap", "Model", "Prompts",
-        "Threads", "Duration",
+        "Threads", "Duration", "RPS",
         "Output TPS", "Total TPS", "About");
     foreach (var result in results)
     {
@@ -51,6 +51,7 @@ static void GenerateTable(string resultsDir)
         fields.Add(result.MaxConcurrency.ToString());
 
         fields.Add(TimeSpan.FromSeconds(result.Duration).ToString());
+        fields.Add(result.RequestThroughput.ToString("N2"));
         fields.Add(result.OutputThroughput.ToString("N2"));
         fields.Add(result.TotalTokenThroughput.ToString("N2"));
 

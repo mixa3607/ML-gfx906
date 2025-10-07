@@ -6,7 +6,7 @@ Run all commands in same pod
 export VLLM_USE_V1=1                                        # vllm serve only. Required for gemma3
 export VLLM_SLEEP_WHEN_IDLE=1                               # vllm serve only. Reduce CPU usage when vLLM is idle
 export HUGGING_FACE_HUB_TOKEN=hf_XXXXXXXXXXXXXXXXXXXXXXX    # vllm serve only. HF api token
-export POWER_CAP=150                                        # AMD GPU power cap
+export POWER_CAP=225                                        # AMD GPU power cap
 export TENSOR_PARALLELISM=2                                 # GPUs count. 1/2/4/8
 export BENCHMARK_AUTHOR=mixa3607                            # author
 export ABOUT="tested on rd450x 256G inside k3s in lxc"      # misc info
@@ -47,7 +47,7 @@ done
 
 ### 4. Copy results from pod
 ```sh
-kubectl exec -n ns-vllm pods/vllm-b5549d6d6-dhsr4 -- bash -c 'tar -zcvf - /app/vllm/*.json .' | tar -zxvf - -C results/
+kubectl exec -n ns-vllm pods/$(kubectl get pods -n ns-vllm -l app=vllm -o jsonpath='{.items[].metadata.name}') -- bash -c 'tar -zcvf - /app/vllm/*.json .' | tar -zxvf - -C results/
 ```
 
 ### 3. Generate table

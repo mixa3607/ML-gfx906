@@ -6,13 +6,50 @@ At this moment rebuild:
 - rccl
 - rocblas+tensile
 
-## Build
-Export env vars or use defaults defined in `./env.sh`:
-- `ROCM_IMAGE_VER` to ver value from tag https://hub.docker.com/r/rocm/dev-ubuntu-24.04/tags e.g. 7.0/6.4.4
-- `ROCM_VERSION` to full version e.g. 7.0.0/6.4.4
-- `PATCHED_ROCM_REGISTRY` to your regisry addr
+Recommend use `docker.io/mixa3607/rocm-gfx906:6.4.4-complete`
 
-Exec `./build-and-push.rocm.sh`
+## Run
+### Docker
+TODO
+
+### Kubernetes
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rocmdev
+  namespace: ns-vllm
+  labels:
+    app: rocmdev
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rocmdev
+  template:
+    metadata:
+      labels:
+        app: rocmdev
+    spec:
+      containers:
+        - name: rocmdev
+          image: docker.io.mixa3607/rocm-gfx906:7.0.0-20251005035204-complete
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+            runAsNonRoot: false
+            runAsGroup: 0
+            runAsUser: 0
+          command: [ "/bin/bash", "-c" ]
+          args:
+            - "apt install tmux wget -y; wget https://gist.githubusercontent.com/mixa3607/1e6d3ee7d87b018484cf80c7928b4c33/raw/.tmux.conf -O ~/.tmux.conf; while true; do sleep 1s; done;"
+            #- sleep inf
+```
+
+## Build
+See build vars in `./env.sh`. You also may use presetis `./preset.rocm-*.sh`. Exec `./build-and-push.rocm.sh`:
 ```bash
 $ . preset.rocm-7.0.0.sh
 $ ./build-and-push.rocm.sh

@@ -21,6 +21,6 @@ done
 
 mkdir ./logs || true
 docker buildx build ${DOCKER_EXTRA_ARGS[@]} --push \
-  --build-arg BASE_ROCM_IMAGE=$BASE_ROCM_REGISTRY/rocm/dev-ubuntu-24.04:${ROCM_IMAGE_VER}-complete \
-  --build-arg ROCM_ARCH=$ROCM_ARCH \
+  --build-arg BASE_ROCM_IMAGE="${BASE_ROCM_IMAGE}:${ROCM_IMAGE_VER}-complete" \
+  --build-arg ROCM_ARCH="${ROCM_ARCH}" \
   --target final -f ./rocm.Dockerfile --progress=plain ./submodules 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log

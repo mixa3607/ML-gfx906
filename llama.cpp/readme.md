@@ -1,6 +1,10 @@
 # llama.cpp GFX906
 LLM inference in C/C++ https://github.com/ggml-org/llama.cpp
 
+Recommend use `docker.io/mixa3607/llama.cpp-gfx906:7.0.0-complete`
+
+Also see [llamacpp-offload-calculator](./llamacpp-offload-calculator/readme.md)
+
 ## Benchmarks
 ```shell
 export PATH="/app:$PATH"
@@ -66,12 +70,9 @@ See https://github.com/ggml-org/llama.cpp/blob/master/docs/docker.md + https://g
 Helm chart and samples [mixa3607 charts](https://github.com/mixa3607/charts)
 
 ## Build
-Export env vars or use defaults defined in `./env.sh`:
-- `LLAMA_ROCM_VERSION` to required ROCm ver (For `build-and-push.rocm.sh` only)
-- `PATCHED_LLAMA_REGISTRY` to your regisry addr
-
-Exec `./build-and-push.rocm.sh` or `./build-and-push.vulkan.sh`
+See build vars in `./env.sh`. You also may use presetis `./preset.rocm-*.sh`. Exec `./build-and-push.rocm.sh`:
 ```bash
+$ . preset.rocm-7.0.0.sh
 $ ./build-and-push.rocm.sh
 ~/REPOS/mixa3607/llama.cpp-gfx906/rocm ~/REPOS/mixa3607/llama.cpp-gfx906/rocm
 ~/REPOS/mixa3607/llama.cpp-gfx906/rocm

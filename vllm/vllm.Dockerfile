@@ -43,12 +43,7 @@ ARG PYTORCH_BRANCH
 RUN ls -la /opt/
 RUN git clone --depth 1 --recurse-submodules --shallow-submodules --jobs 4 --branch ${PYTORCH_BRANCH} ${PYTORCH_REPO} pytorch
 RUN cd pytorch && pip install -r requirements.txt
-#RUN apt install wget -y && wget 'https://repo.radeon.com/rocm/apt/6.4.4/pool/main/r/rocm-llvm/rocm-llvm_19.0.0.25224.60404-129~22.04_amd64.deb' && dpkg -i *.deb 
-#RUN ln -s /opt/rocm-6.4.4/llvm /opt/rocm-7.0.0/llvm
-# && ls -la /opt/rocm-7.0.0/llvm/* && exit 10
 RUN cd pytorch && \
-    #export PATH="$(echo "$PATH" | sed 's|/opt/rocm/llvm/bin||1')" && \
-    #apt remove rocm-llvm -y && \
     python3 tools/amd_build/build_amd.py && \
     CMAKE_PREFIX_PATH=$(python3 -c 'import sys; print(sys.prefix)') python3 setup.py bdist_wheel --dist-dir=/dist && \
     pip install /dist/*.whl
@@ -71,7 +66,6 @@ FROM build_base AS build_triton
 ARG TRITON_REPO
 ARG TRITON_BRANCH
 WORKDIR /app
-#RUN apt install -y llvm-dev
 RUN git clone --depth 1 --recurse-submodules --shallow-submodules --jobs 4 --branch ${TRITON_BRANCH} ${TRITON_REPO} triton
 WORKDIR /app/triton
 # "if" used for diff between triton 3.3.0<=>3.4.0
@@ -97,7 +91,7 @@ RUN --mount=type=bind,from=build_vllm,src=/app/vllm/requirements,target=/app/vll
     --mount=type=bind,from=build_triton,src=/dist/,target=/dist_triton \
     --mount=type=bind,from=build_vllm,src=/dist/,target=/dist_vllm \
     pip install /dist_torch/*.whl /dist_triton/*.whl /dist_vllm/*.whl && \
-    pip install -r requirements/rocm.txt  && \
+    pip install -r requirements/rocm.txt && \
     true
 
 CMD ["/bin/bash"]

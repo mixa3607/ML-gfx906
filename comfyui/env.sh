@@ -2,8 +2,12 @@
 
 pushd $(dirname ${BASH_SOURCE[0]})
 
-if [ "$PATCHED_COMFYUI_IMAGE" == "" ]; then
-  PATCHED_COMFYUI_IMAGE=docker.io/mixa3607/comfyui-gfx906
+if [ "$COMFYUI_IMAGE" == "" ]; then
+  COMFYUI_IMAGE=docker.io/mixa3607/comfyui-gfx906
+fi
+
+if [ "$COMFYUI_BASE_IMAGE" == "" ]; then
+  COMFYUI_BASE_IMAGE="docker.io/library/ubuntu:24.04"
 fi
 
 if [ "$COMFYUI_ROCM_VERSION" == "" ]; then
