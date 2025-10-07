@@ -10,7 +10,7 @@ Packages and status
 | VLLM | [VLLM](https://github.com/nlzy/vllm-gfx906), [triton](https://github.com/nlzy/triton-gfx906) | OK | [VLLM](./vllm/readme.md) |
 
 ## Environment
-All software tested on Lenovo RD450X with 256G mem and 2x MI50 32G. For cooling gpus used [AMD Instinct MI50 blower fan adapter (thingiverse)](https://www.thingiverse.com/thing:7153218).
+All software tested on Lenovo RD450X with 256G mem and 2x MI50 32G (x16 + x8). For cooling gpus used [AMD Instinct MI50 blower fan adapter (thingiverse)](https://www.thingiverse.com/thing:7153218).
 
 ## RVS
 ```shell
@@ -42,3 +42,4 @@ echo 'actions:
   beta: 0' > ~/gst-581Tflops-4K4K8K-rand-bf16.conf
 ./rvs -c ~/gst-581Tflops-4K4K8K-rand-bf16.conf
 ```
+
