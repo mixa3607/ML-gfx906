@@ -10,8 +10,8 @@ fi
 TAG_NAME=$(git_get_current_tag)
 if [ "$TAG_NAME" == "" ]; then
   TAG_NAME="$(date +%Y%m%d%H%M%S)"
-  git tag -a "$TAG_NAME"
-  echo -e "New tag $TAG_NAME" -m "none"
+  git tag -a "$TAG_NAME" -m "none"
+  echo -e "New tag $TAG_NAME"
 else
   echo "Commit already tagged with $TAG_NAME"
 fi
