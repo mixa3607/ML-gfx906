@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export TORCH_ROCM_VERSION="6.3.4"
+export TORCH_PYTORCH_BRANCH="v2.7.1"
+export TORCH_PYTORCH_VISION_BRANCH="v0.21.0"

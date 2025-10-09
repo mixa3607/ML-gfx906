@@ -10,35 +10,8 @@ fi
 TAG_NAME=$(git_get_current_tag)
 if [ "$TAG_NAME" == "" ]; then
   TAG_NAME="$(date +%Y%m%d%H%M%S)"
-  TAG_COMMENT="$(
-    echo "Release $TAG_NAME"
-    echo "Checkpoints:"
-    echo "- ROCm: $ROCM_VERSION"
-    echo "- ComfyUI: $COMFYUI_GIT_REF"
-    echo "- llama.cpp: $LLAMA_GIT_REF"
-  )"
-  git tag -a "$TAG_NAME" -m "$TAG_COMMENT"
-  echo -e "New tag $TAG_NAME:\n$TAG_COMMENT"
+  git tag -a "$TAG_NAME"
+  echo -e "New tag $TAG_NAME" -m "none"
 else
   echo "Commit already tagged with $TAG_NAME"
 fi
-
-git push origin "$TAG_NAME"
-#git push origin
-
-pushd rocm
-./build-and-push.rocm.sh
-popd
-
-pushd llama.cpp
-./build-and-push.rocm.sh
-./build-and-push.vulkan.sh
-popd
-
-pushd comfyui
-./build-and-push.comfyui.sh
-popd
-
-pushd vllm
-./build-and-push.vllm.sh
-popd
