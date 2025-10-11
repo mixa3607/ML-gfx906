@@ -6,12 +6,14 @@ if [ "$COMFYUI_IMAGE" == "" ]; then
   COMFYUI_IMAGE=docker.io/mixa3607/comfyui-gfx906
 fi
 
-if [ "$COMFYUI_BASE_IMAGE" == "" ]; then
-  COMFYUI_BASE_IMAGE="docker.io/library/ubuntu:24.04"
+if [ "$COMFYUI_TORCH_IMAGE" == "" ]; then
+  COMFYUI_TORCH_IMAGE="docker.io/mixa3607/pytorch-gfx906"
 fi
-
 if [ "$COMFYUI_ROCM_VERSION" == "" ]; then
-  COMFYUI_ROCM_VERSION="6.4.4"
+  COMFYUI_ROCM_VERSION="6.3.3"
+fi
+if [ "$COMFYUI_PYTORCH_VERSION" == "" ]; then
+  COMFYUI_PYTORCH_VERSION="v2.7.1"
 fi
 
 if [ "$COMFYUI_GIT_REF" == "" ]; then

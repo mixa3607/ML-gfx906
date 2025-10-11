@@ -5,9 +5,9 @@ cd $(dirname $0)
 source ../env.sh
 
 IMAGE_TAGS=(
-  "$PATCHED_LLAMA_IMAGE:full-${LLAMA_GIT_REF}-rocm-${LLAMA_ROCM_VERSION}-patch-${REPO_GIT_REF}"
-  "$PATCHED_LLAMA_IMAGE:full-${LLAMA_GIT_REF}-rocm-${LLAMA_ROCM_VERSION}"
-  "$PATCHED_LLAMA_IMAGE:full-rocm-${LLAMA_ROCM_VERSION}"
+  "$LLAMA_IMAGE:full-${LLAMA_GIT_REF}-rocm-${LLAMA_ROCM_VERSION}-patch-${REPO_GIT_REF}"
+  "$LLAMA_IMAGE:full-${LLAMA_GIT_REF}-rocm-${LLAMA_ROCM_VERSION}"
+  "$LLAMA_IMAGE:full-rocm-${LLAMA_ROCM_VERSION}"
 )
 
 if docker_image_pushed ${IMAGE_TAGS[0]}; then

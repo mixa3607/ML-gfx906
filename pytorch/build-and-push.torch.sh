@@ -23,6 +23,6 @@ mkdir ./logs || true
 docker buildx build ${DOCKER_EXTRA_ARGS[@]} --push \
   --build-arg BASE_ROCM_IMAGE="${PATCHED_ROCM_IMAGE}:${TORCH_ROCM_VERSION}-complete" \
   --build-arg ROCM_ARCH="${ROCM_ARCH}" \
-  --build-arg PYTORCH_BRANCH=$TORCH_BRANCH \
-  --build-arg PYTORCH_VISION_BRANCH=$TORCH_VISION_BRANCH \
+  --build-arg PYTORCH_BRANCH=$TORCH_VERSION \
+  --build-arg PYTORCH_VISION_BRANCH=$TORCH_VISION_VERSION \
   --target final -f ./torch.Dockerfile --progress=plain ./submodules 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log

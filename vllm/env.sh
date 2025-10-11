@@ -6,6 +6,9 @@ if [ "$VLLM_IMAGE" == "" ]; then
   VLLM_IMAGE=docker.io/mixa3607/vllm-gfx906
   #VLLM_IMAGE=registry.arkprojects.space/apps/vllm-gfx906
 fi
+if [ "$VLLM_TORCH_IMAGE" == "" ]; then
+  VLLM_TORCH_IMAGE="docker.io/mixa3607/pytorch-gfx906"
+fi
 
 if [ "$VLLM_PRESET_NAME" == "" ];           then VLLM_PRESET_NAME=default; fi
 # vllm git checkpoint
@@ -15,8 +18,6 @@ if [ "$VLLM_TRITON_BRANCH" == "" ];         then VLLM_TRITON_BRANCH="v3.4.x"; fi
 # rocm version
 if [ "$VLLM_ROCM_VERSION" == "" ];          then VLLM_ROCM_VERSION=6.4.4; fi
 # torch git checkpoint
-if [ "$VLLM_PYTORCH_BRANCH" == "" ];        then VLLM_PYTORCH_BRANCH="v2.7.1"; fi
-# vision git checkpoint
-if [ "$VLLM_PYTORCH_VISION_BRANCH" == "" ]; then VLLM_PYTORCH_VISION_BRANCH="v0.21.0"; fi
+if [ "$VLLM_PYTORCH_VERSION" == "" ];       then VLLM_PYTORCH_VERSION="v2.7.1"; fi
 
 popd

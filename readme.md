@@ -1,13 +1,23 @@
 # ML software for deprecated GFX906 arch
 
 ## Prebuild images
-Packages and status
+### Images
 | Name | Source | Status | Docs |
 | ---- | ------ | ------ | ---- |
 | ROCm | [ROCm](https://github.com/ROCm/ROCm), [rocBLAS](https://github.com/ROCm/rocBLAS) | OK | [readme](./rocm/readme.md) |
 | llama.cpp | [llama.cpp](https://github.com/ggml-org/llama.cpp) | OK | [readme](./llama.cpp/readme.md) |
 | ComfyUI | [ComfyUI](https://github.com/comfyanonymous/ComfyUI) | OK | [readme](./comfyui/readme.md) |
 | VLLM | [VLLM](https://github.com/nlzy/vllm-gfx906), [triton](https://github.com/nlzy/triton-gfx906) | OK | [readme](./vllm/readme.md) |
+
+### Deps graph
+```mermaid
+flowchart TD
+  rocm-src[docker.io/rocm/dev-ubuntu-24.04] --> rocm[docker.io/mixa3607/rocm-gfx906] 
+  rocm --> llama[docker.io/mixa3607/llama.cpp-gfx906]
+  rocm --> torch[docker.io/mixa3607/pytorch-gfx906]
+  torch --> comfyui[docker.io/mixa3607/comfyui-gfx906]
+  torch --> vllm[docker.io/mixa3607/vllm-gfx906]
+```
 
 ## Environment
 All software tested on Lenovo RD450X with 256G mem and 2x MI50 32G (x16 + x8). For cooling gpus used [AMD Instinct MI50 blower fan adapter (thingiverse)](https://www.thingiverse.com/thing:7153218).

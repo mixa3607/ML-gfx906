@@ -3,6 +3,18 @@ The most powerful and modular diffusion model GUI, api and backend with a graph/
 
 Recommend use `docker.io/mixa3607/comfyui-gfx906:latest-rocm-6.4.4`
 
+## Benchmarks
+| tag                                                  | rocm  | comfy   | pytorch | preset | batch | exec time (sec) |
+|------------------------------------------------------|-------|---------|---------|--------|-------|-----------------|
+| v0.3.63-torch-v2.7.1-rocm-6.4.4-patch-20251010004720 | 6.4.4 | v0.3.63 | v2.7.1  | SDXL   | 1     | 33              |
+| v0.3.63-torch-v2.7.1-rocm-6.4.4-patch-20251010004720 | 6.4.4 | v0.3.63 | v2.7.1  | SDXL   | 2     | 65              |
+| v0.3.63-torch-v2.7.1-rocm-6.4.4-patch-20251010004720 | 6.4.4 | v0.3.63 | v2.7.1  | SD 1.5 | 1     | 3,8             |
+| v0.3.63-torch-v2.7.1-rocm-6.4.4-patch-20251010004720 | 6.4.4 | v0.3.63 | v2.7.1  | SD 1.5 | 2     | 7               |
+| v0.3.63-torch-v2.7.1-rocm-6.3.3-patch-20251010004720 | 6.3.3 | v0.3.63 | v2.7.1  | SDXL   | 1     | 33              |
+| v0.3.63-torch-v2.7.1-rocm-6.3.3-patch-20251010004720 | 6.3.3 | v0.3.63 | v2.7.1  | SDXL   | 2     | 65              |
+| v0.3.63-torch-v2.7.1-rocm-6.3.3-patch-20251010004720 | 6.3.3 | v0.3.63 | v2.7.1  | SD 1.5 | 1     | 3,8             |
+| v0.3.63-torch-v2.7.1-rocm-6.3.3-patch-20251010004720 | 6.3.3 | v0.3.63 | v2.7.1  | SD 1.5 | 2     | 7               |
+
 ## Run
 ### Docker
 See https://github.com/hartmark/sd-rocm/blob/main/docker-compose.yml

@@ -5,6 +5,7 @@ cd $(dirname $0)
 source ../env.sh
 
 IMAGE_TAGS=(
+  "$COMFYUI_IMAGE:${COMFYUI_GIT_REF}-torch-${COMFYUI_PYTORCH_VERSION}-rocm-${COMFYUI_ROCM_VERSION}-patch-${REPO_GIT_REF}"
   "$COMFYUI_IMAGE:${COMFYUI_GIT_REF}-rocm-${COMFYUI_ROCM_VERSION}-patch-${REPO_GIT_REF}"
   "$COMFYUI_IMAGE:${COMFYUI_GIT_REF}-rocm-${COMFYUI_ROCM_VERSION}"
   "$COMFYUI_IMAGE:latest-rocm-${COMFYUI_ROCM_VERSION}"
@@ -22,6 +23,5 @@ done
 
 mkdir ./logs || true
 docker buildx build ${DOCKER_EXTRA_ARGS[@]} --push \
-  --build-arg BASE_ROCM_IMAGE=$PATCHED_ROCM_IMAGE:${COMFYUI_ROCM_VERSION}-complete \
-  --build-arg BASE_COMFY_IMAGE=$COMFYUI_BASE_IMAGE \
+  --build-arg BASE_PYTORCH_IMAGE=$COMFYUI_TORCH_IMAGE:${COMFYUI_PYTORCH_VERSION}-rocm-${COMFYUI_ROCM_VERSION} \
   --progress=plain --target final -f ./comfyui.Dockerfile --push ./submodules/ComfyUI 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log
