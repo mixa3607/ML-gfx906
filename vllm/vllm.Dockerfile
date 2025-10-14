@@ -40,6 +40,7 @@ WORKDIR /app
 RUN git clone --depth 1 --recurse-submodules --shallow-submodules --jobs 4 --branch ${VLLM_BRANCH} ${VLLM_REPO} vllm
 WORKDIR /app/vllm
 RUN pip install -r requirements/rocm.txt
+ENV SETUPTOOLS_SCM_PRETEND_VERSION=0.10.2+gfx906
 RUN python3 setup.py bdist_wheel --dist-dir=/dist
 RUN ls /dist 
 
