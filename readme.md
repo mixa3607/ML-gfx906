@@ -19,6 +19,18 @@ flowchart TD
   torch --> vllm[docker.io/mixa3607/vllm-gfx906]
 ```
 
+## Perf tuning
+Changing smcPPTable/TdcLimitGfx 350 => 150 reduced the hotspot by 10+- degrees with almost no drop in performance in vllm ([table in vllm](./vllm/readme.md#benchmarks))
+
+```console
+$ upp -p /sys/class/drm/card${GPU_ID}/device/pp_table set --write smcPPTable/TdcLimitGfx=150
+Changing smcPPTable.TdcLimitGfx of type H from 330 to 150 at 0x1fe
+Committing changes to '/sys/class/drm/card1/device/pp_table'.
+```
+
+- temperatures <img src="./docs/images/temperatures.png" alt="temperatures" width="400"/>
+- perf 
+
 ## Environment
 All software tested on Lenovo RD450X with 256G mem and 2x MI50 32G (x16 + x8). For cooling gpus used [AMD Instinct MI50 blower fan adapter (thingiverse)](https://www.thingiverse.com/thing:7153218).
 

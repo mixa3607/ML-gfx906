@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export VLLM_PRESET_NAME="ella"
+export VLLM_PRESET_NAME="0.10.2-rocm-6.4.4"
 export VLLM_ROCM_VERSION="6.4.4"
 export VLLM_PYTORCH_VERSION="v2.7.1"
 export VLLM_BRANCH="gfx906/v0.10.2"

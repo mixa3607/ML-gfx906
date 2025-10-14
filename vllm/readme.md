@@ -20,19 +20,33 @@ Methodology [benchmark](./benchmark/readme.md)
   20251007-162504 | 6.4.4 | 2.7.1a0+gite2d141d | 0.1.dev1+gceec3eaf6.rocm644 | 3.3.0+git2b5c6ef9 | 2  | 225    | gaunernst/gemma-3-27b-it-qat-autoawq | 75      | 1       | 00:19:22.7926510 | 0.06 | 20.08      | 86.25     | tested on rd450x 256G inside k3s in lxc  
   20251007-171239 | 6.4.4 | 2.7.1a0+gite2d141d | 0.1.dev1+gceec3eaf6.rocm644 | 3.3.0+git2b5c6ef9 | 2  | 225    | gaunernst/gemma-3-27b-it-qat-autoawq | 100     | 2       | 00:16:02.6107616 | 0.10 | 44.64      | 151.11    | tested on rd450x 256G inside k3s in lxc  
   20251007-173243 | 6.4.4 | 2.7.1a0+gite2d141d | 0.1.dev1+gceec3eaf6.rocm644 | 3.3.0+git2b5c6ef9 | 2  | 225    | gaunernst/gemma-3-27b-it-qat-autoawq | 125     | 3       | 00:19:21.7160991 | 0.11 | 50.35      | 160.67    | tested on rd450x 256G inside k3s in lxc  
-  20251007-175203 | 6.4.4 | 2.7.1a0+gite2d141d | 0.1.dev1+gceec3eaf6.rocm644 | 3.3.0+git2b5c6ef9 | 2  | 225    | gaunernst/gemma-3-27b-it-qat-autoawq | 150     | 4       | 00:18:17.4322852 | 0.14 | 60.88      | 201.22    | tested on rd450x 256G inside k3s in lxc
+  20251007-175203 | 6.4.4 | 2.7.1a0+gite2d141d | 0.1.dev1+gceec3eaf6.rocm644 | 3.3.0+git2b5c6ef9 | 2  | 225    | gaunernst/gemma-3-27b-it-qat-autoawq | 150     | 4       | 00:18:17.4322852 | 0.14 | 60.88      | 201.22    | tested on rd450x 256G inside k3s in lxc  
+  20251012-111624 | 6.3.3 | 2.8.0a0+gitba56102 | 0.11.0+gfx906.rocm633       | 3.4.0+gite4f3b253 | 2  | 225    | gaunernst/gemma-3-27b-it-qat-autoawq | 75      | 1       | 00:21:05.0039699 | 0.06 | 16.07      | 76.89     | tested on rd450x 256G inside k3s in lxc  
+  20251012-112842 | 6.3.3 | 2.8.0a0+gitba56102 | 0.11.0+gfx906.rocm633       | 3.4.0+gite4f3b253 | 2  | 225    | gaunernst/gemma-3-27b-it-qat-autoawq | 100     | 2       | 00:11:41.9394741 | 0.14 | 35.56      | 181.57    | tested on rd450x 256G inside k3s in lxc  
+  20251012-114201 | 6.3.3 | 2.8.0a0+gitba56102 | 0.11.0+gfx906.rocm633       | 3.4.0+gite4f3b253 | 2  | 225    | gaunernst/gemma-3-27b-it-qat-autoawq | 125     | 3       | 00:12:43.8522526 | 0.16 | 41.50      | 209.29    | tested on rd450x 256G inside k3s in lxc  
+  20251012-115501 | 6.3.3 | 2.8.0a0+gitba56102 | 0.11.0+gfx906.rocm633       | 3.4.0+gite4f3b253 | 2  | 225    | gaunernst/gemma-3-27b-it-qat-autoawq | 150     | 4       | 00:12:24.0047521 | 0.20 | 48.33      | 255.35    | tested on rd450x 256G inside k3s in lxc  
+  20251012-121023 | 6.3.3 | 2.8.0a0+gitba56102 | 0.11.0+gfx906.rocm633       | 3.4.0+gite4f3b253 | 2  | 225    | gaunernst/gemma-3-27b-it-qat-autoawq | 200     | 8       | 00:13:31.6286220 | 0.25 | 54.78      | 308.18    | tested on rd450x 256G inside k3s in lxc  
+  20251012-201017 | 6.3.3 | 2.8.0a0+gitba56102 | 0.11.0+gfx906.rocm633       | 3.4.0+gite4f3b253 | 2  | 225    | gaunernst/gemma-3-27b-it-qat-autoawq | 100     | 16      | 00:07:22.8462734 | 0.23 | 54.01      | 285.44    | tested on rd450x 256G inside k3s in lxc  
+  20251013-140107 | 6.3.3 | 2.8.0a0+gitba56102 | 0.11.0+gfx906.rocm633       | 3.4.0+gite4f3b253 | 2  | 225    | gaunernst/gemma-3-27b-it-qat-autoawq | 75      | 1       | 00:20:08.6821350 | 0.06 | 15.66      | 79.31     | TdcLimitGfx=150                          
+  20251013-141355 | 6.3.3 | 2.8.0a0+gitba56102 | 0.11.0+gfx906.rocm633       | 3.4.0+gite4f3b253 | 2  | 225    | gaunernst/gemma-3-27b-it-qat-autoawq | 100     | 2       | 00:12:11.5680303 | 0.14 | 34.12      | 174.22    | TdcLimitGfx=150                          
+  20251013-142754 | 6.3.3 | 2.8.0a0+gitba56102 | 0.11.0+gfx906.rocm633       | 3.4.0+gite4f3b253 | 2  | 225    | gaunernst/gemma-3-27b-it-qat-autoawq | 125     | 3       | 00:13:21.9331666 | 0.16 | 39.53      | 199.35    | TdcLimitGfx=150                          
+  20251013-144145 | 6.3.3 | 2.8.0a0+gitba56102 | 0.11.0+gfx906.rocm633       | 3.4.0+gite4f3b253 | 2  | 225    | gaunernst/gemma-3-27b-it-qat-autoawq | 150     | 4       | 00:13:13.4142282 | 0.19 | 46.02      | 240.14    | TdcLimitGfx=150                          
 
 ## Run
 
 ## DockerHub images
 > ghcr.io registry is deprecated. Use https://hub.docker.com/r/mixa3607/vllm-gfx906 instead
 
-Tags:
-- `jena` based on `rocm-6.3.3`. See more in `preset.setup-jena.sh`
-- `ella` based on `rocm-6.4.4`. See more in `preset.setup-ella.sh` - multimodal requests throw exceptions
-- ~~`eva` based on `rocm-7.0.0`. See more in `preset.setup-eva.sh`~~ error on build pytorch with llvm 20 in rocm 7.0.0
+Vers compatibility table:
+| ROCm | PyTorch | vLLM | triton | model | text | images | misc |
+| ----- | ------- | ---- | ------ | ----- | ---- | ------ | ----|
+| 7.0.0 | ⛔     | ⛔   | ⛔     | ⛔   | ⛔   | ⛔    | can't build any torch ver with llvm20 |
+| 6.3.3 | 2.7.1 | 0.10.2 | 3.3.0 | gaunernst/gemma-3-27b-it-qat-autoawq | ✅️ | ✅️ | ok |
+| 6.4.4 | 2.7.1 | 0.10.2 | 3.3.0 | gaunernst/gemma-3-27b-it-qat-autoawq | ✅️ | ⛔ | requests with images throw exception |
+| 6.3.3 | 2.8.0 | 0.11.0 | 3.4.0 | gaunernst/gemma-3-27b-it-qat-autoawq | ✅️ | ✅️ | ok |
+| 6.4.4 | 2.8.0 | 0.11.0 | 3.4.0 | gaunernst/gemma-3-27b-it-qat-autoawq | ⛔ | ⛔ | all requests throw exception |
 
-Recommend use `docker.io/mixa3607/vllm-gfx906:jena`
+Recommend use `docker.io/mixa3607/vllm-gfx906:0.11.0-rocm-6.3.3`
 
 ### Docker
 Basics from amd https://github.com/ROCm/vllm/blob/main/docs/deployment/docker.md
@@ -127,12 +141,26 @@ spec:
               mountPath: /dev/dri
 ```
 
+## Gemma3 AWQ patch for 0.11.0
+```bash
+echo '
+--- /usr/local/lib/python3.12/dist-packages/vllm/config/model.py        2025-10-12 13:22:53.000000000 +0000
++++ /usr/local/lib/python3.12/dist-packages/vllm/config/model.py        2025-10-12 13:59:26.271776131 +0000
+@@ -1586,6 +1586,7 @@
+     "plamo2": "Numerical instability. Please use bfloat16 or float32 instead.",
+     "glm4": "Numerical instability. Please use bfloat16 or float32 instead.",
+ }
++_FLOAT16_NOT_SUPPORTED_MODELS = {}
+
+
+ def _is_valid_dtype(model_type: str, dtype: torch.dtype):' | patch -d/ -p0
+```
 
 
 ## Build
-See build vars in `./env.sh`. You also may use presetis `./preset.setup-*.sh`. Exec `./build-and-push.vllm.sh`:
+See build vars in `./env.sh`. You also may use presetis `./preset.*.sh`. Exec `./build-and-push.vllm.sh`:
 ```bash
-$ . preset.setup-ella.sh
+$ . preset.0.11.0-rocm-6.3.3.sh
 $ ./build-and-push.vllm.sh
 ~/REPOS/mixa3607/llama.cpp-gfx906/rocm ~/REPOS/mixa3607/llama.cpp-gfx906/rocm
 ~/REPOS/mixa3607/llama.cpp-gfx906/rocm
