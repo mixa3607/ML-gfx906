@@ -154,6 +154,42 @@ echo '
 
 
  def _is_valid_dtype(model_type: str, dtype: torch.dtype):' | patch -d/ -p0
+
+echo '
+--- /usr/local/lib/python3.12/dist-packages/vllm/model_executor/models/gemma3.py
++++ /usr/local/lib/python3.12/dist-packages/vllm/model_executor/models/gemma3.py
+@@ -329,6 +329,9 @@ class Gemma3DecoderLayer(nn.Module):
+         residual: Optional[torch.Tensor],
+         **kwargs,
+     ) -> tuple[torch.Tensor, torch.Tensor]:
++        # https://github.com/huggingface/transformers/pull/36832
++        if hidden_states.dtype == torch.float16:
++            hidden_states = hidden_states.clamp_(-65504, 65504)
+         if residual is None:
+             residual = hidden_states
+             hidden_states = self.input_layernorm(hidden_states)
+@@ -341,11 +344,15 @@ class Gemma3DecoderLayer(nn.Module):
+             **kwargs,
+         )
+         hidden_states = self.post_attention_layernorm(hidden_states)
++        if hidden_states.dtype == torch.float16:
++            hidden_states = hidden_states.clamp_(-65504, 65504)
+
+         hidden_states, residual = self.pre_feedforward_layernorm(
+             hidden_states, residual)
+         hidden_states = self.mlp(hidden_states)
+         hidden_states = self.post_feedforward_layernorm(hidden_states)
++        if hidden_states.dtype == torch.float16:
++            hidden_states = hidden_states.clamp_(-65504, 65504)
+         return hidden_states, residual
+
+
+@@ -552,4 +559,4 @@ class Gemma3ForCausalLM(nn.Module, SupportsLoRA, SupportsPP):
+             skip_prefixes=(["lm_head."]
+                            if self.config.tie_word_embeddings else None),
+         )
+-        return loader.load_weights(weights)
++        return loader.load_weights(weights)' | patch -d/ -p0
 ```
 
 
