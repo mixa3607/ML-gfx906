@@ -1,0 +1,6 @@
+[submodule "llama.cpp/submodules/llama.cpp"]
+	url = ../../ggml-org/llama.cpp.git
+	path = llama.cpp/submodules/llama.cpp
+[submodule "comfyui/submodules/ComfyUI"]
+	path = comfyui/submodules/ComfyUI
+	url = ../../comfyanonymous/ComfyUI.git
