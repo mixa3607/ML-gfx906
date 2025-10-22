@@ -6,9 +6,6 @@ if [ "$VLLM_IMAGE" == "" ]; then
   VLLM_IMAGE=docker.io/mixa3607/vllm-gfx906
   #VLLM_IMAGE=registry.arkprojects.space/apps/vllm-gfx906
 fi
-if [ "$VLLM_TORCH_IMAGE" == "" ]; then
-  VLLM_TORCH_IMAGE="docker.io/mixa3607/pytorch-gfx906"
-fi
 
 if [ "$VLLM_PRESET_NAME" == "" ];           then VLLM_PRESET_NAME=default; fi
 # vllm git checkpoint

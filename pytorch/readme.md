@@ -4,8 +4,9 @@ Tensors and Dynamic neural networks in Python with strong GPU acceleration.
 Packages:
 - torch
 - torchvision
+- torchaudio
 
-Recommend use `docker.io/mixa3607/pytorch-gfx906:v2.7.1-rocm-6.3.3`
+Recommend use `docker.io/mixa3607/pytorch-gfx906:(v2.7.1|v2.8.0)-rocm-6.3.3`
 
 ## Build
 See build vars in `./env.sh`. You also may use presetis `./preset.*.sh`. Exec `./build-and-push.torch.sh`:

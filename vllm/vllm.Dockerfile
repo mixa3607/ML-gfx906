@@ -19,7 +19,7 @@ ENV VLLM_TARGET_DEVICE=rocm
 
 ############# Build base #############
 FROM rocm_base AS build_base
-RUN pip3 install ninja 'cmake<4' wheel pybind11
+RUN pip3 install ninja 'cmake<4' wheel pybind11 setuptools_scm
 
 ############# Build triton #############
 FROM build_base AS build_triton
