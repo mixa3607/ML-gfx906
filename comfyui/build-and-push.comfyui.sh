@@ -23,5 +23,5 @@ done
 
 mkdir ./logs || true
 docker buildx build ${DOCKER_EXTRA_ARGS[@]} --push \
-  --build-arg BASE_PYTORCH_IMAGE=$COMFYUI_TORCH_IMAGE:${COMFYUI_PYTORCH_VERSION}-rocm-${COMFYUI_ROCM_VERSION} \
+  --build-arg BASE_PYTORCH_IMAGE=$TORCH_IMAGE:${COMFYUI_PYTORCH_VERSION}-rocm-${COMFYUI_ROCM_VERSION} \
   --progress=plain --target final -f ./comfyui.Dockerfile --push ./submodules/ComfyUI 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log
