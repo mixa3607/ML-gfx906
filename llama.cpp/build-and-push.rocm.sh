@@ -5,7 +5,7 @@ cd $(dirname $0)
 source ../env.sh
 
 IMAGE_TAGS=(
-  "$LLAMA_IMAGE:full-${LLAMA_GIT_REF}-rocm-${LLAMA_ROCM_VERSION}-patch-${REPO_GIT_REF}"
+  "$LLAMA_IMAGE:full-${LLAMA_GIT_REF}-rocm-${LLAMA_ROCM_VERSION}-${REPO_GIT_REF}"
   "$LLAMA_IMAGE:full-${LLAMA_GIT_REF}-rocm-${LLAMA_ROCM_VERSION}"
   "$LLAMA_IMAGE:full-rocm-${LLAMA_ROCM_VERSION}"
 )
