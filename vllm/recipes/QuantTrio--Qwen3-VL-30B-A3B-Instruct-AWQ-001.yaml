@@ -24,16 +24,16 @@ extraEnvVars:
   - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
     value: "http://signoz-otel.arkprojects.space/v1/traces"
   - name: RECIPE
-    value: "QuantTrio--Qwen3-VL-32B-Instruct-AWQ-001.yaml"
+    value: "QuantTrio--Qwen3-VL-30B-A3B-Instruct-AWQ-001.yaml"
 
 
 app-configuration:
   vllm.yaml: |-
     # basics
-    model: QuantTrio/Qwen3-VL-32B-Instruct-AWQ
+    model: QuantTrio/Qwen3-VL-30B-A3B-Instruct-AWQ
     served-model-name:
-      - Qwen3-VL-32B
-      - QuantTrio/Qwen3-VL-32B-Instruct-AWQ
+      - Qwen3-VL-30B-A3B
+      - QuantTrio/Qwen3-VL-30B-A3B-Instruct-AWQ
     async-scheduling: true
     # gpus setup related
     max-model-len: 64K

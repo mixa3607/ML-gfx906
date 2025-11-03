@@ -39,7 +39,7 @@ done
 
 ### Copy results from pod
 ```sh
-kubectl exec -n ns-vllm pods/$(kubectl get pods -n ns-vllm -l app.kubernetes.io/instance=vllm -o jsonpath='{.items[].metadata.name}') -- bash -c 'cd /app/vllm/ && tar -zcvf - *.json .' | tar -zxvf - -C results/
+kubectl exec -n ns-vllm pods/$(kubectl get pods -n ns-vllm -l app.kubernetes.io/instance=vllm -o jsonpath='{.items[].metadata.name}') -- bash -c 'cd /app/vllm/ && tar -zcvf - *.json' | tar -zxvf - -C results/
 ```
 
 ### Generate table

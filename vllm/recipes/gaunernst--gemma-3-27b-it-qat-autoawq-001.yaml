@@ -1,0 +1,110 @@
+command: [ "/bin/bash", "-c" ]
+args:
+  - |
+    echo '
+    --- /usr/local/lib/python3.12/dist-packages/vllm/config/model.py
+    +++ /usr/local/lib/python3.12/dist-packages/vllm/config/model.py
+    @@ -1586,6 +1586,7 @@
+         "plamo2": "Numerical instability. Please use bfloat16 or float32 instead.",
+         "glm4": "Numerical instability. Please use bfloat16 or float32 instead.",
+     }
+    +_FLOAT16_NOT_SUPPORTED_MODELS = {}
+    
+    
+     def _is_valid_dtype(model_type: str, dtype: torch.dtype):' | patch -d/ -p0
+    
+    echo '
+    --- /usr/local/lib/python3.12/dist-packages/vllm/model_executor/models/gemma3.py
+    +++ /usr/local/lib/python3.12/dist-packages/vllm/model_executor/models/gemma3.py
+    @@ -329,6 +329,9 @@ class Gemma3DecoderLayer(nn.Module):
+             residual: Optional[torch.Tensor],
+             **kwargs,
+         ) -> tuple[torch.Tensor, torch.Tensor]:
+    +        # https://github.com/huggingface/transformers/pull/36832
+    +        if hidden_states.dtype == torch.float16:
+    +            hidden_states = hidden_states.clamp_(-65504, 65504)
+             if residual is None:
+                 residual = hidden_states
+                 hidden_states = self.input_layernorm(hidden_states)
+    @@ -341,11 +344,15 @@ class Gemma3DecoderLayer(nn.Module):
+                 **kwargs,
+             )
+             hidden_states = self.post_attention_layernorm(hidden_states)
+    +        if hidden_states.dtype == torch.float16:
+    +            hidden_states = hidden_states.clamp_(-65504, 65504)
+    
+             hidden_states, residual = self.pre_feedforward_layernorm(
+                 hidden_states, residual)
+             hidden_states = self.mlp(hidden_states)
+             hidden_states = self.post_feedforward_layernorm(hidden_states)
+    +        if hidden_states.dtype == torch.float16:
+    +            hidden_states = hidden_states.clamp_(-65504, 65504)
+             return hidden_states, residual
+    
+    
+    @@ -552,4 +559,4 @@ class Gemma3ForCausalLM(nn.Module, SupportsLoRA, SupportsPP):
+                 skip_prefixes=(["lm_head."]
+                                if self.config.tie_word_embeddings else None),
+             )
+    -        return loader.load_weights(weights)
+    +        return loader.load_weights(weights)' | patch -d/ -p0
+    
+    #sleep infinity
+    exec vllm serve --config ./vllm.yaml
+
+image:
+  registry: docker.io
+  repository: mixa3607/vllm-gfx906
+  tag: 0.11.0-rocm-6.3.3-20251102214219
+
+diagnosticMode:
+  enabled: false
+
+extraEnvVars:
+  - name: HUGGING_FACE_HUB_TOKEN
+    value: "https://huggingface.co/settings/tokens --set extraEnvVars[0].value='hf_xxxxxxx'"
+  - name: VLLM_SLEEP_WHEN_IDLE
+    value: "1"
+  - name: VLLM_USE_V1
+    value: "1"
+  - name: VLLM_USE_TRITON_AWQ
+    value: "1"
+  - name: VLLM_USE_TRITON_FLASH_ATTN
+    value: "True"
+  - name: OTEL_SERVICE_NAME
+    value: "vLLM-server"
+  - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
+    value: "http/protobuf"
+  - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+    value: "http://signoz-otel.arkprojects.space/v1/traces"
+  - name: RECIPE
+    value: "gaunernst--gemma-3-27b-it-qat-autoawq-001.yaml"
+
+app-configuration:
+  vllm.yaml: |-
+    # basics
+    model: gaunernst/gemma-3-27b-it-qat-autoawq
+    served-model-name:
+      - gemma-3-27b
+      - gaunernst/gemma-3-27b-it-qat-autoawq
+    async-scheduling: true
+    # gpus setup related
+    max-model-len: 32K
+    tensor-parallel-size: 2
+    data-parallel-size: 1
+    gpu-memory-utilization: 0.95
+    # multimodality
+    limit-mm-per-prompt.image: 16
+    allowed-media-domains:
+      - s3.arkprojects.space
+      - static.arkprojects.space
+    # logging
+    otlp-traces-endpoint: http://signoz-otel.arkprojects.space/v1/traces
+    collect-detailed-traces: all
+    enable-request-id-headers: true
+    enable-prompt-tokens-details: true
+    enable-server-load-tracking: true
+    enable-force-include-usage: true
+    enable-tokenizer-info-endpoint: true
+    enable-log-requests: true
+    trust-request-chat-template: true
