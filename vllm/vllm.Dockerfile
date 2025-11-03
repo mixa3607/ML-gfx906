@@ -52,6 +52,7 @@ RUN --mount=type=bind,from=build_vllm,src=/app/vllm/requirements,target=/app/vll
     pip install /dist_triton/*.whl /dist_vllm/*.whl && \
     pip install -r requirements/rocm.txt && \
     pip install opentelemetry-sdk opentelemetry-api opentelemetry-semantic-conventions-ai opentelemetry-exporter-otlp && \
+    pip install modelscope && \
     true
 
 CMD ["/bin/bash"]

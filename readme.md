@@ -10,6 +10,31 @@
 | ComfyUI | [ComfyUI](https://github.com/comfyanonymous/ComfyUI) | OK | [readme](./comfyui/readme.md) |
 | VLLM | [VLLM](https://github.com/nlzy/vllm-gfx906), [triton](https://github.com/nlzy/triton-gfx906) | OK | [readme](./vllm/readme.md) |
 
+
+| Project    |    | Image |
+| ---------- | -- | ----- |
+| ROCm       | ╦═ | `docker.io/mixa3607/rocm-gfx906:7.1.0-complete` |
+|            | ╠═ | `docker.io/mixa3607/rocm-gfx906:7.0.2-complete` |
+|            | ╠═ | `docker.io/mixa3607/rocm-gfx906:7.0.0-complete` |
+|            | ╠═ | `docker.io/mixa3607/rocm-gfx906:6.4.4-complete` |
+|            | ╚═ | `docker.io/mixa3607/rocm-gfx906:6.3.3-complete` |
+| PyTorch    | ╦═ | `docker.io/mixa3607/pytorch-gfx906:v2.7.1-rocm-6.4.4` |
+|            | ╠═ | `docker.io/mixa3607/pytorch-gfx906:v2.7.1-rocm-6.3.3` |
+|            | ╠═ | `docker.io/mixa3607/pytorch-gfx906:v2.8.0-rocm-6.4.4` |
+|            | ╠═ | `docker.io/mixa3607/pytorch-gfx906:v2.8.0-rocm-6.3.3` |
+|            | ╠═ | `docker.io/mixa3607/pytorch-gfx906:v2.9.0-rocm-6.4.4` |
+|            | ╠═ | `docker.io/mixa3607/pytorch-gfx906:v2.9.0-rocm-6.3.3` |
+|            | ╚═ | `docker.io/mixa3607/pytorch-gfx906:v2.9.0-rocm-7.0.2` |
+| ComfyUI    | ╦═ | `docker.io/mixa3607/comfyui-gfx906:v0.3.67-torch-v2.9.0-rocm-7.0.2` |
+|            | ╠═ | `docker.io/mixa3607/comfyui-gfx906:v0.3.67-torch-v2.9.0-rocm-6.4.4` |
+|            | ╚═ | `docker.io/mixa3607/comfyui-gfx906:v0.3.67-torch-v2.9.0-rocm-6.3.3` |
+| vLLM       | ╦═ | `docker.io/mixa3607/vllm-gfx906:0.11.0-rocm-6.3.3` |
+|            | ╠═ | `docker.io/mixa3607/vllm-gfx906:0.10.2-rocm-6.3.3` |
+|            | ╚═ | `docker.io/mixa3607/vllm-gfx906:0.8.5-rocm-6.3.3`  |
+| llama.cpp  | ╦═ | `docker.io/mixa3607/llama.cpp-gfx906:full-b6924-rocm-7.1.0` |
+|            | ╚═ | `docker.io/mixa3607/llama.cpp-gfx906:full-b6924-rocm-6.3.3` |
+
+
 ### Deps graph
 ```mermaid
 flowchart TD
@@ -31,7 +56,7 @@ Committing changes to '/sys/class/drm/card1/device/pp_table'.
 <img src="./docs/images/temperatures.png" alt="temperatures" width="400"/>
 
 ## Environment
-All software tested on Lenovo RD450X with 256G mem and 2x MI50 32G (x16 + x8). For cooling gpus used [AMD Instinct MI50 blower fan adapter (thingiverse)](https://www.thingiverse.com/thing:7153218).
+[env v1](./docs/setup.v1.md)
 
 ## RVS
 ```shell

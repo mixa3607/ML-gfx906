@@ -32,26 +32,30 @@ static void GenerateTable(string resultsDir)
     results = results.OrderBy(x => x.Date).ToList();
 
     var table = new MarkdownTable.MarkdownTableBuilder();
-    table.WithHeader("date", "rocm", "torch", "vllm",
-        "triton", "TP", "PwrCap", "Model", "Prompts",
-        "Threads", "Duration", "RPS",
+    table.WithHeader("date", "rocm", 
+        //"torch", 
+        "vllm",
+        //"triton", 
+        //"TP", 
+        "PwrCap", "Model", "Prompts",
+        "Threads", "Duration", "RPM",
         "Output TPS", "Total TPS", "About");
     foreach (var result in results)
     {
         var fields = new List<string>();
         fields.Add(result.Date);
         fields.Add(result.MetadataRocmVer);
-        fields.Add(result.MetadataTorchVer);
+        //fields.Add(result.MetadataTorchVer);
         fields.Add(result.MetadataVllmVer);
-        fields.Add(result.MetadataTritonVer);
-        fields.Add(result.MetadataTensorParallelism);
+        //fields.Add(result.MetadataTritonVer);
+        //fields.Add(result.MetadataTensorParallelism);
         fields.Add(result.MetadataPowerCap);
         fields.Add(result.ModelId);
         fields.Add(result.NumPrompts.ToString());
         fields.Add(result.MaxConcurrency.ToString());
 
         fields.Add(TimeSpan.FromSeconds(result.Duration).ToString());
-        fields.Add(result.RequestThroughput.ToString("N2"));
+        fields.Add((result.RequestThroughput * 60).ToString("N2"));
         fields.Add(result.OutputThroughput.ToString("N2"));
         fields.Add(result.TotalTokenThroughput.ToString("N2"));
 
