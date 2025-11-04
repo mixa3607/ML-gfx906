@@ -22,6 +22,8 @@ done
 mkdir ./logs || true
 docker buildx build ${DOCKER_EXTRA_ARGS[@]} --push \
   --build-arg BASE_PYTORCH_IMAGE=$TORCH_IMAGE:${VLLM_PYTORCH_VERSION}-rocm-${VLLM_ROCM_VERSION} \
+  --build-arg VLLM_REPO=$VLLM_REPO \
   --build-arg VLLM_BRANCH=$VLLM_BRANCH \
+  --build-arg TRITON_REPO=$VLLM_TRITON_REPO \
   --build-arg TRITON_BRANCH=$VLLM_TRITON_BRANCH \
   --progress=plain --target final -f ./vllm.Dockerfile ./submodules 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log
