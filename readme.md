@@ -60,16 +60,14 @@ Committing changes to '/sys/class/drm/card1/device/pp_table'.
 
 ## RVS
 ```shell
-cd /opt/rocm-6.4.1/bin
-apt update
-apt install -y rocm-validation-suite
+apt update && apt install -y rocm-validation-suite
 echo 'actions:
 - name: gst-581Tflops-4K4K8K-rand-bf16
   device: all
   module: gst
-  log_interval: 3000
+  log_interval: 10000
   ramp_interval: 5000
-  duration: 15000
+  duration: 120000
   hot_calls: 1000
   copy_matrix: false
   target_stress: 581000
@@ -86,8 +84,9 @@ echo 'actions:
   transb: 0
   alpha: 1
   beta: 0' > ~/gst-581Tflops-4K4K8K-rand-bf16.conf
-./rvs -c ~/gst-581Tflops-4K4K8K-rand-bf16.conf
+/opt/rocm/bin/rvs -c ~/gst-581Tflops-4K4K8K-rand-bf16.conf
 ```
+
 
 
 
