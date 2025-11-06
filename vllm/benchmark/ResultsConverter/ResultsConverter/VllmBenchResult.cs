@@ -50,6 +50,9 @@ public partial class VllmBenchResult
     [JsonPropertyName("metadata.power_cap")]
     public string MetadataPowerCap { get; set; }
 
+    [JsonPropertyName("metadata.workload")]
+    public string? MetadataWorkload { get; set; }
+
     [JsonPropertyName("request_rate")]
     public string RequestRate { get; set; }
 

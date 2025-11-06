@@ -1,0 +1,64 @@
+image:
+  registry: registry.arkprojects.space
+  repository: apps/vllm-gfx906
+  tag: 0.11.0-rocm-6.3.3-tomylin890-abbe414
+  pullPolicy: Always
+  pullSecrets:
+    - name: harbor-registry-pull-secret
+
+diagnosticMode:
+  enabled: false
+
+extraEnvVars:
+  - name: HUGGING_FACE_HUB_TOKEN
+    value: "https://huggingface.co/settings/tokens --set extraEnvVars[0].value='hf_xxxxxxx'"
+  - name: VLLM_SLEEP_WHEN_IDLE
+    value: "1"
+  - name: VLLM_USE_V1
+    value: "1"
+  - name: VLLM_USE_TRITON_AWQ
+    value: "1"
+  - name: VLLM_USE_TRITON_FLASH_ATTN
+    value: "True"
+  - name: OTEL_SERVICE_NAME
+    value: "vLLM-server"
+  - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
+    value: "http/protobuf"
+  - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+    value: "http://signoz-otel.arkprojects.space/v1/traces"
+  - name: RECIPE
+    value: "QuantTrio--Qwen3-VL-30B-A3B-Instruct-AWQ-002.yaml"
+
+
+app-configuration:
+  vllm.yaml: |-
+    # basics
+    model: QuantTrio/Qwen3-VL-30B-A3B-Instruct-AWQ
+    served-model-name:
+      - Qwen3-VL-30B-A3B
+      - QuantTrio/Qwen3-VL-30B-A3B-Instruct-AWQ
+    async-scheduling: true
+    # gpus setup related
+    max-model-len: 64K
+    max-num-batched-tokens: 6144
+    max-num-seqs: 8
+    tensor-parallel-size: 2
+    data-parallel-size: 1
+    gpu-memory-utilization: 0.95
+    # multimodality
+    mm-encoder-tp-mode: data
+    limit-mm-per-prompt.image: 16
+    limit-mm-per-prompt.video: 1
+    allowed-media-domains:
+      - s3.arkprojects.space
+      - static.arkprojects.space
+    # logging
+    otlp-traces-endpoint: http://signoz-otel.arkprojects.space/v1/traces
+    collect-detailed-traces: all
+    enable-request-id-headers: true
+    enable-prompt-tokens-details: true
+    enable-server-load-tracking: true
+    enable-force-include-usage: true
+    enable-tokenizer-info-endpoint: true
+    enable-log-requests: true
+    trust-request-chat-template: true

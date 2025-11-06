@@ -89,7 +89,7 @@ app-configuration:
       - gaunernst/gemma-3-27b-it-qat-autoawq
     async-scheduling: true
     # gpus setup related
-    max-model-len: 32K
+    max-model-len: 48K
     tensor-parallel-size: 2
     data-parallel-size: 1
     gpu-memory-utilization: 0.95

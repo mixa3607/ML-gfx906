@@ -32,16 +32,26 @@ static void GenerateTable(string resultsDir)
     results = results.OrderBy(x => x.Date).ToList();
 
     var table = new MarkdownTable.MarkdownTableBuilder();
-    table.WithHeader("date", "rocm", 
+    table.WithHeader("date", "rocm",
         //"torch", 
         "vllm",
         //"triton", 
         //"TP", 
         "PwrCap", "Model", "Prompts",
-        "Threads", "Duration", "RPM",
-        "Output TPS", "Total TPS", "About");
+        "Threads",
+        "AVG in",
+        "AVG out",
+        "Duration",
+        "RPM",
+        "TG",
+        "Total TPS",
+        "Workload",
+        "About");
     foreach (var result in results)
     {
+        var ispp = result.MetadataWorkload?.StartsWith("pp;") == true;
+        var istg = result.MetadataWorkload?.StartsWith("tg;") == true;
+
         var fields = new List<string>();
         fields.Add(result.Date);
         fields.Add(result.MetadataRocmVer);
@@ -53,12 +63,15 @@ static void GenerateTable(string resultsDir)
         fields.Add(result.ModelId);
         fields.Add(result.NumPrompts.ToString());
         fields.Add(result.MaxConcurrency.ToString());
+        fields.Add((result.TotalInputTokens / result.NumPrompts).ToString("0"));
+        fields.Add((result.TotalOutputTokens / result.NumPrompts).ToString("0"));
 
-        fields.Add(TimeSpan.FromSeconds(result.Duration).ToString());
-        fields.Add((result.RequestThroughput * 60).ToString("N2"));
-        fields.Add(result.OutputThroughput.ToString("N2"));
-        fields.Add(result.TotalTokenThroughput.ToString("N2"));
+        fields.Add(TimeSpan.FromSeconds(result.Duration).ToString("hh\\:mm\\:ss"));
+        fields.Add(ispp || istg ? "-" : (result.RequestThroughput * 60).ToString("N2"));
+        fields.Add(ispp ? "-" : result.OutputThroughput.ToString("N2"));
+        fields.Add(istg ? "-" : result.TotalTokenThroughput.ToString("N2"));
 
+        fields.Add(ispp ? "pp" : istg ? "tg": (result.MetadataWorkload ?? ""));
         fields.Add(result.MetadataAbout);
         //fields.Add(result.MetadataBenchmarkAuthor);
 
