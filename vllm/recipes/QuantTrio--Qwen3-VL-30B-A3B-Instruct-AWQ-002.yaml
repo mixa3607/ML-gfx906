@@ -1,10 +1,7 @@
 image:
-  registry: registry.arkprojects.space
-  repository: apps/vllm-gfx906
+  registry: docker.io
+  repository: mixa3607/vllm-gfx906
   tag: 0.11.0-rocm-6.3.3-tomylin890-abbe414
-  pullPolicy: Always
-  pullSecrets:
-    - name: harbor-registry-pull-secret
 
 diagnosticMode:
   enabled: false
