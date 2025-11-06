@@ -1,5 +1,6 @@
 # VLLM GFX906
-Used forks by https://github.com/nlzy:
+Used forks:
+- https://github.com/tomylin890/vllm-gfx906
 - https://github.com/nlzy/vllm-gfx906
 - https://github.com/nlzy/triton-gfx906
 
@@ -12,7 +13,7 @@ Used forks by https://github.com/nlzy:
 - `TG` - Output token throughput (tok/s)
 - `Total TPS` - Total Token throughput (tok/s)
 
-Methodology [benchmark](./benchmark/readme.md)
+Methodology [benchmark](./benchmark/readme.md); [Google sheets](https://docs.google.com/spreadsheets/d/1VpBHm-9nGtlmtZd6eqXVJw3eN4QvlvAO_qkhmsFuiSk/edit?usp=sharing)
 
   date            | rocm  | vllm                        | PwrCap | Model                                   | Prompts | Threads | AVG in | AVG out | Duration | RPM | TG     | Total TPS | Workload | About                                                                                                                     
  -----------------|-------|-----------------------------|--------|-----------------------------------------|---------|---------|--------|---------|----------|-----|--------|-----------|----------|-------------------------------------------------------------------------------------------------------------------------- 
