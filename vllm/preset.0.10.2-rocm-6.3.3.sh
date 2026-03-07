@@ -1,7 +1,0 @@
-#!/bin/bash
-
-export VLLM_ROCM_VERSION="6.3.3"
-export VLLM_PYTORCH_VERSION="v2.7.1"
-export VLLM_BRANCH="v0.10.2+gfx906"
-export VLLM_TRITON_BRANCH="v3.3.0+gfx906"
-export VLLM_PRESET_NAME="0.10.2-rocm-$VLLM_ROCM_VERSION"

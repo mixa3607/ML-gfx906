@@ -49,8 +49,8 @@ static void GenerateTable(string resultsDir)
         "About");
     foreach (var result in results)
     {
-        var ispp = result.MetadataWorkload?.StartsWith("pp;") == true;
-        var istg = result.MetadataWorkload?.StartsWith("tg;") == true;
+        var ispp = result.MetadataWorkload?.StartsWith("pp") == true;
+        var istg = result.MetadataWorkload?.StartsWith("tg") == true;
 
         var fields = new List<string>();
         fields.Add(result.Date);

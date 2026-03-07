@@ -11,7 +11,7 @@ IMAGE_TAGS=(
 
 if docker_image_pushed ${IMAGE_TAGS[0]}; then
   echo "${IMAGE_TAGS[0]} already in registry. Skip"
-  exit 0
+  #exit 0
 fi
 
 DOCKER_EXTRA_ARGS=()
@@ -19,11 +19,13 @@ for (( i=0; i<${#IMAGE_TAGS[@]}; i++ )); do
   DOCKER_EXTRA_ARGS+=("-t" "${IMAGE_TAGS[$i]}")
 done
 
-mkdir ./logs || true
+mkdir -p ./logs
 docker buildx build ${DOCKER_EXTRA_ARGS[@]} --push \
   --build-arg BASE_PYTORCH_IMAGE=$TORCH_IMAGE:${VLLM_PYTORCH_VERSION}-rocm-${VLLM_ROCM_VERSION} \
   --build-arg VLLM_REPO=$VLLM_REPO \
   --build-arg VLLM_BRANCH=$VLLM_BRANCH \
+  --build-arg VLLM_PATCH=$VLLM_PATCH \
   --build-arg TRITON_REPO=$VLLM_TRITON_REPO \
   --build-arg TRITON_BRANCH=$VLLM_TRITON_BRANCH \
-  --progress=plain --target final -f ./vllm.Dockerfile ./submodules 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log
+  --build-arg TRITON_PATCH=$VLLM_TRITON_PATCH \
+  --progress=plain --target final -f ./vllm.Dockerfile ./build-context 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log

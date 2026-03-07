@@ -11,9 +11,11 @@ if [ "$VLLM_PRESET_NAME" == "" ];           then VLLM_PRESET_NAME=default; fi
 # vllm git checkpoint
 if [ "$VLLM_REPO" == "" ];                  then VLLM_REPO="https://github.com/nlzy/vllm-gfx906.git"; fi
 if [ "$VLLM_BRANCH" == "" ];                then VLLM_BRANCH="v0.10.2"; fi
+if [ "$VLLM_PATCH" == "" ];                 then VLLM_PATCH="empty.patch"; fi
 # triton git checkpoint
 if [ "$VLLM_TRITON_REPO" == "" ];           then VLLM_TRITON_REPO="https://github.com/nlzy/triton-gfx906.git"; fi
 if [ "$VLLM_TRITON_BRANCH" == "" ];         then VLLM_TRITON_BRANCH="v3.4.x"; fi
+if [ "$VLLM_TRITON_PATCH" == "" ];          then VLLM_TRITON_PATCH="empty.patch"; fi
 # rocm version
 if [ "$VLLM_ROCM_VERSION" == "" ];          then VLLM_ROCM_VERSION=6.4.4; fi
 # torch git checkpoint
