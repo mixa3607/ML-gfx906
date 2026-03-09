@@ -4,6 +4,7 @@ pushd $(dirname ${BASH_SOURCE[0]})
 
 if [ "$COMFYUI_IMAGE" == "" ]; then
   COMFYUI_IMAGE=docker.io/mixa3607/comfyui-gfx906
+  #COMFYUI_IMAGE=registry.arkprojects.space/apps/comfyui-gfx906
 fi
 
 if [ "$COMFYUI_TORCH_IMAGE" == "" ]; then
