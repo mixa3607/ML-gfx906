@@ -64,7 +64,7 @@ RUN --mount=type=bind,from=build_vllm,src=/app/vllm/requirements,target=/app/vll
     pip install -r requirements/rocm.txt && \
     pip install opentelemetry-sdk opentelemetry-api opentelemetry-semantic-conventions-ai opentelemetry-exporter-otlp && \
     pip install modelscope yq && \
-    apt install curl wget jq aria2 -y \
+    apt install curl wget jq aria2 -y && \
     true
 
 CMD ["/bin/bash"]
