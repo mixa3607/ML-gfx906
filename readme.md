@@ -7,6 +7,7 @@
 | Name         | About                | Status | Docs                               |
 | ------------ | -------------------- | ------ | ---------------------------------- |
 | ROCm         | ROCm patched images  | OK     | [readme](./rocm/readme.md)         |
+| ROCm-tensile | gfx906 tensile files | OK     | [readme](./rocm-tensile/readme.md) |
 | PyTorch      | PyTorch images       | OK     | [readme](./pytorch/readme.md)      |
 | llama.cpp    | llama.cpp images     | OK     | [readme](./llama.cpp/readme.md)    |
 | ComfyUI      | ComfyUI images       | OK     | [readme](./comfyui/readme.md)      |
@@ -49,17 +50,9 @@ flowchart TD
   torch --> vllm[docker.io/mixa3607/vllm-gfx906]
 ```
 
-## Perf tuning
+## Docs
 
-Changing smcPPTable/TdcLimitGfx 350 => 150 reduced the hotspot by 10+- degrees with almost no drop in performance in vllm ([table in vllm](./vllm/readme.md#benchmarks))
-
-```console
-$ upp -p /sys/class/drm/card${GPU_ID}/device/pp_table set --write smcPPTable/TdcLimitGfx=150
-Changing smcPPTable.TdcLimitGfx of type H from 330 to 150 at 0x1fe
-Committing changes to '/sys/class/drm/card1/device/pp_table'.
-```
-
-<img src="./docs/images/temperatures.png" alt="temperatures" width="400"/>
+https://arkprojects.space/wiki/AMD_GFX906
 
 ## Environment
 
