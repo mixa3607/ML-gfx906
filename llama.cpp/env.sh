@@ -4,6 +4,7 @@ pushd $(dirname ${BASH_SOURCE[0]})
 
 if [ "$LLAMA_IMAGE" == "" ]; then
   LLAMA_IMAGE=docker.io/mixa3607/llama.cpp-gfx906
+  #LLAMA_IMAGE=registry.arkprojects.space/apps/llama.cpp-gfx906
 fi
 
 # rocm ver

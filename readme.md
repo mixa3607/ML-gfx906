@@ -13,29 +13,29 @@
 | ComfyUI      | ComfyUI images       | OK     | [readme](./comfyui/readme.md)      |
 | VLLM         | vLLM images          | OK     | [readme](./vllm/readme.md)         |
 
-| Project   |     | Image                                                               |
-| --------- | --- | ------------------------------------------------------------------- |
-| ROCm      | ╦═  | `docker.io/mixa3607/rocm-gfx906:7.2.0-complete`                     |
-|           | ╠═  | `docker.io/mixa3607/rocm-gfx906:7.1.1-complete`                     |
-|           | ╠═  | `docker.io/mixa3607/rocm-gfx906:7.1.0-complete`                     |
-|           | ╠═  | `docker.io/mixa3607/rocm-gfx906:7.0.2-complete`                     |
-|           | ╠═  | `docker.io/mixa3607/rocm-gfx906:7.0.0-complete`                     |
-|           | ╠═  | `docker.io/mixa3607/rocm-gfx906:6.4.4-complete`                     |
-|           | ╚═  | `docker.io/mixa3607/rocm-gfx906:6.3.3-complete`                     |
-| PyTorch   | ╦═  | `docker.io/mixa3607/pytorch-gfx906:v2.7.1-rocm-6.4.4`               |
-|           | ╠═  | `docker.io/mixa3607/pytorch-gfx906:v2.7.1-rocm-6.3.3`               |
-|           | ╠═  | `docker.io/mixa3607/pytorch-gfx906:v2.8.0-rocm-6.4.4`               |
-|           | ╠═  | `docker.io/mixa3607/pytorch-gfx906:v2.8.0-rocm-6.3.3`               |
-|           | ╠═  | `docker.io/mixa3607/pytorch-gfx906:v2.9.0-rocm-6.4.4`               |
-|           | ╠═  | `docker.io/mixa3607/pytorch-gfx906:v2.9.0-rocm-6.3.3`               |
-|           | ╚═  | `docker.io/mixa3607/pytorch-gfx906:v2.9.0-rocm-7.0.2`               |
-| ComfyUI   | ╦═  | `docker.io/mixa3607/comfyui-gfx906:v0.16.4-torch-v2.9.0-rocm-7.0.2` |
-|           | ╚═  | `docker.io/mixa3607/comfyui-gfx906:v0.16.4-torch-v2.9.0-rocm-6.3.3` |
-| vLLM      | ╦═  | `docker.io/mixa3607/vllm-gfx906:0.12.0-rocm-6.3.3-nlzy`             |
-|           | ╠═  | `docker.io/mixa3607/vllm-gfx906:0.11.2-rocm-6.3.3-nlzy`             |
-|           | ╚═  | `docker.io/mixa3607/vllm-gfx906:0.11.0-rocm-6.3.3-nlzy`             |
-| llama.cpp | ╦═  | `docker.io/mixa3607/llama.cpp-gfx906:full-b8248-rocm-7.2.0`         |
-|           | ╚═  | `docker.io/mixa3607/llama.cpp-gfx906:full-b8248-rocm-6.3.3`         |
+| Project   |     | Image                                                       |
+| --------- | --- | ----------------------------------------------------------- |
+| ROCm      | ╦═  | `docker.io/mixa3607/rocm-gfx906:7.2.0-complete`             |
+|           | ╠═  | `docker.io/mixa3607/rocm-gfx906:7.1.1-complete`             |
+|           | ╠═  | `docker.io/mixa3607/rocm-gfx906:7.1.0-complete`             |
+|           | ╠═  | `docker.io/mixa3607/rocm-gfx906:7.0.2-complete`             |
+|           | ╠═  | `docker.io/mixa3607/rocm-gfx906:7.0.0-complete`             |
+|           | ╠═  | `docker.io/mixa3607/rocm-gfx906:6.4.4-complete`             |
+|           | ╚═  | `docker.io/mixa3607/rocm-gfx906:6.3.3-complete`             |
+| PyTorch   | ╦═  | `docker.io/mixa3607/pytorch-gfx906:v2.7.1-rocm-6.4.4`       |
+|           | ╠═  | `docker.io/mixa3607/pytorch-gfx906:v2.7.1-rocm-6.3.3`       |
+|           | ╠═  | `docker.io/mixa3607/pytorch-gfx906:v2.8.0-rocm-6.4.4`       |
+|           | ╠═  | `docker.io/mixa3607/pytorch-gfx906:v2.8.0-rocm-6.3.3`       |
+|           | ╠═  | `docker.io/mixa3607/pytorch-gfx906:v2.9.0-rocm-6.4.4`       |
+|           | ╠═  | `docker.io/mixa3607/pytorch-gfx906:v2.9.0-rocm-6.3.3`       |
+|           | ╚═  | `docker.io/mixa3607/pytorch-gfx906:v2.9.0-rocm-7.0.2`       |
+| ComfyUI   | ╦═  | `docker.io/mixa3607/comfyui-gfx906:v0.16.4-rocm-6.3.3`      |
+|           | ╚═  | `docker.io/mixa3607/comfyui-gfx906:v0.16.4-rocm-7.0.2`      |
+| vLLM      | ╦═  | `docker.io/mixa3607/vllm-gfx906:0.12.0-rocm-6.3.3-nlzy`     |
+|           | ╠═  | `docker.io/mixa3607/vllm-gfx906:0.11.2-rocm-6.3.3-nlzy`     |
+|           | ╚═  | `docker.io/mixa3607/vllm-gfx906:0.11.0-rocm-6.3.3-nlzy`     |
+| llama.cpp | ╦═  | `docker.io/mixa3607/llama.cpp-gfx906:full-b8248-rocm-7.2.0` |
+|           | ╚═  | `docker.io/mixa3607/llama.cpp-gfx906:full-b8248-rocm-6.3.3` |
 
 ### Deps graph
 

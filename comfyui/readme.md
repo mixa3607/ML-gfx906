@@ -2,7 +2,7 @@
 
 The most powerful and modular diffusion model GUI, api and backend with a graph/nodes interface. https://github.com/comfyanonymous/ComfyUI
 
-Recommend use `docker.io/mixa3607/comfyui-gfx906:latest-rocm-6.4.4`
+Recommend use `docker.io/mixa3607/comfyui-gfx906:latest-rocm-6.3.3`
 
 ## Benchmarks
 
