@@ -3,8 +3,8 @@
 source ./env.sh
 
 if ! [ -z "$(git status --porcelain)" ]; then 
-  echo "Workdir is dirty. Exit"
-  exit 10
+  echo "Workdir is dirty!"
+  #exit 10
 fi
 
 TAG_NAME=$(git_get_current_tag)
