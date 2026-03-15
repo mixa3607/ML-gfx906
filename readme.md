@@ -42,7 +42,7 @@
 |           | `docker.io/mixa3607/vllm-gfx906:0.11.2-rocm-6.3.3-nlzy`                    |
 |           | `docker.io/mixa3607/vllm-gfx906:0.12.0-rocm-6.3.3-nlzy`                    |
 |           | `docker.io/mixa3607/vllm-gfx906:f854fc5-rocm-6.3.3-aiinfos-20260316021432` |
-|           | `docker.io/mixa3607/vllm-gfx906:f854fc5-rocm-7.2.2-aiinfos-20260316021432` |
+|           | `docker.io/mixa3607/vllm-gfx906:f854fc5-rocm-7.2.0-aiinfos-20260316021432` |
 | --------- | -----------------------------------------------------------                |
 | llama.cpp | `docker.io/mixa3607/llama.cpp-gfx906:full-b8356-rocm-6.3.3`                |
 |           | `docker.io/mixa3607/llama.cpp-gfx906:full-b8356-rocm-7.2.0`                |
