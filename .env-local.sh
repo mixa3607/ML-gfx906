@@ -1,5 +1,5 @@
 # pytorch
-export TORCH_MAX_JOBS="120"
+export TORCH_MAX_JOBS="110"
 export TORCH_IMAGE="registry.arkprojects.space/apps/pytorch-gfx906"
 
 # comfyui
