@@ -75,6 +75,7 @@ RUN if [ "${PYTORCH_VISION_BRANCH}" = "" ]; then \
     else \
       git clone --depth 1 --recurse-submodules --shallow-submodules --jobs 4 --branch "${PYTORCH_VISION_BRANCH}" "${PYTORCH_VISION_REPO}" . ; \
     fi
+RUN pip install 'setuptools<=81.0.0'
 RUN python3 setup.py bdist_wheel --dist-dir=/dist
 RUN pip install /dist/*.whl
 
@@ -91,6 +92,7 @@ RUN if [ "${PYTORCH_AUDIO_BRANCH}" = "" ]; then \
     else \
       git clone --depth 1 --recurse-submodules --shallow-submodules --jobs 4 --branch "${PYTORCH_AUDIO_BRANCH}" "${PYTORCH_AUDIO_REPO}" . ; \
     fi
+RUN pip install 'setuptools<=81.0.0'
 RUN python3 setup.py bdist_wheel --dist-dir=/dist
 RUN pip install /dist/*.whl
 
