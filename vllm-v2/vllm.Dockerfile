@@ -1,4 +1,7 @@
+# Build seq: rocm_base => build_base => build_triton => build_fa => build_vllm => final
+
 ARG BASE_PYTORCH_IMAGE="docker.io/mixa3607/pytorch-gfx906:v2.10.0-rocm-6.3.3"
+ARG MAX_JOBS=""
 
 ARG VLLM_REPO="https://github.com/ai-infos/vllm-gfx906-mobydick.git"
 ARG VLLM_BRANCH="main"
@@ -33,7 +36,7 @@ RUN pip3 install                      \
       'packaging>=24.2'               \
       'jinja2>=3.1.6'                 \
       'timm>=1.0.17'                  \
-      '/opt/share/amd_smi'
+      '/opt/rocm/share/amd_smi'
 RUN apt install curl wget jq aria2 -y
 
 ############# Build base #############
@@ -48,6 +51,8 @@ RUN pip3 install                      \
 
 ############# Build triton #############
 FROM build_base AS build_triton
+RUN --mount=type=bind,from=build_base,src=/tmp,target=/force-sequental-build echo ''
+
 ARG TRITON_REPO
 ARG TRITON_BRANCH
 ARG TRITON_COMMIT
@@ -60,11 +65,15 @@ RUN if [ "$TRITON_COMMIT" != "" ]; then git checkout "$TRITON_COMMIT"; fi
 COPY ./patch/${TRITON_PATCH} ./${TRITON_PATCH}
 RUN git apply ./${TRITON_PATCH} --allow-empty
 # Build
-RUN python3 setup.py bdist_wheel --dist-dir=/dist
+ARG MAX_JOBS
+RUN MAX_JOBS=${MAX_JOBS:-$(nproc)} \
+    python3 setup.py bdist_wheel --dist-dir=/dist
 RUN ls /dist
 
 ############# Build FA #############
 FROM build_base AS build_fa
+RUN --mount=type=bind,from=build_triton,src=/tmp,target=/force-sequental-build echo ''
+
 ARG FA_REPO
 ARG FA_BRANCH
 ARG FA_COMMIT
@@ -77,11 +86,15 @@ RUN if [ "$FA_COMMIT" != "" ]; then git checkout "$FA_COMMIT"; fi
 COPY ./patch/${FA_PATCH} ./${FA_PATCH}
 RUN git apply ./${FA_PATCH} --allow-empty
 # Build
-RUN python3 setup.py bdist_wheel --dist-dir=/dist
+ARG MAX_JOBS
+RUN MAX_JOBS=${MAX_JOBS:-$(nproc)} \
+    python3 setup.py bdist_wheel --dist-dir=/dist
 RUN ls /dist
 
 ############# Build vllm #############
 FROM build_base AS build_vllm
+RUN --mount=type=bind,from=build_fa,src=/tmp,target=/force-sequental-build echo ''
+
 ARG VLLM_REPO
 ARG VLLM_BRANCH
 ARG VLLM_COMMIT
@@ -95,7 +108,9 @@ COPY ./patch/${VLLM_PATCH} ./${VLLM_PATCH}
 RUN git apply ./${VLLM_PATCH} --allow-empty
 # Build
 RUN pip install -r requirements/rocm.txt
-RUN python3 setup.py bdist_wheel --dist-dir=/dist
+ARG MAX_JOBS
+RUN MAX_JOBS=${MAX_JOBS:-$(nproc)} \
+    python3 setup.py bdist_wheel --dist-dir=/dist
 RUN ls /dist 
 
 ############# Install all #############

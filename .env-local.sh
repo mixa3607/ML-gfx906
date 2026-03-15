@@ -7,4 +7,5 @@ export COMFYUI_IMAGE="registry.arkprojects.space/apps/comfyui-gfx906"
 export COMFYUI_TORCH_IMAGE="registry.arkprojects.space/apps/pytorch-gfx906"
 
 # vllm
+export VLLM_MAX_JOBS="60"
 export VLLM_IMAGE="registry.arkprojects.space/apps/vllm-gfx906"

@@ -6,6 +6,7 @@ export VLLM_PYTORCH_VERSION="v2.10.0"
 export VLLM_REPO="https://github.com/ai-infos/vllm-gfx906-mobydick.git"
 export VLLM_BRANCH="gfx906/v0.17.1rc0.x"
 export VLLM_COMMIT="f854fc5"
+export VLLM_PATCH="ai-infos_vllm-gfx906-mobydick/f854fc5.patch"
 
 export VLLM_TRITON_REPO="https://github.com/ai-infos/triton-gfx906.git"
 export VLLM_TRITON_BRANCH="v3.5.1+gfx906"

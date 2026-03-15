@@ -38,8 +38,15 @@ if [ "$BASE_UBUNTU_REGISTRY" == "" ]; then
   BASE_UBUNTU_REGISTRY=docker.io/library
 fi
 
-source $(dirname ${BASH_SOURCE[0]})/rocm/env.sh
-source $(dirname ${BASH_SOURCE[0]})/llama.cpp/env.sh
-source $(dirname ${BASH_SOURCE[0]})/comfyui/env.sh
-source $(dirname ${BASH_SOURCE[0]})/vllm/env.sh
-source $(dirname ${BASH_SOURCE[0]})/pytorch/env.sh
+if [ "$1" != "" ]; then
+  for PROJ in "$@"; do
+    source $(dirname ${BASH_SOURCE[0]})/${PROJ}/env.sh
+  done
+else
+  echo "Warn: pass requiured projs over args"
+  source $(dirname ${BASH_SOURCE[0]})/rocm/env.sh
+  source $(dirname ${BASH_SOURCE[0]})/llama.cpp/env.sh
+  source $(dirname ${BASH_SOURCE[0]})/comfyui/env.sh
+  source $(dirname ${BASH_SOURCE[0]})/vllm/env.sh
+  source $(dirname ${BASH_SOURCE[0]})/pytorch/env.sh
+fi
