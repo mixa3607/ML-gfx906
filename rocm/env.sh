@@ -23,7 +23,6 @@ fi
 # destination image
 if [ "$PATCHED_ROCM_IMAGE" == "" ]; then
   PATCHED_ROCM_IMAGE=docker.io/mixa3607/rocm-gfx906
-  #PATCHED_ROCM_IMAGE=registry.arkprojects.space/apps/rocm-gfx906
 fi
 
 popd

@@ -9,3 +9,6 @@ export COMFYUI_TORCH_IMAGE="registry.arkprojects.space/apps/pytorch-gfx906"
 # vllm
 export VLLM_MAX_JOBS="60"
 export VLLM_IMAGE="registry.arkprojects.space/apps/vllm-gfx906"
+
+# rocm
+export PATCHED_ROCM_IMAGE="registry.arkprojects.space/apps/rocm-gfx906"
