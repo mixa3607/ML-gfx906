@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export VLLM_ROCM_VERSION="6.3.3"
+export VLLM_ROCM_VERSION="7.2.0"
 export VLLM_PYTORCH_VERSION="v2.10.0"
 
 export VLLM_REPO="https://github.com/ai-infos/vllm-gfx906-mobydick.git"
