@@ -45,8 +45,6 @@ if [ "$1" != "" ]; then
 else
   echo "Warn: pass requiured projs over args"
   source $(dirname ${BASH_SOURCE[0]})/rocm/env.sh
-  source $(dirname ${BASH_SOURCE[0]})/llama.cpp/env.sh
-  source $(dirname ${BASH_SOURCE[0]})/comfyui/env.sh
   source $(dirname ${BASH_SOURCE[0]})/vllm/env.sh
   source $(dirname ${BASH_SOURCE[0]})/pytorch/env.sh
 fi
