@@ -2,7 +2,7 @@
 set -e
 
 cd $(dirname $0)
-source ../env.sh
+source ../env.sh "comfyui" "pytorch"
 
 IMAGE_TAGS=(
   "$COMFYUI_IMAGE:${COMFYUI_GIT_REF}-torch-${COMFYUI_PYTORCH_VERSION}-rocm-${COMFYUI_ROCM_VERSION}-${REPO_GIT_REF}"
