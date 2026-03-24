@@ -2,7 +2,7 @@
 set -e
 
 cd $(dirname $0)
-source ../env.sh
+source ../env.sh "llama.cpp" "rocm" 
 
 IMAGE_TAGS=(
   "$LLAMA_IMAGE:full-${LLAMA_GIT_REF}-rocm-${LLAMA_ROCM_VERSION}-${REPO_GIT_REF}"
