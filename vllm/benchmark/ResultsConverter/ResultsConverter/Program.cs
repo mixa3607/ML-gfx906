@@ -56,6 +56,7 @@ static void GenerateTable(string resultsDir)
     {
         var ispp = result.MetadataWorkload?.StartsWith("pp") == true;
         var istg = result.MetadataWorkload?.StartsWith("tg") == true;
+        var isemb = result.MetadataWorkload?.StartsWith("embed") == true;
 
         var fields = new List<string>();
         fields.Add(result.Date);
@@ -70,15 +71,15 @@ static void GenerateTable(string resultsDir)
         fields.Add(result.NumPrompts.ToString());
         fields.Add(result.MaxConcurrency.ToString());
         fields.Add((result.TotalInputTokens / result.NumPrompts).ToString("0"));
-        fields.Add((result.TotalOutputTokens / result.NumPrompts).ToString("0"));
+        fields.Add(isemb ? "-" : (result.TotalOutputTokens / result.NumPrompts).ToString("0"));
 
         fields.Add(TimeSpan.FromSeconds(result.Duration).ToString("hh\\:mm\\:ss"));
         //fields.Add(ispp || istg ? "-" : (result.RequestThroughput * 60).ToString("N2"));
-        fields.Add(ispp ? "-" : result.OutputThroughput.ToString("N2"));
+        fields.Add(ispp || isemb ? "-" : result.OutputThroughput.ToString("N2"));
         fields.Add(istg ? "-" : result.TotalTokenThroughput.ToString("N2"));
 
-        fields.Add(ispp ? "pp" : istg ? "tg": (result.MetadataWorkload ?? ""));
-        fields.Add(result.MetadataAbout);
+        fields.Add(ispp ? "pp" : istg ? "tg" : isemb ? "embed" : (result.MetadataWorkload ?? ""));
+        fields.Add(result.MetadataAbout ?? "");
         //fields.Add(result.MetadataBenchmarkAuthor);
 
         table.WithRow(fields.ToArray());

@@ -2,7 +2,7 @@
 set -e
 
 cd $(dirname $0)
-source ../env.sh
+source ../env.sh "pytorch" "rocm"
 
 IMAGE_TAGS=(
   "$TORCH_IMAGE:${TORCH_VERSION}-rocm-${TORCH_ROCM_VERSION}-${REPO_GIT_REF}"
