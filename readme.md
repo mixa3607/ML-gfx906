@@ -41,11 +41,11 @@
 | vLLM      | `docker.io/mixa3607/vllm-gfx906:0.11.0-rocm-6.3.3-nlzy`     |
 |           | `docker.io/mixa3607/vllm-gfx906:0.11.2-rocm-6.3.3-nlzy`     |
 |           | `docker.io/mixa3607/vllm-gfx906:0.12.0-rocm-6.3.3-nlzy`     |
-|           | `docker.io/mixa3607/vllm-gfx906:43566ec-rocm-6.3.3-aiinfos` |
-|           | `docker.io/mixa3607/vllm-gfx906:43566ec-rocm-7.2.0-aiinfos` |
+|           | `docker.io/mixa3607/vllm-gfx906:767968c-rocm-6.3.3-aiinfos` |
+|           | `docker.io/mixa3607/vllm-gfx906:767968c-rocm-7.2.0-aiinfos` |
 | --------- | ----------------------------------------------------------- |
-| llama.cpp | `docker.io/mixa3607/llama.cpp-gfx906:full-b8548-rocm-6.3.3` |
-|           | `docker.io/mixa3607/llama.cpp-gfx906:full-b8548-rocm-7.2.0` |
+| llama.cpp | `docker.io/mixa3607/llama.cpp-gfx906:full-b8639-rocm-6.3.3` |
+|           | `docker.io/mixa3607/llama.cpp-gfx906:full-b8639-rocm-7.2.0` |
 
 ### Deps graph
 
