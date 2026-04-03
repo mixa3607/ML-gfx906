@@ -2,7 +2,7 @@
 set -e
 
 cd $(dirname $0)
-source ../env.sh
+source ../env.sh "rocm"
 
 IMAGE_TAGS=(
   "$PATCHED_ROCM_IMAGE:${ROCM_VERSION}-${REPO_GIT_REF}-complete"

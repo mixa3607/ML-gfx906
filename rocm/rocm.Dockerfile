@@ -16,24 +16,25 @@ RUN ROCM_VERSION_MAJOR=$(ls /opt/ | sed -nE 's|rocm-([0-9]+)\.([0-9]+)\.([0-9]+)
     echo "$ROCM_VERSION_MAJOR.$ROCM_VERSION_MINOR" > /opt/ROCM_VERSION && \
     echo "$ROCM_VERSION_MAJOR.$ROCM_VERSION_MINOR.$ROCM_VERSION_PATCH" > /opt/ROCM_VERSION_FULL && \
     echo "Detected rocm version is $(cat /opt/ROCM_VERSION_FULL)" && \
+    apt-get update && apt-get install -y git cmake libfmt-dev && \
     true
 
 ############# Build base #############
 FROM rocm_base AS build_base
-RUN apt-get update && apt-get install -y git cmake libfmt-dev
-WORKDIR /rebuild-deps
 
 ############# Build rocBLAS #############
 FROM build_base AS build_rocblas
 ARG ROCBLAS_REPO
 ARG TENSILE_REPO
+ARG ROCM_ARCH
+ENV PACKAGE_NAME=rocblas
+
+WORKDIR /rebuild-deps
 RUN git clone --depth 1 --branch rocm-$(cat /opt/ROCM_VERSION_FULL) ${ROCBLAS_REPO} rocBLAS && \
     git clone --depth 1 --branch rocm-$(cat /opt/ROCM_VERSION_FULL) ${TENSILE_REPO} Tensile && \
     true
 
 WORKDIR /rebuild-deps/rocBLAS
-ARG ROCM_ARCH
-ENV PACKAGE_NAME=rocblas
 RUN dpkg -s ${PACKAGE_NAME}
 RUN ./install.sh --dependencies --rmake_invoked
 RUN export INSTALLED_PACKAGE_VERSION=$(dpkg -s ${PACKAGE_NAME} | sed -nE 's|^ *Version: (.+)$|\1|p') && \
@@ -61,12 +62,11 @@ RUN cd ./build/release && \
 ############# Build rccl #############
 FROM build_base AS build_rccl
 ARG RCCL_REPO
-RUN git clone --depth 1 --branch rocm-$(cat /opt/ROCM_VERSION_FULL) ${RCCL_REPO} rccl && \
-    true
-
-WORKDIR /rebuild-deps/rccl
 ARG ROCM_ARCH
 ENV PACKAGE_NAME=rccl
+WORKDIR /rebuild-deps/rccl
+
+RUN git clone --depth 1 --branch rocm-$(cat /opt/ROCM_VERSION_FULL) ${RCCL_REPO} .
 RUN dpkg -s ${PACKAGE_NAME}
 RUN export INSTALLED_PACKAGE_VERSION=$(dpkg -s ${PACKAGE_NAME} | sed -nE 's|^ *Version: (.+)$|\1|p') && \
     echo "Installed package version is \"$INSTALLED_PACKAGE_VERSION\"" && \
@@ -85,13 +85,10 @@ RUN cd ./build/release && \
 
 ############# Patched image #############
 FROM rocm_base AS final
-RUN apt-get update && apt-get install -y libfmt-dev
-# Install rocblas 
-RUN --mount=type=bind,from=build_rocblas,src=/dist/,target=/dist \
-    dpkg -i /dist/*.deb
-# Install rccl
-RUN --mount=type=bind,from=build_rccl,src=/dist/,target=/dist \
-    dpkg -i /dist/*.deb
+# Install patched deb's 
+RUN --mount=type=bind,from=build_rocblas,src=/dist/,target=/dist-rocblas \
+    --mount=type=bind,from=build_rccl,src=/dist/,target=/dist-rccl \
+    dpkg -i /dist-rccl/*.deb /dist-rocblas/*.deb
 
 # Validate apt deps state
 RUN apt-get install
