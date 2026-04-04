@@ -117,13 +117,14 @@ RUN ls /dist
 FROM rocm_base AS final
 WORKDIR /app/vllm
 RUN --mount=type=bind,from=build_vllm,src=/app/vllm/requirements,target=/app/vllm/requirements \
-    --mount=type=bind,from=build_vllm,src=/dist/,target=/dist_vllm \
-    --mount=type=bind,from=build_triton,src=/dist/,target=/dist_triton \
-    --mount=type=bind,from=build_fa,src=/dist/,target=/dist_fa \
-    pip install /dist_triton/*.whl /dist_vllm/*.whl /dist_fa/*.whl && \
     pip install -r requirements/rocm.txt && \
     pip install opentelemetry-sdk opentelemetry-api opentelemetry-semantic-conventions-ai opentelemetry-exporter-otlp && \
     pip install modelscope yq && \
+    true
+RUN --mount=type=bind,from=build_vllm,src=/dist/,target=/dist_vllm \
+    --mount=type=bind,from=build_triton,src=/dist/,target=/dist_triton \
+    --mount=type=bind,from=build_fa,src=/dist/,target=/dist_fa \
+    pip install /dist_triton/*.whl /dist_vllm/*.whl /dist_fa/*.whl && \
     true
 
 CMD ["/bin/bash"]

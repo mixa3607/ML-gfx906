@@ -42,8 +42,4 @@ if [ "$1" != "" ]; then
   for PROJ in "$@"; do
     source $(dirname ${BASH_SOURCE[0]})/${PROJ}/env.sh
   done
-else
-  echo "Warn: pass requiured projs over args"
-  source $(dirname ${BASH_SOURCE[0]})/rocm/env.sh
-  source $(dirname ${BASH_SOURCE[0]})/vllm/env.sh
 fi

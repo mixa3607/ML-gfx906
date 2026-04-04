@@ -2,7 +2,7 @@
 set -e
 
 cd $(dirname $0)
-source ../env.sh
+source ../env.sh "vllm" "pytorch"
 
 IMAGE_TAGS=(
   "${VLLM_IMAGE}:${VLLM_PRESET_NAME}-${REPO_GIT_REF}"
