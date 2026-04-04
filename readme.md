@@ -36,7 +36,7 @@
 |           | `docker.io/mixa3607/pytorch-gfx906:v2.11.0-rocm-7.2.0`      |
 | --------- | ----------------------------------------------------------- |
 | ComfyUI   | `docker.io/mixa3607/comfyui-gfx906:v0.18.1-rocm-6.3.3`      |
-|           | `docker.io/mixa3607/comfyui-gfx906:v0.18.1-rocm-7.0.2`      |
+|           | `docker.io/mixa3607/comfyui-gfx906:v0.18.1-rocm-7.2.1`      |
 | --------- | ----------------------------------------------------------- |
 | vLLM      | `docker.io/mixa3607/vllm-gfx906:0.11.0-rocm-6.3.3-nlzy`     |
 |           | `docker.io/mixa3607/vllm-gfx906:0.11.2-rocm-6.3.3-nlzy`     |
