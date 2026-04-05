@@ -1,0 +1,37 @@
+diff --git a/pyproject.toml b/pyproject.toml
+index fad8c8c68..7120e1c81 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -6,7 +6,7 @@ requires = [
+     "packaging>=24.2",
+     "setuptools>=77.0.3,<81.0.0",
+     "setuptools-scm>=8.0",
+-    "torch == 2.10.0",
++    "torch >= 2.10.0",
+     "wheel",
+     "jinja2",
+ ]
+diff --git a/requirements/build.txt b/requirements/build.txt
+index c46880a05..f3c7ca66f 100644
+--- a/requirements/build.txt
++++ b/requirements/build.txt
+@@ -4,7 +4,7 @@ ninja
+ packaging>=24.2
+ setuptools>=77.0.3,<81.0.0
+ setuptools-scm>=8
+-torch==2.10.0
++torch>=2.10.0
+ wheel
+ jinja2>=3.1.6
+ regex
+diff --git a/requirements/rocm-build.txt b/requirements/rocm-build.txt
+index 5fca66dfa..57ff2fd88 100644
+--- a/requirements/rocm-build.txt
++++ b/requirements/rocm-build.txt
+@@ -13,5 +13,5 @@ setuptools>=77.0.3,<80.0.0
+ setuptools-scm>=8
+ wheel
+ jinja2>=3.1.6
+-amdsmi>=6.3,<6.4
++amdsmi>=6.3
+ timm>=1.0.17

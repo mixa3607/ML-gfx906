@@ -23,6 +23,7 @@ mkdir -p ./logs
 docker buildx build ${DOCKER_EXTRA_ARGS[@]} --push \
   --build-arg BASE_PYTORCH_IMAGE=${TORCH_IMAGE}:${VLLM_PYTORCH_VERSION}-rocm-${VLLM_ROCM_VERSION} \
   --build-arg MAX_JOBS="${VLLM_MAX_JOBS}" \
+  --build-arg EXTRA_REQUIREMENTS="${VLLM_EXTRA_REQUIREMENTS}" \
   \
   --build-arg VLLM_REPO=${VLLM_REPO}     \
   --build-arg VLLM_BRANCH=${VLLM_BRANCH} \
