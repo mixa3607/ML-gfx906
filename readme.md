@@ -1,5 +1,9 @@
 # ML software for deprecated GFX906 arch
 
+## Docs
+
+https://arkprojects.space/wiki/AMD_GFX906
+
 ## Prebuild images
 
 ### Images
@@ -11,7 +15,7 @@
 | PyTorch      | PyTorch images       | OK     | [readme](./pytorch/readme.md)      |
 | llama.cpp    | llama.cpp images     | OK     | [readme](./llama.cpp/readme.md)    |
 | ComfyUI      | ComfyUI images       | OK     | [readme](./comfyui/readme.md)      |
-| VLLM         | vLLM images          | OK     | [readme](./vllm/readme.md)         |
+| VLLM         | vLLM images          | OK     | [readme](./vllm-v2/readme.md)      |
 
 | Project   | Image                                                       |
 | --------- | ----------------------------------------------------------- |
@@ -22,6 +26,7 @@
 |           | `docker.io/mixa3607/rocm-gfx906:7.1.0-complete`             |
 |           | `docker.io/mixa3607/rocm-gfx906:7.1.1-complete`             |
 |           | `docker.io/mixa3607/rocm-gfx906:7.2.0-complete`             |
+|           | `docker.io/mixa3607/rocm-gfx906:7.2.1-complete`             |
 | --------- | ----------------------------------------------------------- |
 | PyTorch   | `docker.io/mixa3607/pytorch-gfx906:v2.7.1-rocm-6.4.4`       |
 |           | `docker.io/mixa3607/pytorch-gfx906:v2.7.1-rocm-6.3.3`       |
@@ -34,18 +39,16 @@
 |           | `docker.io/mixa3607/pytorch-gfx906:v2.10.0-rocm-7.2.0`      |
 |           | `docker.io/mixa3607/pytorch-gfx906:v2.11.0-rocm-6.3.3`      |
 |           | `docker.io/mixa3607/pytorch-gfx906:v2.11.0-rocm-7.2.0`      |
+|           | `docker.io/mixa3607/pytorch-gfx906:v2.11.0-rocm-7.2.1`      |
 | --------- | ----------------------------------------------------------- |
 | ComfyUI   | `docker.io/mixa3607/comfyui-gfx906:v0.18.1-rocm-6.3.3`      |
 |           | `docker.io/mixa3607/comfyui-gfx906:v0.18.1-rocm-7.2.1`      |
 | --------- | ----------------------------------------------------------- |
-| vLLM      | `docker.io/mixa3607/vllm-gfx906:0.11.0-rocm-6.3.3-nlzy`     |
-|           | `docker.io/mixa3607/vllm-gfx906:0.11.2-rocm-6.3.3-nlzy`     |
-|           | `docker.io/mixa3607/vllm-gfx906:0.12.0-rocm-6.3.3-nlzy`     |
-|           | `docker.io/mixa3607/vllm-gfx906:767968c-rocm-6.3.3-aiinfos` |
-|           | `docker.io/mixa3607/vllm-gfx906:767968c-rocm-7.2.0-aiinfos` |
+| vLLM      | `docker.io/mixa3607/vllm-gfx906:0.19.1-rocm-6.3.3-aiinfos`  |
+|           | `docker.io/mixa3607/vllm-gfx906:0.19.1-rocm-7.2.1-aiinfos`  |
 | --------- | ----------------------------------------------------------- |
-| llama.cpp | `docker.io/mixa3607/llama.cpp-gfx906:full-b8639-rocm-6.3.3` |
-|           | `docker.io/mixa3607/llama.cpp-gfx906:full-b8639-rocm-7.2.0` |
+| llama.cpp | `docker.io/mixa3607/llama.cpp-gfx906:full-b8667-rocm-6.3.3` |
+|           | `docker.io/mixa3607/llama.cpp-gfx906:full-b8667-rocm-7.2.1` |
 
 ### Deps graph
 
@@ -57,14 +60,6 @@ flowchart TD
   torch --> comfyui[docker.io/mixa3607/comfyui-gfx906]
   torch --> vllm[docker.io/mixa3607/vllm-gfx906]
 ```
-
-## Docs
-
-https://arkprojects.space/wiki/AMD_GFX906
-
-## Environment
-
-[env v1](./docs/setup.v1.md)
 
 ## RVS
 
