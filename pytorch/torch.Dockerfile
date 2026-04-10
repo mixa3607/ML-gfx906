@@ -1,4 +1,4 @@
-ARG BASE_ROCM_IMAGE="docker.io/mixa3607/vllm-gfx906:latest"
+ARG BASE_ROCM_IMAGE="docker.io/mixa3607/rocm-gfx906:latest"
 ARG ROCM_ARCH="gfx906"
 ARG PYTHON_VERSION="3.12"
 
