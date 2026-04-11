@@ -7,7 +7,7 @@ if [ "$COMFYUI_IMAGE" == "" ]; then
 fi
 
 if [ "$COMFYUI_TORCH_IMAGE" == "" ]; then
-  COMFYUI_TORCH_IMAGE="docker.io/mixa3607/pytorch-gfx906"
+  COMFYUI_TORCH_IMAGE="docker.io/pytorch/pytorch"
 fi
 if [ "$COMFYUI_ROCM_VERSION" == "" ]; then
   COMFYUI_ROCM_VERSION="6.3.3"
