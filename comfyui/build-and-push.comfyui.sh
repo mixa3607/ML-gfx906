@@ -5,9 +5,9 @@ cd $(dirname $0)
 source ../env.sh "comfyui" "pytorch"
 
 IMAGE_TAGS=(
-  "$COMFYUI_IMAGE:${COMFYUI_GIT_REF}-torch-${COMFYUI_PYTORCH_VERSION}-rocm-${COMFYUI_ROCM_VERSION}-${REPO_GIT_REF}"
-  "$COMFYUI_IMAGE:${COMFYUI_GIT_REF}-rocm-${COMFYUI_ROCM_VERSION}-${REPO_GIT_REF}"
-  "$COMFYUI_IMAGE:${COMFYUI_GIT_REF}-rocm-${COMFYUI_ROCM_VERSION}"
+  "$COMFYUI_IMAGE:${COMFYUI_BRANCH}-torch-${COMFYUI_PYTORCH_VERSION}-rocm-${COMFYUI_ROCM_VERSION}-${REPO_GIT_REF}"
+  "$COMFYUI_IMAGE:${COMFYUI_BRANCH}-rocm-${COMFYUI_ROCM_VERSION}-${REPO_GIT_REF}"
+  "$COMFYUI_IMAGE:${COMFYUI_BRANCH}-rocm-${COMFYUI_ROCM_VERSION}"
   "$COMFYUI_IMAGE:latest-rocm-${COMFYUI_ROCM_VERSION}"
 )
 
@@ -23,5 +23,8 @@ done
 
 mkdir ./logs || true
 docker buildx build ${DOCKER_EXTRA_ARGS[@]} --push \
-  --build-arg BASE_PYTORCH_IMAGE=$TORCH_IMAGE:${COMFYUI_PYTORCH_VERSION}-rocm-${COMFYUI_ROCM_VERSION} \
-  --progress=plain --target final -f ./comfyui.Dockerfile --push ./submodules/ComfyUI 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log
+  --build-arg BASE_PYTORCH_IMAGE=${COMFYUI_TORCH_IMAGE}:v${COMFYUI_PYTORCH_VERSION}-rocm-${COMFYUI_ROCM_VERSION} \
+  --build-arg COMFY_REPO=$COMFYUI_REPO \
+  --build-arg COMFY_BRANCH=$COMFYUI_BRANCH \
+  --build-arg COMFY_COMMIT=$COMFYUI_COMMIT \
+  --progress=plain --target final -f ./comfyui.Dockerfile --push ./build-context 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log

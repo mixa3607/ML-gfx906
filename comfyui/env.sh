@@ -3,7 +3,7 @@
 pushd $(dirname ${BASH_SOURCE[0]})
 
 if [ "$COMFYUI_IMAGE" == "" ]; then
-  COMFYUI_IMAGE=docker.io/mixa3607/comfyui-gfx906
+  COMFYUI_IMAGE="docker.io/mixa3607/comfyui-gfx906"
 fi
 
 if [ "$COMFYUI_TORCH_IMAGE" == "" ]; then
@@ -16,11 +16,14 @@ if [ "$COMFYUI_PYTORCH_VERSION" == "" ]; then
   COMFYUI_PYTORCH_VERSION="v2.7.1"
 fi
 
-if [ "$COMFYUI_GIT_REF" == "" ]; then
-  COMFYUI_GIT_REF="$(git_get_current_tag submodules/ComfyUI)"
+if [ "$COMFYUI_REPO" == "" ]; then
+  COMFYUI_REPO="https://github.com/Comfy-Org/ComfyUI.git"
 fi
-if [ "$COMFYUI_GIT_REF" == "" ]; then
-  COMFYUI_GIT_REF="$(git_get_current_sha submodules/ComfyUI)"
+if [ "$COMFYUI_BRANCH" == "" ]; then
+  COMFYUI_BRANCH="master"
+fi
+if [ "$COMFYUI_COMMIT" == "" ]; then
+  COMFYUI_COMMIT=""
 fi
 
 popd
