@@ -41,7 +41,7 @@ WORKDIR /files/llamacpp-python
 RUN cp -r /files/llamacpp/requirements.txt /files/llamacpp/requirements /files/llamacpp/gguf-py /files/llamacpp/*.py /files/llamacpp-python
 RUN find .
 
-############# Base image #############
+############# Build image #############
 FROM rocm_base AS build_llamacpp
 RUN apt-get install -y build-essential cmake libssl-dev
 COPY --from=files_llamacpp /files/llamacpp /build/llamacpp
