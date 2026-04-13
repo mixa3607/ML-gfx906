@@ -3,14 +3,14 @@
 pushd $(dirname ${BASH_SOURCE[0]})
 
 if [ "$COMFYUI_IMAGE" == "" ]; then
-  COMFYUI_IMAGE="docker.io/mixa3607/comfyui-gfx906"
+  COMFYUI_IMAGE="docker.io/mixa3607/comfyui-sm100"
 fi
 
 if [ "$COMFYUI_TORCH_IMAGE" == "" ]; then
   COMFYUI_TORCH_IMAGE="docker.io/pytorch/pytorch"
 fi
-if [ "$COMFYUI_ROCM_VERSION" == "" ]; then
-  COMFYUI_ROCM_VERSION="6.3.3"
+if [ "$COMFYUI_CUDA_VERSION" == "" ]; then
+  COMFYUI_CUDA_VERSION="6.3.3"
 fi
 if [ "$COMFYUI_PYTORCH_VERSION" == "" ]; then
   COMFYUI_PYTORCH_VERSION="v2.7.1"
