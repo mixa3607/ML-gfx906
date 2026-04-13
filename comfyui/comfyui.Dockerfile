@@ -1,6 +1,6 @@
 ARG BASE_PYTORCH_IMAGE="docker.io/mixa3607/pytorch-gfx906:v2.7.1-rocm-6.3.3"
 
-ARG COMFY_REPO="https://github.com/ggml-org/llama.cpp.git"
+ARG COMFY_REPO="https://github.com/Comfy-Org/ComfyUI.git"
 ARG COMFY_BRANCH="master"
 ARG COMFY_COMMIT=""
 
@@ -18,7 +18,7 @@ ARG COMFY_COMMIT
 WORKDIR /files/comfy
 RUN git clone --depth 1 --recurse-submodules --shallow-submodules --jobs 4 --branch ${COMFY_BRANCH} ${COMFY_REPO} .
 RUN if [ "$COMFY_COMMIT" != "" ]; then git checkout "$COMFY_COMMIT"; fi
-COPY /entrypoint.sh /comfyui
+COPY /entrypoint.sh /files/comfy
 
 FROM files_comfy AS files_comfy_requirements
 WORKDIR /files/comfy-requirements

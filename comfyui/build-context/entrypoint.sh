@@ -25,7 +25,7 @@ if [ "$VENV_NAME" != "" ]; then
   fi
 
   echo "Creating venv in $VENV_ROOT"
-  python3 -m venv "$VENV_ROOT"
+  python3 -m venv "$VENV_ROOT" --system-site-packages
 
   echo "Activating venv"
   source "$VENV_ROOT/bin/activate"
