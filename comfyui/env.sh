@@ -10,7 +10,7 @@ if [ "$COMFYUI_TORCH_IMAGE" == "" ]; then
   COMFYUI_TORCH_IMAGE="docker.io/pytorch/pytorch"
 fi
 if [ "$COMFYUI_CUDA_VERSION" == "" ]; then
-  COMFYUI_CUDA_VERSION="6.3.3"
+  COMFYUI_CUDA_VERSION="13.0-cudnn9"
 fi
 if [ "$COMFYUI_PYTORCH_VERSION" == "" ]; then
   COMFYUI_PYTORCH_VERSION="v2.7.1"
