@@ -7,7 +7,7 @@ ARG COMFY_COMMIT=""
 ############# Base image #############
 FROM ${BASE_PYTORCH_IMAGE} AS torch_base
 RUN python3 -m pip config set global.break-system-packages true && \
-    apt-get update && apt-get install git curl wget jq aria2 -y
+    apt-get update && apt-get install git curl wget jq aria2 python3-venv -y
 
 ############# Clone repos #############
 FROM torch_base AS files_comfy
@@ -18,6 +18,7 @@ ARG COMFY_COMMIT
 WORKDIR /files/comfy
 RUN git clone --depth 1 --recurse-submodules --shallow-submodules --jobs 4 --branch ${COMFY_BRANCH} ${COMFY_REPO} .
 RUN if [ "$COMFY_COMMIT" != "" ]; then git checkout "$COMFY_COMMIT"; fi
+COPY /entrypoint.sh /comfyui
 
 FROM files_comfy AS files_comfy_requirements
 WORKDIR /files/comfy-requirements
@@ -30,3 +31,4 @@ WORKDIR /comfyui
 COPY --from=files_comfy_requirements /files/comfy-requirements /comfyui
 RUN pip install huggingface_hub modelscope yq -r requirements.txt -r manager_requirements.txt
 COPY --from=files_comfy /files/comfy /comfyui
+ENTRYPOINT ["/comfyui/entrypoint.sh"]
