@@ -4,10 +4,10 @@ set -e
 cd $(dirname $0)
 source ../env.sh "llama.cpp" "rocm" 
 
+
 IMAGE_TAGS=(
-  "$LLAMA_IMAGE:full-${LLAMA_BRANCH}-rocm-${LLAMA_ROCM_VERSION}-${REPO_GIT_REF}"
-  "$LLAMA_IMAGE:full-${LLAMA_BRANCH}-rocm-${LLAMA_ROCM_VERSION}"
-  "$LLAMA_IMAGE:full-rocm-${LLAMA_ROCM_VERSION}"
+  "${LLAMA_IMAGE}:${LLAMA_PRESET_NAME}-${REPO_GIT_REF}"
+  "${LLAMA_IMAGE}:${LLAMA_PRESET_NAME}"
 )
 
 if docker_image_pushed ${IMAGE_TAGS[0]}; then
@@ -26,4 +26,5 @@ docker buildx build ${DOCKER_EXTRA_ARGS[@]} --push \
   --build-arg LLAMACPP_REPO=$LLAMA_REPO \
   --build-arg LLAMACPP_BRANCH=$LLAMA_BRANCH \
   --build-arg LLAMACPP_COMMIT=$LLAMA_COMMIT \
+  --build-arg LLAMACPP_CODE_PATH=$LLAMA_CODE_PATH \
   --progress=plain --target final -f llamacpp.Dockerfile ./build-context 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log
