@@ -26,6 +26,23 @@ Recommend use `docker.io/mixa3607/comfyui-gfx906:latest-rocm-6.3.3`
 
 See https://github.com/hartmark/sd-rocm/blob/main/docker-compose.yml
 
+Persistence (files):
+```bash
+-e PERSISTENCE_PATH=/data
+-v $(pwd)/data:/data
+```
+
+Persistence (venv):
+```bash
+-e VENV_NAME=venv
+```
+
+Behavior:
+- Creates a Python virtual environment
+  - With persistence: /data/<venv>
+  - Without: /comfyui/<venv>
+
+
 ### Kubernetes
 
 Helm chart and samples [mixa3607 charts](https://github.com/mixa3607/charts)
