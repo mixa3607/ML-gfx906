@@ -27,7 +27,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Run build script
         run: |
-          cd ./llamacpp
+          cd ./llama.cpp
           export LLAMA_BRANCH="$(curl -L \
             -H "Accept: application/vnd.github+json" \
             'https://api.github.com/repos/ggml-org/llama.cpp/releases?per_page=1' | yq -r '.[0].tag_name')"
