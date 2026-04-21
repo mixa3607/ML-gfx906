@@ -1,0 +1,10 @@
+name: Daily Nvidia-sm100 ComfyUI build trigger
+
+on:
+  schedule:
+    - cron: "0 14 * * *"
+  workflow_dispatch:
+
+jobs:
+  trigger-build:
+    uses: mixa3607/ML-gfx906/.github/workflows/comfyui-daily-build.yaml@nvidia-sm100
