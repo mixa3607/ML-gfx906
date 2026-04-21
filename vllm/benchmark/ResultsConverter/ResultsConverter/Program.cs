@@ -49,8 +49,11 @@ static void GenerateTable(string resultsDir)
     cols["Duration"] = (false, r => TimeSpan.FromSeconds(r.Duration).ToString("hh\\:mm\\:ss"));
     cols["PP t/s"] = (true, r => r.MetadataWorkload is "tg" ? "-" : r.TotalTokenThroughput.ToString("N2"));
     cols["TG t/s"] = (true, r => r.MetadataWorkload is "pp" or "embed" ? "-" : r.OutputThroughput.ToString("N2"));
+    cols["Acpt %"] = (false, r => r.SpecDecodeAcceptanceRate == null ? "-" : r.SpecDecodeAcceptanceRate.Value.ToString("N2"));
     cols["Workload"] = (true, r => r.MetadataWorkload ?? "");
-    cols["About"] = (true, r => r.MetadataAbout ?? "");
+    cols["About"] = (true, r => r.MetadataAbout ?? """
+                                                   [recipe (setup-b)](../../recipes/Qwen3.5-27B/index.md#setup-b) 
+                                                   """);
 
     var table = new MarkdownTable.MarkdownTableBuilder();
     table.WithHeader(cols.Where(x=>x.Value.enable).Select(x=>x.Key).ToArray());

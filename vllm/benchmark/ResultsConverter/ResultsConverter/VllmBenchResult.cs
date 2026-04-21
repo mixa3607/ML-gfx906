@@ -20,6 +20,9 @@ public partial class VllmBenchResult
     [JsonPropertyName("num_prompts")]
     public long NumPrompts { get; set; }
 
+    [JsonPropertyName("spec_decode_acceptance_rate")]
+    public double? SpecDecodeAcceptanceRate { get; set; }
+
     [JsonPropertyName("metadata.rocm_ver")]
     public string MetadataRocmVer { get; set; }
 
