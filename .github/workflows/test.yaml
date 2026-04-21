@@ -8,3 +8,4 @@ on:
 jobs:
   trigger-build:
     uses: mixa3607/ML-gfx906/.github/workflows/comfyui-daily-build.yaml@nvidia-sm100
+    secrets: inherit
