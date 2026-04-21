@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        rocm_version: [ "6.3.3", "7.2.1" ]
+        cuda_version: [ "13.0-cudnn9" ]
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -31,6 +31,6 @@ jobs:
           export COMFYUI_BRANCH="$(curl -L \
             -H "Accept: application/vnd.github+json" \
             'https://api.github.com/repos/Comfy-Org/ComfyUI/releases?per_page=1' | yq -r '.[0].tag_name')"
-          export COMFYUI_ROCM_VERSION='${{ matrix.rocm_version }}'
+          export COMFYUI_CUDA_VERSION='${{ matrix.rocm_version }}'
           export COMFYUI_PYTORCH_VERSION='2.11.0'
           ./build-and-push.comfyui.sh
