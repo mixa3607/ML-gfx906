@@ -47,7 +47,7 @@ WORKDIR /build/llamacpp
 RUN HIPCXX="$(hipconfig -l)/clang" HIP_PATH="$(hipconfig -R)" \
     cmake -S . -B build \
         -DGGML_HIP=ON                 \
-        -DGGML_HIP_GRAPHS=ON          \
+        -DGGML_HIP_GRAPHS=OFF         \
         -DGGML_HIP_RCCL=ON            \
         -DAMDGPU_TARGETS="$ROCM_ARCH" \
         -DGGML_BACKEND_DL=ON          \
