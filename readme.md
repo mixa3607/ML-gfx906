@@ -17,38 +17,40 @@ https://arkprojects.space/wiki/AMD_GFX906
 | ComfyUI      | ComfyUI images       | OK     | [readme](./comfyui/readme.md)      |
 | VLLM         | vLLM images          | OK     | [readme](./vllm-v2/readme.md)      |
 
-| Project   | Image                                                                                                                                             |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ROCm      | `docker.io/mixa3607/rocm-gfx906:6.3.3-complete`                                                                                                   |
-|           | `docker.io/mixa3607/rocm-gfx906:6.4.4-complete`                                                                                                   |
-|           | `docker.io/mixa3607/rocm-gfx906:7.0.0-complete`                                                                                                   |
-|           | `docker.io/mixa3607/rocm-gfx906:7.0.2-complete`                                                                                                   |
-|           | `docker.io/mixa3607/rocm-gfx906:7.1.0-complete`                                                                                                   |
-|           | `docker.io/mixa3607/rocm-gfx906:7.1.1-complete`                                                                                                   |
-|           | `docker.io/mixa3607/rocm-gfx906:7.2.0-complete`                                                                                                   |
-|           | `docker.io/mixa3607/rocm-gfx906:7.2.1-complete`                                                                                                   |
-| --------- | -----------------------------------------------------------                                                                                       |
-| PyTorch   | `docker.io/mixa3607/pytorch-gfx906:v2.7.1-rocm-6.4.4`                                                                                             |
-|           | `docker.io/mixa3607/pytorch-gfx906:v2.7.1-rocm-6.3.3`                                                                                             |
-|           | `docker.io/mixa3607/pytorch-gfx906:v2.8.0-rocm-6.4.4`                                                                                             |
-|           | `docker.io/mixa3607/pytorch-gfx906:v2.8.0-rocm-6.3.3`                                                                                             |
-|           | `docker.io/mixa3607/pytorch-gfx906:v2.9.0-rocm-6.4.4`                                                                                             |
-|           | `docker.io/mixa3607/pytorch-gfx906:v2.9.0-rocm-6.3.3`                                                                                             |
-|           | `docker.io/mixa3607/pytorch-gfx906:v2.9.0-rocm-7.0.2`                                                                                             |
-|           | `docker.io/mixa3607/pytorch-gfx906:v2.10.0-rocm-6.3.3`                                                                                            |
-|           | `docker.io/mixa3607/pytorch-gfx906:v2.10.0-rocm-7.2.0`                                                                                            |
-|           | `docker.io/mixa3607/pytorch-gfx906:v2.11.0-rocm-6.3.3`                                                                                            |
-|           | `docker.io/mixa3607/pytorch-gfx906:v2.11.0-rocm-7.2.0`                                                                                            |
-|           | `docker.io/mixa3607/pytorch-gfx906:v2.11.0-rocm-7.2.1`                                                                                            |
-| --------- | -----------------------------------------------------------                                                                                       |
-| ComfyUI   | [`docker.io/mixa3607/comfyui-gfx906:<ver>-rocm-6.3.3`](https://hub.docker.com/repository/docker/mixa3607/comfyui-gfx906/tags?name=rocm-6.3.3)     |
-|           | [`docker.io/mixa3607/comfyui-gfx906:<ver>-rocm-7.2.1`](https://hub.docker.com/repository/docker/mixa3607/comfyui-gfx906/tags?name=rocm-7.2.1)     |
-| --------- | -----------------------------------------------------------                                                                                       |
-| vLLM      | `docker.io/mixa3607/vllm-gfx906:0.19.1-rocm-6.3.3-aiinfos`                                                                                        |
-|           | `docker.io/mixa3607/vllm-gfx906:0.19.1-rocm-7.2.1-aiinfos`                                                                                        |
-| --------- | -----------------------------------------------------------                                                                                       |
-| llama.cpp | [`docker.io/mixa3607/llama.cpp-gfx906:<ver>-rocm-6.3.3`](https://hub.docker.com/repository/docker/mixa3607/llama.cpp-gfx906/tags?name=rocm-6.3.3) |
-|           | [`docker.io/mixa3607/llama.cpp-gfx906:<ver>-rocm-7.2.1`](https://hub.docker.com/repository/docker/mixa3607/llama.cpp-gfx906/tags?name=rocm-7.2.1) |
+| Project   | Image                                                                                                                               |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| ROCm      | `docker.io/mixa3607/rocm-gfx906:6.3.3-complete`                                                                                     |
+|           | `docker.io/mixa3607/rocm-gfx906:6.4.4-complete`                                                                                     |
+|           | `docker.io/mixa3607/rocm-gfx906:7.0.0-complete`                                                                                     |
+|           | `docker.io/mixa3607/rocm-gfx906:7.0.2-complete`                                                                                     |
+|           | `docker.io/mixa3607/rocm-gfx906:7.1.0-complete`                                                                                     |
+|           | `docker.io/mixa3607/rocm-gfx906:7.1.1-complete`                                                                                     |
+|           | `docker.io/mixa3607/rocm-gfx906:7.2.0-complete`                                                                                     |
+|           | `docker.io/mixa3607/rocm-gfx906:7.2.1-complete`                                                                                     |
+| --------- | -----------------------------------------------------------                                                                         |
+| PyTorch   | `docker.io/mixa3607/pytorch-gfx906:v2.7.1-rocm-6.4.4`                                                                               |
+|           | `docker.io/mixa3607/pytorch-gfx906:v2.7.1-rocm-6.3.3`                                                                               |
+|           | `docker.io/mixa3607/pytorch-gfx906:v2.8.0-rocm-6.4.4`                                                                               |
+|           | `docker.io/mixa3607/pytorch-gfx906:v2.8.0-rocm-6.3.3`                                                                               |
+|           | `docker.io/mixa3607/pytorch-gfx906:v2.9.0-rocm-6.4.4`                                                                               |
+|           | `docker.io/mixa3607/pytorch-gfx906:v2.9.0-rocm-6.3.3`                                                                               |
+|           | `docker.io/mixa3607/pytorch-gfx906:v2.9.0-rocm-7.0.2`                                                                               |
+|           | `docker.io/mixa3607/pytorch-gfx906:v2.10.0-rocm-6.3.3`                                                                              |
+|           | `docker.io/mixa3607/pytorch-gfx906:v2.10.0-rocm-7.2.0`                                                                              |
+|           | `docker.io/mixa3607/pytorch-gfx906:v2.11.0-rocm-6.3.3`                                                                              |
+|           | `docker.io/mixa3607/pytorch-gfx906:v2.11.0-rocm-7.2.0`                                                                              |
+|           | `docker.io/mixa3607/pytorch-gfx906:v2.11.0-rocm-7.2.1`                                                                              |
+| --------- | -----------------------------------------------------------                                                                         |
+| vLLM      | `docker.io/mixa3607/vllm-gfx906:0.19.1-rocm-6.3.3-aiinfos`                                                                          |
+|           | `docker.io/mixa3607/vllm-gfx906:0.19.1-rocm-7.2.1-aiinfos`                                                                          |
+| --------- | -----------------------------------------------------------                                                                         |
+| ComfyUI   | [`docker.io/mixa3607/comfyui-gfx906:<ver>-rocm-6.3.3`](https://hub.docker.com/r/mixa3607/comfyui-gfx906/tags?name=rocm-6.3.3)\*     |
+|           | [`docker.io/mixa3607/comfyui-gfx906:<ver>-rocm-7.2.1`](https://hub.docker.com/r/mixa3607/comfyui-gfx906/tags?name=rocm-7.2.1)\*     |
+| --------- | -----------------------------------------------------------                                                                         |
+| llama.cpp | [`docker.io/mixa3607/llama.cpp-gfx906:<ver>-rocm-6.3.3`](https://hub.docker.com/r/mixa3607/llama.cpp-gfx906/tags?name=rocm-6.3.3)\* |
+|           | [`docker.io/mixa3607/llama.cpp-gfx906:<ver>-rocm-7.2.1`](https://hub.docker.com/r/mixa3607/llama.cpp-gfx906/tags?name=rocm-7.2.1)\* |
+
+> \* llama.cpp and ComfyUI have daily builds. See last tag on dockerhub
 
 ### Deps graph
 
