@@ -3,7 +3,7 @@
 pushd $(dirname ${BASH_SOURCE[0]})
 
 if [ "$COMFYUI_IMAGE" == "" ]; then
-  COMFYUI_IMAGE="docker.io/mixa3607/comfyui-sm100"
+  COMFYUI_IMAGE="docker.io/mixa3607/comfyui-sm120"
 fi
 
 if [ "$COMFYUI_TORCH_IMAGE" == "" ]; then

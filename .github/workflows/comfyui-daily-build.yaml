@@ -16,7 +16,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          ref: nvidia-sm100
+          ref: nvidia-sm120
       - name: Install yq
         run: |
           wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq

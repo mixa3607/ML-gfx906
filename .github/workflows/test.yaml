@@ -1,4 +1,4 @@
-name: Daily Nvidia-sm100 ComfyUI build trigger
+name: Daily Nvidia-sm120 ComfyUI build trigger
 
 on:
   schedule:
@@ -7,5 +7,5 @@ on:
 
 jobs:
   trigger-build:
-    uses: mixa3607/ML-gfx906/.github/workflows/comfyui-daily-build.yaml@nvidia-sm100
+    uses: mixa3607/ML-gfx906/.github/workflows/comfyui-daily-build.yaml@nvidia-sm120
     secrets: inherit
