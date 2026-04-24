@@ -1,5 +1,5 @@
-ARG BASE_ROCM_IMAGE="docker.io/mixa3607/rocm-gfx906:latest"
-ARG ROCM_ARCH="gfx906"
+ARG BASE_CUDA_IMAGE=""
+ARG CUDA_ARCH="120"
 ARG PYTHON_VERSION="3.12"
 
 ARG LLAMACPP_REPO="https://github.com/ggml-org/llama.cpp.git"
@@ -8,7 +8,7 @@ ARG LLAMACPP_COMMIT=""
 ARG LLAMACPP_CODE_PATH=""
 
 ############# Base image #############
-FROM ${BASE_ROCM_IMAGE} AS rocm_base
+FROM ${BASE_CUDA_IMAGE} AS cuda_base
 # Install basic utilities and Python
 ARG PYTHON_VERSION
 ENV PYTHON_VERSION=$PYTHON_VERSION
@@ -17,11 +17,11 @@ RUN apt-get update && \
     pip3 config set global.break-system-packages true && \
     true
 
-ARG ROCM_ARCH
-ENV AMDGPU_TARGETS=${ROCM_ARCH}
+ARG CUDA_ARCH
+ENV AMDGPU_TARGETS=${CUDA_ARCH}
 
 ############# Clone repos #############
-FROM rocm_base AS files_llamacpp
+FROM cuda_base AS files_llamacpp
 ARG LLAMACPP_REPO
 ARG LLAMACPP_BRANCH
 ARG LLAMACPP_COMMIT
@@ -38,18 +38,16 @@ RUN cp -r /files/llamacpp/requirements.txt /files/llamacpp/requirements /files/l
 RUN find .
 
 ############# Build #############
-FROM rocm_base AS build_llamacpp
+FROM cuda_base AS build_llamacpp
 RUN apt-get install -y build-essential cmake libssl-dev
 COPY --from=files_llamacpp /files/llamacpp /build/llamacpp
 WORKDIR /build/llamacpp
 
 # https://github.com/ggml-org/llama.cpp/blob/a6206958d28a064564ef132091b9c617ae005f49/ggml/CMakeLists.txt#L221
-RUN HIPCXX="$(hipconfig -l)/clang" HIP_PATH="$(hipconfig -R)" \
-    cmake -S . -B build \
-        -DGGML_HIP=ON                 \
-        -DGGML_HIP_GRAPHS=OFF         \
-        -DGGML_HIP_RCCL=ON            \
-        -DAMDGPU_TARGETS="$ROCM_ARCH" \
+RUN cmake -S . -B build \
+        -DGGML_CUDA=ON                \
+        -DGGML_NATIVE=OFF             \
+        -DCMAKE_CUDA_ARCHITECTURES="$CUDA_ARCH" \
         -DGGML_BACKEND_DL=ON          \
         -DGGML_CPU_ALL_VARIANTS=ON    \
         -DGGML_AVX512=ON              \
@@ -62,7 +60,7 @@ RUN HIPCXX="$(hipconfig -l)/clang" HIP_PATH="$(hipconfig -R)" \
 RUN mkdir -p /builded && cp -r ./build/bin/* .devops/tools.sh /builded
 
 ############# Copy and install all #############
-FROM rocm_base AS final
+FROM cuda_base AS final
 WORKDIR /app
 COPY --from=files_llamacpp_python /files/llamacpp-python /app
 RUN pip3 install --upgrade setuptools && \

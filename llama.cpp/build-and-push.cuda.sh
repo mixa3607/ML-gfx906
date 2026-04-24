@@ -3,7 +3,7 @@ set -e
 set -o pipefail
 
 cd $(dirname $0)
-source ../env.sh "llama.cpp" "rocm" 
+source ../env.sh "llama.cpp"
 
 IMAGE_TAGS=(
   "${LLAMA_IMAGE}:${LLAMA_PRESET_NAME}"
@@ -27,7 +27,7 @@ done
 
 mkdir -p ./logs || true
 docker buildx build ${DOCKER_EXTRA_ARGS[@]} --push \
-  --build-arg BASE_ROCM_IMAGE=${PATCHED_ROCM_IMAGE}:${LLAMA_ROCM_VERSION}-complete \
+  --build-arg BASE_CUDA_IMAGE=${LLAMA_CUDA_IMAGE}:${LLAMA_CUDA_VERSION}-devel-ubuntu22.04 \
   --build-arg LLAMACPP_REPO=$LLAMA_REPO \
   --build-arg LLAMACPP_BRANCH=$LLAMA_BRANCH \
   --build-arg LLAMACPP_COMMIT=$LLAMA_COMMIT \

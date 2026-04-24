@@ -3,12 +3,14 @@
 pushd $(dirname ${BASH_SOURCE[0]})
 
 if [ "$LLAMA_IMAGE" == "" ]; then
-  LLAMA_IMAGE=docker.io/mixa3607/llama.cpp-gfx906
+  LLAMA_IMAGE=docker.io/mixa3607/llama.cpp-sm120
 fi
 
-# rocm ver
-if [ "$LLAMA_ROCM_VERSION" == "" ]; then
-  LLAMA_ROCM_VERSION=7.2.1
+if [ "$LLAMA_CUDA_IMAGE" == "" ]; then
+  LLAMA_CUDA_IMAGE="docker.io/nvidia/cuda"
+fi
+if [ "$LLAMA_CUDA_VERSION" == "" ]; then
+  LLAMA_CUDA_VERSION="13.2.1-cudnn"
 fi
 
 if [ "$LLAMA_REPO" == "" ]; then
