@@ -1,19 +1,25 @@
 #/bin/bash
 set -e
+set -o pipefail
 
 cd $(dirname $0)
 source ../env.sh "comfyui" "pytorch"
 
 IMAGE_TAGS=(
-  "$COMFYUI_IMAGE:${COMFYUI_BRANCH}-torch-${COMFYUI_PYTORCH_VERSION}-rocm-${COMFYUI_ROCM_VERSION}-${REPO_GIT_REF}"
-  "$COMFYUI_IMAGE:${COMFYUI_BRANCH}-rocm-${COMFYUI_ROCM_VERSION}-${REPO_GIT_REF}"
   "$COMFYUI_IMAGE:${COMFYUI_BRANCH}-rocm-${COMFYUI_ROCM_VERSION}"
+  "$COMFYUI_IMAGE:${COMFYUI_BRANCH}-rocm-${COMFYUI_ROCM_VERSION}-${REPO_GIT_REF}"
+  "$COMFYUI_IMAGE:${COMFYUI_BRANCH}-torch-${COMFYUI_PYTORCH_VERSION}-rocm-${COMFYUI_ROCM_VERSION}-${REPO_GIT_REF}"
   "$COMFYUI_IMAGE:latest-rocm-${COMFYUI_ROCM_VERSION}"
 )
 
 if docker_image_pushed ${IMAGE_TAGS[0]}; then
-  echo "${IMAGE_TAGS[0]} already in registry. Skip"
-  exit 0
+  echo -n "${IMAGE_TAGS[0]} already in registry. "
+  if [ "$COMFYUI_FORCE_BUILD" == "1" ]; then
+    echo "Force build."
+  else
+    echo "Skip."
+    exit 0
+  fi
 fi
 
 DOCKER_EXTRA_ARGS=()
