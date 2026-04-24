@@ -1,6 +1,5 @@
 ARG BASE_CUDA_IMAGE=""
 ARG CUDA_ARCH="120"
-ARG PYTHON_VERSION="3.12"
 
 ARG LLAMACPP_REPO="https://github.com/ggml-org/llama.cpp.git"
 ARG LLAMACPP_BRANCH="master"
@@ -10,15 +9,13 @@ ARG LLAMACPP_CODE_PATH=""
 ############# Base image #############
 FROM ${BASE_CUDA_IMAGE} AS cuda_base
 # Install basic utilities and Python
-ARG PYTHON_VERSION
-ENV PYTHON_VERSION=$PYTHON_VERSION
 RUN apt-get update && \
-    apt-get install -y curl libgomp1 git python3 python3-venv && \
+    apt-get install -y curl libgomp1 git python3 python3-venv python3-pip && \
     pip3 config set global.break-system-packages true && \
     true
 
 ARG CUDA_ARCH
-ENV AMDGPU_TARGETS=${CUDA_ARCH}
+ENV CUDA_ARCH=${CUDA_ARCH}
 
 ############# Clone repos #############
 FROM cuda_base AS files_llamacpp
