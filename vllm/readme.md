@@ -1,3 +1,0 @@
-# VLLM SM120
-
-WIP
