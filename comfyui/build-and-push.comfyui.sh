@@ -3,7 +3,7 @@ set -e
 set -o pipefail
 
 cd $(dirname $0)
-source ../env.sh "comfyui" "pytorch"
+source ../env.sh "comfyui"
 
 IMAGE_TAGS=(
   "$COMFYUI_IMAGE:${COMFYUI_BRANCH}-cuda-${COMFYUI_CUDA_VERSION}"
