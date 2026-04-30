@@ -1,0 +1,7 @@
+transformers >= 5.7.0
+opentelemetry-sdk 
+opentelemetry-api 
+opentelemetry-semantic-conventions-ai 
+opentelemetry-exporter-otlp
+modelscope
+yq

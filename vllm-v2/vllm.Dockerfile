@@ -32,7 +32,7 @@ ENV FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE
 # Install base tools
 RUN pip3 install --upgrade --ignore-installed '/opt/rocm/share/amd_smi' pyjwt && \
     pip3 cache purge && \
-    apt install curl git wget jq aria2 -y
+    apt-get update && apt-get install curl git wget jq aria2 -y
 
 ############# Clone repos #############
 FROM rocm_base AS files_triton
@@ -91,7 +91,7 @@ RUN pip3 install -r python/requirements.txt
 # Build
 ARG MAX_JOBS
 RUN MAX_JOBS=${MAX_JOBS:-$(nproc)} \
-    python -m build --wheel --no-isolation --outdir /dist
+    pip3 wheel -v --no-deps --no-build-isolation --wheel-dir /dist .
 RUN pip3 install /dist/triton-*.whl
 RUN ls /dist
 
@@ -103,7 +103,7 @@ RUN pip3 install ninja packaging wheel pybind11 psutil
 # Build
 ARG MAX_JOBS
 RUN MAX_JOBS=${MAX_JOBS:-$(nproc)} \
-    python -m build --wheel --no-isolation --outdir /dist
+    pip3 wheel -v --no-deps --no-build-isolation --wheel-dir /dist .
 RUN pip3 install /dist/flash_attn-*.whl
 RUN ls /dist
 
@@ -115,7 +115,7 @@ RUN pip3 install -r requirements/rocm.txt
 # Build
 ARG MAX_JOBS
 RUN MAX_JOBS=${MAX_JOBS:-$(nproc)} \
-    python -m build --wheel --no-isolation --outdir /dist
+    pip3 wheel -v --no-deps --no-build-isolation --wheel-dir /dist .
 RUN pip3 install /dist/vllm-*.whl
 RUN ls /dist 
 
@@ -125,7 +125,7 @@ WORKDIR /app/vllm
 RUN --mount=type=bind,from=build_vllm,src=/app/vllm/requirements/,target=/app/vllm/requirements \
     --mount=type=bind,from=files_extra,src=/app/extra-requirements/,target=/app/extra-requirements \
     --mount=type=bind,from=build_vllm,src=/dist/,target=/dist \
-    pip3 install /dist/*.whl -r /app/vllm/requirements/rocm.txt && \
+    pip3 install /dist/*.whl /dist/flash_attn-*.whl -r /app/vllm/requirements/rocm.txt && \
     pip3 install -r /app/extra-requirements/*.txt && \
     pip3 cache purge && \
     true
