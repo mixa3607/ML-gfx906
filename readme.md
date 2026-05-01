@@ -41,8 +41,8 @@ https://arkprojects.space/wiki/AMD_GFX906
 |           | `docker.io/mixa3607/pytorch-gfx906:v2.11.0-rocm-7.2.0`                                                                              |
 |           | `docker.io/mixa3607/pytorch-gfx906:v2.11.0-rocm-7.2.1`                                                                              |
 | --------- | -----------------------------------------------------------                                                                         |
-| vLLM      | `docker.io/mixa3607/vllm-gfx906:0.19.1-rocm-6.3.3-aiinfos`                                                                          |
-|           | `docker.io/mixa3607/vllm-gfx906:0.19.1-rocm-7.2.1-aiinfos`                                                                          |
+| vLLM      | `docker.io/mixa3607/vllm-gfx906:0.20.1-rocm-6.3.3-aiinfos`                                                                          |
+|           | `docker.io/mixa3607/vllm-gfx906:0.20.1-rocm-7.2.1-aiinfos`                                                                          |
 | --------- | -----------------------------------------------------------                                                                         |
 | ComfyUI   | [`docker.io/mixa3607/comfyui-gfx906:<ver>-rocm-6.3.3`](https://hub.docker.com/r/mixa3607/comfyui-gfx906/tags?name=rocm-6.3.3)\*     |
 |           | [`docker.io/mixa3607/comfyui-gfx906:<ver>-rocm-7.2.1`](https://hub.docker.com/r/mixa3607/comfyui-gfx906/tags?name=rocm-7.2.1)\*     |
