@@ -10,7 +10,7 @@ ARG LLAMACPP_CODE_PATH=""
 FROM ${BASE_CUDA_IMAGE} AS cuda_base
 # Install basic utilities and Python
 RUN apt-get update && \
-    apt-get install -y curl libgomp1 git python3 python3-venv python3-pip && \
+    apt-get install -y curl libgomp1 git python3 python3-venv python3-pip numactl && \
     pip3 config set global.break-system-packages true && \
     true
 
