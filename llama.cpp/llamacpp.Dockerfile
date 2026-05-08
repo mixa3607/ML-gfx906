@@ -13,7 +13,7 @@ FROM ${BASE_ROCM_IMAGE} AS rocm_base
 ARG PYTHON_VERSION
 ENV PYTHON_VERSION=$PYTHON_VERSION
 RUN apt-get update && \
-    apt-get install -y curl libgomp1 git python3 python3-venv && \
+    apt-get install -y curl libgomp1 git python3 python3-venv numactl && \
     pip3 config set global.break-system-packages true && \
     true
 
