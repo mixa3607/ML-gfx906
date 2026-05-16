@@ -1,0 +1,6 @@
+#!/bin/bash
+
+export LLAMA_ROCM_VERSION='7.2.2'
+export LLAMA_BRANCH='b9180'
+export LLAMA_PRESET_NAME="${LLAMA_BRANCH}-rocm-${LLAMA_ROCM_VERSION}"
+

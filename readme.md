@@ -27,6 +27,8 @@ https://arkprojects.space/wiki/AMD_GFX906
 |           | `docker.io/mixa3607/rocm-gfx906:7.1.1-complete`                                                                                     |
 |           | `docker.io/mixa3607/rocm-gfx906:7.2.0-complete`                                                                                     |
 |           | `docker.io/mixa3607/rocm-gfx906:7.2.1-complete`                                                                                     |
+|           | `docker.io/mixa3607/rocm-gfx906:7.2.2-complete`                                                                                     |
+|           | `docker.io/mixa3607/rocm-gfx906:7.2.3-complete`                                                                                     |
 | --------- | -----------------------------------------------------------                                                                         |
 | PyTorch   | `docker.io/mixa3607/pytorch-gfx906:v2.7.1-rocm-6.4.4`                                                                               |
 |           | `docker.io/mixa3607/pytorch-gfx906:v2.7.1-rocm-6.3.3`                                                                               |
