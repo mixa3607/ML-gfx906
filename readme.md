@@ -50,7 +50,7 @@ https://arkprojects.space/wiki/AMD_GFX906
 |           | [`docker.io/mixa3607/comfyui-gfx906:<ver>-rocm-7.2.1`](https://hub.docker.com/r/mixa3607/comfyui-gfx906/tags?name=rocm-7.2.1)\*     |
 | --------- | -----------------------------------------------------------                                                                         |
 | llama.cpp | [`docker.io/mixa3607/llama.cpp-gfx906:<ver>-rocm-6.3.3`](https://hub.docker.com/r/mixa3607/llama.cpp-gfx906/tags?name=rocm-6.3.3)\* |
-|           | [`docker.io/mixa3607/llama.cpp-gfx906:<ver>-rocm-7.2.1`](https://hub.docker.com/r/mixa3607/llama.cpp-gfx906/tags?name=rocm-7.2.1)\* |
+|           | [`docker.io/mixa3607/llama.cpp-gfx906:<ver>-rocm-7.2.3`](https://hub.docker.com/r/mixa3607/llama.cpp-gfx906/tags?name=rocm-7.2.3)\* |
 
 > \* llama.cpp and ComfyUI have daily builds. See last tag on dockerhub
 

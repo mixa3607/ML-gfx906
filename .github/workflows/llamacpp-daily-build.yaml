@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        rocm_version: [ "6.3.3", "7.2.1" ]
+        rocm_version: [ "6.3.3", "7.2.3" ]
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
