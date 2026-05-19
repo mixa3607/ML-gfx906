@@ -7,7 +7,7 @@ if ! [ -f "$PRESET" ]; then
   echo "Creating preset $PRESET"
   echo "#!/bin/bash
 
-export COMFYUI_CUDA_VERSION='cuda13.0-cudnn9'
+export COMFYUI_CUDA_VERSION='13.0-cudnn9'
 export COMFYUI_PYTORCH_VERSION='2.11.0'
 export COMFYUI_BRANCH='$RELEASE_TAG'" > "$PRESET"
 fi
