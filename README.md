@@ -1,11 +1,10 @@
 # ML software for deprecated GFX906 arch
 
 ![GitHub License](https://img.shields.io/github/license/mixa3607/ML-gfx906?style=flat-square)
-![Static Badge](https://img.shields.io/badge/discord-gfx906-green?style=flat-square&link=https%3A%2F%2Fdiscord.gg%2FZbXbcqJct)
-![Static Badge](https://img.shields.io/badge/docs-arkprojects.space%2Fwiki-green?style=flat-square&link=https%3A%2F%2Farkprojects.space%2Fwiki%2FAMD_GFX906)
+[<img src="https://img.shields.io/badge/discord-gfx906-green?style=flat-square">](https://discord.gg/ZbXbcqJct)
+[<img src="https://img.shields.io/badge/docs-arkprojects.space%2Fwiki-green?style=flat-square">]([https://discord.gg/ZbXbcqJct](https://arkprojects.space/wiki/AMD_GFX906))
 
 ## Docs
-
 https://arkprojects.space/wiki/AMD_GFX906
 
 ## Prebuild images
