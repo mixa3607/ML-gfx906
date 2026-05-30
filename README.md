@@ -1,5 +1,9 @@
 # ML software for deprecated GFX906 arch
 
+![GitHub License](https://img.shields.io/github/license/mixa3607/ML-gfx906?style=flat-square)
+![Static Badge](https://img.shields.io/badge/discord-gfx906-green?style=flat-square&link=https%3A%2F%2Fdiscord.gg%2FZbXbcqJct)
+![Static Badge](https://img.shields.io/badge/docs-arkprojects.space%2Fwiki-green?style=flat-square&link=https%3A%2F%2Farkprojects.space%2Fwiki%2FAMD_GFX906)
+
 ## Docs
 
 https://arkprojects.space/wiki/AMD_GFX906
@@ -8,14 +12,14 @@ https://arkprojects.space/wiki/AMD_GFX906
 
 ### Images
 
-| Name         | About                | Status | Docs                               |
-| ------------ | -------------------- | ------ | ---------------------------------- |
-| ROCm         | ROCm patched images  | OK     | [readme](./rocm/readme.md)         |
-| ROCm-tensile | gfx906 tensile files | OK     | [readme](./rocm-tensile/readme.md) |
-| PyTorch      | PyTorch images       | OK     | [readme](./pytorch/readme.md)      |
-| llama.cpp    | llama.cpp images     | OK     | [readme](./llama.cpp/readme.md)    |
-| ComfyUI      | ComfyUI images       | OK     | [readme](./comfyui/readme.md)      |
-| VLLM         | vLLM images          | OK     | [readme](./vllm-v2/readme.md)      |
+| Name         | About                | Status                                                                                                                                                  | Docs                               |
+| ------------ | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| ROCm         | ROCm patched images  | OK                                                                                                                                                      | [readme](./rocm/readme.md)         |
+| ROCm-tensile | gfx906 tensile files | OK                                                                                                                                                      | [readme](./rocm-tensile/readme.md) |
+| PyTorch      | PyTorch images       | OK                                                                                                                                                      | [readme](./pytorch/readme.md)      |
+| llama.cpp    | llama.cpp images     | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/llamacpp-daily-build.yaml?style=flat-square) | [readme](./llama.cpp/readme.md)    |
+| ComfyUI      | ComfyUI images       | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/comfyui-daily-build.yaml?style=flat-square)  | [readme](./comfyui/readme.md)      |
+| VLLM         | vLLM images          | OK                                                                                                                                                      | [readme](./vllm-v2/readme.md)      |
 
 | Project   | Image                                                                                                                               |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
