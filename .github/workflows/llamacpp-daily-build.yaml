@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        rocm_version: ["6.3.3", "7.2.3"]
+        rocm_version: ["6.3.3", "7.2.4"]
     steps:
       - name: Aggressive cleanup
         run: |
