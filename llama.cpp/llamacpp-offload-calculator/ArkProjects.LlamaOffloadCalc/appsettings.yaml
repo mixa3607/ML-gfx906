@@ -8,16 +8,22 @@ Devices:
     Id: 1
     Type: GPU
     TotalSizeMb: 32768
-    PciBus: 0000:01:00.0
   ROCm1:
     Id: 2
     Type: GPU
     TotalSizeMb: 32768
-    PciBus: 0000:02:00.0
-  CPU:
+  ROCm2:
     Id: 3
+    Type: GPU
+    TotalSizeMb: 32768
+  ROCm3:
+    Id: 4
+    Type: GPU
+    TotalSizeMb: 32768
+  CPU:
+    Id: 100
     Type: CPU
-    TotalSizeMb: 131072
+    TotalSizeMb: 262144
     ReservedMemory: 0
 
 # offloading rules

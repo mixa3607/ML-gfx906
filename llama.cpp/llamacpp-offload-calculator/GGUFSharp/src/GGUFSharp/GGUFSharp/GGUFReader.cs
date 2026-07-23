@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,8 +14,9 @@ namespace GGUFSharp
     {
         public GGUFFile Read(string filePath)
         {
-            using var fs = MemoryMappedFile.CreateFromFile(filePath);
-            using var s = fs.CreateViewStream(0, 0, MemoryMappedFileAccess.Read);
+            //using var fs = MemoryMappedFile.CreateFromFile(filePath);
+            //using var s = fs.CreateViewStream(0, 0, MemoryMappedFileAccess.Read);
+            using var s = File.OpenRead(filePath);
             var header = readHeader(s);
             //using var meta = fs.CreateViewStream(24, 100*1024 * 1024, MemoryMappedFileAccess.Read);
             var d = readMetaData(s, header.MetaKVCount).ToList();
@@ -26,17 +27,21 @@ namespace GGUFSharp
             //}
 
             var t = readTensorData(s, header.TensorCount).ToList();
-            ulong alignment = 32;//TODO: read align from header
-
-
-            ulong startOffset = (ulong)s.Position +(alignment-((ulong)s.Position % alignment))% alignment;
-            var sortedItems = t.OrderBy(x => x.Offset).ToList();
-            for (var i = 0; i < sortedItems.Count - 1; i++)
+            var tensorInfos = new List<GGUFTensorInfo>();
+            var tensorStartOffset = 0ul;
+            if (t.Count != 0)
             {
-                sortedItems[i].Size = sortedItems[i + 1].Offset - sortedItems[i].Offset;
+                ulong alignment = 32;//TODO: read align from header
+
+                tensorStartOffset = (ulong)s.Position + (alignment - ((ulong)s.Position % alignment)) % alignment;
+                tensorInfos = t.OrderBy(x => x.Offset).ToList();
+                for (var i = 0; i < tensorInfos.Count - 1; i++)
+                {
+                    tensorInfos[i].Size = tensorInfos[i + 1].Offset - tensorInfos[i].Offset;
+                }
+                var last = tensorInfos.Last();
+                last.Size = (ulong)new FileInfo(filePath).Length - last.Offset - tensorStartOffset;
             }
-            var last = sortedItems.Last();
-            last.Size = (ulong)new FileInfo(filePath).Length - last.Offset-startOffset;
 
 
             //foreach (var item in t)
@@ -47,9 +52,9 @@ namespace GGUFSharp
             {
                 FilePath = filePath,
                 MetaItems = d,
-                TensorInfos = sortedItems,
+                TensorInfos = tensorInfos,
                 Version = header.Version,
-                DataStartOffset = startOffset,
+                DataStartOffset = tensorStartOffset,
             };
 
         }

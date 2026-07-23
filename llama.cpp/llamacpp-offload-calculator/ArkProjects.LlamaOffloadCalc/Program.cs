@@ -1,12 +1,14 @@
-﻿using ArkProjects.LlmCalc;
+using ArkProjects.LlmCalc;
 using ArkProjects.LlmCalc.Options;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
 using System.Text;
 using System.Text.RegularExpressions;
 
 
 var options = GetOptions(args);
+options.GgufFile = options.GgufFile.Trim();
 new OffloadCalculationOptionsValidator().ValidateAndThrow(options);
 
 var tensorsOffloadRules = options.OffloadRules
@@ -52,19 +54,19 @@ var assignedLayers = new Dictionary<string, List<int>>();
 {
     var layersCount = tensorInfos.Select(x => x.BlkId).Distinct().Count();
     var layerIds = tensorInfos.Select(x => x.BlkId).Distinct().OrderBy(x => x).ToList();
-    var s = devices.Where(x => x.LayersPortion > 0).Sum(x => x.LayersPortion);
-    foreach (var device in devices.OrderBy(x => x.LayersPortion))
+    var weightSum = devices.Where(x => x.LayersPortion > 0).Sum(x => x.LayersPortion);
+
+    foreach (var device in devices.Where(x => x.LayersPortion > 0).OrderBy(x => x.LayersPortion))
     {
-        if (device.LayersPortion <= 0)
-            continue;
-        var c = (int)(layersCount / s * device.LayersPortion);
-        assignedLayers[device.Name] = layerIds.Take(c).ToList();
-        layerIds = layerIds.Skip(c).ToList();
+        var c = (double)layersCount * device.LayersPortion / weightSum;
+        assignedLayers[device.Name] = layerIds.Take((int)Math.Floor(c)).ToList();
+        layerIds = layerIds.Skip((int)Math.Floor(c)).ToList();
     }
 
-    if (layerIds.Count > 0)
+    foreach (var device in devices.Where(x => x.LayersPortion > 0).OrderBy(x => x.LayersPortion).Take(layerIds.Count))
     {
-        assignedLayers[devices.GroupBy(x => x.LayersPortion).MaxBy(x => x.Key)!.Last().Name].AddRange(layerIds);
+        assignedLayers[device.Name].Add(layerIds[0]);
+        layerIds = layerIds.Skip(1).ToList();
     }
 }
 
@@ -132,7 +134,7 @@ static void PrintDevicesUtilization(IEnumerable<LLamaDevice> devices)
     {
         Console.WriteLine($"{device.Name,-10} " +
                           $"{device.GetUsedSpace() / 1024 / 1024} Mb of {device.TotalSize / 1024 / 1024} Mb " +
-                          $"({device.Tensors.Aggregate(0L, (current, tensor) => current + tensor.Size) / 1024 / 1024})");
+                          $"({device.Tensors.Aggregate(0L, (current, tensor) => current + tensor.Size) / 1024 / 1024} Mb)");
     }
 
     Console.WriteLine();
@@ -140,24 +142,20 @@ static void PrintDevicesUtilization(IEnumerable<LLamaDevice> devices)
 
 static void PrintHelmChartConfig(IReadOnlyList<LLamaDevice> devices)
 {
-    Console.WriteLine("======= Helm chart config");
+    Console.WriteLine("======= Helm chart ini");
     var sb = new StringBuilder();
-    sb.Append("extraEnvVars:\n");
-    sb.Append($"  - name: LLAMA_ARG_MAIN_GPU\n" +
-              $"    value: '0'\n");
-    sb.Append($"  - name: LLAMA_ARG_TENSOR_SPLIT\n" +
-              $"    value: '{string.Join(',', devices.Select(x => x.Layers.Count))}'\n");
-    sb.Append("\n");
+    sb.Append("main-gpu = 0\n");
+    sb.Append($"tensor-split = {string.Join(',', devices.Select(x => x.Layers.Count))}\n");
 
-    sb.Append("modelTensorsOverride:\n");
     foreach (var device in devices.Where(x => x.Type != LLamaDeviceType.GPU && x.Tensors.Count > 0))
     {
-        sb.Append($"  - name: {device.Name}\n" +
-                  $"    tensors:\n");
+        sb.Append("{{- $" + device.Name + "_tensors := list\n");
         foreach (var tensor in device.Tensors)
         {
-            sb.Append($"    - {tensor.Name}\n");
+            sb.Append($"                   \"{tensor.Name}\"\n");
         }
+        sb.Append("}}\n");
+        sb.Append("override-tensor = ({{- join \"|\" $" + device.Name + "_tensors }})=" + device.Name);
     }
 
     Console.WriteLine(sb);

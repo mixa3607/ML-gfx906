@@ -7,6 +7,10 @@
     "gpt-oss-120b-F16": {
       "commandName": "Project",
       "commandLineArgs": "-e gpt-oss-120b-F16"
+    },
+    "DeepSeek-V4-Flash-UD-Q8_K_XL": {
+      "commandName": "Project",
+      "commandLineArgs": "-e DeepSeek-V4-Flash-UD-Q8_K_XL"
     }
   }
 }
