@@ -1,0 +1,12 @@
+GgufFile: >-
+  \\TRUENAS/trash5-kube-volumes/pvc-05df5761-57be-4f16-9989-b0699b79616f/hub/models--bartowski--DeepSeek-V4-Flash-GGUF/snapshots/f9815d70824d68364c5a3c5136ff9672883394e0/DeepSeek-V4-Flash-MXFP4/DeepSeek-V4-Flash-MXFP4-00001-of-00004.gguf
+
+Devices:
+  ROCm0:
+    ReservedMemoryMb: 3072
+  ROCm1:
+    ReservedMemoryMb: 2048
+  ROCm2:
+    ReservedMemoryMb: 2048
+  ROCm3:
+    ReservedMemoryMb: 2048

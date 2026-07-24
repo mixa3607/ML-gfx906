@@ -11,6 +11,10 @@
     "DeepSeek-V4-Flash-UD-Q8_K_XL": {
       "commandName": "Project",
       "commandLineArgs": "-e DeepSeek-V4-Flash-UD-Q8_K_XL"
+    },
+    "DeepSeek-V4-Flash-NVFP4": {
+      "commandName": "Project",
+      "commandLineArgs": "-e DeepSeek-V4-Flash-NVFP4"
     }
   }
 }

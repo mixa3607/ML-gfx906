@@ -1,12 +1,12 @@
-GgufFile: |
-  \\192.168.1.100\trash5-kube-volumes\pvc-05df5761-57be-4f16-9989-b0699b79616f\hub\models--unsloth--DeepSeek-V4-Flash-GGUF\snapshots\e3aa0d6a5fa4f820d9e132ac1fd1d01e1b2b49e0\UD-Q8_K_XL\DeepSeek-V4-Flash-UD-Q8_K_XL-00001-of-00005.gguf
+GgufFile: >-
+  \\TRUENAS\trash5-kube-volumes/pvc-05df5761-57be-4f16-9989-b0699b79616f/hub/models--unsloth--DeepSeek-V4-Flash-GGUF/snapshots/e3aa0d6a5fa4f820d9e132ac1fd1d01e1b2b49e0/UD-Q8_K_XL/DeepSeek-V4-Flash-UD-Q8_K_XL-00001-of-00005.gguf
 
 Devices:
   ROCm0:
     ReservedMemoryMb: 3072
   ROCm1:
-    ReservedMemoryMb: 1024
+    ReservedMemoryMb: 3072
   ROCm2:
-    ReservedMemoryMb: 1024
+    ReservedMemoryMb: 3072
   ROCm3:
-    ReservedMemoryMb: 9216
+    ReservedMemoryMb: 3072
