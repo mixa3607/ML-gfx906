@@ -3,10 +3,10 @@ GgufFile: >-
 
 Devices:
   ROCm0:
-    ReservedMemoryMb: 3072
+    ReservedMemoryMb: 4096
   ROCm1:
-    ReservedMemoryMb: 3072
+    ReservedMemoryMb: 2048
   ROCm2:
-    ReservedMemoryMb: 3072
+    ReservedMemoryMb: 2048
   ROCm3:
     ReservedMemoryMb: 3072
