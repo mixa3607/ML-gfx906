@@ -50,8 +50,6 @@ jobs:
           df -h
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          ref: master
       - name: Install yq
         run: |
           wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq

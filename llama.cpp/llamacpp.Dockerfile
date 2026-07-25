@@ -1,6 +1,5 @@
 ARG BASE_ROCM_IMAGE="docker.io/mixa3607/rocm-gfx906:latest"
 ARG ROCM_ARCH="gfx906"
-ARG PYTHON_VERSION="3.12"
 
 ARG LLAMACPP_REPO="https://github.com/ggml-org/llama.cpp.git"
 ARG LLAMACPP_BRANCH="master"
@@ -10,10 +9,8 @@ ARG LLAMACPP_CODE_PATH=""
 ############# Base image #############
 FROM ${BASE_ROCM_IMAGE} AS rocm_base
 # Install basic utilities and Python
-ARG PYTHON_VERSION
-ENV PYTHON_VERSION=$PYTHON_VERSION
 RUN apt-get update && \
-    apt-get install -y curl libgomp1 git python3 python3-venv numactl && \
+    apt-get install -y curl libgomp1 git python3 python3-venv python3-pip numactl && \
     pip3 config set global.break-system-packages true && \
     true
 
