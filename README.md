@@ -16,7 +16,7 @@ https://arkprojects.space/wiki/AMD_GFX906
 | ROCm         | ROCm patched images  | OK                                                                                                                                                      | [readme](./rocm/readme.md)         |
 | ROCm-tensile | gfx906 tensile files | OK                                                                                                                                                      | [readme](./rocm-tensile/readme.md) |
 | PyTorch      | PyTorch images       | OK                                                                                                                                                      | [readme](./pytorch/readme.md)      |
-| llama.cpp    | llama.cpp images     | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/llamacpp-daily-build.yaml?style=flat-square) | [readme](./llama.cpp/readme.md)    |
+| llama.cpp    | llama.cpp images     | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/llamacpp-ggml-daily-build.yaml?style=flat-square) | [readme](./llama.cpp/readme.md)    |
 | ComfyUI      | ComfyUI images       | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/comfyui-daily-build.yaml?style=flat-square)  | [readme](./comfyui/readme.md)      |
 | VLLM         | vLLM images          | OK                                                                                                                                                      | [readme](./vllm-v2/readme.md)      |
 
