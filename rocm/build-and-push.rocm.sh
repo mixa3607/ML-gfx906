@@ -5,8 +5,8 @@ cd $(dirname $0)
 source ../env.sh "rocm"
 
 IMAGE_TAGS=(
-  "$ROCM_IMAGE:${ROCM_THEROCK_VERSION}-${REPO_GIT_REF}"
-  "$ROCM_IMAGE:${ROCM_THEROCK_VERSION}"
+  "$ROCM_IMAGE:${ROCM_THEROCK_VERSION}-complete-${REPO_GIT_REF}"
+  "$ROCM_IMAGE:${ROCM_THEROCK_VERSION}-complete"
 )
 
 if docker_image_pushed ${IMAGE_TAGS[0]}; then

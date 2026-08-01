@@ -9,7 +9,7 @@ ARG THEROCK_VERSION
 RUN --mount=type=bind,src=/,target=/build-context \
     apt-get update && apt-get install -y ca-certificates curl git && \
     /build-context/setup-apt-gfx906.sh && \
-    apt-get update && apt-get install -y amdrocm${THEROCK_VERSION}-${ROCM_ARCH} && \
+    apt-get update && apt-get install -y $(apt-cache pkgnames amdrocm | grep -E "${THEROCK_VERSION}(|-${ROCM_ARCH})\$") && \
     rm -rf /var/lib/{apt,dpkg,cache,log}/ && \
     true
 
