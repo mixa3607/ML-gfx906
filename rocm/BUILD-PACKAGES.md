@@ -28,8 +28,8 @@ apt install -y \
 
 ```bash
 # Clone the repository
-mkdir $HOME/TheRock
-cd $HOME/TheRock
+mkdir $HOME/rocm/code/TheRock
+cd $HOME/rocm/code/TheRock
 git clone https://github.com/ROCm/TheRock.git .
 
 # Install ccache
@@ -52,8 +52,8 @@ source .venv/bin/activate
 python3 ./build_tools/fetch_sources.py
 
 # Configure
-PACKAGES_DIR=$HOME/packages/therock
-VERSION_SUFFIX=gfx906-1
+PACKAGES_DIR=$HOME/rocm/packages/therock
+VERSION_SUFFIX=gfx906-20260802001858
 
 eval "$(./build_tools/setup_ccache.py)"
 CMAKE_ARGS=(
@@ -74,7 +74,7 @@ CMAKE_ARGS=(
   -DTHEROCK_ENABLE_HIPFILE=OFF
   -DTHEROCK_ENABLE_MEDIA_LIBS=OFF
   # disable tests
-  -DTHEROCK_BUILD_TESTS=OFF
+  -DTHEROCK_BUILD_TESTING=OFF
 )
 cmake -B ./build -G Ninja --fresh "${CMAKE_ARGS[@]}" .
 cmake --build ./build -j 60
@@ -87,32 +87,4 @@ cmake --build ./build -j 60
    --rocm-version "$(cat version.json | jq '."rocm-version"' -r)" \
    --version-suffix $VERSION_SUFFIX \
    --pkg-type deb
-```
-
-## Build ROCm Validation Suite
-
-```bash
-# Clone
-mkdir $HOME/ROCmValidationSuite
-cd $HOME/ROCmValidationSuite
-git clone https://github.com/ROCm/ROCmValidationSuite.git .
-
-# Configure
-ROCM_PATH=/opt/rocm
-PACKAGES_DIR=$HOME/packages/rvc
-VERSION_SUFFIX=gfx906-1
-
-cmake -B ./build --fresh \
-  -DROCM_PATH=$ROCM_PATH \
-  -DCMAKE_INSTALL_PREFIX=$ROCM_PATH \
-  -DCPACK_PACKAGE_DIRECTORY=$PACKAGES_DIR \
-  -DCPACK_PACKAGING_INSTALL_PREFIX=$ROCM_PATH \
-  -DCPACK_DEBIAN_PACKAGE_RELEASE=$VERSION_SUFFIX \
-  -DRVS_BUILD_TESTS=OFF
-
-# Build
-cmake --build ./build -j 60
-pushd ./build
-make package
-popd
 ```
