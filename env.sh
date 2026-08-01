@@ -38,6 +38,10 @@ if [ "$BASE_UBUNTU_REGISTRY" == "" ]; then
   BASE_UBUNTU_REGISTRY=docker.io/library
 fi
 
+# docker buildx remote connection "graceful_stop" fix
+export GRPC_GO_KEEPALIVE_TIME_MS=20000
+export GRPC_GO_KEEPALIVE_TIMEOUT_MS=10000
+
 if [ "$1" != "" ]; then
   for PROJ in "$@"; do
     source $(dirname ${BASH_SOURCE[0]})/${PROJ}/env.sh
