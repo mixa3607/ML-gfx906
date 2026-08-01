@@ -1,6 +1,9 @@
 # ROCM tensile files
 
-Extracted from ../rocm images
+> **Warning:** Deprecated!!!
+> Use packages from [`gfx906` APT repo](../rocm/readme.md)
+
+ROCM tensile files extracted from ../rocm images
 
 ### Github limitations
 
