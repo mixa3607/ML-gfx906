@@ -5,8 +5,8 @@ cd $(dirname $0)
 source ../env.sh "rocm"
 
 IMAGE_TAGS=(
-  "$PATCHED_ROCM_IMAGE:${ROCM_VERSION}-${REPO_GIT_REF}-complete"
-  "$PATCHED_ROCM_IMAGE:${ROCM_VERSION}-complete"
+  "$ROCM_IMAGE:${ROCM_THEROCK_VERSION}-${REPO_GIT_REF}"
+  "$ROCM_IMAGE:${ROCM_THEROCK_VERSION}"
 )
 
 if docker_image_pushed ${IMAGE_TAGS[0]}; then
@@ -21,6 +21,7 @@ done
 
 mkdir ./logs || true
 docker buildx build ${DOCKER_EXTRA_ARGS[@]} --push \
-  --build-arg BASE_ROCM_IMAGE="${BASE_ROCM_IMAGE}:${ROCM_IMAGE_VER}-complete" \
+  --build-arg ROCM_BASE_IMAGE="${ROCM_BASE_IMAGE}" \
   --build-arg ROCM_ARCH="${ROCM_ARCH}" \
-  --target final -f ./rocm.Dockerfile --progress=plain ./submodules 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log
+  --build-arg THEROCK_VERSION="${ROCM_THEROCK_VERSION}" \
+  --target final -f ./rocm.Dockerfile --progress=plain ./build-context 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log
