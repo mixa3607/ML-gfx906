@@ -27,11 +27,12 @@ apt install -y \
 ## Build TheRock
 
 ```bash
-# Clone the repository
+########## Clone ##########
 mkdir $HOME/rocm/code/TheRock
 cd $HOME/rocm/code/TheRock
 git clone https://github.com/ROCm/TheRock.git .
 
+########## Install deps ##########
 # Install ccache
 ./dockerfiles/install_ccache.sh 4.12.2
 
@@ -51,9 +52,9 @@ source .venv/bin/activate
 # Download submodules and apply patches
 python3 ./build_tools/fetch_sources.py
 
-# Configure
+########## Configure ##########
 PACKAGES_DIR=$HOME/rocm/packages/therock
-VERSION_SUFFIX=gfx906-20260802001858
+VERSION_SUFFIX=gfx906+20260802001858
 
 eval "$(./build_tools/setup_ccache.py)"
 CMAKE_ARGS=(
@@ -77,13 +78,16 @@ CMAKE_ARGS=(
   -DTHEROCK_BUILD_TESTING=OFF
 )
 cmake -B ./build -G Ninja --fresh "${CMAKE_ARGS[@]}" .
+
+########## Build ##########
+# Build code (10_000_000 years)
 cmake --build ./build -j 60
 
 # Build deb packages
 ./build_tools/packaging/linux/build_package.py \
    --artifacts-dir ./build/artifacts \
    --target gfx906 \
-   --dest-dir $HOME/packages/therock \
+   --dest-dir $PACKAGES_DIR \
    --rocm-version "$(cat version.json | jq '."rocm-version"' -r)" \
    --version-suffix $VERSION_SUFFIX \
    --pkg-type deb
