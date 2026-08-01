@@ -1,4 +1,35 @@
 # ROCm Validation Suite (RVC)
+A system validation and diagnostics tool for monitoring, stress testing, detecting, and troubleshooting issues impacting AMD GPUs in high-performance computing environments
+
+- https://github.com/ROCm/ROCmValidationSuite/
+- https://rocm.docs.amd.com/projects/ROCmValidationSuite/en/latest/
+
+```bash
+echo 'actions:
+- name: gst-581Tflops-4K4K8K-rand-bf16
+  device: all
+  module: gst
+  log_interval: 10000
+  ramp_interval: 5000
+  duration: 120000
+  hot_calls: 1000
+  copy_matrix: false
+  target_stress: 581000
+  matrix_size_a: 4864
+  matrix_size_b: 4096
+  matrix_size_c: 8192
+  matrix_init: rand
+  data_type: bf16_r
+  lda: 8320
+  ldb: 8320
+  ldc: 4992
+  ldd: 4992
+  transa: 1
+  transb: 0
+  alpha: 1
+  beta: 0' > ~/gst-581Tflops-4K4K8K-rand-bf16.conf
+rvs -c ~/gst-581Tflops-4K4K8K-rand-bf16.conf
+```
 
 ## Install from APT
 
