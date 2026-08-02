@@ -75,7 +75,7 @@ git clone https://github.com/ROCm/ROCmValidationSuite.git .
 
 ########## Configure ##########
 # Packages dest dir
-PACKAGES_DIR=$HOME/rocm/packages/rvc
+PACKAGES_DIR=$HOME/rocm/packages/rvs
 # Path to rocm when package installed
 ROCM_DEPS_DIR=/opt/rocm
 # Try search current rocm bins
@@ -87,7 +87,7 @@ if ! [ -d $ROCM_BUILD_DIR ]; then
   echo "ROCm directory not found"
 fi
 # Version suffix e.g. v0.1.2-<VERSION_SUFFIX>
-VERSION_SUFFIX=gfx906-20260802001858
+VERSION_SUFFIX=gfx906+20260802001858
 
 CPACK_DEBIAN_PACKAGE_RELEASE=$VERSION_SUFFIX \
 cmake -B ./build --fresh \
@@ -100,7 +100,7 @@ cmake -B ./build --fresh \
 
 ########## Build ##########
 # Build code
-cmake --build ./build -j 60
+cmake --build ./build
 
 # Build deb packages
 pushd ./build; make package; popd
