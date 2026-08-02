@@ -8,7 +8,7 @@ fi
 
 # rocm ver
 if [ "$LLAMA_ROCM_VERSION" == "" ]; then
-  LLAMA_ROCM_VERSION=7.2.1
+  LLAMA_ROCM_VERSION=7.14
 fi
 
 if [ "$LLAMA_REPO" == "" ]; then

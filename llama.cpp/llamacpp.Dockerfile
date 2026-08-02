@@ -1,4 +1,4 @@
-ARG BASE_ROCM_IMAGE="docker.io/mixa3607/rocm-gfx906:latest"
+ARG ROCM_IMAGE="docker.io/mixa3607/rocm-gfx906:latest"
 ARG ROCM_ARCH="gfx906"
 
 ARG LLAMACPP_REPO="https://github.com/ggml-org/llama.cpp.git"
@@ -7,7 +7,7 @@ ARG LLAMACPP_COMMIT=""
 ARG LLAMACPP_CODE_PATH=""
 
 ############# Base image #############
-FROM ${BASE_ROCM_IMAGE} AS rocm_base
+FROM ${ROCM_IMAGE} AS rocm_base
 # Install basic utilities and Python
 RUN apt-get update && \
     apt-get install -y curl libgomp1 git python3 python3-venv python3-pip numactl && \
@@ -23,11 +23,18 @@ ARG LLAMACPP_REPO
 ARG LLAMACPP_BRANCH
 ARG LLAMACPP_COMMIT
 ARG LLAMACPP_CODE_PATH
+
 # Clone
 WORKDIR /files/llamacpp
-RUN git clone --depth 1 --recurse-submodules --shallow-submodules --jobs 4 --branch ${LLAMACPP_BRANCH} ${LLAMACPP_REPO} .
-RUN if [ "$LLAMACPP_COMMIT" != "" ]; then git checkout "$LLAMACPP_COMMIT"; fi
-RUN if [ "$LLAMACPP_CODE_PATH" != "" ]; then cd "$LLAMACPP_CODE_PATH" && find ./ -maxdepth 1 -mindepth 1 -exec mv -t /files/llamacpp {} + ; fi
+RUN <<EOF_DOCKERFILE
+git clone --depth 1 --recurse-submodules --shallow-submodules --jobs 4 --branch ${LLAMACPP_BRANCH} ${LLAMACPP_REPO} .
+if [ "$LLAMACPP_COMMIT" != "" ]; then 
+  git checkout "$LLAMACPP_COMMIT"
+fi
+if [ "$LLAMACPP_CODE_PATH" != "" ]; then 
+  cd "$LLAMACPP_CODE_PATH" && find ./ -maxdepth 1 -mindepth 1 -exec mv -t /files/llamacpp {} +
+fi
+EOF_DOCKERFILE
 
 FROM files_llamacpp AS files_llamacpp_python
 WORKDIR /files/llamacpp-python

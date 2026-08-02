@@ -5,10 +5,19 @@ set -o pipefail
 cd $(dirname $0)
 source ../env.sh "llama.cpp" "rocm" 
 
+LLAMA_BASE_IMAGE="${ROCM_IMAGE}:${LLAMA_ROCM_VERSION}-complete"
 IMAGE_TAGS=(
-  "${LLAMA_IMAGE}:${LLAMA_PRESET_NAME}"
   "${LLAMA_IMAGE}:${LLAMA_PRESET_NAME}-${REPO_GIT_REF}"
+  "${LLAMA_IMAGE}:${LLAMA_PRESET_NAME}"
 )
+
+declare -A IMAGE_ANNOTATIONS
+IMAGE_ANNOTATIONS["org.opencontainers.image.created"]="$(date --rfc-3339=seconds)"
+IMAGE_ANNOTATIONS["org.opencontainers.image.authors"]="mixa3607"
+IMAGE_ANNOTATIONS["org.opencontainers.image.source"]="https://github.com/mixa3607/ML-gfx906/tree/${REPO_GIT_REF}/llama.cpp"
+IMAGE_ANNOTATIONS["org.opencontainers.image.version"]="${REPO_GIT_REF}"
+IMAGE_ANNOTATIONS["org.opencontainers.image.title"]="Llama.cpp gfx906"
+IMAGE_ANNOTATIONS["org.opencontainers.image.base.name"]="${LLAMA_BASE_IMAGE}"
 
 if docker_image_pushed ${IMAGE_TAGS[0]}; then
   echo -n "${IMAGE_TAGS[0]} already in registry. "
@@ -22,14 +31,17 @@ fi
 
 DOCKER_EXTRA_ARGS=()
 for (( i=0; i<${#IMAGE_TAGS[@]}; i++ )); do
-  DOCKER_EXTRA_ARGS+=("-t" "${IMAGE_TAGS[$i]}")
+  DOCKER_EXTRA_ARGS+=("--tag" "${IMAGE_TAGS[$i]}")
+done
+for key in "${!IMAGE_ANNOTATIONS[@]}"; do
+  DOCKER_EXTRA_ARGS+=("--annotation" "${key}=${IMAGE_ANNOTATIONS[$key]}")
 done
 
 mkdir -p ./logs || true
 docker buildx build ${DOCKER_EXTRA_ARGS[@]} --push \
-  --build-arg BASE_ROCM_IMAGE=${PATCHED_ROCM_IMAGE}:${LLAMA_ROCM_VERSION}-complete \
-  --build-arg LLAMACPP_REPO=$LLAMA_REPO \
-  --build-arg LLAMACPP_BRANCH=$LLAMA_BRANCH \
-  --build-arg LLAMACPP_COMMIT=$LLAMA_COMMIT \
-  --build-arg LLAMACPP_CODE_PATH=$LLAMA_CODE_PATH \
+  --build-arg ROCM_IMAGE=${LLAMA_BASE_IMAGE} \
+  --build-arg LLAMACPP_REPO="$LLAMA_REPO" \
+  --build-arg LLAMACPP_BRANCH="$LLAMA_BRANCH" \
+  --build-arg LLAMACPP_COMMIT="$LLAMA_COMMIT" \
+  --build-arg LLAMACPP_CODE_PATH="$LLAMA_CODE_PATH" \
   --progress=plain --target final -f llamacpp.Dockerfile ./build-context 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log
