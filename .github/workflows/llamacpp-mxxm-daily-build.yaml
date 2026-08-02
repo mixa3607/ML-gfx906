@@ -10,55 +10,27 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        rocm_version: ["7.2.4"]
+        build:
+          - rocm_version: "7.14"
+            release_tag: "20260802001858"
     steps:
       - name: Aggressive cleanup
-        run: |
-          # Remove Java (JDKs)
-          # sudo rm -rf /usr/lib/jvm
+        uses: ./.github/workflows/actions/cleanup-space-action
 
-          # Remove .NET SDKs
-          # sudo rm -rf /usr/share/dotnet
-
-          # Remove Swift toolchain
-          sudo rm -rf /usr/share/swift
-
-          # Remove Haskell (GHC)
-          sudo rm -rf /usr/local/.ghcup
-
-          # Remove Julia
-          sudo rm -rf /usr/local/julia*
-
-          # Remove Android SDKs
-          sudo rm -rf /usr/local/lib/android
-
-          # Remove Chromium (optional if not using for browser tests)
-          # sudo rm -rf /usr/local/share/chromium
-
-          # Remove Microsoft/Edge and Google Chrome builds
-          # sudo rm -rf /opt/microsoft /opt/google
-
-          # Remove Azure CLI
-          # sudo rm -rf /opt/az
-
-          # Remove PowerShell
-          # sudo rm -rf /usr/local/share/powershell
-
-          # Remove CodeQL and other toolcaches
-          # sudo rm -rf /opt/hostedtoolcache
-          
-          df -h
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ matrix.build.release_tag }}
+
       - name: Install yq
-        run: |
-          wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
-          chmod +x /usr/local/bin/yq
+        uses: ./.github/workflows/actions/install-yq
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Run build script
         run: |
           cd ./llama.cpp
@@ -66,6 +38,6 @@ jobs:
           export LLAMA_BRANCH="$(curl -L \
             -H "Accept: application/vnd.github+json" \
             'https://api.github.com/repos/mxxm-t/mx-llama.cpp/tags?per_page=1' | yq -r '.[0].name')"
-          export LLAMA_ROCM_VERSION='${{ matrix.rocm_version }}'
+          export LLAMA_ROCM_VERSION='${{ matrix.build.rocm_version }}'
           export LLAMA_PRESET_NAME="${LLAMA_BRANCH}-rocm-${LLAMA_ROCM_VERSION}-mxxm"
           ./build-and-push.rocm.sh
