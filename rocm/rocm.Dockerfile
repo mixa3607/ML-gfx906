@@ -4,6 +4,10 @@ ARG ROCM_BUILD="7.14.0-gfx906+20260802001858"
 ############# Base image #############
 FROM ${ROCM_BASE_IMAGE} AS rocm_base
 ARG ROCM_BUILD
+
+ENV ROCM_PATH=/opt/rocm
+ENV PATH=/opt/rocm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
 RUN <<EOF_DOCKERFILE
 apt-get update
 apt-get install -y ca-certificates curl git jq
@@ -36,11 +40,14 @@ ROCM_PACKAGES="$(
 echo "Rocm packages to install ($(echo "$ROCM_PACKAGES" | wc -l)): \n$ROCM_PACKAGES" 
 apt-get install -y $ROCM_PACKAGES
 
+tee /etc/ld.so.conf.d/rocm.conf <<EOF
+# ROCm gfx906
+$ROCM_PATH/lib
+EOF
+ldconfig
+
 rm -rf /var/lib/apt/lists/*
 EOF_DOCKERFILE
 
 ############# Final image #############
 FROM rocm_base AS final
-ENV ROCM_PATH=/opt/rocm
-ENV PATH=/opt/rocm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-
