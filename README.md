@@ -11,15 +11,15 @@ https://arkprojects.space/wiki/AMD_GFX906
 
 ### Images
 
-| Name         | About                 | Status                                                                                                                                                  | Docs                               |
-| ------------ | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| ROCm         | ROCm patched images   | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/rocm-daily-build.yaml?style=flat-square)     | [readme](./rocm/readme.md)         |
-| ROCm RVS     | ROCm Validation Suite | OK                                                                                                                                                      | [readme](./rocm-rvc/readme.md)     |
-| ROCm tensile | gfx906 tensile files  | Deprecated                                                                                                                                              | [readme](./rocm-tensile/readme.md) |
-| PyTorch      | PyTorch images        | OK                                                                                                                                                      | [readme](./pytorch/readme.md)      |
-| llama.cpp    | llama.cpp images      | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/llamacpp-daily-build.yaml?style=flat-square) | [readme](./llama.cpp/readme.md)    |
-| ComfyUI      | ComfyUI images        | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/comfyui-daily-build.yaml?style=flat-square)  | [readme](./comfyui/readme.md)      |
-| vLLM         | vLLM images           | OK                                                                                                                                                      | [readme](./vllm-v2/readme.md)      |
+| Name         | About                 | Status                                                                                                                                                       | Docs                               |
+| ------------ | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------- |
+| ROCm         | ROCm patched images   | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/rocm-daily-build.yaml?style=flat-square)          | [readme](./rocm/readme.md)         |
+| ROCm RVS     | ROCm Validation Suite | OK                                                                                                                                                           | [readme](./rocm-rvc/readme.md)     |
+| ROCm tensile | gfx906 tensile files  | Deprecated                                                                                                                                                   | [readme](./rocm-tensile/readme.md) |
+| PyTorch      | PyTorch images        | OK                                                                                                                                                           | [readme](./pytorch/readme.md)      |
+| llama.cpp    | llama.cpp images      | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/llamacpp-ggml-daily-build.yaml?style=flat-square) | [readme](./llama.cpp/readme.md)    |
+| ComfyUI      | ComfyUI images        | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/comfyui-daily-build.yaml?style=flat-square)       | [readme](./comfyui/readme.md)      |
+| vLLM         | vLLM images           | OK                                                                                                                                                           | [readme](./vllm-v2/readme.md)      |
 
 
 ### Deps graph
