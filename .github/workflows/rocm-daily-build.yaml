@@ -24,7 +24,7 @@ jobs:
         uses: ./.github/workflows/actions/cleanup-space-action
 
       - name: Install yq
-        uses: ./.github/workflows/actions/install-yq
+        uses: ./.github/workflows/actions/install-yq-action
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
