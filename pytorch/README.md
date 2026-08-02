@@ -8,18 +8,33 @@ Packages:
 - torchvision
 - torchaudio
 
-Recommend use `docker.io/mixa3607/pytorch-gfx906:<any-ver>-rocm-6.3.3`
+## Prebuilt images
+
+- [`docker.io/mixa3607/vllm-gfx906:0.20.1-rocm-6.3.3-aiinfos`](https://hub.docker.com/r/mixa3607/vllm-gfx906/tags)\*
+- [`docker.io/mixa3607/vllm-gfx906:0.20.1-rocm-7.2.1-aiinfos`](https://hub.docker.com/r/mixa3607/vllm-gfx906/tags)\*
+- [`docker.io/mixa3607/pytorch-gfx906:v2.7.1-rocm-6.4.4`](https://hub.docker.com/r/mixa3607/pytorch-gfx906/tags)
+- [`docker.io/mixa3607/pytorch-gfx906:v2.7.1-rocm-6.3.3`](https://hub.docker.com/r/mixa3607/pytorch-gfx906/tags)
+- [`docker.io/mixa3607/pytorch-gfx906:v2.8.0-rocm-6.4.4`](https://hub.docker.com/r/mixa3607/pytorch-gfx906/tags)
+- [`docker.io/mixa3607/pytorch-gfx906:v2.8.0-rocm-6.3.3`](https://hub.docker.com/r/mixa3607/pytorch-gfx906/tags)
+- [`docker.io/mixa3607/pytorch-gfx906:v2.9.0-rocm-6.4.4`](https://hub.docker.com/r/mixa3607/pytorch-gfx906/tags)
+- [`docker.io/mixa3607/pytorch-gfx906:v2.9.0-rocm-6.3.3`](https://hub.docker.com/r/mixa3607/pytorch-gfx906/tags)
+- [`docker.io/mixa3607/pytorch-gfx906:v2.9.0-rocm-7.0.2`](https://hub.docker.com/r/mixa3607/pytorch-gfx906/tags)
+- [`docker.io/mixa3607/pytorch-gfx906:v2.10.0-rocm-6.3.3`](https://hub.docker.com/r/mixa3607/pytorch-gfx906/tags)
+- [`docker.io/mixa3607/pytorch-gfx906:v2.10.0-rocm-7.2.0`](https://hub.docker.com/r/mixa3607/pytorch-gfx906/tags)
+- [`docker.io/mixa3607/pytorch-gfx906:v2.11.0-rocm-6.3.3`](https://hub.docker.com/r/mixa3607/pytorch-gfx906/tags)
+- [`docker.io/mixa3607/pytorch-gfx906:v2.11.0-rocm-7.2.0`](https://hub.docker.com/r/mixa3607/pytorch-gfx906/tags)
+- [`docker.io/mixa3607/pytorch-gfx906:v2.11.0-rocm-7.2.1`](https://hub.docker.com/r/mixa3607/pytorch-gfx906/tags)
 
 ## Vers compatibility table
 
 |            | PyTorch 2.7.1 | PyTorch 2.8.0 | PyTorch 2.9.0 | PyTorch 2.10 | PyTorch 2.11.0-rc3 |
 | ---------- | ------------- | ------------- | ------------- | ------------ | ------------------ |
-| ROCm 6.3.3 | ✅️            | ✅️            | ✅️            | ✅️           | ✅️                 |
-| ROCm 6.4.4 | ✅️            | ✅️            | ✅️            | ❓           | ❓                 |
-| ROCm 7.0.0 | ❓            | ❓            | ❓            | ❓           | ❓                 |
-| ROCm 7.0.2 | ⛔ (\*2)      | ⛔ (\*2)      | ✅️            | ❓           | ❓                 |
-| ROCm 7.1.0 | ⛔ (\*1)      | ⛔ (\*1)      | ⛔ (\*1)      | ❓           | ❓                 |
-| ROCm 7.2.0 | ❓            | ❓            | ❓            | ✅️           | ✅️                 |
+| ROCm 6.3.3 | ✅️             | ✅️             | ✅️             | ✅️            | ✅️                  |
+| ROCm 6.4.4 | ✅️             | ✅️             | ✅️             | ❓            | ❓                  |
+| ROCm 7.0.0 | ❓             | ❓             | ❓             | ❓            | ❓                  |
+| ROCm 7.0.2 | ⛔ (\*2)       | ⛔ (\*2)       | ✅️             | ❓            | ❓                  |
+| ROCm 7.1.0 | ⛔ (\*1)       | ⛔ (\*1)       | ⛔ (\*1)       | ❓            | ❓                  |
+| ROCm 7.2.0 | ❓             | ❓             | ❓             | ✅️            | ✅️                  |
 
 > \*1 - Could not find a version that satisfies the requirement amdsmi==7.1.0
 
