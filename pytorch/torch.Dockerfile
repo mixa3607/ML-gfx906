@@ -1,6 +1,5 @@
 ARG BASE_ROCM_IMAGE="docker.io/mixa3607/rocm-gfx906:latest"
 ARG ROCM_ARCH="gfx906"
-ARG PYTHON_VERSION="3.12"
 
 ARG PYTORCH_REPO="https://github.com/pytorch/pytorch.git"
 ARG PYTORCH_BRANCH="v2.7.1"
@@ -15,17 +14,10 @@ ARG PYTORCH_AUDIO_BRANCH=""
 ############# Base image #############
 FROM ${BASE_ROCM_IMAGE} AS rocm_base
 # Install basic utilities and Python
-ARG PYTHON_VERSION
-ENV PYTHON_VERSION=$PYTHON_VERSION
-RUN apt-get update && apt-get install -y software-properties-common git python3-pip && \
-    add-apt-repository ppa:deadsnakes/ppa && \
-    apt-get update -y && \
-    apt-get install -y python${PYTHON_VERSION} python${PYTHON_VERSION}-dev python${PYTHON_VERSION}-venv \
-    python${PYTHON_VERSION}-lib2to3 python-is-python3 python${PYTHON_VERSION}-full && \
-    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python${PYTHON_VERSION} 1 && \
-    update-alternatives --set python3 /usr/bin/python${PYTHON_VERSION} && \
-    ln -sf /usr/bin/python${PYTHON_VERSION}-config /usr/bin/python3-config && \
+RUN apt-get update && \
+    apt-get install -y git python3 python3-venv python3-pip python3-dev && \
     python3 -m pip config set global.break-system-packages true && \
+    rm -rf /var/lib/{apt,dpkg,cache,log}/ && \
     true
 
 # Set environment variables
