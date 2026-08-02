@@ -38,10 +38,10 @@ for key in "${!IMAGE_ANNOTATIONS[@]}"; do
 done
 
 mkdir -p ./logs || true
-docker buildx build ${DOCKER_EXTRA_ARGS[@]} --push \
-  --build-arg ROCM_IMAGE=${LLAMA_BASE_IMAGE} \
-  --build-arg LLAMACPP_REPO="$LLAMA_REPO" \
-  --build-arg LLAMACPP_BRANCH="$LLAMA_BRANCH" \
-  --build-arg LLAMACPP_COMMIT="$LLAMA_COMMIT" \
-  --build-arg LLAMACPP_CODE_PATH="$LLAMA_CODE_PATH" \
+docker buildx build "${DOCKER_EXTRA_ARGS[@]}" --push \
+  --build-arg ROCM_IMAGE="${LLAMA_BASE_IMAGE}" \
+  --build-arg LLAMACPP_REPO="${LLAMA_REPO}" \
+  --build-arg LLAMACPP_BRANCH="${LLAMA_BRANCH}" \
+  --build-arg LLAMACPP_COMMIT="${LLAMA_COMMIT}" \
+  --build-arg LLAMACPP_CODE_PATH="${LLAMA_CODE_PATH}" \
   --progress=plain --target final -f llamacpp.Dockerfile ./build-context 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log
