@@ -15,13 +15,13 @@ jobs:
             rocm_build: "7.14.0-gfx906+20260802001858"
             release_tag: "master"
     steps:
-      - name: Aggressive cleanup
-        uses: ./.github/workflows/actions/cleanup-space-action
-
       - name: Checkout repo
         uses: actions/checkout@v7
         with:
           ref: ${{ matrix.build.release_tag }}
+
+      - name: Aggressive cleanup
+        uses: ./.github/workflows/actions/cleanup-space-action
 
       - name: Install yq
         uses: ./.github/workflows/actions/install-yq
