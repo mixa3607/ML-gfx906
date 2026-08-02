@@ -5,9 +5,9 @@ libraries, and runtimes for AI and HPC solution development on AMD GPUs.
 
 ## Docker Image (TheRock build)
 
-| Distro       | Version | Image                                          | Status |
-| ------------ | ------- | ---------------------------------------------- | ------ |
-| Ubuntu 24.04 | 7.14    | `docker.io/mixa3607/rocm-gfx906:7.14-complete` | ✅      |
+| Distro       | ROCm | Build                        | Image                                          | Status |
+| ------------ | ---- | ---------------------------- | ---------------------------------------------- | ------ |
+| Ubuntu 24.04 | 7.14 | 7.14.0-gfx906+20260802001858 | `docker.io/mixa3607/rocm-gfx906:7.14-complete` | ✅      |
 
 ```bash
 docker pull docker.io/mixa3607/rocm-gfx906:7.14-complete
@@ -21,19 +21,19 @@ docker pull docker.io/mixa3607/rocm-gfx906:7.14-complete
 > **Warning:** Do not use the official AMD repositories together with the
 > gfx906 repository! This will cause multiple package conflicts.
 
-| Distro       | Version | Status |
-| ------------ | ------- | ------ |
-| Ubuntu 24.04 | 7.14    | ✅      |
+| Distro       | ROCm | Build                        | Status |
+| ------------ | ---- | ---------------------------- | ------ |
+| Ubuntu 24.04 | 7.14 | 7.14.0-gfx906+20260802001858 | ✅      |
 
 ### Add the repository (Ubuntu 24.04)
 
 ```bash
-apt-get update
-apt-get install ca-certificates curl -y
-install -m 0755 -d /etc/apt/keyrings
+sudo apt-get update
+sudo apt-get install ca-certificates curl -y
+sudo install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://s3.arkprojects.space/apt-gfx906/ubuntu/gpg -o /etc/apt/keyrings/apt-gfx906.asc
-chmod a+r /etc/apt/keyrings/apt-gfx906.asc
-tee /etc/apt/sources.list.d/gfx906.sources <<EOF
+sudo chmod a+r /etc/apt/keyrings/apt-gfx906.asc
+sudo tee /etc/apt/sources.list.d/gfx906.sources <<EOF
 Types: deb
 URIs: https://s3.arkprojects.space/apt-gfx906/ubuntu
 Suites: $(. /etc/os-release && echo "$VERSION_CODENAME")
@@ -41,6 +41,7 @@ Components: main
 Architectures: $(dpkg --print-architecture)
 Signed-By: /etc/apt/keyrings/apt-gfx906.asc
 EOF
+sudo apt-get update
 ```
 
 ### Install ROCm

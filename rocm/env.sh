@@ -3,13 +3,16 @@
 pushd $(dirname ${BASH_SOURCE[0]})
 
 # value from tag https://github.com/ROCm/TheRock/tags therock-<VERSION>
-if [ "$ROCM_THEROCK_VERSION" == "" ]; then
-  ROCM_THEROCK_VERSION=7.14
+if [ "$ROCM_VERSION" == "" ]; then
+  ROCM_VERSION=7.14
 fi
 
-# target arch
 if [ "$ROCM_ARCH" == "" ]; then
   ROCM_ARCH=gfx906
+fi
+
+if [ "$ROCM_BUILD" == "" ]; then
+  ROCM_BUILD=$ROCM_VERSION.0-$ROCM_ARCH+$REPO_GIT_REF
 fi
 
 # base image

@@ -75,13 +75,13 @@ CMAKE_ARGS=(
   -DTHEROCK_ENABLE_HIPFILE=OFF
   -DTHEROCK_ENABLE_MEDIA_LIBS=OFF
   # disable tests
-  -DTHEROCK_BUILD_TESTING=OFF
+  #-DTHEROCK_BUILD_TESTING=OFF
 )
 cmake -B ./build -G Ninja --fresh "${CMAKE_ARGS[@]}" .
 
 ########## Build ##########
 # Build code (10_000_000 years)
-cmake --build ./build -j 60
+cmake --build ./build
 
 # Build deb packages
 ./build_tools/packaging/linux/build_package.py \
@@ -92,3 +92,5 @@ cmake --build ./build -j 60
    --version-suffix $VERSION_SUFFIX \
    --pkg-type deb
 ```
+
+> Parallelism control https://github.com/ROCm/TheRock/blob/main/docs/environment_setup_guide.md#resource-utilization

@@ -1,17 +1,46 @@
 ARG ROCM_BASE_IMAGE="docker.io/library/ubuntu:24.04"
-ARG ROCM_ARCH="gfx906"
-ARG THEROCK_VERSION="7.14"
+ARG ROCM_BUILD="7.14.0-gfx906+20260802001858"
 
 ############# Base image #############
 FROM ${ROCM_BASE_IMAGE} AS rocm_base
-ARG ROCM_ARCH
-ARG THEROCK_VERSION
-RUN --mount=type=bind,src=/,target=/build-context \
-    apt-get update && apt-get install -y ca-certificates curl git && \
-    /build-context/setup-apt-gfx906.sh && \
-    apt-get update && apt-get install -y $(apt-cache pkgnames amdrocm | grep -E "${THEROCK_VERSION}(|-${ROCM_ARCH})\$") && \
-    rm -rf /var/lib/{apt,dpkg,cache,log}/ && \
-    true
+ARG ROCM_BUILD
+RUN <<EOF_DOCKERFILE
+apt-get update
+apt-get install -y ca-certificates curl git jq
+
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://s3.arkprojects.space/apt-gfx906/ubuntu/gpg -o /etc/apt/keyrings/apt-gfx906.asc
+chmod a+r /etc/apt/keyrings/apt-gfx906.asc
+tee /etc/apt/sources.list.d/gfx906.sources <<EOF
+Types: deb
+URIs: https://s3.arkprojects.space/apt-gfx906/ubuntu
+Suites: $(. /etc/os-release && echo "$VERSION_CODENAME")
+Components: main
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/apt-gfx906.asc
+EOF
+
+apt-get update
+ROCM_PACKAGES="$(
+  apt list | 
+  sed -nE 's|^(.+)/(.+) (.+) (.+)$|{ "name": "\1", "version": "\3" }|1p' | 
+  jq -r \
+    --arg prefix amdrocm \
+    --arg build "$ROCM_BUILD" \
+  '
+    select(.name | startswith($prefix)) | 
+    select(.version == $build) | 
+    .name + "=" + .version
+  ' 
+)"
+echo "Rocm packages to install ($(echo "$ROCM_PACKAGES" | wc -l)): \n$ROCM_PACKAGES" 
+apt-get install -y $ROCM_PACKAGES
+
+rm -rf /var/lib/apt/lists/*
+EOF_DOCKERFILE
 
 ############# Final image #############
 FROM rocm_base AS final
+ENV ROCM_PATH=/opt/rocm
+ENV PATH=/opt/rocm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+

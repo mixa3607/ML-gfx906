@@ -1,3 +1,4 @@
 #!/bin/bash
 
-export ROCM_THEROCK_VERSION="7.14"
+export ROCM_VERSION="7.14"
+export ROCM_BUILD="$ROCM_VERSION.0-gfx906+20260802001858"
