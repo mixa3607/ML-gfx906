@@ -8,7 +8,8 @@ ARG ROCM_BUILD
 ENV ROCM_PATH=/opt/rocm
 ENV PATH=/opt/rocm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-RUN <<EOF_DOCKERFILE
+RUN <<EOF_DOCKERFILE bash
+set -ex
 apt-get update
 apt-get install -y ca-certificates curl git jq
 
@@ -37,7 +38,12 @@ ROCM_PACKAGES="$(
     .name + "=" + .version
   ' 
 )"
-echo "Rocm packages to install ($(echo "$ROCM_PACKAGES" | wc -l)): \n$ROCM_PACKAGES" 
+ROCM_PACKAGES_COUNT="$(( $(echo "$ROCM_PACKAGES" | wc -l) -1 ))"
+if [ "$ROCM_PACKAGES_COUNT" -eq 0 ]; then
+  echo "No ROCm packages found. Exit 1"
+  exit 1
+fi
+echo "Rocm packages to install ($ROCM_PACKAGES_COUNT): \n$ROCM_PACKAGES" 
 apt-get install -y $ROCM_PACKAGES
 
 tee /etc/ld.so.conf.d/rocm.conf <<EOF
