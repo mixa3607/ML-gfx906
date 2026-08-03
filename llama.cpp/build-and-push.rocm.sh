@@ -9,6 +9,8 @@ echo "LLAMA_REPO:      ${LLAMA_REPO}"
 echo "LLAMA_BRANCH:    ${LLAMA_BRANCH}"
 echo "LLAMA_COMMIT:    ${LLAMA_COMMIT}"
 echo "LLAMA_CODE_PATH: ${LLAMA_CODE_PATH}"
+echo "ROCM_ARCH:       ${ROCM_ARCH}"
+echo "ROCM_VERSION:    ${LLAMA_ROCM_VERSION}"
 
 LLAMA_BASE_IMAGE="${ROCM_IMAGE}:${LLAMA_ROCM_VERSION}-complete"
 IMAGE_TAGS=(
@@ -47,6 +49,7 @@ done
 mkdir -p ./logs || true
 docker buildx build "${DOCKER_EXTRA_ARGS[@]}" --push \
   --build-arg ROCM_IMAGE="${LLAMA_BASE_IMAGE}" \
+  --build-arg ROCM_ARCH="${ROCM_ARCH}" \
   --build-arg LLAMACPP_REPO="${LLAMA_REPO}" \
   --build-arg LLAMACPP_BRANCH="${LLAMA_BRANCH}" \
   --build-arg LLAMACPP_COMMIT="${LLAMA_COMMIT}" \
