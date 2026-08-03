@@ -1,9 +1,9 @@
 name: Daily ROCm build
 
 on:
-  schedule:
-    - cron: "0 14 * * *"
   workflow_dispatch:
+  #schedule:
+  #  - cron: "0 14 * * *"
 
 jobs:
   build:

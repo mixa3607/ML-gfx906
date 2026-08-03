@@ -1,6 +1,5 @@
 #/bin/bash
-set -e
-set -o pipefail
+set -eo pipefail
 
 cd $(dirname $0)
 source ../env.sh "llama.cpp" "rocm" 

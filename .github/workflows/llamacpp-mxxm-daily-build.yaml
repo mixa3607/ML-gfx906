@@ -1,9 +1,9 @@
 name: Daily llama.cpp build (mxxm)
 
 on:
-  schedule:
-    - cron: "0 14 * * *"
   workflow_dispatch:
+  #schedule:
+  #  - cron: "0 14 * * *"
 
 jobs:
   build:
@@ -12,32 +12,37 @@ jobs:
       matrix:
         build:
           - rocm_version: "7.14"
-            release_tag: "20260802001858"
+            llamacpp_tag: ""
+            release_tag: "master"
     steps:
-      - name: Aggressive cleanup
-        uses: ./.github/workflows/actions/cleanup-space-action
-
       - name: Checkout repo
         uses: actions/checkout@v7
         with:
           ref: ${{ matrix.build.release_tag }}
 
+      - name: Aggressive cleanup
+        uses: ./.github/workflows/actions/cleanup-space-action
+
       - name: Install yq
-        uses: ./.github/workflows/actions/install-yq
+        uses: ./.github/workflows/actions/install-yq-action
 
       - name: Log in to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Run build script
+        env:
+          LLAMA_REPO: "https://github.com/mxxm-t/mx-llama.cpp.git"
+          LLAMA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
+          LLAMA_BRANCH: "${{ matrix.build.llamacpp_tag }}"
         run: |
           cd ./llama.cpp
-          export LLAMA_REPO=https://github.com/mxxm-t/mx-llama.cpp.git
-          export LLAMA_BRANCH="$(curl -L \
-            -H "Accept: application/vnd.github+json" \
-            'https://api.github.com/repos/mxxm-t/mx-llama.cpp/tags?per_page=1' | yq -r '.[0].name')"
-          export LLAMA_ROCM_VERSION='${{ matrix.build.rocm_version }}'
+          if [ "$LLAMA_BRANCH" == "" ]; then
+            export LLAMA_BRANCH="$(curl -L \
+              -H "Accept: application/vnd.github+json" \
+              'https://api.github.com/repos/mxxm-t/mx-llama.cpp/tags?per_page=1' | yq -r '.[0].name')"
+          fi
           export LLAMA_PRESET_NAME="${LLAMA_BRANCH}-rocm-${LLAMA_ROCM_VERSION}-mxxm"
           ./build-and-push.rocm.sh
