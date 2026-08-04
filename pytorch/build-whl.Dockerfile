@@ -1,8 +1,9 @@
 ARG BASE_ROCM_IMAGE="docker.io/mixa3607/rocm-gfx906:latest"
 ARG ROCM_ARCH="gfx906"
+ARG VERSION_SUFFIX=$ROCM_ARCH
 
 ARG PYTORCH_REPO="https://github.com/pytorch/pytorch.git"
-ARG PYTORCH_BRANCH="v2.7.1"
+ARG PYTORCH_BRANCH="v2.13.0"
 ARG PYTORCH_MAX_JOBS=""
 
 ARG PYTORCH_VISION_REPO="https://github.com/pytorch/vision.git"
@@ -33,25 +34,40 @@ ENV USE_MEM_EFF_ATTENTION=OFF
 
 ############# Build torch #############
 FROM rocm_base AS build_torch
-RUN pip install            \
-      'setuptools<=81.0.0' \
-      'setuptools_scm'     \
-      'wheel'              \
-      'packaging'          \
-      'cmake'              \
-      'ninja'              \
+RUN apt-get install -y \
+      pkg-config       \
+      libdrm-dev       
+RUN pip install        \
+      'setuptools'     \
+      'setuptools_scm' \
+      'wheel'          \
+      'packaging'      \
+      'cmake'          \
+      'ninja'          \
       'jinja2'             
 
 WORKDIR /build/pytorch
+
 ARG PYTORCH_REPO
 ARG PYTORCH_BRANCH
 RUN git clone --depth 1 --recurse-submodules --shallow-submodules --jobs 4 --branch "${PYTORCH_BRANCH}" "${PYTORCH_REPO}" .
 RUN pip install -r requirements.txt
 RUN python3 tools/amd_build/build_amd.py
+
 ARG PYTORCH_MAX_JOBS
-RUN MAX_JOBS=${PYTORCH_MAX_JOBS:-$(nproc)} \
+ARG VERSION_SUFFIX
+RUN MAX_JOBS="${PYTORCH_MAX_JOBS:-$(nproc)}"                        \
+    VERSION="$(cat version.txt | sed -E 's/(a|b|rc)[0-9]+$//1')"    \
+    PYTORCH_BUILD_VERSION="${VERSION}+${VERSION_SUFFIX}"            \
+    PYTORCH_BUILD_NUMBER="0"                                        \
     CMAKE_PREFIX_PATH=$(python3 -c 'import sys; print(sys.prefix)') \
     python3 setup.py bdist_wheel --dist-dir=/dist
+
+RUN VERSION="$(cat version.txt | sed -E 's/(a|b|rc)[0-9]+$//1')" && \
+    PYTORCH_BUILD_VERSION="${VERSION}+${VERSION_SUFFIX}"         && \
+    echo "$PYTORCH_BUILD_VERSION" > /torch-version.txt
+
+
 RUN pip install /dist/*.whl
 
 ############# Build vision #############
@@ -67,8 +83,12 @@ RUN if [ "${PYTORCH_VISION_BRANCH}" = "" ]; then \
     else \
       git clone --depth 1 --recurse-submodules --shallow-submodules --jobs 4 --branch "${PYTORCH_VISION_BRANCH}" "${PYTORCH_VISION_REPO}" . ; \
     fi
-RUN pip install 'setuptools<=81.0.0'
-RUN python3 setup.py bdist_wheel --dist-dir=/dist
+
+ARG VERSION_SUFFIX
+RUN VERSION="$(cat version.txt | sed -E 's/(a|b|rc)[0-9]+$//1')" \
+    BUILD_VERSION="${VERSION}+${VERSION_SUFFIX}"                 \
+    PYTORCH_VERSION="$(cat /torch-version.txt)"                  \
+    python3 setup.py bdist_wheel --dist-dir=/dist
 RUN pip install /dist/*.whl
 
 ############# Build audio #############
@@ -84,16 +104,16 @@ RUN if [ "${PYTORCH_AUDIO_BRANCH}" = "" ]; then \
     else \
       git clone --depth 1 --recurse-submodules --shallow-submodules --jobs 4 --branch "${PYTORCH_AUDIO_BRANCH}" "${PYTORCH_AUDIO_REPO}" . ; \
     fi
-RUN pip install 'setuptools<=81.0.0'
-RUN python3 setup.py bdist_wheel --dist-dir=/dist
+
+ARG VERSION_SUFFIX
+RUN VERSION="$(cat version.txt | sed -E 's/(a|b|rc)[0-9]+$//1')" \
+    BUILD_VERSION="${VERSION}+${VERSION_SUFFIX}"                 \
+    PYTORCH_VERSION="$(cat /torch-version.txt)"                  \
+    python3 setup.py bdist_wheel --dist-dir=/dist
 RUN pip install /dist/*.whl
 
-############# Install all #############
-FROM rocm_base AS final
-RUN --mount=type=bind,from=build_torch,src=/dist/,target=/dist_torch \
-    --mount=type=bind,from=build_vision,src=/dist/,target=/dist_vision \
-    --mount=type=bind,from=build_audio,src=/dist/,target=/dist_audio \
-    pip install /opt/rocm/share/amd_smi /dist_torch/*.whl /dist_vision/torchvision-*.whl /dist_audio/torchaudio-*.whl && \
-    true
-
-CMD ["/bin/bash"]
+############# Export whl #############
+FROM scratch AS final
+COPY --from=build_torch  /dist/* /
+COPY --from=build_vision /dist/* /
+COPY --from=build_audio  /dist/* /
