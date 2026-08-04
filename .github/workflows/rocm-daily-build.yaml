@@ -13,7 +13,7 @@ jobs:
         build:
           - rocm_version: "7.14"
             rocm_build: "7.14.0-gfx906+20260802001858"
-            release_tag: "master"
+            release_tag: "20260802001858"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v7
@@ -37,4 +37,4 @@ jobs:
           cd ./rocm
           export ROCM_VERSION="${{ matrix.build.rocm_version }}"
           export ROCM_BUILD="${{ matrix.build.rocm_build }}"
-          ./build-and-push.rocm.sh
+          ./build-and-push.image.sh

@@ -4,7 +4,7 @@ set -eo pipefail
 cd $(dirname $0)
 source ../env.sh "rocm-transfer-bench" "rocm"
 
-TB_VERSION_SUFFIX="${ROCM_ARCH}+${REPO_GIT_REF}"
+TB_VERSION_SUFFIX="${ROCM_VERSION}+${ROCM_ARCH}+${REPO_GIT_REF}"
 TB_BASE_IMAGE="${ROCM_IMAGE}:${ROCM_VERSION}-complete"
 TB_PACKAGES_DIR="$PWD/output/rocm${ROCM_VERSION}/tb-${TB_VERSION}-${TB_VERSION_SUFFIX}"
 
@@ -34,12 +34,14 @@ DOCKER_EXTRA_ARGS=(
   --build-arg "VERSION_SUFFIX=${TB_VERSION_SUFFIX}"
   --build-arg "TB_BRANCH=${TB_VERSION}"
   --progress plain
+  --pull
+  --target final 
+  --file ./build-deb.Dockerfile
+  --output "type=local,dest=$TB_PACKAGES_DIR"
 )
 
 mkdir -p ./logs || true
-docker buildx build --target final --file ./build-deb.Dockerfile \
-  --output "type=local,dest=$TB_PACKAGES_DIR" \
-  "${DOCKER_EXTRA_ARGS[@]}" ./build-context 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log
+docker buildx build "${DOCKER_EXTRA_ARGS[@]}" ./build-context 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log
 
 # Push packages
 if [ "$TB_PUSH" == "1" ]; then

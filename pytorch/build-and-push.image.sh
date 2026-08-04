@@ -62,6 +62,7 @@ DOCKER_EXTRA_ARGS+=(
   --progress plain
   --target final 
   --file ./build-image.Dockerfile
+  --pull
 )
 
 if [ "$TORCH_PUSH" == "1" ]; then

@@ -18,7 +18,7 @@ FROM ${BASE_ROCM_IMAGE} AS rocm_base
 RUN apt-get update && \
     apt-get install -y git python3 python3-venv python3-pip python3-dev && \
     python3 -m pip config set global.break-system-packages true && \
-    rm -rf /var/lib/{apt,dpkg,cache,log}/ && \
+    rm -rf /var/lib/apt/lists/* && \
     true
 
 # Set environment variables

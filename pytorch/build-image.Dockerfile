@@ -45,7 +45,7 @@ python3 -m pip config set global.break-system-packages true
 python3 -m pip install /opt/rocm/share/amd_smi
 pushd /packages; python3 -m pip install *.whl; popd
 
-rm -rf /var/lib/{apt,dpkg,cache,log}/
+rm -rf /var/lib/apt/lists/*
 EOF_DOCKERFILE
 
 CMD ["/bin/bash"]

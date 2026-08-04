@@ -10,10 +10,10 @@ ENV ROCM_PATH=/opt/rocm
 ENV PATH=/opt/rocm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 RUN --mount=type=bind,src=/,target=/build-context <<EOF_DOCKERFILE bash
-set -ex
+set -eo pipefail
 
 apt-get update
-apt-get install -y ca-certificates curl git jq
+apt-get install --no-install-recommends -y ca-certificates curl git jq
 /build-context/install-gfx906-repo.sh
 
 apt-get update

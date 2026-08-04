@@ -50,10 +50,6 @@ sudo apt-get update
 THEROCK_VERSION="7.14"
 ROCM_ARCH="gfx906"
 apt-get install -y amdrocm${THEROCK_VERSION}-${ROCM_ARCH}
-
-# Optional: install ROCm Validation Suite
-apt-get install -y rvc
-# See ../rocm-rvc for build-from-source instructions
 ```
 
 > See [BUILD-PACKAGES.md](./BUILD-PACKAGES.md) for instructions on building

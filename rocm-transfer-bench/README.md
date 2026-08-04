@@ -31,7 +31,6 @@ with `cpack`.
 
 - Docker with the `buildx` plugin
 - Access to the ROCm base image (see the [rocm subproject](../rocm/README.md))
-- `s3cmd` — only needed to push packages to the apt repository (not implemented yet)
 
 ### Presets
 

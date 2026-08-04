@@ -26,4 +26,9 @@ if [ "$COMFYUI_COMMIT" == "" ]; then
   COMFYUI_COMMIT=""
 fi
 
+# push image
+if [ "$COMFYUI_PUSH" == "" ]; then
+  COMFYUI_PUSH="1"
+fi
+
 popd

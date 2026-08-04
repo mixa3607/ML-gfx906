@@ -35,13 +35,16 @@ DOCKER_EXTRA_ARGS+=(
   --build-arg "PYTORCH_BRANCH=${TORCH_VERSION}"
   --build-arg "PYTORCH_VISION_BRANCH=${TORCH_VISION_VERSION}"
   --build-arg "MAX_JOBS=${TORCH_MAX_JOBS}"
+  --output "type=local,dest=$TORCH_PACKAGES_DIR"
   --progress plain
+  --target final
+  --file ./build-whl.Dockerfile
+  --pull
 )
 
 mkdir -p ./logs || true
-docker buildx build --target final --file ./build-whl.Dockerfile \
-  --output "type=local,dest=$TORCH_PACKAGES_DIR" \
-  "${DOCKER_EXTRA_ARGS[@]}" ./build-context 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log
+echo "Build PyTorch wheel packages"
+docker buildx build "${DOCKER_EXTRA_ARGS[@]}" ./build-context 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log
 
 if [ "$TORCH_PUSH" == "1" ]; then
   if ! [ -e ".venv/bin/activate" ]; then

@@ -2,6 +2,11 @@ name: Daily ComfyUI build
 
 on:
   workflow_dispatch:
+    inputs:
+      comfyui_tag:
+        description: "ComfyUI tag to build (empty = latest)"
+        required: false
+        default: ""
   #schedule:
   #  - cron: "0 14 * * *"
 
@@ -11,14 +16,10 @@ jobs:
     strategy:
       matrix:
         build:
-          #- rocm_version: "6.3.3"
-          #  pytorch_version: "2.11.0"
-          #  comfyui_tag: ""
-          #  release_tag: "master"
           - rocm_version: "7.14"
             pytorch_version: "2.13.0"
-            comfyui_tag: ""
-            release_tag: "master"
+            comfyui_tag: "${{ inputs.comfyui_tag }}"
+            release_tag: "20260802001858"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v7
@@ -49,4 +50,4 @@ jobs:
               -H "Accept: application/vnd.github+json" \
               'https://api.github.com/repos/Comfy-Org/ComfyUI/releases?per_page=1' | yq -r '.[0].tag_name')"
           fi
-          ./build-and-push.comfyui.sh
+          ./build-and-push.image.sh

@@ -27,7 +27,7 @@ ARG LLAMACPP_CODE_PATH
 # Clone
 WORKDIR /files/llamacpp
 RUN <<EOF_DOCKERFILE bash
-set -ex
+set -eo pipefail
 git clone --depth 1 --recurse-submodules --shallow-submodules --jobs 4 --branch ${LLAMACPP_BRANCH} ${LLAMACPP_REPO} .
 if [ "$LLAMACPP_COMMIT" != "" ]; then 
   git checkout "$LLAMACPP_COMMIT"

@@ -2,6 +2,11 @@ name: Daily llama.cpp build (ggml)
 
 on:
   workflow_dispatch:
+    inputs:
+      llamacpp_tag:
+        description: "llama.cpp tag to build (empty = latest)"
+        required: false
+        default: ""
   #schedule:
   #  - cron: "0 14 * * *"
 
@@ -12,11 +17,11 @@ jobs:
       matrix:
         build:
           - rocm_version: "7.14"
-            llamacpp_tag: "b10229"
-            release_tag: "master"
-          #- rocm_version: "6.3.3"
-          #  llamacpp_tag: ""
-          #  release_tag: "master"
+            llamacpp_tag: "${{ inputs.llamacpp_tag }}"
+            release_tag: "20260802001858"
+          - rocm_version: "6.3.3"
+            llamacpp_tag: "${{ inputs.llamacpp_tag }}"
+            release_tag: "20260802001858"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v7
@@ -48,4 +53,4 @@ jobs:
               'https://api.github.com/repos/ggml-org/llama.cpp/releases?per_page=1' | yq -r '.[0].tag_name')"
           fi
           export LLAMA_PRESET_NAME="${LLAMA_BRANCH}-rocm-${LLAMA_ROCM_VERSION}"
-          ./build-and-push.rocm.sh
+          ./build-and-push.image.sh

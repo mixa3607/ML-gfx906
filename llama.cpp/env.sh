@@ -21,4 +21,9 @@ if [ "$LLAMA_COMMIT" == "" ]; then
   LLAMA_COMMIT=""
 fi
 
+# push image
+if [ "$LLAMA_PUSH" == "" ]; then
+  LLAMA_PUSH="1"
+fi
+
 popd

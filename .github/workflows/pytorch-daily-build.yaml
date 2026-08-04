@@ -1,12 +1,7 @@
-name: Daily llama.cpp build (mxxm)
+name: Daily PyTorch build
 
 on:
   workflow_dispatch:
-    inputs:
-      llamacpp_tag:
-        description: "llama.cpp tag to build (empty = latest)"
-        required: false
-        default: ""
   #schedule:
   #  - cron: "0 14 * * *"
 
@@ -17,7 +12,7 @@ jobs:
       matrix:
         build:
           - rocm_version: "7.14"
-            llamacpp_tag: "${{ inputs.llamacpp_tag }}"
+            torch_version: "v2.13.0"
             release_tag: "20260802001858"
     steps:
       - name: Checkout repo
@@ -38,16 +33,8 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Run build script
-        env:
-          LLAMA_REPO: "https://github.com/mxxm-t/mx-llama.cpp.git"
-          LLAMA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
-          LLAMA_BRANCH: "${{ matrix.build.llamacpp_tag }}"
         run: |
-          cd ./llama.cpp
-          if [ "$LLAMA_BRANCH" == "" ]; then
-            export LLAMA_BRANCH="$(curl -L \
-              -H "Accept: application/vnd.github+json" \
-              'https://api.github.com/repos/mxxm-t/mx-llama.cpp/tags?per_page=1' | yq -r '.[0].name')"
-          fi
-          export LLAMA_PRESET_NAME="${LLAMA_BRANCH}-rocm-${LLAMA_ROCM_VERSION}-mxxm"
+          cd ./pytorch
+          export TORCH_ROCM_VERSION="${{ matrix.build.rocm_version }}"
+          export TORCH_VERSION="${{ matrix.build.torch_version }}"
           ./build-and-push.image.sh

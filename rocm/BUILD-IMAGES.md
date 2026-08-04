@@ -7,7 +7,7 @@ repository and published to Docker Hub.
 
 ```bash
 . preset.rocm-7.14.sh
-./build-and-push.rocm.sh
+./build-and-push.image.sh
 ```
 
 ## How It Works
@@ -24,7 +24,7 @@ running the script:
 | `ROCM_BASE_IMAGE`      | `docker.io/library/ubuntu:24.04`      | Base Docker image        |
 | `ROCM_IMAGE`           | `docker.io/mixa3607/rocm-gfx906`      | Destination image name   |
 
-The [`rocm.Dockerfile`](./rocm.Dockerfile) adds the APT repository (via
+The [`build-image.Dockerfile`](./build-image.Dockerfile) adds the APT repository (via
 [`setup-apt-gfx906.sh`](./build-context/setup-apt-gfx906.sh)), then installs all
 `amdrocm` packages matching the given version and architecture (`--target gfx906`).
 
@@ -43,12 +43,12 @@ Build for a specific TheRock version and push to a custom registry:
 ```bash
 export ROCM_THEROCK_VERSION=7.14
 export ROCM_IMAGE=my-registry.example.com/rocm-gfx906
-./build-and-push.rocm.sh
+./build-and-push.image.sh
 ```
 
 Build for a different Ubuntu base:
 
 ```bash
 export ROCM_BASE_IMAGE=docker.io/library/ubuntu:22.04
-./build-and-push.rocm.sh
+./build-and-push.image.sh
 ```

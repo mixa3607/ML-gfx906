@@ -24,9 +24,9 @@ The image is based on `docker.io/mixa3607/rocm-gfx906:<ver>-complete` and has
 
 ### Wheels
 
-| Torch  | ROCm | URL                                                                                    |
-| ------ | ---- | -------------------------------------------------------------------------------------- |
-| 2.13.0 | 7.14 | https://s3.arkprojects.space/py-gfx906/rocm7.14/torch-v2.13.0+gfx906.76e2dbe/index.txt |
+| Torch  | ROCm | URL                                                                                           |
+| ------ | ---- | --------------------------------------------------------------------------------------------- |
+| 2.13.0 | 7.14 | https://s3.arkprojects.space/py-gfx906/rocm7.14/torch-v2.13.0+gfx906.20260802001858/index.txt |
 
 Wheels are built for **Python 3.12** (`cp312`) on `linux_x86_64`.
 
@@ -176,10 +176,6 @@ export TORCH_MAX_JOBS=32
 ```
 
 See [`../.env-local.sh`](../.env-local.sh) for a ready-made local override file.
-
-## Docs
-
-https://arkprojects.space/wiki/AMD_GFX906
 
 ## Prebuilt images (Legacy builds)
 

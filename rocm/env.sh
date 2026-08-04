@@ -25,4 +25,9 @@ if [ "$ROCM_IMAGE" == "" ]; then
   ROCM_IMAGE=docker.io/mixa3607/rocm-gfx906
 fi
 
+# push image
+if [ "$ROCM_PUSH" == "" ]; then
+  ROCM_PUSH="1"
+fi
+
 popd
