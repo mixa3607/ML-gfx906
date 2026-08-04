@@ -1,5 +1,5 @@
 # ROCm Validation Suite (RVS)
-A system validation and diagnostics tool for monitoring, stress testing, detecting, and troubleshooting issues impacting AMD GPUs in high-performance computing environments
+A system validation and diagnostics tool for monitoring, stress testing, detecting, and troubleshooting issues impacting AMD GPUs in high-performance computing environments.
 
 - https://github.com/ROCm/ROCmValidationSuite/
 - https://rocm.docs.amd.com/projects/ROCmValidationSuite/en/latest/
@@ -39,69 +39,70 @@ rvs -c ~/gst-581Tflops-4K4K8K-rand-bf16.conf
 apt-get install -y rocm-validation-suite
 ```
 
-## Build from Source
+## Build deb package from source
 
-### OS Preparation
+The build happens inside `docker buildx` on top of the ROCm base image
+(`docker.io/mixa3607/rocm-gfx906:<ver>-complete`) and produces a deb package
+with `make package` (CPack).
 
-```bash
-# Remove ROCm paths from env if installed
-export PATH=$(echo $PATH | tr ':' '\n' | grep -v "/opt/rocm" | paste -sd:)
-unset ROCM_PATH
-unset ROCM_DIR
-unset HIP_PATH
-unset HIP_DIR
+| Artifact | Script                    | Dockerfile               |
+| -------- | ------------------------- | ------------------------ |
+| deb      | `./build-and-push.deb.sh` | `./build-deb.Dockerfile` |
 
-# Install Ubuntu dependencies
-apt update
-apt install -y \
-  gfortran git ninja-build jq \
-  cmake g++ pkg-config \
-  xxd automake libtool \
-  python3-venv python3-dev \
-  libegl1-mesa-dev texinfo \
-  bison flex libsqlite3-dev \
-  curl make debhelper libpci3 \
-  libpci-dev doxygen unzip \
-  libyaml-cpp-dev libnuma-dev
-```
+### Prerequisites
 
-### Build deb package
+- Docker with the `buildx` plugin
+- Access to the ROCm base image (see the [rocm subproject](../rocm/README.md))
+
+### Presets
+
+Preset files set the ROCm and ROCmValidationSuite versions. Source one, then run
+the build script:
 
 ```bash
-########## Clone ##########
-mkdir $HOME/rocm/code/ROCmValidationSuite
-cd $HOME/rocm/code/ROCmValidationSuite
-git clone https://github.com/ROCm/ROCmValidationSuite.git .
-
-########## Configure ##########
-# Packages dest dir
-PACKAGES_DIR="$HOME/rocm/packages/rvs"
-# Path to rocm when package installed
-ROCM_DEPS_DIR="/opt/rocm"
-# Try search current rocm bins
-ROCM_BUILD_DIR="$HOME/rocm/code/TheRock/build/dist/rocm"
-if ! [ -d "$ROCM_BUILD_DIR" ]; then
-  ROCM_BUILD_DIR="$ROCM_DEPS_DIR"
-fi
-if ! [ -d "$ROCM_BUILD_DIR" ]; then
-  echo "ROCm directory not found"
-fi
-# Version suffix e.g. v0.1.2-<VERSION_SUFFIX>
-VERSION_SUFFIX=gfx906+20260802001858
-
-CPACK_DEBIAN_PACKAGE_RELEASE="$VERSION_SUFFIX" \
-cmake -B ./build --fresh \
-  -DROCM_PATH="$ROCM_BUILD_DIR" \
-  -DCMAKE_PREFIX_PATH="$ROCM_BUILD_DIR" \
-  -DCMAKE_INSTALL_PREFIX="$ROCM_DEPS_DIR" \
-  -DCPACK_PACKAGING_INSTALL_PREFIX="$ROCM_DEPS_DIR" \
-  -DCPACK_PACKAGE_DIRECTORY="$PACKAGES_DIR" \
-  -DRVS_BUILD_TESTS=OFF
-
-########## Build ##########
-# Build code
-cmake --build ./build
-
-# Build deb packages
-pushd ./build; make package; popd
+. preset.rvs-rocm-7.14.sh
+./build-and-push.deb.sh
 ```
+
+### Build variables
+
+Defaults come from [`env.sh`](./env.sh) and [`../rocm/env.sh`](../rocm/env.sh).
+Export any variable to override it.
+
+| Variable          | Default                          | Description                                   |
+| ----------------- | -------------------------------- | --------------------------------------------- |
+| `RVS_VERSION`     | `main`                           | ROCmValidationSuite git tag/branch            |
+| `RVS_PUSH`        | `1`                              | Push deb package to the apt repository        |
+| `RVS_FORCE_BUILD` | *(unset)*                        | Set to `1` to rebuild even if output exists   |
+| `ROCM_VERSION`    | `7.14`                           | ROCm version of the base image                |
+| `ROCM_ARCH`       | `gfx906`                         | Target GPU architecture                       |
+| `ROCM_IMAGE`      | `docker.io/mixa3607/rocm-gfx906` | ROCm base image name                          |
+| `REPO_GIT_REF`    | *(git tag, else short SHA)*      | Build revision appended to the version suffix |
+
+The version suffix is `<arch>+<ref>` (e.g. `gfx906+76e2dbe`), so the package is
+named `rocm-validation-suite-<ver>+gfx906.<ref>.deb`.
+
+The build log is saved to `./logs/build_<timestamp>.log`.
+
+### Build the deb package
+
+```bash
+. preset.rvs-rocm-7.14.sh
+./build-and-push.deb.sh
+```
+
+The script clones the repo inside the container (checkout `$RVS_VERSION`),
+configures and builds it, and writes the deb package to
+`output/rocm<ver>/rvs-<suffix>/`. The build is skipped if the directory already
+exists, unless `RVS_FORCE_BUILD=1`.
+
+### Push
+
+`RVS_PUSH` controls pushing the package to the apt repository:
+
+- `1` (default) — not implemented yet
+- `0` — keep the package locally
+
+## Docs
+
+https://arkprojects.space/wiki/AMD_GFX906
