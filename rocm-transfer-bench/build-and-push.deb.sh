@@ -43,6 +43,6 @@ docker buildx build --target final --file ./build-deb.Dockerfile \
 
 # Push packages
 if [ "$TB_PUSH" == "1" ]; then
-  echo "not implemented"
-  exit 1
+  SCP_DST="k3s@kube-worker6.arkprojects.lan:/home/k3s/rocm-dev-packages/rocm-transfer-bench"
+  find "$TB_PACKAGES_DIR" -maxdepth 1 -mindepth 1 -name "*.deb" | xargs -I {} scp {} "$SCP_DST" 
 fi

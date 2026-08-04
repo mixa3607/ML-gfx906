@@ -33,8 +33,8 @@ DOCKER_EXTRA_ARGS+=(
   --build-arg "ROCM_ARCH=${ROCM_ARCH}"
   --build-arg "VERSION_SUFFIX=${TORCH_VERSION_SUFFIX}"
   --build-arg "PYTORCH_BRANCH=${TORCH_VERSION}"
-  --build-arg "PYTORCH_MAX_JOBS=${TORCH_MAX_JOBS}"
   --build-arg "PYTORCH_VISION_BRANCH=${TORCH_VISION_VERSION}"
+  --build-arg "MAX_JOBS=${TORCH_MAX_JOBS}"
   --progress plain
 )
 
@@ -57,6 +57,3 @@ if [ "$TORCH_PUSH" == "1" ]; then
   cat "$TORCH_PACKAGES_DIR/index.txt"
   s3cmd put -r "$ROCM_PACKAGES_DIR" "s3://py-gfx906/" --acl-public
 fi
-
-
-

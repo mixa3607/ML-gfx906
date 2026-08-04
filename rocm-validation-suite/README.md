@@ -95,14 +95,3 @@ The script clones the repo inside the container (checkout `$RVS_VERSION`),
 configures and builds it, and writes the deb package to
 `output/rocm<ver>/rvs-<suffix>/`. The build is skipped if the directory already
 exists, unless `RVS_FORCE_BUILD=1`.
-
-### Push
-
-`RVS_PUSH` controls pushing the package to the apt repository:
-
-- `1` (default) — not implemented yet
-- `0` — keep the package locally
-
-## Docs
-
-https://arkprojects.space/wiki/AMD_GFX906

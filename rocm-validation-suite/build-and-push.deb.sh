@@ -41,5 +41,6 @@ docker buildx build --target final --file ./build-deb.Dockerfile \
 
 # Push packages
 if [ "$RVS_PUSH" == "1" ]; then
-  echo "not implemented"
+  SCP_DST="k3s@kube-worker6.arkprojects.lan:/home/k3s/rocm-dev-packages/rocm-validation-suite"
+  find "$RVS_PACKAGES_DIR" -maxdepth 1 -mindepth 1 -name "*.deb" | xargs -I {} scp {} "$SCP_DST" 
 fi

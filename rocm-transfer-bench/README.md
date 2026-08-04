@@ -74,10 +74,3 @@ The script clones the repo inside the container (checkout `$TB_VERSION`),
 configures and builds it, and writes the deb package to
 `output/rocm<ver>/tb-<suffix>/`. The build is skipped if the directory already
 exists, unless `TB_FORCE_BUILD=1`.
-
-### Push
-
-`TB_PUSH` controls pushing the package to the apt repository:
-
-- `1` (default) — not implemented yet
-- `0` — keep the package locally

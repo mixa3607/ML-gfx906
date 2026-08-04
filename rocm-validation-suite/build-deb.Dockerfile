@@ -5,7 +5,6 @@ ARG RVS_BRANCH="main"
 
 ############# Build deb #############
 FROM ${BASE_ROCM_IMAGE} AS build_deb
-ARG VERSION_SUFFIX
 ARG RVS_REPO
 ARG RVS_BRANCH
 
@@ -27,6 +26,7 @@ WORKDIR /build/ROCmValidationSuite
 RUN git clone --depth 1 --branch "${RVS_BRANCH}" "${RVS_REPO}" .
 
 # Configure
+ARG VERSION_SUFFIX
 RUN CPACK_DEBIAN_PACKAGE_RELEASE="${VERSION_SUFFIX}" \
     cmake -B ./build --fresh \
       -DROCM_PATH="${ROCM_PATH}" \

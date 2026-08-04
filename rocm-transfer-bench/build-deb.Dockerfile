@@ -7,9 +7,6 @@ ARG TB_BRANCH="main"
 
 ############# Build deb #############
 FROM ${BASE_ROCM_IMAGE} AS build_deb
-ARG ROCM_ARCH
-ARG ROCM_VERSIOIN
-ARG VERSION_SUFFIX
 ARG TB_REPO
 ARG TB_BRANCH
 
@@ -32,6 +29,9 @@ WORKDIR /build/TransferBench
 RUN git clone --depth 1 --branch "${TB_BRANCH}" "${TB_REPO}" .
 
 # Configure
+ARG ROCM_ARCH
+ARG ROCM_VERSIOIN
+ARG VERSION_SUFFIX
 RUN cmake -B ./build --fresh \
       -DCMAKE_BUILD_TYPE="Release" \
       -DROCM_PATH="${ROCM_PATH}" \
@@ -49,7 +49,7 @@ RUN cmake -B ./build --fresh \
       .
 
 # Build code
-RUN cmake --build ./build
+RUN cmake --build ./build -j$(nproc)
 
 # Build deb packages
 RUN cd ./build && cpack -G DEB
