@@ -1,8 +1,13 @@
 # ROCm TransferBench (TB)
-TransferBench is a utility for benchmarking simultaneous memory transfers between user-specified devices (CPUs, GPUs, and NICs).
+
+TransferBench is a utility for benchmarking simultaneous memory transfers between
+user-specified devices (CPUs, GPUs, and NICs).
 
 - https://github.com/ROCm/TransferBench
 - https://rocm.docs.amd.com/projects/TransferBench
+
+All deb packages are built for the deprecated `gfx906` GPU architecture and are
+**not** compatible with other AMD GPUs.
 
 ## Install from APT
 
@@ -12,78 +17,67 @@ TransferBench is a utility for benchmarking simultaneous memory transfers betwee
 apt-get install -y amdrocm-transferbench
 ```
 
-## Build from Source
+## Build deb package from source
 
-### OS Preparation
+The build happens inside `docker buildx` on top of the ROCm base image
+(`docker.io/mixa3607/rocm-gfx906:<ver>-complete`) and produces a deb package
+with `cpack`.
 
-```bash
-# Remove ROCm paths from env if installed
-export PATH=$(echo $PATH | tr ':' '\n' | grep -v "/opt/rocm" | paste -sd:)
-unset ROCM_PATH
-unset ROCM_DIR
-unset HIP_PATH
-unset HIP_DIR
+| Artifact | Script                    | Dockerfile               |
+| -------- | ------------------------- | ------------------------ |
+| deb      | `./build-and-push.deb.sh` | `./build-deb.Dockerfile` |
 
-# Install Ubuntu dependencies
-apt update
-apt install -y \
-  gfortran git ninja-build jq \
-  cmake g++ pkg-config \
-  xxd automake libtool \
-  python3-venv python3-dev \
-  libegl1-mesa-dev texinfo \
-  bison flex libsqlite3-dev \
-  curl make debhelper libpci3 \
-  libpci-dev doxygen unzip \
-  libyaml-cpp-dev libnuma-dev \
-  rdma-core libibverbs-dev ibverbs-utils
-```
+### Prerequisites
 
-### Build deb package
+- Docker with the `buildx` plugin
+- Access to the ROCm base image (see the [rocm subproject](../rocm/README.md))
+- `s3cmd` — only needed to push packages to the apt repository (not implemented yet)
+
+### Presets
+
+Preset files set the ROCm and TransferBench versions. Source one, then run the
+build script:
 
 ```bash
-########## Clone ##########
-mkdir $HOME/rocm/code/TransferBench
-cd $HOME/rocm/code/TransferBench
-git clone https://github.com/ROCm/TransferBench.git .
-
-########## Configure ##########
-# Packages dest dir
-PACKAGES_DIR="$HOME/rocm/packages/tb"
-# Path to rocm when package installed
-ROCM_DEPS_DIR="/opt/rocm"
-# Try search current rocm bins
-ROCM_BUILD_DIR="$HOME/rocm/code/TheRock/build/dist/rocm"
-if ! [ -d "$ROCM_BUILD_DIR" ]; then
-  ROCM_BUILD_DIR="$ROCM_DEPS_DIR"
-fi
-if ! [ -d "$ROCM_BUILD_DIR" ]; then
-  echo "ROCm directory not found"
-fi
-# Version suffix e.g. v0.1.2-<VERSION_SUFFIX>
-VERSION_SUFFIX=gfx906+20260802001858
-
-CMAKE_ARGS=(
-  -DCMAKE_BUILD_TYPE="Release"
-  -DROCM_PATH="${ROCM_BUILD_DIR}"
-  -DROCM_MAJOR_VERSION="${ROCM_MAJOR}"
-  -DHIP_PLATFORM=amd
-  -DCMAKE_INSTALL_PREFIX="${ROCM_DEPS_DIR}"
-  -DCPACK_PACKAGING_INSTALL_PREFIX="${ROCM_DEPS_DIR}"
-  -DCPACK_PACKAGE_DIRECTORY="$PACKAGES_DIR"
-  -DCMAKE_VERBOSE_MAKEFILE=ON
-  -DBUILD_RELOCATABLE_PACKAGE=ON
-  -DBUILD_LOCAL_GPU_TARGET_ONLY=OFF
-  -DENABLE_MPI_COMM=OFF
-  -DGPU_TARGETS="gfx906"
-  -DTRANSFERBENCH_PACKAGE_RELEASE="${VERSION_SUFFIX}"
-)
-cmake -B ./build --fresh "${CMAKE_ARGS[@]}" .
-
-########## Build ##########
-# Build code
-cmake --build ./build
-
-# Build deb packages
-pushd ./build; cpack -G DEB; popd
+. preset.tb-rocm-7.14.sh
+./build-and-push.deb.sh
 ```
+
+### Build variables
+
+Defaults come from [`env.sh`](./env.sh) and [`../rocm/env.sh`](../rocm/env.sh).
+Export any variable to override it.
+
+| Variable         | Default                          | Description                                   |
+| ---------------- | -------------------------------- | --------------------------------------------- |
+| `TB_VERSION`     | `main`                           | TransferBench git tag/branch to build         |
+| `TB_PUSH`        | `1`                              | Push deb package to the apt repository        |
+| `TB_FORCE_BUILD` | *(unset)*                        | Set to `1` to rebuild even if output exists   |
+| `ROCM_VERSION`   | `7.14`                           | ROCm version of the base image                |
+| `ROCM_ARCH`      | `gfx906`                         | Target GPU architecture                       |
+| `ROCM_IMAGE`     | `docker.io/mixa3607/rocm-gfx906` | ROCm base image name                          |
+| `REPO_GIT_REF`   | *(git tag, else short SHA)*      | Build revision appended to the version suffix |
+
+The version suffix is `<arch>+<ref>` (e.g. `gfx906+76e2dbe`), so the package is
+named `amdrocm-transferbench-<ver>+gfx906.<ref>.deb`.
+
+The build log is saved to `./logs/build_<timestamp>.log`.
+
+### Build the deb package
+
+```bash
+. preset.tb-rocm-7.14.sh
+./build-and-push.deb.sh
+```
+
+The script clones the repo inside the container (checkout `$TB_VERSION`),
+configures and builds it, and writes the deb package to
+`output/rocm<ver>/tb-<suffix>/`. The build is skipped if the directory already
+exists, unless `TB_FORCE_BUILD=1`.
+
+### Push
+
+`TB_PUSH` controls pushing the package to the apt repository:
+
+- `1` (default) — not implemented yet
+- `0` — keep the package locally
