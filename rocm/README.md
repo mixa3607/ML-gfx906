@@ -57,7 +57,10 @@ apt-get install -y amdrocm${THEROCK_VERSION}-${ROCM_ARCH}
 
 ## Docker Image (Legacy build)
 
-> Legacy build files deleted in `20260802001858` release
+> Legacy builds (pre-TheRock) are **no longer supported** starting from the
+> `20260802001858` release. If you are stuck on an old build (e.g. `6.3.3`)
+> because of issues with the new TheRock builds, please
+> [open an issue](https://github.com/mixa3607/ML-gfx906/issues).
 
 | Distro       | Version | Image                                           | Status |
 | ------------ | ------- | ----------------------------------------------- | ------ |

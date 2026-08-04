@@ -39,10 +39,10 @@ Download the wheels directly and install them:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-curl -O https://s3.arkprojects.space/py-gfx906/rocm7.14/torch-v2.13.0+gfx906.76e2dbe/index.txt
+curl -O https://s3.arkprojects.space/py-gfx906/rocm7.14/torch-v2.13.0+gfx906.20260802001858/index.txt
 # install every file listed in index.txt
 while read -r f; do
-  curl -O "https://s3.arkprojects.space/py-gfx906/rocm7.14/torch-v2.13.0+gfx906.76e2dbe/$f"
+  curl -O "https://s3.arkprojects.space/py-gfx906/rocm7.14/torch-v2.13.0+gfx906.20260802001858/$f"
 done < index.txt
 pip install *.whl
 ```

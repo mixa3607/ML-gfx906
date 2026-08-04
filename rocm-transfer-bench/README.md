@@ -38,7 +38,7 @@ Preset files set the ROCm and TransferBench versions. Source one, then run the
 build script:
 
 ```bash
-. preset.tb-rocm-7.14.sh
+. preset.v1.69.01-rocm-7.14.sh
 ./build-and-push.deb.sh
 ```
 
@@ -57,15 +57,15 @@ Export any variable to override it.
 | `ROCM_IMAGE`     | `docker.io/mixa3607/rocm-gfx906` | ROCm base image name                          |
 | `REPO_GIT_REF`   | *(git tag, else short SHA)*      | Build revision appended to the version suffix |
 
-The version suffix is `<arch>+<ref>` (e.g. `gfx906+76e2dbe`), so the package is
-named `amdrocm-transferbench-<ver>+gfx906.<ref>.deb`.
+The version suffix is `<rocm>+<arch>+<ref>` (e.g. `7.14+gfx906+76e2dbe`), so the
+package is named `amdrocm-transferbench-<ver>+gfx906.<ref>.deb`.
 
 The build log is saved to `./logs/build_<timestamp>.log`.
 
 ### Build the deb package
 
 ```bash
-. preset.tb-rocm-7.14.sh
+. preset.v1.69.01-rocm-7.14.sh
 ./build-and-push.deb.sh
 ```
 

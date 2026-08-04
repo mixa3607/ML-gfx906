@@ -2,12 +2,17 @@
 
 ![GitHub License](https://img.shields.io/github/license/mixa3607/ML-gfx906?style=flat-square)
 [<img src="https://img.shields.io/badge/discord-gfx906-green?style=flat-square">](https://discord.gg/ZbXbcqJct)
-[<img src="https://img.shields.io/badge/docs-arkprojects.space%2Fwiki-green?style=flat-square">]([https://arkprojects.space/wiki/AMD_GFX906](https://arkprojects.space/wiki/AMD_GFX906))
+[<img src="https://img.shields.io/badge/docs-arkprojects.space%2Fwiki-green?style=flat-square">](https://arkprojects.space/wiki/AMD_GFX906)
 
 ## Docs
 https://arkprojects.space/wiki/AMD_GFX906
 
 ## Prebuild images
+
+> Legacy builds (pre-TheRock) are **no longer supported** starting from the
+> `20260802001858` release. If you are stuck on an old build (e.g. `6.3.3`)
+> because of issues with the new TheRock builds, please
+> [open an issue](https://github.com/mixa3607/ML-gfx906/issues).
 
 ### Images
 
@@ -28,7 +33,6 @@ https://arkprojects.space/wiki/AMD_GFX906
 ```mermaid
 flowchart TD
   ubuntu[docker.io/library/ubuntu] --> rocm[docker.io/mixa3607/rocm-gfx906]
-  rocm --> rocm-rvc[docker.io/mixa3607/rvc-gfx906]
   rocm --> llama[docker.io/mixa3607/llama.cpp-gfx906]
   rocm --> torch[docker.io/mixa3607/pytorch-gfx906]
   torch --> comfyui[docker.io/mixa3607/comfyui-gfx906]

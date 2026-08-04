@@ -19,20 +19,9 @@ https://arkprojects.space/wiki/AMD_GFX906/vllm/run
 
 ## Build
 
-See build vars in `./env.sh`. You also may use presetis `./preset.*.sh`. Exec `./build-and-push.vllm.sh`:
+See build vars in `./env.sh`. You also may use presets `./preset.*.sh`. Exec `./build-and-push.vllm.sh`:
 
 ```bash
-$ . preset.0.11.0-rocm-6.3.3.sh
+$ . preset.0.20.1-rocm-6.3.3-aiinfos.sh
 $ ./build-and-push.vllm.sh
-~/REPOS/mixa3607/llama.cpp-gfx906/rocm ~/REPOS/mixa3607/llama.cpp-gfx906/rocm
-~/REPOS/mixa3607/llama.cpp-gfx906/rocm
-~/REPOS/mixa3607/llama.cpp-gfx906/llama.cpp ~/REPOS/mixa3607/llama.cpp-gfx906/rocm
-~/REPOS/mixa3607/llama.cpp-gfx906/rocm
-~/REPOS/mixa3607/llama.cpp-gfx906/comfyui ~/REPOS/mixa3607/llama.cpp-gfx906/rocm
-~/REPOS/mixa3607/llama.cpp-gfx906/rocm
-~/REPOS/mixa3607/llama.cpp-gfx906/vllm ~/REPOS/mixa3607/llama.cpp-gfx906/rocm
-~/REPOS/mixa3607/llama.cpp-gfx906/rocm
-#0 building with "remote" instance using remote driver
-#...............
-#14 DONE 583.8s
 ```

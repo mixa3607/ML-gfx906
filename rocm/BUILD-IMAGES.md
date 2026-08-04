@@ -19,20 +19,20 @@ running the script:
 
 | Variable               | Default                                | Description              |
 | ---------------------- | -------------------------------------- | ------------------------ |
-| `ROCM_THEROCK_VERSION` | `7.14`                                 | TheRock release version  |
+| `ROCM_VERSION`         | `7.14`                                 | TheRock release version  |
 | `ROCM_ARCH`            | `gfx906`                               | Target GPU architecture  |
 | `ROCM_BASE_IMAGE`      | `docker.io/library/ubuntu:24.04`      | Base Docker image        |
 | `ROCM_IMAGE`           | `docker.io/mixa3607/rocm-gfx906`      | Destination image name   |
 
 The [`build-image.Dockerfile`](./build-image.Dockerfile) adds the APT repository (via
-[`setup-apt-gfx906.sh`](./build-context/setup-apt-gfx906.sh)), then installs all
+[`install-gfx906-repo.sh`](./build-context/install-gfx906-repo.sh)), then installs all
 `amdrocm` packages matching the given version and architecture (`--target gfx906`).
 
 Two tags are created:
 
-- `$ROCM_IMAGE:$ROCM_THEROCK_VERSION-complete-$REPO_GIT_REF` — pinned to build
+- `$ROCM_IMAGE:$ROCM_VERSION-complete-$REPO_GIT_REF` — pinned to build
   revision
-- `$ROCM_IMAGE:$ROCM_THEROCK_VERSION-complete` — floating tag for the version
+- `$ROCM_IMAGE:$ROCM_VERSION-complete` — floating tag for the version
 
 The build log is saved to `./logs/build_<timestamp>.log`.
 
@@ -41,7 +41,7 @@ The build log is saved to `./logs/build_<timestamp>.log`.
 Build for a specific TheRock version and push to a custom registry:
 
 ```bash
-export ROCM_THEROCK_VERSION=7.14
+export ROCM_VERSION=7.14
 export ROCM_IMAGE=my-registry.example.com/rocm-gfx906
 ./build-and-push.image.sh
 ```
