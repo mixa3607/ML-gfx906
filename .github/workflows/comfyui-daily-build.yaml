@@ -15,8 +15,8 @@ jobs:
           #  pytorch_version: "2.11.0"
           #  comfyui_tag: ""
           #  release_tag: "master"
-          - rocm_version: "7.2.1"
-            pytorch_version: "2.11.0"
+          - rocm_version: "7.14"
+            pytorch_version: "2.13.0"
             comfyui_tag: ""
             release_tag: "master"
     steps:

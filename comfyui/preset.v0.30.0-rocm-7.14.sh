@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export COMFYUI_ROCM_VERSION='7.14'
+export COMFYUI_PYTORCH_VERSION='2.13.0'
+export COMFYUI_BRANCH='v0.30.0'

@@ -20,7 +20,7 @@ https://arkprojects.space/wiki/AMD_GFX906
 | PyTorch      | PyTorch images        | OK                                                                                                                                                           | [readme](./pytorch/README.md)               |
 | llama.cpp    | llama.cpp images      | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/llamacpp-ggml-daily-build.yaml?style=flat-square) | [readme](./llama.cpp/README.md)             |
 | ComfyUI      | ComfyUI images        | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/comfyui-daily-build.yaml?style=flat-square)       | [readme](./comfyui/README.md)               |
-| vLLM         | vLLM images           | OK                                                                                                                                                           | [readme](./vllm-v2/README.md)               |
+| vLLM         | vLLM images           | Paused                                                                                                                                                       | [readme](./vllm-v2/README.md)               |
 
 
 ### Deps graph
