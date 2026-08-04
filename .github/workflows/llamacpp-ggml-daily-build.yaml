@@ -7,8 +7,8 @@ on:
         description: "llama.cpp tag to build (empty = latest)"
         required: false
         default: ""
-  #schedule:
-  #  - cron: "0 14 * * *"
+  schedule:
+    - cron: "0 14 * * *"
 
 jobs:
   build:
