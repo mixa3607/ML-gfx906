@@ -45,6 +45,9 @@ jobs:
           LLAMA_REPO: "https://github.com/mxxm-t/mx-llama.cpp.git"
           LLAMA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
           LLAMA_BRANCH: "${{ matrix.build.llamacpp_tag }}"
+          LLAMA_IS_RELEASE: "1"
+          LLAMA_CMAKE_HIP_FLAGS: "-mllvm -amdgpu-sched-strategy=max-ilp"
+          LLAMA_PATCH: "mxxm-gfx906-kcase.patch"
         run: |
           cd ./llama.cpp
           if [ "$LLAMA_BRANCH" == "" ]; then

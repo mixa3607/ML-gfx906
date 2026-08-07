@@ -5,10 +5,16 @@ cd $(dirname $0)
 source ../env.sh "llama.cpp" "rocm"
 
 LLAMA_BASE_IMAGE="${ROCM_IMAGE}:${LLAMA_ROCM_VERSION}-complete"
-IMAGE_TAGS=(
-  "${LLAMA_IMAGE}:${LLAMA_PRESET_NAME}-${REPO_GIT_REF}"
-  "${LLAMA_IMAGE}:${LLAMA_PRESET_NAME}"
-)
+if [ "$LLAMA_IS_RELEASE" == "1" ]; then
+  IMAGE_TAGS=(
+    "${LLAMA_IMAGE}:${LLAMA_PRESET_NAME}-${REPO_GIT_REF}"
+    "${LLAMA_IMAGE}:${LLAMA_PRESET_NAME}"
+  )
+else
+  IMAGE_TAGS=(
+    "${LLAMA_IMAGE}:${LLAMA_PRESET_NAME}-${REPO_GIT_REF}-pre"
+  )
+fi
 
 declare -A IMAGE_ANNOTATIONS
 IMAGE_ANNOTATIONS["org.opencontainers.image.created"]="$(date --rfc-3339=seconds)"
@@ -19,12 +25,16 @@ IMAGE_ANNOTATIONS["org.opencontainers.image.title"]="Llama.cpp gfx906"
 IMAGE_ANNOTATIONS["org.opencontainers.image.base.name"]="${LLAMA_BASE_IMAGE}"
 
 echo "Start building llama.cpp image..."
-echo "LLAMA_REPO:      ${LLAMA_REPO}"
-echo "LLAMA_BRANCH:    ${LLAMA_BRANCH}"
-echo "LLAMA_COMMIT:    ${LLAMA_COMMIT}"
-echo "LLAMA_CODE_PATH: ${LLAMA_CODE_PATH}"
-echo "ROCM_ARCH:       ${ROCM_ARCH}"
-echo "ROCM_VERSION:    ${LLAMA_ROCM_VERSION}"
+echo "LLAMA_REPO:       ${LLAMA_REPO}"
+echo "LLAMA_BRANCH:     ${LLAMA_BRANCH}"
+echo "LLAMA_COMMIT:     ${LLAMA_COMMIT}"
+echo "LLAMA_CODE_PATH:  ${LLAMA_CODE_PATH}"
+echo "LLAMA_PATCH:      ${LLAMA_PATCH}"
+echo "ROCM_ARCH:        ${ROCM_ARCH}"
+echo "ROCM_VERSION:     ${LLAMA_ROCM_VERSION}"
+echo "CMAKE_HIP_FLAGS:  ${LLAMA_CMAKE_HIP_FLAGS}"
+echo "CCACHE_MAXSIZE:   ${LLAMA_CCACHE_MAXSIZE}"
+echo "IS_RELEASE:       ${LLAMA_IS_RELEASE}"
 
 DOCKER_EXTRA_ARGS=()
 for (( i=0; i<${#IMAGE_TAGS[@]}; i++ )); do
@@ -53,6 +63,9 @@ DOCKER_EXTRA_ARGS+=(
   --build-arg LLAMACPP_BRANCH="${LLAMA_BRANCH}"
   --build-arg LLAMACPP_COMMIT="${LLAMA_COMMIT}"
   --build-arg LLAMACPP_CODE_PATH="${LLAMA_CODE_PATH}"
+  --build-arg LLAMACPP_PATCH="${LLAMA_PATCH}"
+  --build-arg CMAKE_HIP_FLAGS="${LLAMA_CMAKE_HIP_FLAGS}"
+  --build-arg CCACHE_MAXSIZE="${LLAMA_CCACHE_MAXSIZE}"
   --progress plain
   --target final 
   --file ./build-image.Dockerfile
