@@ -45,6 +45,7 @@ jobs:
           LLAMA_REPO: "https://github.com/mxxm-t/mx-llama.cpp.git"
           LLAMA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
           LLAMA_BRANCH: "${{ matrix.build.llamacpp_tag }}"
+          LLAMA_IS_RELEASE: "1"
         run: |
           cd ./llama.cpp
           if [ "$LLAMA_BRANCH" == "" ]; then

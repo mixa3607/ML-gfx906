@@ -1,0 +1,1 @@
+-mllvm -amdgpu-sched-strategy=iterative-maxocc 

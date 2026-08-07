@@ -1,0 +1,57 @@
+diff --git a/ggml/src/ggml-cuda/mmq.cuh b/ggml/src/ggml-cuda/mmq.cuh
+index 2eb15fd..e0fd72a 100644
+--- a/ggml/src/ggml-cuda/mmq.cuh
++++ b/ggml/src/ggml-cuda/mmq.cuh
+@@ -219,6 +219,7 @@ struct ggml_cuda_mmq_config {
+ 
+ #include "mmq-config-cdna.cuh"
+ #include "mmq-config-rdna2.cuh"
++#include "mmq-config-gfx906.cuh"
+ #include "mmq-config-rdna3.cuh"
+ #include "mmq-config-rdna3-5.cuh"
+ #include "mmq-config-rdna4.cuh"
+@@ -227,6 +228,9 @@ struct ggml_cuda_mmq_config {
+ 
+ static __host__ ggml_cuda_mmq_config ggml_cuda_mmq_get_config(const ggml_type type, const int J, const bool fallback, const int cc) {
+     if (GGML_CUDA_CC_IS_AMD(cc)) {
++        if (cc == GGML_CUDA_CC_VEGA20) {
++            return ggml_cuda_mmq_get_config_gfx906(type, J, fallback);
++        }
+         if (GGML_CUDA_CC_IS_CDNA(cc)) {
+             return ggml_cuda_mmq_get_config_cdna(type, J, fallback);
+         }
+@@ -252,7 +256,9 @@ static __host__ ggml_cuda_mmq_config ggml_cuda_mmq_get_config(const ggml_type ty
+ 
+ static constexpr __device__ ggml_cuda_mmq_config ggml_cuda_mmq_get_config(ggml_type type, int J, bool fallback) {
+ #ifdef GGML_USE_HIP
+-#ifdef CDNA
++#ifdef __gfx906__
++    return ggml_cuda_mmq_get_config_gfx906(type, J, fallback);
++#elif defined(CDNA)
+     return ggml_cuda_mmq_get_config_cdna(type, J, fallback);
+ #elif defined(RDNA4)
+     return ggml_cuda_mmq_get_config_rdna4(type, J, fallback);
+@@ -1470,6 +1476,7 @@ template <ggml_type type, bool fallback>
+ void mul_mat_q_switch_J(ggml_backend_cuda_context & ctx, const mmq_args & args, cudaStream_t stream) {
+     const int    id    = ggml_cuda_get_device();
+     const int    cc    = ggml_cuda_info().devices[id].cc;
++    const int    nsm   = ggml_cuda_info().devices[id].nsm;
+     const size_t smpbo = ggml_cuda_info().devices[id].smpbo;
+ 
+     int J_best        = 0;
+@@ -1487,6 +1494,15 @@ void mul_mat_q_switch_J(ggml_backend_cuda_context & ctx, const mmq_args & args,
+ 
+         const int ntiles_x = (args.ncols_max + config.J - 1) / config.J;
+ 
++        // gfx906: do not widen J past 64 if the tile grid can no longer fill the CUs.
++        // This is what regresses row-sharded (-sm tensor) and MoE (tiny per-expert) shapes.
++        if (cc == GGML_CUDA_CC_VEGA20 && config.J > 64) {
++            if (args.ids_dst != nullptr) { continue; }
++            const int nty = (args.nrows_x + config.I - 1) / config.I;
++            const long total_tiles = (long) nty * ntiles_x * args.nchannels_y * args.nsamples_y;
++            if (total_tiles < nsm) { continue; }
++        }
++
+         if (ntiles_x < ntiles_J_best) {
+             J_best = J;
+             ntiles_J_best = ntiles_x;

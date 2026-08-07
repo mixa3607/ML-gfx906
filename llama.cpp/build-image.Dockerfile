@@ -5,6 +5,9 @@ ARG LLAMACPP_REPO="https://github.com/ggml-org/llama.cpp.git"
 ARG LLAMACPP_BRANCH="master"
 ARG LLAMACPP_COMMIT=""
 ARG LLAMACPP_CODE_PATH=""
+ARG LLAMACPP_PATCH="empty.patch"
+ARG CMAKE_HIP_FLAGS=""
+ARG CCACHE_MAXSIZE="2G"
 
 ############# Base image #############
 FROM ${ROCM_IMAGE} AS rocm_base
@@ -17,12 +20,13 @@ RUN apt-get update && \
 ARG ROCM_ARCH
 ENV AMDGPU_TARGETS=${ROCM_ARCH}
 
-############# Clone repos #############
+############# Prepare code #############
 FROM rocm_base AS files_llamacpp
 ARG LLAMACPP_REPO
 ARG LLAMACPP_BRANCH
 ARG LLAMACPP_COMMIT
 ARG LLAMACPP_CODE_PATH
+ARG LLAMACPP_PATCH
 
 # Clone
 WORKDIR /files/llamacpp
@@ -37,6 +41,10 @@ if [ "$LLAMACPP_CODE_PATH" != "" ]; then
 fi
 EOF_DOCKERFILE
 
+# patch
+COPY ./patch/${LLAMACPP_PATCH} ./${LLAMACPP_PATCH}
+RUN git apply ./${LLAMACPP_PATCH} --allow-empty && rm ./${LLAMACPP_PATCH}
+
 FROM files_llamacpp AS files_llamacpp_python
 WORKDIR /files/llamacpp-python
 RUN cp -r /files/llamacpp/requirements.txt /files/llamacpp/requirements /files/llamacpp/gguf-py /files/llamacpp/*.py /files/llamacpp-python
@@ -44,27 +52,44 @@ RUN find .
 
 ############# Build #############
 FROM rocm_base AS build_llamacpp
-RUN apt-get install -y build-essential cmake libssl-dev
+ARG CMAKE_HIP_FLAGS
+ARG CCACHE_MAXSIZE
+RUN apt-get install -y build-essential cmake libssl-dev ccache
 COPY --from=files_llamacpp /files/llamacpp /build/llamacpp
 WORKDIR /build/llamacpp
 
+ENV CCACHE_DIR=/ccache
+ENV CCACHE_MAXSIZE=${CCACHE_MAXSIZE}
+
 # https://github.com/ggml-org/llama.cpp/blob/a6206958d28a064564ef132091b9c617ae005f49/ggml/CMakeLists.txt#L221
-RUN HIPCXX="$(hipconfig -l)/clang" HIP_PATH="$(hipconfig -R)" \
-    cmake -S . -B build \
-        -DGGML_HIP=ON                 \
-        -DGGML_HIP_GRAPHS=ON          \
-        -DGGML_HIP_RCCL=ON            \
-        -DAMDGPU_TARGETS="$ROCM_ARCH" \
-        -DGGML_BACKEND_DL=ON          \
-        -DGGML_RPC=ON                 \
-        -DGGML_CPU_ALL_VARIANTS=ON    \
-        -DGGML_AVX512=ON              \
-        -DGGML_AVX512_VBMI=ON         \
-        -DGGML_AVX512_VNNI=ON         \
-        -DGGML_AVX512_BF16=ON         \
-        -DCMAKE_BUILD_TYPE=Release    \
-        -DLLAMA_BUILD_TESTS=OFF       \
-    && cmake --build build --config Release -j$(nproc)
+RUN --mount=type=cache,target=/ccache <<EOF_DOCKERFILE bash
+set -eo pipefail
+
+export HIPCXX="$(hipconfig -l)/clang"
+export HIP_PATH="$(hipconfig -R)"
+
+CMAKE_ARGS=(
+  -DGGML_HIP=ON
+  -DGGML_HIP_GRAPHS=ON
+  -DGGML_HIP_RCCL=ON
+  -DAMDGPU_TARGETS="${ROCM_ARCH}"
+  -DGGML_BACKEND_DL=ON
+  -DGGML_RPC=ON
+  -DGGML_CPU_ALL_VARIANTS=ON
+  -DGGML_AVX512=ON
+  -DGGML_AVX512_VBMI=ON
+  -DGGML_AVX512_VNNI=ON
+  -DGGML_AVX512_BF16=ON
+  -DCMAKE_BUILD_TYPE=Release
+  -DCMAKE_C_COMPILER_LAUNCHER=ccache
+  -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+  -DLLAMA_BUILD_TESTS=OFF
+  -DCMAKE_HIP_FLAGS="${CMAKE_HIP_FLAGS}"
+)
+
+cmake -S . -B build "\${CMAKE_ARGS[@]}"
+cmake --build build --config Release -j$(nproc)
+EOF_DOCKERFILE
 RUN mkdir -p /builded && cp -r ./build/bin/* .devops/tools.sh /builded
 
 ############# Copy and install all #############

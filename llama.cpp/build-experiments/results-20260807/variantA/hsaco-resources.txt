@@ -1,0 +1,32 @@
+
+=== type 8, J=64, fallback=false ===
+    .name:           _ZL9mul_mat_qIL9ggml_type8ELi64ELb0EEvPKcPKiS4_S4_PfS5_PKf15HIP_vector_typeIjLj3EEiiiiiS9_S9_iiiS9_S9_iiiS9_
+    .private_segment_fixed_size: 0
+    .sgpr_count:     44
+    .vgpr_count:     73
+    .wavefront_size: 64
+    .name:           _ZL24mul_mat_q_stream_k_fixupIL9ggml_type8ELi64ELb0EEvPKiS2_PfS3_15HIP_vector_typeIjLj3EEiiiS5_iS5_iS5_
+
+=== type 12, J=64, fallback=false ===
+    .name:           _ZL9mul_mat_qIL9ggml_type12ELi64ELb0EEvPKcPKiS4_S4_PfS5_PKf15HIP_vector_typeIjLj3EEiiiiiS9_S9_iiiS9_S9_iiiS9_
+    .private_segment_fixed_size: 64
+    .sgpr_count:     72
+    .vgpr_count:     128
+    .wavefront_size: 64
+    .name:           _ZL24mul_mat_q_stream_k_fixupIL9ggml_type12ELi64ELb0EEvPKiS2_PfS3_15HIP_vector_typeIjLj3EEiiiS5_iS5_iS5_
+
+=== type 13, J=64, fallback=false ===
+    .name:           _ZL9mul_mat_qIL9ggml_type13ELi64ELb0EEvPKcPKiS4_S4_PfS5_PKf15HIP_vector_typeIjLj3EEiiiiiS9_S9_iiiS9_S9_iiiS9_
+    .private_segment_fixed_size: 68
+    .sgpr_count:     64
+    .vgpr_count:     128
+    .wavefront_size: 64
+    .name:           _ZL24mul_mat_q_stream_k_fixupIL9ggml_type13ELi64ELb0EEvPKiS2_PfS3_15HIP_vector_typeIjLj3EEiiiS5_iS5_iS5_
+
+=== type 14, J=64, fallback=false ===
+    .name:           _ZL9mul_mat_qIL9ggml_type14ELi64ELb0EEvPKcPKiS4_S4_PfS5_PKf15HIP_vector_typeIjLj3EEiiiiiS9_S9_iiiS9_S9_iiiS9_
+    .private_segment_fixed_size: 0
+    .sgpr_count:     56
+    .vgpr_count:     126
+    .wavefront_size: 64
+    .name:           _ZL24mul_mat_q_stream_k_fixupIL9ggml_type14ELi64ELb0EEvPKiS2_PfS3_15HIP_vector_typeIjLj3EEiiiS5_iS5_iS5_

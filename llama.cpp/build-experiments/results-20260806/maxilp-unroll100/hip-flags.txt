@@ -1,0 +1,1 @@
+-mllvm -amdgpu-sched-strategy=max-ilp -mllvm -unroll-threshold=100 

@@ -1,0 +1,14 @@
+Get:1 https://s3.arkprojects.space/apt-gfx906/ubuntu noble InRelease [4311 B]
+Get:2 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:3 https://s3.arkprojects.space/apt-gfx906/ubuntu noble/main amd64 Packages [30.2 kB]
+Hit:4 http://archive.ubuntu.com/ubuntu noble InRelease
+Get:5 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:6 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:7 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1522 kB]
+Get:8 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1470 kB]
+Get:9 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1756 kB]
+Get:10 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [2140 kB]
+Get:11 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [1145 kB]
+Get:12 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1643 kB]
+Fetched 10.1 MB in 2s (6005 kB/s)
+Reading package lists...

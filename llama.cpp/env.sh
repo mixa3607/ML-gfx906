@@ -20,6 +20,18 @@ fi
 if [ "$LLAMA_COMMIT" == "" ]; then
   LLAMA_COMMIT=""
 fi
+if [ "$LLAMA_CMAKE_HIP_FLAGS" == "" ]; then
+  LLAMA_CMAKE_HIP_FLAGS=""
+fi
+if [ "$LLAMA_CCACHE_MAXSIZE" == "" ]; then
+  LLAMA_CCACHE_MAXSIZE="2G"
+fi
+if [ "$LLAMA_IS_RELEASE" == "" ]; then
+  LLAMA_IS_RELEASE="0"
+fi
+if [ "$LLAMA_PATCH" == "" ]; then 
+  LLAMA_PATCH="empty.patch"
+fi
 
 # push image
 if [ "$LLAMA_PUSH" == "" ]; then

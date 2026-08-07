@@ -1,0 +1,9 @@
+- model_type
+- build
+- split_mode
+- devices
+- n_prompt
+- n_gen
+- n_depth
+- avg_ts
+- stddev_ts

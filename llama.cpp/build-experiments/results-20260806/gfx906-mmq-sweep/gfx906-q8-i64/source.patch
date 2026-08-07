@@ -1,0 +1,33 @@
+diff --git a/ggml/src/ggml-cuda/mmq.cuh b/ggml/src/ggml-cuda/mmq.cuh
+index 2eb15fd..21bdf58 100644
+--- a/ggml/src/ggml-cuda/mmq.cuh
++++ b/ggml/src/ggml-cuda/mmq.cuh
+@@ -219,6 +219,7 @@ struct ggml_cuda_mmq_config {
+ 
+ #include "mmq-config-cdna.cuh"
+ #include "mmq-config-rdna2.cuh"
++#include "mmq-config-gfx906.cuh"
+ #include "mmq-config-rdna3.cuh"
+ #include "mmq-config-rdna3-5.cuh"
+ #include "mmq-config-rdna4.cuh"
+@@ -227,6 +228,9 @@ struct ggml_cuda_mmq_config {
+ 
+ static __host__ ggml_cuda_mmq_config ggml_cuda_mmq_get_config(const ggml_type type, const int J, const bool fallback, const int cc) {
+     if (GGML_CUDA_CC_IS_AMD(cc)) {
++        if (cc == GGML_CUDA_CC_VEGA20) {
++            return ggml_cuda_mmq_get_config_gfx906(type, J, fallback);
++        }
+         if (GGML_CUDA_CC_IS_CDNA(cc)) {
+             return ggml_cuda_mmq_get_config_cdna(type, J, fallback);
+         }
+@@ -252,7 +256,9 @@ static __host__ ggml_cuda_mmq_config ggml_cuda_mmq_get_config(const ggml_type ty
+ 
+ static constexpr __device__ ggml_cuda_mmq_config ggml_cuda_mmq_get_config(ggml_type type, int J, bool fallback) {
+ #ifdef GGML_USE_HIP
+-#ifdef CDNA
++#ifdef __gfx906__
++    return ggml_cuda_mmq_get_config_gfx906(type, J, fallback);
++#elif defined(CDNA)
+     return ggml_cuda_mmq_get_config_cdna(type, J, fallback);
+ #elif defined(RDNA4)
+     return ggml_cuda_mmq_get_config_rdna4(type, J, fallback);
