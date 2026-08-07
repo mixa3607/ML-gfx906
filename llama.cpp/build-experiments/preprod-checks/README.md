@@ -14,6 +14,18 @@ curl https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -L 
   --n-prompt 2048 --ubatch-size 2048 --batch-size 2048 \
   --n-gen 256 --n-depth 0,16384,32768 --split-mode layer,tensor \
   --device rocm0,rocm0/rocm1,rocm0/rocm1/rocm2/rocm3 \
-  --output jsonl | tee "gemma.txt" | yq -p=json
+  --output jsonl | tee "gemma1.txt" | yq -p=json
+./llama-bench \
+  --hf-repo bartowski/google_gemma-4-26B-A4B-it-GGUF:Q6_K --flash-attn 1 \
+  --n-prompt 2048 --ubatch-size 2048 --batch-size 2048 \
+  --n-gen 256 --n-depth 0,16384,32768 --split-mode tensor \
+  --device rocm0,rocm0/rocm1/rocm2/rocm3 \
+  --output jsonl | tee "gemma2.txt" | yq -p=json
+./llama-bench \
+  --hf-repo unsloth/gemma-4-31B-it-GGUF:Q8_K_XL --flash-attn 1 \
+  --n-prompt 2048 --ubatch-size 2048 --batch-size 2048 \
+  --n-gen 256 --n-depth 0,16384,32768 --split-mode tensor \
+  --device rocm0/rocm1/rocm2/rocm3 \
+  --output jsonl | tee "gemma3.txt" | yq -p=json
 ```
 
