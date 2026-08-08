@@ -19,7 +19,7 @@ jobs:
           - rocm_version: "7.14"
             pytorch_version: "2.13.0"
             comfyui_tag: "${{ inputs.comfyui_tag }}"
-            release_tag: "20260802001858"
+            release_tag: "20260808180342"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v7
@@ -43,11 +43,10 @@ jobs:
           COMFYUI_PYTORCH_VERSION: "${{ matrix.build.pytorch_version }}"
           COMFYUI_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
           COMFYUI_BRANCH: "${{ matrix.build.comfyui_tag }}"
+          COMFYUI_REPO: "https://github.com/Comfy-Org/ComfyUI.git"
         run: |
           cd ./comfyui
           if [ "$COMFYUI_BRANCH" == "" ]; then
-            export COMFYUI_BRANCH="$(curl -L \
-              -H "Accept: application/vnd.github+json" \
-              'https://api.github.com/repos/Comfy-Org/ComfyUI/releases?per_page=1' | yq -r '.[0].tag_name')"
+            export COMFYUI_BRANCH="$("$GITHUB_WORKSPACE/.github/scripts/github_get_last" --type release --repo "$COMFYUI_REPO")"
           fi
           ./build-and-push.image.sh
