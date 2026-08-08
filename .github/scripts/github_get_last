@@ -3,12 +3,13 @@
 set -euo pipefail
 
 usage() {
-  echo "Usage: $0 --type tag|release --repo https://github.com/OWNER/REPOSITORY.git" >&2
+  echo "Usage: $0 --type tag|release --repo https://github.com/OWNER/REPOSITORY.git [--github-token TOKEN]" >&2
   exit 2
 }
 
 type=""
 repo=""
+github_token=""
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -20,6 +21,11 @@ while [ "$#" -gt 0 ]; do
     --repo)
       [ "$#" -ge 2 ] || usage
       repo="$2"
+      shift 2
+      ;;
+    --github-token)
+      [ "$#" -ge 2 ] || usage
+      github_token="$2"
       shift 2
       ;;
     *)
@@ -49,7 +55,13 @@ if [ -z "$repo" ] || [ "$repository" = "$repo" ] || ! [[ "$repository" =~ ^[^/]+
   exit 2
 fi
 
-curl --fail --silent --show-error --location \
-  -H "Accept: application/vnd.github+json" \
-  -H "X-GitHub-Api-Version: 2022-11-28" \
+headers=(
+  -H "Accept: application/vnd.github+json"
+  -H "X-GitHub-Api-Version: 2022-11-28"
+)
+if [ -n "$github_token" ]; then
+  headers+=(-H "Authorization: Bearer $github_token")
+fi
+
+curl --fail --silent --show-error --location "${headers[@]}" \
   "https://api.github.com/repos/$repository/$endpoint" | yq -er "$query"

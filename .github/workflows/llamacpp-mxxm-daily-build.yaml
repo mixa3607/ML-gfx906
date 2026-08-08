@@ -47,10 +47,12 @@ jobs:
           LLAMA_BRANCH: "${{ matrix.build.llamacpp_tag }}"
           LLAMA_IS_RELEASE: "1"
           LLAMA_CMAKE_HIP_FLAGS: "-mllvm -amdgpu-sched-strategy=max-ilp"
+          GITHUB_TOKEN: "${{ github.token }}"
         run: |
           cd ./llama.cpp
           if [ "$LLAMA_BRANCH" == "" ]; then
-            export LLAMA_BRANCH="$("$GITHUB_WORKSPACE/.github/scripts/github_get_last" --type tag --repo "$LLAMA_REPO")"
+            LLAMA_BRANCH="$("$GITHUB_WORKSPACE/.github/scripts/github_get_last" --type tag --repo "$LLAMA_REPO" --github-token "$GITHUB_TOKEN")"
+            export LLAMA_BRANCH
           fi
           export LLAMA_PRESET_NAME="${LLAMA_BRANCH}-rocm-${LLAMA_ROCM_VERSION}-mxxm"
           ./build-and-push.image.sh
