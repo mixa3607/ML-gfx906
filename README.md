@@ -5,6 +5,7 @@
 [<img src="https://img.shields.io/badge/docs-arkprojects.space%2Fwiki-green?style=flat-square">](https://arkprojects.space/wiki/AMD_GFX906)
 
 ## Docs
+
 https://arkprojects.space/wiki/AMD_GFX906
 
 ## Prebuild images
@@ -16,18 +17,18 @@ https://arkprojects.space/wiki/AMD_GFX906
 
 ### Images
 
-| Name         | About                 | Status                                                                                                                                                       | Docs                                        |
-| ------------ | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
-| ROCm         | ROCm patched images   | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/rocm-daily-build.yaml?style=flat-square)          | [readme](./rocm/README.md)                  |
-| ROCm RVS     | ROCm Validation Suite | OK                                                                                                                                                           | [readme](./rocm-validation-suite/README.md) |
-| ROCm TB      | ROCm TransferBench    | OK                                                                                                                                                           | [readme](./rocm-transfer-bench/README.md)   |
-| AMD Memory Tweak | MI50 HBM2 timing tool | OK                                                                                                                                                        | [readme](./amd-memory-tweak/README.md)      |
-| ROCm tensile | gfx906 tensile files  | Deprecated                                                                                                                                                   | [readme](./rocm-tensile/readme.md)          |
-| PyTorch      | PyTorch images        | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/pytorch-daily-build.yaml?style=flat-square)       | [readme](./pytorch/README.md)               |
-| llama.cpp    | llama.cpp images      | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/llamacpp-ggml-daily-build.yaml?style=flat-square) | [readme](./llama.cpp/README.md)             |
-| ComfyUI      | ComfyUI images        | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/comfyui-daily-build.yaml?style=flat-square)       | [readme](./comfyui/README.md)               |
-| vLLM         | vLLM images           | Paused                                                                                                                                                       | [readme](./vllm-v2/README.md)               |
-
+| Name             | About                   | Status                                                                                                                                                       | Docs                                        |
+| ---------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| ROCm             | ROCm patched images     | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/rocm-daily-build.yaml?style=flat-square)          | [readme](./rocm/README.md)                  |
+| ROCm RVS         | ROCm Validation Suite   | OK                                                                                                                                                           | [readme](./rocm-validation-suite/README.md) |
+| ROCm TB          | ROCm TransferBench      | OK                                                                                                                                                           | [readme](./rocm-transfer-bench/README.md)   |
+| AMD Memory Tweak | AMD HBM2 timing tool    | OK                                                                                                                                                           | [readme](./amd-memory-tweak/README.md)      |
+| AMD Tuning       | Tool for AMD GPU tuning | OK                                                                                                                                                           | [readme](./amd-tuning/README.md)            |
+| ROCm tensile     | gfx906 tensile files    | Deprecated                                                                                                                                                   | [readme](./rocm-tensile/readme.md)          |
+| PyTorch          | PyTorch images          | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/pytorch-daily-build.yaml?style=flat-square)       | [readme](./pytorch/README.md)               |
+| llama.cpp        | llama.cpp images        | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/llamacpp-ggml-daily-build.yaml?style=flat-square) | [readme](./llama.cpp/README.md)             |
+| ComfyUI          | ComfyUI images          | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/comfyui-daily-build.yaml?style=flat-square)       | [readme](./comfyui/README.md)               |
+| vLLM             | vLLM images             | Paused                                                                                                                                                       | [readme](./vllm-v2/README.md)               |
 
 ### Deps graph
 
