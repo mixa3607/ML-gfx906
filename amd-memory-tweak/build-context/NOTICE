@@ -1,0 +1,12 @@
+AMD Memory Tweak
+
+Original authors:
+  Elio VP <elio@eliovp.be>
+  A. Solodovnikov
+
+Original project:
+  https://github.com/Eliovp/amdmemorytweak
+
+The vendored AmdMemTweak.cpp is based on AMD Memory Tweak Linux CLI 0.1.9 and
+retains its original copyright and license notice. ML-gfx906 adds Vega20 MI50
+device ID 0x66a1 support and a read-only debugfs fallback.
