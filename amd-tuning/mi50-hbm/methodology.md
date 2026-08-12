@@ -71,7 +71,7 @@ The initial search changed parameters in this order:
 The extended search established:
 
 - UCLK 1180 MHz ran normally, while 1185 MHz and above produced a repeatable
-  throughput cliff around 27.5 t/s without reporting ECC errors.
+  throughput cliff around 27.5 t/s without reporting ECC errors (drops to 300 MHz).
 - RCDRD 13 completed the short benchmark without reported errors.
 - RCDRD 12 produced 156000 corrected UMC errors and was rejected immediately.
 - RFCPB below 100 did not improve throughput; 100 was retained.

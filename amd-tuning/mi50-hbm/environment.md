@@ -28,12 +28,12 @@ HBM vendor reported by tools: Hynix HBM2
 
 Device mapping:
 
-| ROCm/tool index | PCI BDF | DRM card | debugfs DRI |
-|---:|---|---|---:|
-| 0 | `0000:33:00.0` | `card4` | 4 / 131 |
-| 1 | `0000:36:00.0` | `card5` | 5 / 132 |
-| 2 | `0000:4d:00.0` | `card6` | 6 / 133 |
-| 3 | `0000:50:00.0` | `card7` | 7 / 134 |
+| ROCm/tool index | PCI BDF        | DRM card | debugfs DRI |
+| --------------: | -------------- | -------- | ----------: |
+|               0 | `0000:33:00.0` | `card4`  |     4 / 131 |
+|               1 | `0000:36:00.0` | `card5`  |     5 / 132 |
+|               2 | `0000:4d:00.0` | `card6`  |     6 / 133 |
+|               3 | `0000:50:00.0` | `card7`  |     7 / 134 |
 
 The numeric debugfs aliases can differ after reboot. Resolve them through
 `/sys/kernel/debug/dri/*/name` rather than assuming fixed numbers.

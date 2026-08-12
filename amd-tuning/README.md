@@ -40,9 +40,8 @@ project, for example:
 yq (https://github.com/mikefarah/yq/) version v4.53.3
 ```
 
-`amd-tuning-deps-installer` invokes `install-yq.sh`, which dynamically installs
-the latest GitHub release and verifies its published SHA-256 checksum. No
-version is pinned.
+`amd-tuning-deps-installer` dynamically installs the latest GitHub release and
+verifies its published SHA-256 checksum. No version is pinned.
 
 ## Profile format
 
