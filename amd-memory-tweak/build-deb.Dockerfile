@@ -31,7 +31,7 @@ RUN set -eux; \
       'Architecture: amd64' \
       'Depends: libc6, libgcc-s1, libpci3, libstdc++6' \
       'Recommends: python3' \
-      'Maintainer: ML-gfx906 project' \
+      'Maintainer: mixa3607 (ML-gfx906 project)' \
       'Homepage: https://github.com/Eliovp/amdmemorytweak' \
       'Description: AMD HBM2 memory timing tool with MI50 support' \
       ' Patched AMD Memory Tweak CLI with Vega20 MI50 device support and' \
