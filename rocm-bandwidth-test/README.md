@@ -28,8 +28,8 @@ rocm-bandwidth-test --help
 ## Build deb package from source
 
 The build runs in `docker buildx` on
-`docker.io/mixa3607/rocm-gfx906:<ver>-complete`. It clones upstream `master`
-and creates a deb with CPack.
+`docker.io/mixa3607/rocm-gfx906:<ver>-complete`. It clones upstream `develop`
+with its required submodules and creates a relocatable deb with CPack.
 
 | Artifact | Script | Dockerfile |
 | --- | --- | --- |
@@ -43,7 +43,7 @@ and creates a deb with CPack.
 ### Build
 
 ```bash
-. preset.master-rocm-7.14.sh
+. preset.devel-rocm-7.14.sh
 ./build-and-push.deb.sh
 ```
 
@@ -58,7 +58,7 @@ Defaults come from [`env.sh`](./env.sh) and [`../rocm/env.sh`](../rocm/env.sh).
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `RBT_VERSION` | `master` | ROCm Bandwidth Test git tag or branch |
+| `RBT_VERSION` | `develop` | ROCm Bandwidth Test git tag or branch |
 | `RBT_PUSH` | `0` | Set to `1` to upload the deb to the apt repository |
 | `RBT_FORCE_BUILD` | *(unset)* | Set to `1` to rebuild an existing output directory |
 | `ROCM_VERSION` | `7.14` | ROCm version of the base image |

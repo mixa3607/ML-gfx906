@@ -3,7 +3,7 @@ ARG ROCM_ARCH="gfx906"
 ARG ROCM_VERSION="7.14"
 ARG VERSION_SUFFIX="gfx906"
 ARG RBT_REPO="https://github.com/ROCm/rocm_bandwidth_test.git"
-ARG RBT_BRANCH="master"
+ARG RBT_BRANCH="develop"
 
 ############# Build deb #############
 FROM ${BASE_ROCM_IMAGE} AS build_deb
@@ -22,7 +22,8 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /build/rocm_bandwidth_test
 
-RUN git clone --branch "${RBT_BRANCH}" "${RBT_REPO}" .
+RUN git clone --depth 1 --recurse-submodules --jobs 8 \
+      --branch "${RBT_BRANCH}" "${RBT_REPO}" .
 
 RUN CPACK_DEBIAN_PACKAGE_RELEASE="${VERSION_SUFFIX}" \
     CPACK_RPM_PACKAGE_RELEASE="${VERSION_SUFFIX}" \
@@ -31,16 +32,17 @@ RUN CPACK_DEBIAN_PACKAGE_RELEASE="${VERSION_SUFFIX}" \
       -DCMAKE_PREFIX_PATH="${ROCM_PATH}" \
       -DROCM_PATH="${ROCM_PATH}" \
       -DROCM_MAJOR_VERSION="${ROCM_VERSION%%.*}" \
+      -DAMD_APP_BUILD_RELOCATABLE_PACKAGE=ON \
+      -DAMD_APP_STANDALONE_BUILD_PACKAGE=OFF \
+      -DAMD_APP_ROCM_BUILD_PACKAGE=OFF \
       -DCMAKE_INSTALL_PREFIX="/opt/rocm/extras-${ROCM_VERSION%%.*}" \
       -DCPACK_PACKAGING_INSTALL_PREFIX="/opt/rocm/extras-${ROCM_VERSION%%.*}" \
       -DCMAKE_INSTALL_RPATH="\$ORIGIN:\$ORIGIN/../lib:/opt/rocm/lib:/opt/rocm/lib64"
 
 RUN cmake --build ./build -j"$(nproc)"
 
-# The ROCm container supplies HSA outside Debian's package database.
 RUN mkdir /dist && \
     cd ./build && \
-    sed -i 's/set(CPACK_DEBIAN_PACKAGE_DEPENDS "libstdc++6, hsa-rocr")/set(CPACK_DEBIAN_PACKAGE_DEPENDS "libstdc++6")/' CPackConfig.cmake && \
     cpack -G DEB && \
     cp ./*.deb /dist/
 

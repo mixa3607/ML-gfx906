@@ -1,5 +1,3 @@
-/build-context/*
-!/build-context/.gitkeep
 /logs/
 /output/
 /src-temp/

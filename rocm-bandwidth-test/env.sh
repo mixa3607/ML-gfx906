@@ -3,7 +3,7 @@
 pushd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null
 
 if [ "$RBT_VERSION" = "" ]; then
-  RBT_VERSION="master"
+  RBT_VERSION="develop"
 fi
 if [ "$RBT_PUSH" = "" ]; then
   RBT_PUSH="0"
