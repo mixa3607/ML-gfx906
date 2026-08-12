@@ -1,0 +1,31 @@
+name: Build ROCm Bandwidth Test DEB
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build:
+          - rocm_version: "7.14"
+            rbt_version: develop
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build DEB package
+        working-directory: rocm-bandwidth-test
+        run: |
+          export ROCM_VERSION="${{ matrix.build.rocm_version }}"
+          export RBT_VERSION="${{ matrix.build.rbt_version }}"
+          export RBT_PUSH=0
+          ./build-and-push.deb.sh
+
+      - name: Upload DEB package
+        uses: actions/upload-artifact@v6
+        with:
+          name: rocm-bandwidth-test-${{ matrix.build.rbt_version }}-rocm-${{ matrix.build.rocm_version }}-deb
+          path: rocm-bandwidth-test/output/**/*.deb
+          if-no-files-found: error
+          retention-days: 14

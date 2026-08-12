@@ -3,7 +3,7 @@
 pushd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null
 
 if [ "${AMT_VERSION:-}" = "" ]; then
-  AMT_VERSION="0.1.9.1"
+  AMT_VERSION="0.0.0"
 fi
 if [ "${AMT_PUSH:-}" = "" ]; then
   AMT_PUSH="0"

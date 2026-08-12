@@ -1,3 +1,15 @@
-AMD_TUNING_VERSION=${AMD_TUNING_VERSION:-0.1.0}
-AMD_TUNING_BASE_IMAGE=${AMD_TUNING_BASE_IMAGE:-${BASE_UBUNTU_REGISTRY}/ubuntu:24.04}
-AMD_TUNING_PUSH=${AMD_TUNING_PUSH:-0}
+#!/bin/bash
+
+pushd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null
+
+if [ "${AMD_TUNING_VERSION:-}" = "" ]; then
+  AMD_TUNING_VERSION="0.0.0"
+fi
+if [ "${AMD_TUNING_PUSH:-}" = "" ]; then
+  AMD_TUNING_PUSH="0"
+fi
+if [ "${AMD_TUNING_BASE_IMAGE:-}" = "" ]; then
+  AMD_TUNING_BASE_IMAGE="docker.io/library/ubuntu:24.04"
+fi
+
+popd > /dev/null

@@ -1,0 +1,29 @@
+name: Build AMD Tuning DEB
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build:
+          - amd_tuning_version: "0.1.0"
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build DEB package
+        working-directory: amd-tuning
+        run: |
+          export AMD_TUNING_VERSION="${{ matrix.build.amd_tuning_version }}"
+          export AMD_TUNING_PUSH=0
+          ./build-and-push.deb.sh
+
+      - name: Upload DEB package
+        uses: actions/upload-artifact@v6
+        with:
+          name: amd-tuning-${{ matrix.build.amd_tuning_version }}-deb
+          path: amd-tuning/output/**/*.deb
+          if-no-files-found: error
+          retention-days: 14

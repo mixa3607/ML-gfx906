@@ -1,0 +1,29 @@
+name: Build AMD Memory Tweak DEB
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build:
+          - amt_version: "0.1.9.1"
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build DEB package
+        working-directory: amd-memory-tweak
+        run: |
+          export AMT_VERSION="${{ matrix.build.amt_version }}"
+          export AMT_PUSH=0
+          ./build-and-push.deb.sh
+
+      - name: Upload DEB package
+        uses: actions/upload-artifact@v6
+        with:
+          name: amd-memory-tweak-${{ matrix.build.amt_version }}-deb
+          path: amd-memory-tweak/output/**/*.deb
+          if-no-files-found: error
+          retention-days: 14
