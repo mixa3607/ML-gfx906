@@ -1,0 +1,34 @@
+#!/bin/bash
+set -euo pipefail
+
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+if [ ! -x "$SCRIPT_DIR/install-yq.sh" ] && [ -x /usr/lib/amd-tuning/install-yq.sh ]; then
+  SCRIPT_DIR=/usr/lib/amd-tuning
+fi
+
+if [ "${EUID}" -ne 0 ]; then
+  echo "amd-tuning-deps-installer: run as root" >&2
+  exit 1
+fi
+
+need_apt=0
+for command in curl python3; do
+  command -v "$command" > /dev/null || need_apt=1
+done
+python3 -m pip --version > /dev/null 2>&1 || need_apt=1
+if [ "$need_apt" -eq 1 ]; then
+  apt-get update
+  apt-get install -y --no-install-recommends ca-certificates curl python3-pip
+fi
+
+if ! command -v upp > /dev/null; then
+  python3 -m pip install --break-system-packages upp
+fi
+
+version=$(yq --version 2>&1 || true)
+if [[ "$version" != yq\ \(https://github.com/mikefarah/yq/\)\ version\ v4.* ]]; then
+  "$SCRIPT_DIR/install-yq.sh"
+fi
+
+command -v upp
+yq --version

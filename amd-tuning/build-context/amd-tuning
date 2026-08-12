@@ -2,6 +2,9 @@
 set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+if [ ! -r "$SCRIPT_DIR/pp-table-allowlist.txt" ] && [ -r /usr/lib/amd-tuning/pp-table-allowlist.txt ]; then
+  SCRIPT_DIR=/usr/lib/amd-tuning
+fi
 PP_ALLOWLIST="$SCRIPT_DIR/pp-table-allowlist.txt"
 MEM_ALLOWLIST="$SCRIPT_DIR/memory-tweak-allowlist.txt"
 AMDMEMTWEAK=${AMDMEMTWEAK:-amdmemtweak}

@@ -3,6 +3,30 @@
 YAML profile orchestration for UPP PowerPlay values and AMD Memory Tweak HBM2
 timings.
 
+## Debian package
+
+Build the package with the same buildx workflow as `amd-memory-tweak`:
+
+```bash
+. preset.v0.1.0.sh
+./build-and-push.deb.sh
+```
+
+The artifact is written to `output/amd-tuning-<version>-<suffix>/`. Install it
+after `amd-memory-tweak`:
+
+```bash
+apt-get install ./amd-memory-tweak_*.deb ./amd-tuning_*.deb
+amd-tuning-deps-installer
+```
+
+`amd-tuning-deps-installer` must run as root. It installs missing base tools,
+UPP through `pip`, and the current verified Mike Farah `yq` v4 binary. It is
+safe to rerun and does not reinstall an already-valid `upp` or `yq`.
+
+The package contains the CLI, its allowlists, and stock/OC examples under
+`/usr/share/amd-tuning/examples/`.
+
 ## Dependencies
 
 - `amdmemtweak` from [`../amd-memory-tweak`](../amd-memory-tweak)
@@ -16,8 +40,9 @@ project, for example:
 yq (https://github.com/mikefarah/yq/) version v4.53.3
 ```
 
-`install-yq.sh` dynamically installs the latest GitHub release and verifies its
-published SHA-256 checksum. No version is pinned.
+`amd-tuning-deps-installer` invokes `install-yq.sh`, which dynamically installs
+the latest GitHub release and verifies its published SHA-256 checksum. No
+version is pinned.
 
 ## Profile format
 
@@ -35,11 +60,11 @@ Only keys listed in `pp-table-allowlist.txt` and
 ## Commands
 
 ```bash
-./amd-tuning validate --profile profile-mi50-hbm-oc.yaml
-./amd-tuning show --gpu 0
-./amd-tuning backup --gpu 0 --output profile-backup.yaml
-./amd-tuning diff --gpu 0 --profile profile-mi50-hbm-oc.yaml
-./amd-tuning apply --gpu 0 --profile profile-mi50-hbm-oc.yaml
+amd-tuning validate --profile /usr/share/amd-tuning/examples/profile-mi50-hbm-oc.yaml
+amd-tuning show --gpu 0
+amd-tuning backup --gpu 0 --output profile-backup.yaml
+amd-tuning diff --gpu 0 --profile /usr/share/amd-tuning/examples/profile-mi50-hbm-oc.yaml
+amd-tuning apply --gpu 0 --profile /usr/share/amd-tuning/examples/profile-mi50-hbm-oc.yaml
 ```
 
 `--bdf` may be supplied alongside `--gpu`. The CLI verifies that both identify
