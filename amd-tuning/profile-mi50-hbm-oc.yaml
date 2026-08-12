@@ -1,0 +1,21 @@
+schemaVersion: 1
+ppTable:
+  smcPPTable/FreqTableUclk/2: 1180
+  smcPPTable/FreqTableUclk/3: 1180
+memoryTweak:
+  cl: 24
+  ras: 29
+  rcdrd: 13
+  rcdwr: 14
+  rc: 44
+  rp: 15
+  rrds: 4
+  rrdl: 4
+  rtp: 7
+  rdrddd: 3
+  rdrdsd: 2
+  rdrdsc: 1
+  rdrdscl: 3
+  rfcpb: 100
+  rfc: 340
+  ref: 4500

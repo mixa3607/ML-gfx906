@@ -1,0 +1,30 @@
+schemaVersion: 1
+ppTable:
+  SmallPowerLimit1: 225
+  SmallPowerLimit2: 225
+  BoostPowerLimit: 225
+  PowerSavingClockTable/PowerSavingClockMax/0: 1725
+  smcPPTable/SocketPowerLimitAc0: 225
+  smcPPTable/SocketPowerLimitDc: 225
+  smcPPTable/TdcLimitGfx: 330
+  smcPPTable/FreqTableGfx/8: 1725
+  smcPPTable/FreqTableUclk/2: 1000
+  smcPPTable/FreqTableUclk/3: 1000
+  smcPPTable/DcModeMaxFreq/0: 1725
+memoryTweak:
+  cl: 24
+  ras: 29
+  rcdrd: 16
+  rcdwr: 14
+  rc: 45
+  rp: 16
+  rrds: 4
+  rrdl: 4
+  rtp: 7
+  rdrddd: 3
+  rdrdsd: 2
+  rdrdsc: 1
+  rdrdscl: 3
+  rfcpb: 120
+  rfc: 350
+  ref: 3900

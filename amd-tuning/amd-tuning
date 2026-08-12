@@ -1,0 +1,213 @@
+#!/bin/bash
+set -euo pipefail
+
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+PP_ALLOWLIST="$SCRIPT_DIR/pp-table-allowlist.txt"
+MEM_ALLOWLIST="$SCRIPT_DIR/memory-tweak-allowlist.txt"
+AMDMEMTWEAK=${AMDMEMTWEAK:-amdmemtweak}
+GPU=0
+BDF=""
+PROFILE=""
+OUTPUT=""
+COMMAND=""
+
+usage() {
+  cat <<'EOF'
+Usage:
+  amd-tuning apply    [--gpu INDEX] [--bdf PCI_BDF] --profile FILE
+  amd-tuning show     [--gpu INDEX] [--bdf PCI_BDF]
+  amd-tuning backup   [--gpu INDEX] [--bdf PCI_BDF] [--output FILE]
+  amd-tuning validate --profile FILE
+  amd-tuning diff     [--gpu INDEX] [--bdf PCI_BDF] --profile FILE
+EOF
+}
+
+die() {
+  echo "amd-tuning: $*" >&2
+  exit 1
+}
+
+require_commands() {
+  local command
+  for command in "$@"; do
+    command -v "$command" > /dev/null || die "missing command: $command"
+  done
+}
+
+check_yq() {
+  require_commands yq
+  local version
+  version=$(yq --version 2>&1)
+  [[ "$version" == yq\ \(https://github.com/mikefarah/yq/\)\ version\ v4.* ]] ||
+    die "Mike Farah yq v4 is required; got: $version"
+}
+
+contains_line() {
+  local value=$1 file=$2
+  grep -Fqx -- "$value" "$file"
+}
+
+parse_args() {
+  COMMAND=${1:-}
+  [ "$COMMAND" != "" ] || { usage >&2; exit 2; }
+  shift || true
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --gpu) GPU=$2; shift 2 ;;
+      --bdf) BDF=$2; shift 2 ;;
+      --profile) PROFILE=$2; shift 2 ;;
+      --output) OUTPUT=$2; shift 2 ;;
+      -h|--help) usage; exit 0 ;;
+      *) die "unknown argument: $1" ;;
+    esac
+  done
+}
+
+memory_json() {
+  "$AMDMEMTWEAK" --i "$GPU" --current --json |
+    yq -p=json -o=json -I=0 "select(.gpu == $GPU)"
+}
+
+resolve_device() {
+  local json
+  json=$(memory_json)
+  [ "$json" != "" ] || die "GPU index $GPU was not returned by amdmemtweak"
+  local detected_bdf
+  detected_bdf=$(printf '%s\n' "$json" | yq -p=json -r '.bdf')
+  if [ "$BDF" = "" ]; then
+    BDF=$detected_bdf
+  elif [ "$BDF" != "$detected_bdf" ]; then
+    die "GPU $GPU is $detected_bdf, not requested BDF $BDF"
+  fi
+  PPTABLE="/sys/bus/pci/devices/$BDF/pp_table"
+  [ -e "$PPTABLE" ] || die "missing PPTable: $PPTABLE"
+}
+
+validate_profile() {
+  local file=$1 key value
+  [ -r "$file" ] || die "profile is not readable: $file"
+  yq eval '.' "$file" > /dev/null
+  [ "$(yq -r '.schemaVersion // 0' "$file")" = "1" ] ||
+    die "unsupported or missing schemaVersion"
+  for section in ppTable memoryTweak; do
+    local type
+    type=$(yq -r ".${section} | type" "$file")
+    [ "$type" = "!!map" ] || [ "$type" = "!!null" ] ||
+      die "$section must be a mapping"
+  done
+  while IFS=$'\t' read -r key value; do
+    [ "$key" != "" ] || continue
+    contains_line "$key" "$PP_ALLOWLIST" || die "unsupported ppTable key: $key"
+    [[ "$value" =~ ^-?[0-9]+$ ]] || die "ppTable.$key must be an integer"
+  done < <(yq -r '.ppTable // {} | to_entries | .[] | [.key, .value] | @tsv' "$file")
+  while IFS=$'\t' read -r key value; do
+    [ "$key" != "" ] || continue
+    contains_line "$key" "$MEM_ALLOWLIST" || die "unsupported memoryTweak key: $key"
+    [[ "$value" =~ ^[0-9]+$ ]] || die "memoryTweak.$key must be a non-negative integer"
+  done < <(yq -r '.memoryTweak // {} | to_entries | .[] | [.key, .value] | @tsv' "$file")
+}
+
+emit_state() {
+  local include_dump=$1 key value json
+  json=$(memory_json)
+  printf 'schemaVersion: 1\n'
+  printf 'device:\n  gpu: %s\n  bdf: "%s"\n' "$GPU" "$BDF"
+  printf 'ppTable:\n'
+  while IFS= read -r key; do
+    [ "$key" != "" ] || continue
+    value=$(upp -p "$PPTABLE" get "$key")
+    printf '  "%s": %s\n' "$key" "$value"
+  done < "$PP_ALLOWLIST"
+  printf 'memoryTweak:\n'
+  while IFS= read -r key; do
+    [ "$key" != "" ] || continue
+    value=$(printf '%s\n' "$json" | yq -p=json -r ".timings.${key}")
+    [ "$value" != "null" ] && printf '  %s: %s\n' "$key" "$value"
+  done < "$MEM_ALLOWLIST"
+  if [ "$include_dump" = "1" ]; then
+    printf 'ppTableDump: |\n'
+    upp -p "$PPTABLE" dump | sed 's/^/  /'
+  fi
+}
+
+apply_profile() {
+  local file=$1 key value
+  local pp_args=() mem_args=()
+  while IFS=$'\t' read -r key value; do
+    [ "$key" != "" ] && pp_args+=("$key=$value")
+  done < <(yq -r '.ppTable // {} | to_entries | .[] | [.key, .value] | @tsv' "$file")
+  if [ "${#pp_args[@]}" -gt 0 ]; then
+    upp -p "$PPTABLE" set --write "${pp_args[@]}"
+    sleep 2
+  fi
+  while IFS=$'\t' read -r key value; do
+    [ "$key" != "" ] && mem_args+=("--$key" "$value")
+  done < <(yq -r '.memoryTweak // {} | to_entries | .[] | [.key, .value] | @tsv' "$file")
+  if [ "${#mem_args[@]}" -gt 0 ]; then
+    "$AMDMEMTWEAK" --i "$GPU" "${mem_args[@]}"
+  fi
+}
+
+diff_profile() {
+  local file=$1 key expected actual different=0 json
+  json=$(memory_json)
+  while IFS=$'\t' read -r key expected; do
+    [ "$key" != "" ] || continue
+    actual=$(upp -p "$PPTABLE" get "$key")
+    if [ "$actual" != "$expected" ]; then
+      printf 'ppTable.%s: %s -> %s\n' "$key" "$actual" "$expected"
+      different=1
+    fi
+  done < <(yq -r '.ppTable // {} | to_entries | .[] | [.key, .value] | @tsv' "$file")
+  while IFS=$'\t' read -r key expected; do
+    [ "$key" != "" ] || continue
+    actual=$(printf '%s\n' "$json" | yq -p=json -r ".timings.${key}")
+    if [ "$actual" != "$expected" ]; then
+      printf 'memoryTweak.%s: %s -> %s\n' "$key" "$actual" "$expected"
+      different=1
+    fi
+  done < <(yq -r '.memoryTweak // {} | to_entries | .[] | [.key, .value] | @tsv' "$file")
+  return "$different"
+}
+
+parse_args "$@"
+check_yq
+
+case "$COMMAND" in
+  validate)
+    [ "$PROFILE" != "" ] || die "validate requires --profile"
+    validate_profile "$PROFILE"
+    echo "Profile is valid: $PROFILE"
+    ;;
+  show)
+    require_commands "$AMDMEMTWEAK" upp
+    resolve_device
+    emit_state 0
+    ;;
+  backup)
+    require_commands "$AMDMEMTWEAK" upp
+    resolve_device
+    if [ "$OUTPUT" = "" ]; then
+      emit_state 1
+    else
+      emit_state 1 > "$OUTPUT"
+      echo "Backup written to $OUTPUT"
+    fi
+    ;;
+  apply)
+    [ "$PROFILE" != "" ] || die "apply requires --profile"
+    require_commands "$AMDMEMTWEAK" upp
+    validate_profile "$PROFILE"
+    resolve_device
+    apply_profile "$PROFILE"
+    ;;
+  diff)
+    [ "$PROFILE" != "" ] || die "diff requires --profile"
+    require_commands "$AMDMEMTWEAK" upp
+    validate_profile "$PROFILE"
+    resolve_device
+    diff_profile "$PROFILE"
+    ;;
+  -h|--help|help) usage ;;
+  *) die "unknown command: $COMMAND" ;;
+esac

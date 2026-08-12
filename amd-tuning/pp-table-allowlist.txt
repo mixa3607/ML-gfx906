@@ -1,0 +1,11 @@
+SmallPowerLimit1
+SmallPowerLimit2
+BoostPowerLimit
+PowerSavingClockTable/PowerSavingClockMax/0
+smcPPTable/SocketPowerLimitAc0
+smcPPTable/SocketPowerLimitDc
+smcPPTable/TdcLimitGfx
+smcPPTable/FreqTableGfx/8
+smcPPTable/FreqTableUclk/2
+smcPPTable/FreqTableUclk/3
+smcPPTable/DcModeMaxFreq/0
