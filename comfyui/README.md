@@ -101,7 +101,7 @@ any variable to override it.
 | `COMFYUI_IMAGE`          | `docker.io/mixa3607/comfyui-gfx906` | Destination image name                       |
 | `COMFYUI_TORCH_IMAGE`    | `docker.io/mixa3607/pytorch-gfx906` | PyTorch base image name                      |
 | `COMFYUI_ROCM_VERSION`   | `6.3.3`                             | ROCm version of the base image               |
-| `COMFYUI_PYTORCH_VERSION`| `v2.7.1`                            | PyTorch version of the base image            |
+| `COMFYUI_PYTORCH_VERSION`| `2.7.1`                             | PyTorch version of the base image            |
 | `COMFYUI_REPO`           | `https://github.com/Comfy-Org/ComfyUI.git` | ComfyUI git repository               |
 | `COMFYUI_BRANCH`         | `master`                            | ComfyUI git tag/branch to build              |
 | `COMFYUI_COMMIT`         | *(empty)*                           | Pin a specific commit (on top of the branch) |

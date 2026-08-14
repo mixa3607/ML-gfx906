@@ -35,14 +35,14 @@ Build variables:
 
 | Variable | Default | Description |
 |---|---|---|
-| `AMT_VERSION` | `0.1.9.1` | Debian upstream version |
+| `AMT_VERSION` | `0.0.0` | Debian upstream version |
 | `AMT_BASE_IMAGE` | `ubuntu:24.04` | Build container image |
 | `AMT_PUSH` | `0` | Push the resulting deb over SCP |
 | `AMT_FORCE_BUILD` | `0` | Rebuild an existing output directory |
 
 ## Install
 
-> `amd-memory-tweak` is available from the [gfx906 APT repository](../README.md#apt-repository-therock-build).
+> `amd-memory-tweak` is available from the [gfx906 APT repository](../README.md#add-the-repository-ubuntu-2404).
 
 ```bash
 apt-get install ./amd-memory-tweak_*.deb

@@ -13,7 +13,7 @@ if [ "$COMFYUI_ROCM_VERSION" == "" ]; then
   COMFYUI_ROCM_VERSION="6.3.3"
 fi
 if [ "$COMFYUI_PYTORCH_VERSION" == "" ]; then
-  COMFYUI_PYTORCH_VERSION="v2.7.1"
+  COMFYUI_PYTORCH_VERSION="2.7.1"
 fi
 
 if [ "$COMFYUI_REPO" == "" ]; then

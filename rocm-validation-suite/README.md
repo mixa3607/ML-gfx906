@@ -33,7 +33,7 @@ rvs -c ~/gst-581Tflops-4K4K8K-rand-bf16.conf
 
 ## Install from APT
 
-> **Required:** [gfx906 apt repository](../README.md#apt-repository-therock-build) must be installed.
+> **Required:** [gfx906 apt repository](../README.md#add-the-repository-ubuntu-2404) must be installed.
 
 ```bash
 apt-get install -y rocm-validation-suite
@@ -72,7 +72,7 @@ Export any variable to override it.
 | Variable          | Default                          | Description                                   |
 | ----------------- | -------------------------------- | --------------------------------------------- |
 | `RVS_VERSION`     | `main`                           | ROCmValidationSuite git tag/branch            |
-| `RVS_PUSH`        | `1`                              | Push deb package to the apt repository        |
+| `RVS_PUSH`        | `0`                              | Push deb package to the apt repository        |
 | `RVS_FORCE_BUILD` | *(unset)*                        | Set to `1` to rebuild even if output exists   |
 | `ROCM_VERSION`    | `7.14`                           | ROCm version of the base image                |
 | `ROCM_ARCH`       | `gfx906`                         | Target GPU architecture                       |

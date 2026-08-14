@@ -44,7 +44,7 @@ The build happens inside `docker buildx` on top of the ROCm base image
 Preset files set the llama.cpp, ROCm and other versions. Source one, then run the build script:
 
 ```bash
-. preset.b10219-rocm-7.14.sh
+. preset.b10288-rocm-7.14-ggml.sh
 ./build-and-push.image.sh
 ```
 
@@ -80,7 +80,7 @@ via a BuildKit cache so rebuilds reuse compiled objects.
 ### Build the image
 
 ```bash
-. preset.b10219-rocm-7.14.sh
+. preset.b10288-rocm-7.14-ggml.sh
 ./build-and-push.image.sh
 ```
 

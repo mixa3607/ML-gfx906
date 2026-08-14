@@ -5,7 +5,7 @@ timings.
 
 ## Debian package
 
-> `amd-tuning` is available from the [gfx906 APT repository](../README.md#apt-repository-therock-build).
+> `amd-tuning` is available from the [gfx906 APT repository](../README.md#add-the-repository-ubuntu-2404).
 
 Build the package with the same buildx workflow as `amd-memory-tweak`:
 
@@ -28,6 +28,7 @@ safe to rerun and does not reinstall an already-valid `upp` or `yq`.
 
 The package contains the CLI, its allowlists, and stock/OC examples under
 `/usr/share/amd-tuning/examples/`.
+The included profiles are for GPUs with VBIOS `113-D1631700-111`.
 
 ## Dependencies
 
@@ -61,11 +62,11 @@ Only keys listed in `pp-table-allowlist.txt` and
 ## Commands
 
 ```bash
-amd-tuning validate --profile /usr/share/amd-tuning/examples/profile-mi50-hbm-oc.yaml
+amd-tuning validate --profile /usr/share/amd-tuning/examples/profile-mi50-113-D1631700-111-mem-oc.yaml
 amd-tuning show --gpu 0
 amd-tuning backup --gpu 0 --output profile-backup.yaml
-amd-tuning diff --gpu 0 --profile /usr/share/amd-tuning/examples/profile-mi50-hbm-oc.yaml
-amd-tuning apply --gpu 0 --profile /usr/share/amd-tuning/examples/profile-mi50-hbm-oc.yaml
+amd-tuning diff --gpu 0 --profile /usr/share/amd-tuning/examples/profile-mi50-113-D1631700-111-mem-oc.yaml
+amd-tuning apply --gpu 0 --profile /usr/share/amd-tuning/examples/profile-mi50-113-D1631700-111-mem-oc.yaml
 ```
 
 `--bdf` may be supplied alongside `--gpu`. The CLI verifies that both identify

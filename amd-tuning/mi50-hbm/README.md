@@ -5,8 +5,6 @@ for llama.cpp workloads.
 
 - `environment.md`: hardware, software and device mapping.
 - `methodology.md`: benchmark and stability procedure.
-- `results.csv`: machine-readable benchmark results.
-- `profiles.sh`: reference commands for applying and reverting tested settings.
 
 The current best error-free short-run experimental profile is:
 

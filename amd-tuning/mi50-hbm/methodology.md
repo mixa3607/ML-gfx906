@@ -39,10 +39,6 @@ HIP_VISIBLE_DEVICES=0 /app/llama-bench \
   -o json
 ```
 
-An earlier Gemma 4 31B Q4_K_L workload was used during tool bring-up. It is
-retained in `results.csv`, but tuning decisions should prioritize the dense Qwen
-results requested for memory characterization.
-
 ## Test sequence
 
 1. Confirm no live KFD workload is using GPU0.

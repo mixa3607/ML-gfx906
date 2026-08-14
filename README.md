@@ -19,7 +19,7 @@ https://arkprojects.space/wiki/AMD_GFX906
 sudo apt-get update
 sudo apt-get install ca-certificates curl -y
 sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://s3.arkprojects.space/apt-gfx906/ubuntu/gpg -o /etc/apt/keyrings/apt-gfx906.asc
+sudo curl -fsSL https://s3.arkprojects.space/apt-gfx906/ubuntu/gpg -o /etc/apt/keyrings/apt-gfx906.asc
 sudo chmod a+r /etc/apt/keyrings/apt-gfx906.asc
 sudo tee /etc/apt/sources.list.d/gfx906.sources <<EOF
 Types: deb

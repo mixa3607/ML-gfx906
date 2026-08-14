@@ -11,7 +11,7 @@ All deb packages are built for the deprecated `gfx906` GPU architecture and are
 
 ## Install from APT
 
-> **Required:** [gfx906 apt repository](../README.md#apt-repository-therock-build) must be installed.
+> **Required:** [gfx906 apt repository](../README.md#add-the-repository-ubuntu-2404) must be installed.
 
 ```bash
 apt-get install -y amdrocm7.14-transferbench
@@ -50,7 +50,7 @@ Export any variable to override it.
 | Variable         | Default                          | Description                                   |
 | ---------------- | -------------------------------- | --------------------------------------------- |
 | `TB_VERSION`     | `main`                           | TransferBench git tag/branch to build         |
-| `TB_PUSH`        | `1`                              | Push deb package to the apt repository        |
+| `TB_PUSH`        | `0`                              | Push deb package to the apt repository        |
 | `TB_FORCE_BUILD` | *(unset)*                        | Set to `1` to rebuild even if output exists   |
 | `ROCM_VERSION`   | `7.14`                           | ROCm version of the base image                |
 | `ROCM_ARCH`      | `gfx906`                         | Target GPU architecture                       |
