@@ -11,10 +11,10 @@ All deb packages are built for the deprecated `gfx906` GPU architecture and are
 
 ## Install from APT
 
-> **Required:** [gfx906 apt repository](../rocm/README.md#add-the-repository-ubuntu-2404) must be installed
+> **Required:** [gfx906 apt repository](../README.md#apt-repository-therock-build) must be installed.
 
 ```bash
-apt-get install -y amdrocm-transferbench
+apt-get install -y amdrocm7.14-transferbench
 ```
 
 ## Build deb package from source

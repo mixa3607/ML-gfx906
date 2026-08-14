@@ -9,22 +9,6 @@ devices.
 All packages are built for the deprecated `gfx906` GPU architecture and are not
 compatible with other AMD GPUs.
 
-## Install from APT
-
-> **Required:** [gfx906 apt repository](../rocm/README.md#add-the-repository-ubuntu-2404) must be installed.
-
-```bash
-apt-get install -y rocm-bandwidth-test
-```
-
-The executable is installed below `/opt/rocm/extras-7`.
-
-```bash
-export PATH=/opt/rocm/extras-7/bin:$PATH
-export LD_LIBRARY_PATH=/opt/rocm/extras-7/lib:$LD_LIBRARY_PATH
-rocm-bandwidth-test --help
-```
-
 ## Build deb package from source
 
 The build runs in `docker buildx` on

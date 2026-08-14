@@ -5,6 +5,8 @@ timings.
 
 ## Debian package
 
+> `amd-tuning` is available from the [gfx906 APT repository](../README.md#apt-repository-therock-build).
+
 Build the package with the same buildx workflow as `amd-memory-tweak`:
 
 ```bash

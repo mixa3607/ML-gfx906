@@ -6,16 +6,33 @@
 
 ## Docs
 
-https://arkprojects.space/wiki/AMD_GFX906
-
-## Prebuild images
-
 > Legacy builds (pre-TheRock) are **no longer supported** starting from the
 > `20260802001858` release. If you are stuck on an old build (e.g. `6.3.3`)
 > because of issues with the new TheRock builds, please
 > [open an issue](https://github.com/mixa3607/ML-gfx906/issues).
 
-### Images
+https://arkprojects.space/wiki/AMD_GFX906
+
+### Add the repository (Ubuntu 24.04)
+
+```bash
+sudo apt-get update
+sudo apt-get install ca-certificates curl -y
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://s3.arkprojects.space/apt-gfx906/ubuntu/gpg -o /etc/apt/keyrings/apt-gfx906.asc
+sudo chmod a+r /etc/apt/keyrings/apt-gfx906.asc
+sudo tee /etc/apt/sources.list.d/gfx906.sources <<EOF
+Types: deb
+URIs: https://s3.arkprojects.space/apt-gfx906/ubuntu
+Suites: $(. /etc/os-release && echo "$VERSION_CODENAME")
+Components: main
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/apt-gfx906.asc
+EOF
+sudo apt-get update
+```
+
+### Subprojects
 
 | Name                  | About                   | Artefacts    | Status                                                                                                                                                             | Docs                                        |
 | --------------------- | ----------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |

@@ -33,7 +33,7 @@ rvs -c ~/gst-581Tflops-4K4K8K-rand-bf16.conf
 
 ## Install from APT
 
-> **Required:** [gfx906 apt repository](../rocm/README.md#add-the-repository-ubuntu-2404) must be installed
+> **Required:** [gfx906 apt repository](../README.md#apt-repository-therock-build) must be installed.
 
 ```bash
 apt-get install -y rocm-validation-suite

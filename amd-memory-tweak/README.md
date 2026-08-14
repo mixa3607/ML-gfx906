@@ -42,6 +42,8 @@ Build variables:
 
 ## Install
 
+> `amd-memory-tweak` is available from the [gfx906 APT repository](../README.md#apt-repository-therock-build).
+
 ```bash
 apt-get install ./amd-memory-tweak_*.deb
 ```
