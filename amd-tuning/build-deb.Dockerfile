@@ -1,5 +1,5 @@
 ARG BASE_UBUNTU_IMAGE="docker.io/library/ubuntu:24.04"
-ARG AMD_TUNING_VERSION="0.1.0"
+ARG AMD_TUNING_VERSION="0.0.0"
 ARG VERSION_SUFFIX="gfx906"
 
 FROM ${BASE_UBUNTU_IMAGE} AS build_deb
@@ -21,8 +21,8 @@ RUN set -eux; \
     install -Dm755 amd-tuning-deps-installer "${package_root}/usr/bin/amd-tuning-deps-installer"; \
     install -Dm644 pp-table-allowlist.txt "${package_root}/usr/lib/amd-tuning/pp-table-allowlist.txt"; \
     install -Dm644 memory-tweak-allowlist.txt "${package_root}/usr/lib/amd-tuning/memory-tweak-allowlist.txt"; \
-    install -Dm644 examples/profile-mi50-stock.yaml "${package_root}/usr/share/amd-tuning/examples/profile-mi50-stock.yaml"; \
-    install -Dm644 examples/profile-mi50-hbm-oc.yaml "${package_root}/usr/share/amd-tuning/examples/profile-mi50-hbm-oc.yaml"; \
+    install -Dm644 examples/profile-mi50-113-D1631700-111-mem-oc.yaml "${package_root}/usr/share/amd-tuning/examples/profile-mi50-113-D1631700-111-mem-oc.yaml"; \
+    install -Dm644 examples/profile-mi50-113-D1631700-111-stock.yaml "${package_root}/usr/share/amd-tuning/examples/profile-mi50-113-D1631700-111-stock.yaml"; \
     install -d -m 0755 "${package_root}/DEBIAN" /dist; \
     chmod 0755 "${package_root}/DEBIAN"; \
     chmod g-s "${package_root}/DEBIAN"; \
