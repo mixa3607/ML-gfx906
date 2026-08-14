@@ -2,6 +2,13 @@ name: Build ROCm Validation Suite DEB
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - master
+    tags:
+      - "**"
+    paths:
+      - "rocm-validation-suite/**"
 
 jobs:
   build:

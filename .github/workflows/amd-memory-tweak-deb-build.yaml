@@ -2,6 +2,13 @@ name: Build AMD Memory Tweak DEB
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - master
+    tags:
+      - "**"
+    paths:
+      - "amd-memory-tweak/**"
 
 jobs:
   build:

@@ -2,6 +2,13 @@ name: Build ROCm TransferBench DEB
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - master
+    tags:
+      - "**"
+    paths:
+      - "rocm-transfer-bench/**"
 
 jobs:
   build:

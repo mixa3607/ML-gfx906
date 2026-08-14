@@ -2,6 +2,13 @@ name: Build AMD Tuning DEB
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - master
+    tags:
+      - "**"
+    paths:
+      - "amd-tuning/**"
 
 jobs:
   build:
