@@ -7,6 +7,11 @@ if [ "$VLLM_IMAGE" == "" ]; then
 fi
 
 if [ "$VLLM_PRESET_NAME" == "" ];           then VLLM_PRESET_NAME=default; fi
+# vllm version label: applied as a local git tag so setuptools-scm reports it,
+# and used as the docker tag's version component (see AGENTS.md).
+if [ "$VLLM_VERSION" == "" ];               then VLLM_VERSION=""; fi
+# optional apt mirror override for in-build apt-get steps (empty = image default)
+if [ "$VLLM_APT_MIRROR" == "" ];            then VLLM_APT_MIRROR=""; fi
 # vllm git checkpoint
 if [ "$VLLM_REPO" == "" ];                  then VLLM_REPO="https://github.com/ai-infos/vllm-gfx906-mobydick.git"; fi
 if [ "$VLLM_BRANCH" == "" ];                then VLLM_BRANCH="main"; fi

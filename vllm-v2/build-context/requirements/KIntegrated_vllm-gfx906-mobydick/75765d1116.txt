@@ -1,0 +1,10 @@
+# Extra runtime requirements for KIntegrated vllm-gfx906-mobydick @ 75765d1116
+# (vLLM 0.26.0; includes the gfx906 AWQ out_shape fix). Per the fork's README,
+# transformers 5.7.0 (<6) is the validated version.
+transformers==5.7.0
+opentelemetry-sdk
+opentelemetry-api
+opentelemetry-semantic-conventions-ai
+opentelemetry-exporter-otlp
+modelscope
+yq
