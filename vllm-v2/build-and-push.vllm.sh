@@ -29,6 +29,8 @@ docker buildx build ${DOCKER_EXTRA_ARGS[@]} --push \
   --build-arg VLLM_BRANCH=${VLLM_BRANCH} \
   --build-arg VLLM_COMMIT=${VLLM_COMMIT} \
   --build-arg VLLM_PATCH=${VLLM_PATCH}   \
+  --build-arg VLLM_VERSION=${VLLM_VERSION} \
+  --build-arg APT_MIRROR=${VLLM_APT_MIRROR} \
   \
   --build-arg FA_REPO=${VLLM_FA_REPO}     \
   --build-arg FA_BRANCH=${VLLM_FA_BRANCH} \

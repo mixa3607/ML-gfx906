@@ -1,0 +1,16 @@
+# Extra runtime requirements for KIntegrated vllm-gfx906-mobydick @ e861d0b30f
+# (gfx906/main, labeled 0.27.99rc0: MoE W4A16 GEMM + custom FlashAttention
+# CUSTOM backend + dense GEMV, pre-merge review fixes R1-R12; supersedes
+# 613caa72c6.txt and f4b77c371a.txt).
+# Per the fork's README, transformers 5.7.0 (<6) is the validated version.
+transformers==5.7.0
+opentelemetry-sdk
+opentelemetry-api
+opentelemetry-semantic-conventions-ai
+opentelemetry-exporter-otlp
+modelscope
+yq
+# fastsafetensors: parallel safetensors loader to speed up checkpoint load
+# (routed via --load-format fastsafetensors; GDS failure falls back to nogds
+# in vllm's loader). See plan-gfx906fa review / weight_utils.py.
+fastsafetensors
