@@ -19,6 +19,7 @@ WORKDIR /files/comfy
 RUN git clone --depth 1 --recurse-submodules --shallow-submodules --jobs 4 --branch ${COMFY_BRANCH} ${COMFY_REPO} .
 RUN if [ "$COMFY_COMMIT" != "" ]; then git checkout "$COMFY_COMMIT"; fi
 COPY /entrypoint.sh /files/comfy
+COPY /sitecustomize.py /files/comfy
 
 FROM files_comfy AS files_comfy_requirements
 WORKDIR /files/comfy-requirements

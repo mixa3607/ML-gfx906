@@ -37,5 +37,6 @@ if [ "$BOOTSTRAP_ONLY" == "1" ]; then
   echo "Warning: BOOTSTRAP_ONLY is set to 1. Just exit"
 else
   echo "Run ComfyUI"
+  export PYTHONPATH="$PWD${PYTHONPATH:+:$PYTHONPATH}"
   exec python3 ./main.py "${EXTRA_ARGS[@]}" "$@"
 fi

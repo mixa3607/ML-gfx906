@@ -34,6 +34,10 @@ apt-get install -y amdrocm${THEROCK_VERSION}-${ROCM_ARCH}
 > See [BUILD-PACKAGES.md](./BUILD-PACKAGES.md) for instructions on building
 > packages from source.
 
+> gfx906 has rocBLAS device libraries but no supported hipBLASLt device
+> library. See [hipBLASLt and gfx906](./HIPBLASLT-GFX906.md) before using
+> INT8 workloads that require `torch._int_mm`.
+
 ## Docker Image (Legacy build)
 
 > Legacy builds (pre-TheRock) are **no longer supported** starting from the
