@@ -12,8 +12,8 @@ jobs:
       matrix:
         build:
           - rocm_version: "7.14"
-            rocm_build: "7.14.0-gfx906+20260826041541"
-            release_tag: "20260826041541"
+            rocm_build: "7.14.0-gfx906+20260802001858"
+            release_tag: "20260802001858"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v7
