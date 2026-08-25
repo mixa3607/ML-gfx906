@@ -102,7 +102,10 @@ RUN mkdir -p /builded && cp -r ./build/bin/* .devops/tools.sh /builded
 FROM rocm_base AS final
 WORKDIR /app
 COPY --from=files_llamacpp_python /files/llamacpp-python /app
-RUN pip3 install --upgrade setuptools && \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ffmpeg && \
+    rm -rf /var/lib/apt/lists/* && \
+    pip3 install --upgrade setuptools && \
     pip3 install -r requirements.txt && \
     pip3 cache purge && \
     true
