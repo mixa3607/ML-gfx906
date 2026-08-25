@@ -13,7 +13,7 @@ jobs:
         build:
           - rocm_version: "7.14"
             torch_version: "v2.13.0"
-            release_tag: "20260802001858"
+            release_tag: "20260826041541"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v7
