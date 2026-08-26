@@ -10,4 +10,8 @@ if [ "$ROCM_TOOLKIT_PUSH" == "" ]; then
   ROCM_TOOLKIT_PUSH="1"
 fi
 
+if [ "$ROCM_TOOLKIT_IS_RELEASE" == "" ]; then
+  ROCM_TOOLKIT_IS_RELEASE="0"
+fi
+
 popd > /dev/null

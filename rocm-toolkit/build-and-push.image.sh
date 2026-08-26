@@ -5,10 +5,16 @@ cd $(dirname $0)
 source ../env.sh "rocm" "rocm-toolkit"
 
 BASE_ROCM_IMAGE="${ROCM_IMAGE}:${ROCM_VERSION}-complete"
-IMAGE_TAGS=(
-  "$ROCM_TOOLKIT_IMAGE:${ROCM_VERSION}-${REPO_GIT_REF}"
-  "$ROCM_TOOLKIT_IMAGE:${ROCM_VERSION}"
-)
+if [ "$ROCM_TOOLKIT_IS_RELEASE" == "1" ]; then
+  IMAGE_TAGS=(
+    "$ROCM_TOOLKIT_IMAGE:${ROCM_VERSION}-${REPO_GIT_REF}"
+    "$ROCM_TOOLKIT_IMAGE:${ROCM_VERSION}"
+  )
+else
+  IMAGE_TAGS=(
+    "$ROCM_TOOLKIT_IMAGE:${ROCM_VERSION}-${REPO_GIT_REF}-pre"
+  )
+fi
 
 declare -A IMAGE_ANNOTATIONS
 IMAGE_ANNOTATIONS["org.opencontainers.image.created"]="$(date --rfc-3339=seconds)"
@@ -21,6 +27,7 @@ IMAGE_ANNOTATIONS["org.opencontainers.image.base.name"]="${BASE_ROCM_IMAGE}"
 echo "Start building ROCm toolkit image..."
 echo "ROCm base image: ${BASE_ROCM_IMAGE}"
 echo "ROCm version:    ${ROCM_VERSION}"
+echo "Is release:      ${ROCM_TOOLKIT_IS_RELEASE}"
 echo "Push:            ${ROCM_TOOLKIT_PUSH}"
 
 DOCKER_EXTRA_ARGS=()
