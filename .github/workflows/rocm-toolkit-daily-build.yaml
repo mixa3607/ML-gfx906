@@ -12,9 +12,12 @@ jobs:
       matrix:
         build:
           - rocm_version: "7.14"
+            release_tag: "20260826054506"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v7
+        with:
+          ref: ${{ matrix.build.release_tag }}
 
       - name: Aggressive cleanup
         uses: ./.github/workflows/actions/cleanup-space-action
