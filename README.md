@@ -37,6 +37,7 @@ sudo apt-get update
 | Name                  | About                   | Artefacts    | Status                                                                                                                                                             | Docs                                        |
 | --------------------- | ----------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
 | ROCm                  | ROCm bulds              | deb, image   | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/rocm-daily-build.yaml?style=flat-square)                | [readme](./rocm/README.md)                  |
+| ROCm Toolkit          | ROCm tools image        | image        | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/rocm-toolkit-daily-build.yaml?style=flat-square)        | [readme](./rocm-toolkit/README.md)          |
 | ROCm Validation Suite | ROCm Validation Suite   | deb          | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/rocm-validation-suite-deb-build.yaml?style=flat-square) | [readme](./rocm-validation-suite/README.md) |
 | ROCm TransferBench    | ROCm TransferBench      | deb          | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/rocm-transfer-bench-deb-build.yaml?style=flat-square)   | [readme](./rocm-transfer-bench/README.md)   |
 | AMD Memory Tweak      | AMD HBM2 timing tool    | deb          | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/amd-memory-tweak-deb-build.yaml?style=flat-square)      | [readme](./amd-memory-tweak/README.md)      |
@@ -53,6 +54,7 @@ sudo apt-get update
 ```mermaid
 flowchart TD
   ubuntu[docker.io/library/ubuntu] --> rocm[docker.io/mixa3607/rocm-gfx906]
+  rocm --> toolkit[docker.io/mixa3607/rocm-toolkit-gfx906]
   rocm --> llama[docker.io/mixa3607/llama.cpp-gfx906]
   rocm --> torch[docker.io/mixa3607/pytorch-gfx906]
   torch --> comfyui[docker.io/mixa3607/comfyui-gfx906]

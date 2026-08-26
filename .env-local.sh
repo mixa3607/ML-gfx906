@@ -13,6 +13,9 @@ export VLLM_IMAGE="registry.arkprojects.space/apps/vllm-gfx906"
 # rocm
 export ROCM_IMAGE="registry.arkprojects.space/apps/rocm-gfx906"
 
+# rocm toolkit
+export ROCM_TOOLKIT_IMAGE="registry.arkprojects.space/apps/rocm-toolkit-gfx906"
+
 # llamacpp
 export LLAMA_IMAGE="registry.arkprojects.space/apps/llama.cpp-gfx906"
 
