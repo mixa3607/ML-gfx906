@@ -17,6 +17,15 @@
 #define SMN_INDEX 0x0e
 #define SMN_DATA 0x0f
 #define HBM_TEMP_BASE 0x57148
+#define SVI2_PLANE0_CHANNEL1 0x16803
+#define SVI2_PLANE0_CHANNEL0 0x16804
+#define SVI2_PLANE1_CHANNEL0 0x16805
+#define SVI2_PLANE1_CHANNEL1 0x16806
+
+struct current_calibration {
+    uint16_t max_current;
+    int8_t offset;
+};
 
 static int read_line(const char *path, char *value, size_t size) {
     FILE *file = fopen(path, "r");
@@ -49,6 +58,56 @@ static int bar5_start(const char *bdf, uint64_t *start) {
     return 0;
 }
 
+static uint16_t le16(const uint8_t *value) {
+    return value[0] | (uint16_t)value[1] << 8;
+}
+
+static int read_current_calibration(const char *path, struct current_calibration calibration[4]) {
+    FILE *rom = fopen(path, "rb");
+    if (!rom)
+        return -1;
+    if (fseek(rom, 0, SEEK_END)) {
+        fclose(rom);
+        return -1;
+    }
+    long length = ftell(rom);
+    if (length < 0 || fseek(rom, 0, SEEK_SET)) {
+        fclose(rom);
+        return -1;
+    }
+    uint8_t *data = malloc((size_t)length);
+    if (!data || fread(data, 1, (size_t)length, rom) != (size_t)length) {
+        free(data);
+        fclose(rom);
+        return -1;
+    }
+    fclose(rom);
+
+    int result = -1;
+    if (length >= 0x4a) {
+        uint16_t header = le16(data + 0x48);
+        for (uint16_t field = 0x1c; field <= 0x24; field += 2) {
+            if ((size_t)header + field + 2 > (size_t)length)
+                continue;
+            uint16_t master = le16(data + header + field);
+            if ((size_t)master + 12 > (size_t)length || data[master + 2] != 2 || data[master + 3] != 1)
+                continue;
+            uint16_t smc_dpm = le16(data + master + 8);
+            if ((size_t)smc_dpm + 0x2c > (size_t)length || data[smc_dpm + 2] != 4 || data[smc_dpm + 3] != 4)
+                continue;
+            for (unsigned int rail = 0; rail < 4; ++rail) {
+                const uint8_t *entry = data + smc_dpm + 0x1c + rail * 4;
+                calibration[rail].max_current = le16(entry);
+                calibration[rail].offset = (int8_t)entry[2];
+            }
+            result = 0;
+            break;
+        }
+    }
+    free(data);
+    return result;
+}
+
 static void print_tmon(const volatile uint32_t *bar, unsigned int tmon, uint32_t first) {
     static const char *const directions[] = {"RDIL", "RDIR"};
     for (unsigned int group = 0; group < 2; ++group) {
@@ -76,7 +135,22 @@ static void print_hbm(volatile uint32_t *bar) {
     bar[SMN_INDEX] = saved_index;
 }
 
-static int read_gpu(const char *bdf) {
+static void print_svi2(const volatile uint32_t *bar, const struct current_calibration calibration[4]) {
+    static const char *const names[] = {"SVI2_GFX", "SVI2_SOC", "SVI2_MEM0", "SVI2_MEM1"};
+    static const uint32_t registers[] = {
+        SVI2_PLANE0_CHANNEL0, SVI2_PLANE0_CHANNEL1,
+        SVI2_PLANE1_CHANNEL0, SVI2_PLANE1_CHANNEL1,
+    };
+    for (unsigned int rail = 0; rail < 4; ++rail) {
+        uint32_t value = bar[registers[rail]];
+        double voltage = 1.55 - ((value >> 16) & 0xff) * 0.00625;
+        double current = (value & 0xff) * (calibration[rail].max_current - calibration[rail].offset) / 255.0
+                         + calibration[rail].offset;
+        printf("    %-24s : %.5f V  %.3f A\n", names[rail], voltage, current);
+    }
+}
+
+static int read_gpu(const char *bdf, const struct current_calibration *calibration) {
     char path[512], vendor[16], device[16];
     snprintf(path, sizeof(path), "/sys/bus/pci/devices/%s/vendor", bdf);
     if (read_line(path, vendor, sizeof(vendor)) || strcmp(vendor, "0x1002"))
@@ -105,12 +179,26 @@ static int read_gpu(const char *bdf) {
     print_tmon(bar, 0, TMON0_RDIL0);
     print_tmon(bar, 1, TMON1_RDIL0);
     print_hbm(bar);
+    if (calibration)
+        print_svi2(bar, calibration);
     munmap((void *)bar, BAR5_SIZE);
     close(mem);
     return 1;
 }
 
-int main(void) {
+int main(int argc, char *argv[]) {
+    struct current_calibration calibration[4];
+    const struct current_calibration *current = NULL;
+    if (argc == 3 && !strcmp(argv[1], "--vbios")) {
+        if (read_current_calibration(argv[2], calibration)) {
+            fprintf(stderr, "%s: unsupported AtomBIOS SMC DPM table\n", argv[2]);
+            return EXIT_FAILURE;
+        }
+        current = calibration;
+    } else if (argc != 1) {
+        fprintf(stderr, "usage: %s [--vbios ROM]\n", argv[0]);
+        return EXIT_FAILURE;
+    }
     DIR *devices = opendir("/sys/bus/pci/devices");
     if (!devices) {
         perror("/sys/bus/pci/devices");
@@ -121,7 +209,7 @@ int main(void) {
     while ((entry = readdir(devices))) {
         if (entry->d_name[0] == '.')
             continue;
-        int result = read_gpu(entry->d_name);
+        int result = read_gpu(entry->d_name, current);
         if (result < 0) {
             closedir(devices);
             return EXIT_FAILURE;

@@ -43,6 +43,44 @@ The binary also contains a secured/fenced fallback that forwards reads to SMU
 operations 36 and 37. That fallback is not active for the RDI register range on
 this test bench.
 
+## SVI2 telemetry
+
+`atitool -vctfstatus` also exposes voltage and current telemetry. The Vega 20
+implementation reads the SVI2 dword range `0x16800` through `0x16808` through
+the same BAR5 aperture. The voltage encoding used for the measured SVI2 values
+is `1.55 - byte2 * 0.00625` V; the low byte contains an unscaled current code.
+
+Current requires board-specific calibration from AtomBIOS, not a fixed hardware
+scale. The SMC DPM table stores the current at raw code `0` and at raw code
+`255`, so the recovered formula is
+`current = raw_code * (max_current - offset) / 255 + offset`.
+
+The D163 ROM (`274474.rom`, SHA-256
+`68d98d779570f4032ed2b988fea0a35baf20ddb7235034569e165507ab7acd93`) has
+an Atom master data table at `0x4e7e`; its SMC DPM info table is at `0x9194`
+and is revision 4.4. Four `{ uint16_t max_current, int8_t offset }` records
+start at table offset `0x1c`:
+
+- GFX: `768 A`, `0 A`; raw `3` gives `9.035294 A`.
+- SOC: `100 A`, `0 A`.
+- MEM0: `128 A`, `1 A`; its gain is `0.498039 A/code`.
+- MEM1: `16 A`, `0 A`; raw `36` gives `2.258824 A`.
+
+The live `atitool` trace exactly matched GFX, MEM0, and MEM1 calibration.
+Those values must not be hard-coded for another board; the standalone reader
+must parse the owning adapter's Atom table before publishing current telemetry.
+
+On the D163 board, the read-only SVI2 channel map is plane0/channel1 `0x16803`,
+plane0/channel0 `0x16804`, plane1/channel0 `0x16805`, and plane1/channel1
+`0x16806`. The standalone labels these by their Atom calibration entries
+(`GFX`, `SOC`, `MEM0`, `MEM1`) rather than duplicating `atitool`'s ambiguous
+current labels.
+
+Requested-voltage reads initialise and poll SVI2 transaction registers, so the
+standalone reader deliberately does not access that path. `vega20-rdi --vbios`
+parses the AtomBIOS calibration table and combines it with the read-only
+measured telemetry registers.
+
 ## Test bench observations
 
 - Host: `kube-worker6.arkprojects.lan`
