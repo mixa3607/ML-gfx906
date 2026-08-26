@@ -1,0 +1,54 @@
+# Vega 20 thermal-status research
+
+## Confirmed behavior
+
+`atitool -thermalstatus` reads 64 RDI temperatures and four individual HBM
+stack temperatures on an AMD Vega 20 (MI50). The standard `amdgpu` hwmon API
+only exposes `edge`, `junction`, and aggregate `mem`, so it cannot supply the
+same data.
+
+The reference binary was opened in IDA from `D:\rocm-metrics\atitool`.
+Relevant functions:
+
+- `sub_ABD136` reads an individual RDI temperature.
+- `sub_ABD2FC` maps sensor IDs 50--81 to TMON 0, 82--113 to TMON 1, and IDs
+  150--153 to HBM stacks 0--3.
+- `sub_ABD0E2` converts the 12-bit temperature field.
+- `sub_A7E5B6` is `CVega20GraphicsDevice::MMRegRead32`.
+
+RDI logical register indices used by the binary are:
+
+- TMON 0: `0x1660d` through `0x1662c`
+- TMON 1: `0x16631` through `0x16650`
+
+The values have a 12-bit temperature field in bits 23:12. The conversion mode
+is selected by the Vega 20 thermal-control object; it is either signed
+quarter-degrees or `raw * 0.125 - 49`.
+
+## Important restriction
+
+On this MI50, the active `MMRegRead32` mode maps BAR5 through `/dev/mem` and
+reads the cached aperture at `byte_index / 4`. The read-only standalone path is
+therefore equivalent for RDI. The prior 185--195 C result was a decoding error:
+this device uses `((value >> 12) & 0xfff) * 0.125 - 49`, not signed
+quarter-degrees.
+
+HBM uses SMN indirect reads through BAR5 registers `0x0e` (index) and `0x0f`
+(data). Stack `n` selects SMN offset `0x57148 + n * 0x200000`; the temperature
+is the unsigned byte in data bits 23:16. Selecting an HBM register writes the
+volatile SMN index register, and the standalone reader restores its previous
+value after the four reads.
+
+The binary also contains a secured/fenced fallback that forwards reads to SMU
+operations 36 and 37. That fallback is not active for the RDI register range on
+this test bench.
+
+## Test bench observations
+
+- Host: `kube-worker6.arkprojects.lan`
+- Devices: four `1002:66a1` Vega 20 / MI50 GPUs at `33:00.0`, `36:00.0`,
+  `4d:00.0`, and `50:00.0`.
+- `atitool -thermalstatus` successfully returned all 68 temperatures for the
+  first adapter.
+- `rocm-smi --showtemp` reported only edge, junction, memory, and zero-valued
+  HBM stack placeholders.
