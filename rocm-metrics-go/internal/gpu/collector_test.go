@@ -35,10 +35,16 @@ func TestReadGPU(t *testing.T) {
 		"max_link_speed":              "16.0 GT/s PCIe\n",
 		"current_link_width":          "16\n",
 		"max_link_width":              "16\n",
+		"product_number":              "102-D16317-11\n",
+		"product_name":                "Radeon Instinct MI50 32GB\n",
+		"serial_number":               "6921210044327dd4\n",
+		"vbios_version":               "113-D1631700-111\n",
 		"hwmon/hwmon0/power1_average": "125000000\n",
 		"hwmon/hwmon0/power1_cap":     "200000000\n",
 		"hwmon/hwmon0/power1_cap_min": "100000000\n",
 		"hwmon/hwmon0/power1_cap_max": "250000000\n",
+		"hwmon/hwmon0/pwm1":           "64\n",
+		"hwmon/hwmon0/pwm1_max":       "255\n",
 	}
 	for name, value := range files {
 		if err := os.WriteFile(filepath.Join(device, name), []byte(value), 0o644); err != nil {
@@ -71,5 +77,11 @@ func TestReadGPU(t *testing.T) {
 	}
 	if sample.activity == nil || *sample.activity != 42 || sample.pcieSpeed["current"] != 16 || sample.pcieWidth["current"] != 8 {
 		t.Fatalf("unexpected activity or PCIe data: %#v %#v %#v", sample.activity, sample.pcieSpeed, sample.pcieWidth)
+	}
+	if sample.model != "102-D16317-11" || sample.series != "Radeon Instinct MI50 32GB" || sample.serial != "6921210044327dd4" || sample.vbios != "113-D1631700-111" || sample.driverVersion == "" {
+		t.Fatalf("unexpected GPU metadata: %#v", sample)
+	}
+	if sample.fan == nil || *sample.fan != float64(64)*100/255 {
+		t.Fatalf("unexpected fan data: %#v", sample.fan)
 	}
 }

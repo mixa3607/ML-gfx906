@@ -29,6 +29,8 @@ type Collector struct {
 	activity    *prometheus.Desc
 	pcieSpeed   *prometheus.Desc
 	pcieWidth   *prometheus.Desc
+	info        *prometheus.Desc
+	fan         *prometheus.Desc
 	up          *prometheus.Desc
 	registerUp  *prometheus.Desc
 	temperature *prometheus.Desc
@@ -60,6 +62,8 @@ func NewCollector(sysfs, backend, vbios string) (*Collector, error) {
 		activity:    prometheus.NewDesc("vega20_gfx_activity_percent", "GPU graphics-engine activity reported by amdgpu.", []string{"gpu"}, nil),
 		pcieSpeed:   prometheus.NewDesc("vega20_pcie_link_speed_gigatransfers_per_second", "Effective current and maximum PCIe link speed across the GPU parent chain.", []string{"gpu", "state"}, nil),
 		pcieWidth:   prometheus.NewDesc("vega20_pcie_link_width_lanes", "Effective current and maximum PCIe link width across the GPU parent chain.", []string{"gpu", "state"}, nil),
+		info:        prometheus.NewDesc("vega20_gpu_info", "Vega 20 GPU identity and driver metadata.", []string{"gpu", "card_vendor", "card_model", "card_series", "driver_version", "serial_number", "vbios_version"}, nil),
+		fan:         prometheus.NewDesc("vega20_fan_speed_percent", "GPU fan PWM duty cycle.", []string{"gpu"}, nil),
 		up:          prometheus.NewDesc("vega20_gpu_up", "Whether sysfs telemetry was read successfully for the GPU.", []string{"gpu"}, nil),
 		registerUp:  prometheus.NewDesc("vega20_register_telemetry_up", "Whether register telemetry was read successfully for the GPU.", []string{"gpu", "backend"}, nil),
 		temperature: prometheus.NewDesc("vega20_temperature_celsius", "Vega 20 temperature sensors.", []string{"gpu", "sensor"}, nil),
@@ -80,6 +84,8 @@ func (c *Collector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- c.activity
 	ch <- c.pcieSpeed
 	ch <- c.pcieWidth
+	ch <- c.info
+	ch <- c.fan
 	ch <- c.up
 	ch <- c.registerUp
 	ch <- c.temperature
@@ -128,6 +134,10 @@ func (c *Collector) Collect(ch chan<- prometheus.Metric) {
 		for state, value := range gpu.pcieWidth {
 			ch <- prometheus.MustNewConstMetric(c.pcieWidth, prometheus.GaugeValue, float64(value), gpu.bdf, state)
 		}
+		ch <- prometheus.MustNewConstMetric(c.info, prometheus.GaugeValue, 1, gpu.bdf, gpu.vendor, gpu.model, gpu.series, gpu.driverVersion, gpu.serial, gpu.vbios)
+		if gpu.fan != nil {
+			ch <- prometheus.MustNewConstMetric(c.fan, prometheus.GaugeValue, *gpu.fan, gpu.bdf)
+		}
 		if c.backend == "none" {
 			continue
 		}
@@ -156,16 +166,23 @@ func (c *Collector) Collect(ch chan<- prometheus.Metric) {
 }
 
 type sample struct {
-	bdf         string
-	vramTotal   uint64
-	vramUsed    uint64
-	visibleVRAM map[string]uint64
-	gtt         map[string]uint64
-	power       map[string]uint64
-	limits      map[string]uint64
-	activity    *uint64
-	pcieSpeed   map[string]float64
-	pcieWidth   map[string]uint64
+	bdf           string
+	vramTotal     uint64
+	vramUsed      uint64
+	visibleVRAM   map[string]uint64
+	gtt           map[string]uint64
+	power         map[string]uint64
+	limits        map[string]uint64
+	activity      *uint64
+	pcieSpeed     map[string]float64
+	pcieWidth     map[string]uint64
+	vendor        string
+	model         string
+	series        string
+	driverVersion string
+	serial        string
+	vbios         string
+	fan           *float64
 }
 
 func readGPU(card string) (sample, error) {
@@ -187,15 +204,21 @@ func readGPU(card string) (sample, error) {
 	}
 	pcie := effectivePCIeLink(devicePath)
 	result := sample{
-		bdf:         filepath.Base(devicePath),
-		vramTotal:   total,
-		vramUsed:    used,
-		visibleVRAM: memoryStats(device, "mem_info_vis_vram_total", "mem_info_vis_vram_used"),
-		gtt:         memoryStats(device, "mem_info_gtt_total", "mem_info_gtt_used"),
-		power:       map[string]uint64{},
-		limits:      map[string]uint64{},
-		pcieSpeed:   pcie.speeds,
-		pcieWidth:   pcie.widths,
+		bdf:           filepath.Base(devicePath),
+		vramTotal:     total,
+		vramUsed:      used,
+		visibleVRAM:   memoryStats(device, "mem_info_vis_vram_total", "mem_info_vis_vram_used"),
+		gtt:           memoryStats(device, "mem_info_gtt_total", "mem_info_gtt_used"),
+		power:         map[string]uint64{},
+		limits:        map[string]uint64{},
+		pcieSpeed:     pcie.speeds,
+		pcieWidth:     pcie.widths,
+		vendor:        "AMD",
+		model:         readText(filepath.Join(device, "product_number")),
+		series:        readText(filepath.Join(device, "product_name")),
+		driverVersion: readText("/proc/sys/kernel/osrelease"),
+		serial:        readText(filepath.Join(device, "serial_number")),
+		vbios:         readText(filepath.Join(device, "vbios_version")),
 	}
 	if activity, err := readUint(filepath.Join(device, "gpu_busy_percent")); err == nil {
 		result.activity = &activity
@@ -210,6 +233,12 @@ func readGPU(card string) (sample, error) {
 		for limit, file := range map[string]string{"current": "power1_cap", "minimum": "power1_cap_min", "maximum": "power1_cap_max"} {
 			if value, err := readUint(filepath.Join(hwmon, file)); err == nil {
 				result.limits[limit] = value
+			}
+		}
+		if pwm, err := readUint(filepath.Join(hwmon, "pwm1")); err == nil {
+			if maximum, err := readUint(filepath.Join(hwmon, "pwm1_max")); err == nil && maximum > 0 && pwm <= maximum {
+				fan := float64(pwm) * 100 / float64(maximum)
+				result.fan = &fan
 			}
 		}
 	}
