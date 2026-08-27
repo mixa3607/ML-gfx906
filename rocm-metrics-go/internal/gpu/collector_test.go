@@ -26,6 +26,15 @@ func TestReadGPU(t *testing.T) {
 		"device":                      "0x66a1\n",
 		"mem_info_vram_total":         "34359738368\n",
 		"mem_info_vram_used":          "4294967296\n",
+		"mem_info_vis_vram_total":     "17179869184\n",
+		"mem_info_vis_vram_used":      "2147483648\n",
+		"mem_info_gtt_total":          "68719476736\n",
+		"mem_info_gtt_used":           "1073741824\n",
+		"gpu_busy_percent":            "42\n",
+		"current_link_speed":          "16.0 GT/s PCIe\n",
+		"max_link_speed":              "16.0 GT/s PCIe\n",
+		"current_link_width":          "16\n",
+		"max_link_width":              "16\n",
 		"hwmon/hwmon0/power1_average": "125000000\n",
 		"hwmon/hwmon0/power1_cap":     "200000000\n",
 		"hwmon/hwmon0/power1_cap_min": "100000000\n",
@@ -46,5 +55,11 @@ func TestReadGPU(t *testing.T) {
 	}
 	if sample.power["average"] != 125000000 || sample.limits["maximum"] != 250000000 {
 		t.Fatalf("unexpected power data: %#v %#v", sample.power, sample.limits)
+	}
+	if sample.visibleVRAM["free"] != 15032385536 || sample.gtt["free"] != 67645734912 {
+		t.Fatalf("unexpected memory data: %#v %#v", sample.visibleVRAM, sample.gtt)
+	}
+	if sample.activity == nil || *sample.activity != 42 || sample.pcieSpeed["current"] != 16 || sample.pcieWidth["current"] != 16 {
+		t.Fatalf("unexpected activity or PCIe data: %#v %#v %#v", sample.activity, sample.pcieSpeed, sample.pcieWidth)
 	}
 }
