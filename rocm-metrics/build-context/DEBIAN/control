@@ -1,0 +1,7 @@
+Package: rocm-metrics
+Version: @PACKAGE_VERSION@
+Section: utils
+Priority: optional
+Architecture: amd64
+Maintainer: mixa3607
+Description: Prometheus exporter for AMD Vega 20 / MI50 metrics

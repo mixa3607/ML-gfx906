@@ -27,7 +27,7 @@ docker buildx build \
   --target final \
   --file ./build-deb.Dockerfile \
   --output "type=local,dest=${METRICS_PACKAGES_DIR}" \
-  . 2>&1 | tee "./logs/build-deb_$(date +%Y%m%d%H%M%S).log"
+  ./build-context 2>&1 | tee "./logs/build-deb_$(date +%Y%m%d%H%M%S).log"
 
 find "$METRICS_PACKAGES_DIR" -maxdepth 1 -type f -name '*.deb' -printf '%f\n' | sort > "$METRICS_PACKAGES_DIR/index.txt"
 

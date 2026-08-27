@@ -5,10 +5,10 @@ GO ?= go
 all: vega20-metrics
 
 vega20-metrics:
-	$(GO) build -o $@ ./cmd/vega20-metrics
+	cd build-context && $(GO) build -o ../$@ ./cmd/vega20-metrics
 
 test:
-	$(GO) test ./...
+	cd build-context && $(GO) test ./...
 
 deb:
 	./build-and-push.deb.sh

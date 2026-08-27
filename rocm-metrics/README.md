@@ -60,7 +60,7 @@ headless MI50 as hardware clock-counter telemetry.
 ## Run
 
 ```sh
-go build ./cmd/vega20-metrics
+make
 sudo ./vega20-metrics --listen :9487 --register-backend debugfs
 curl localhost:9487/metrics
 ```
