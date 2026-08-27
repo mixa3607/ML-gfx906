@@ -12,15 +12,53 @@
 #include <unistd.h>
 
 #define BAR5_SIZE (512 * 1024)
-#define TMON0_RDIL0 0x1660d
-#define TMON1_RDIL0 0x16631
-#define SMN_INDEX 0x0e
-#define SMN_DATA 0x0f
-#define HBM_TEMP_BASE 0x57148
+#define PCI_RESOURCE_COUNT 6
+
+#define TMON0_RDI_FIRST_DWORD 0x1660d
+#define TMON1_RDI_FIRST_DWORD 0x16631
+#define TMON_RDI_SENSORS_PER_DIRECTION 16
+#define TMON_RDI_VALID_MASK 0x800
+#define TMON_RDI_RAW_SHIFT 12
+#define TMON_RDI_RAW_MASK 0xfff
+#define TMON_RDI_DEGREES_PER_CODE 0.125
+#define TMON_RDI_DEGREES_OFFSET -49.0
+#define TMON_THERMAL_POLICY_DWORD 0x1665f
+#define TMON_THERMAL_POLICY_MASK 0x1ff
+#define TMON_HW_CTF_LIMIT_DWORD 0x16602
+#define TMON_HW_CTF_LIMIT_SHIFT 6
+#define TMON_HW_CTF_LIMIT_MASK 0xff
+#define TMON_TGRADIENT_SENSOR_COUNT 32
+
+#define SMN_INDEX_DWORD 0x0e
+#define SMN_DATA_DWORD 0x0f
+#define HBM_STACK_COUNT 4
+#define HBM_TEMPERATURE_SMN_BASE 0x57148
+#define HBM_TEMPERATURE_SMN_STACK_STRIDE 0x200000
+#define HBM_TEMPERATURE_SHIFT 16
+#define HBM_TEMPERATURE_MASK 0xff
+
 #define SVI2_PLANE0_CHANNEL1 0x16803
 #define SVI2_PLANE0_CHANNEL0 0x16804
 #define SVI2_PLANE1_CHANNEL0 0x16805
 #define SVI2_PLANE1_CHANNEL1 0x16806
+#define SVI2_VOLTAGE_SHIFT 16
+#define SVI2_VOLTAGE_MASK 0xff
+#define SVI2_CURRENT_MASK 0xff
+#define SVI2_VOLTAGE_MAX 1.55
+#define SVI2_VOLTAGE_STEP 0.00625
+#define SVI2_CURRENT_CODE_MAX 255.0
+
+#define ATOM_ROM_HEADER_POINTER_OFFSET 0x48
+#define ATOM_ROM_HEADER_MIN_SIZE (ATOM_ROM_HEADER_POINTER_OFFSET + sizeof(uint16_t))
+#define ATOM_ROM_MASTER_DATA_TABLE_FIELD_FIRST 0x1c
+#define ATOM_ROM_MASTER_DATA_TABLE_FIELD_LAST 0x24
+#define ATOM_ROM_MASTER_DATA_TABLE_FIELD_SIZE sizeof(uint16_t)
+#define ATOM_COMMON_TABLE_FORMAT_REVISION_OFFSET 2
+#define ATOM_COMMON_TABLE_CONTENT_REVISION_OFFSET 3
+#define ATOM_MASTER_DATA_TABLE_SMC_DPM_ENTRY_OFFSET 8
+#define ATOM_SMC_DPM_V4_4_CALIBRATION_OFFSET 0x1c
+#define ATOM_SMC_DPM_V4_4_CALIBRATION_SIZE 4
+#define ATOM_SMC_DPM_V4_4_RAIL_COUNT 4
 
 struct current_calibration {
     uint16_t max_current;
@@ -44,7 +82,7 @@ static int bar5_start(const char *bdf, uint64_t *start) {
     if (!resource)
         return -1;
     uint64_t begin, end, flags;
-    for (int index = 0; index < 6; ++index) {
+    for (int index = 0; index < PCI_RESOURCE_COUNT; ++index) {
         if (fscanf(resource, "%" SCNx64 " %" SCNx64 " %" SCNx64,
                    &begin, &end, &flags) != 3) {
             fclose(resource);
@@ -62,7 +100,8 @@ static uint16_t le16(const uint8_t *value) {
     return value[0] | (uint16_t)value[1] << 8;
 }
 
-static int read_current_calibration(const char *path, struct current_calibration calibration[4]) {
+static int read_current_calibration(
+        const char *path, struct current_calibration calibration[ATOM_SMC_DPM_V4_4_RAIL_COUNT]) {
     FILE *rom = fopen(path, "rb");
     if (!rom)
         return -1;
@@ -84,19 +123,28 @@ static int read_current_calibration(const char *path, struct current_calibration
     fclose(rom);
 
     int result = -1;
-    if (length >= 0x4a) {
-        uint16_t header = le16(data + 0x48);
-        for (uint16_t field = 0x1c; field <= 0x24; field += 2) {
-            if ((size_t)header + field + 2 > (size_t)length)
+    if (length >= (long)ATOM_ROM_HEADER_MIN_SIZE) {
+        uint16_t header = le16(data + ATOM_ROM_HEADER_POINTER_OFFSET);
+        // Atom ROM header revisions place the master data-table pointer in this small range.
+        for (uint16_t field = ATOM_ROM_MASTER_DATA_TABLE_FIELD_FIRST;
+             field <= ATOM_ROM_MASTER_DATA_TABLE_FIELD_LAST;
+             field += ATOM_ROM_MASTER_DATA_TABLE_FIELD_SIZE) {
+            if ((size_t)header + field + ATOM_ROM_MASTER_DATA_TABLE_FIELD_SIZE > (size_t)length)
                 continue;
             uint16_t master = le16(data + header + field);
-            if ((size_t)master + 12 > (size_t)length || data[master + 2] != 2 || data[master + 3] != 1)
+            if ((size_t)master + ATOM_MASTER_DATA_TABLE_SMC_DPM_ENTRY_OFFSET + sizeof(uint16_t) > (size_t)length
+                || data[master + ATOM_COMMON_TABLE_FORMAT_REVISION_OFFSET] != 2
+                || data[master + ATOM_COMMON_TABLE_CONTENT_REVISION_OFFSET] != 1)
                 continue;
-            uint16_t smc_dpm = le16(data + master + 8);
-            if ((size_t)smc_dpm + 0x2c > (size_t)length || data[smc_dpm + 2] != 4 || data[smc_dpm + 3] != 4)
+            uint16_t smc_dpm = le16(data + master + ATOM_MASTER_DATA_TABLE_SMC_DPM_ENTRY_OFFSET);
+            if ((size_t)smc_dpm + ATOM_SMC_DPM_V4_4_CALIBRATION_OFFSET
+                    + ATOM_SMC_DPM_V4_4_RAIL_COUNT * ATOM_SMC_DPM_V4_4_CALIBRATION_SIZE > (size_t)length
+                || data[smc_dpm + ATOM_COMMON_TABLE_FORMAT_REVISION_OFFSET] != 4
+                || data[smc_dpm + ATOM_COMMON_TABLE_CONTENT_REVISION_OFFSET] != 4)
                 continue;
-            for (unsigned int rail = 0; rail < 4; ++rail) {
-                const uint8_t *entry = data + smc_dpm + 0x1c + rail * 4;
+            for (unsigned int rail = 0; rail < ATOM_SMC_DPM_V4_4_RAIL_COUNT; ++rail) {
+                const uint8_t *entry = data + smc_dpm + ATOM_SMC_DPM_V4_4_CALIBRATION_OFFSET
+                                       + rail * ATOM_SMC_DPM_V4_4_CALIBRATION_SIZE;
                 calibration[rail].max_current = le16(entry);
                 calibration[rail].offset = (int8_t)entry[2];
             }
@@ -111,40 +159,75 @@ static int read_current_calibration(const char *path, struct current_calibration
 static void print_tmon(const volatile uint32_t *bar, unsigned int tmon, uint32_t first) {
     static const char *const directions[] = {"RDIL", "RDIR"};
     for (unsigned int group = 0; group < 2; ++group) {
-        for (unsigned int sensor = 0; sensor < 16; ++sensor) {
-            uint32_t value = bar[first + group * 16 + sensor];
-            if (!(value & 0x800)) {
+        for (unsigned int sensor = 0; sensor < TMON_RDI_SENSORS_PER_DIRECTION; ++sensor) {
+            uint32_t value = bar[first + group * TMON_RDI_SENSORS_PER_DIRECTION + sensor];
+            if (!(value & TMON_RDI_VALID_MASK)) {
                 printf("    TMON_%u_%s%u              : unavailable\n", tmon, directions[group], sensor);
                 continue;
             }
-            uint32_t raw = (value >> 12) & 0xfff;
+            // Vega 20 RDI encodes an eighth-degree value biased by -49 C.
+            uint32_t raw = (value >> TMON_RDI_RAW_SHIFT) & TMON_RDI_RAW_MASK;
             printf("    TMON_%u_%s%u              : %.2f C\n",
-                   tmon, directions[group], sensor, raw * 0.125 - 49.0);
+                   tmon, directions[group], sensor,
+                   raw * TMON_RDI_DEGREES_PER_CODE + TMON_RDI_DEGREES_OFFSET);
         }
     }
 }
 
 static void print_hbm(volatile uint32_t *bar) {
-    uint32_t saved_index = bar[SMN_INDEX];
-    for (unsigned int stack = 0; stack < 4; ++stack) {
-        bar[SMN_INDEX] = HBM_TEMP_BASE + stack * 0x200000;
-        uint32_t value = bar[SMN_DATA];
-        printf("    HBM_STACK%u                : %u.00 C\n", stack, (value >> 16) & 0xff);
+    uint32_t saved_index = bar[SMN_INDEX_DWORD];
+    for (unsigned int stack = 0; stack < HBM_STACK_COUNT; ++stack) {
+        bar[SMN_INDEX_DWORD] = HBM_TEMPERATURE_SMN_BASE + stack * HBM_TEMPERATURE_SMN_STACK_STRIDE;
+        uint32_t value = bar[SMN_DATA_DWORD];
+        printf("    HBM_STACK%u                : %u.00 C\n", stack,
+               (value >> HBM_TEMPERATURE_SHIFT) & HBM_TEMPERATURE_MASK);
     }
-    // SMN_INDEX is a selector, so put the caller-visible state back as found.
-    bar[SMN_INDEX] = saved_index;
+    // SMN_INDEX_DWORD is a selector, so put the caller-visible state back as found.
+    bar[SMN_INDEX_DWORD] = saved_index;
 }
 
-static void print_svi2(const volatile uint32_t *bar, const struct current_calibration calibration[4]) {
+static void print_thermal_metrics(const volatile uint32_t *bar) {
+    uint32_t policy = bar[TMON_THERMAL_POLICY_DWORD] & TMON_THERMAL_POLICY_MASK;
+    uint32_t limit = (bar[TMON_HW_CTF_LIMIT_DWORD] >> TMON_HW_CTF_LIMIT_SHIFT)
+                     & TMON_HW_CTF_LIMIT_MASK;
+    printf("    THERMAL_POLICY              : %u.00 C\n", policy);
+    printf("    HW_CTF_LIMIT                : %.2f C\n", limit + TMON_RDI_DEGREES_OFFSET);
+
+    uint32_t first = bar[TMON0_RDI_FIRST_DWORD];
+    if (!(first & TMON_RDI_VALID_MASK)) {
+        printf("    TGRADIENT                   : unavailable\n");
+        return;
+    }
+    // Vega 20 defines TGRADIENT as the hottest TMON0 RDI minus RDIL0.
+    double baseline = ((first >> TMON_RDI_RAW_SHIFT) & TMON_RDI_RAW_MASK)
+                      * TMON_RDI_DEGREES_PER_CODE + TMON_RDI_DEGREES_OFFSET;
+    double maximum = baseline;
+    for (unsigned int sensor = 1; sensor < TMON_TGRADIENT_SENSOR_COUNT; ++sensor) {
+        uint32_t value = bar[TMON0_RDI_FIRST_DWORD + sensor];
+        if (!(value & TMON_RDI_VALID_MASK))
+            continue;
+        double temperature = ((value >> TMON_RDI_RAW_SHIFT) & TMON_RDI_RAW_MASK)
+                             * TMON_RDI_DEGREES_PER_CODE + TMON_RDI_DEGREES_OFFSET;
+        if (temperature > maximum)
+            maximum = temperature;
+    }
+    printf("    TGRADIENT                   : %.2f C\n", maximum - baseline);
+}
+
+static void print_svi2(
+        const volatile uint32_t *bar,
+        const struct current_calibration calibration[ATOM_SMC_DPM_V4_4_RAIL_COUNT]) {
     static const char *const names[] = {"SVI2_GFX", "SVI2_SOC", "SVI2_MEM0", "SVI2_MEM1"};
     static const uint32_t registers[] = {
         SVI2_PLANE0_CHANNEL0, SVI2_PLANE0_CHANNEL1,
         SVI2_PLANE1_CHANNEL0, SVI2_PLANE1_CHANNEL1,
     };
-    for (unsigned int rail = 0; rail < 4; ++rail) {
+    for (unsigned int rail = 0; rail < ATOM_SMC_DPM_V4_4_RAIL_COUNT; ++rail) {
         uint32_t value = bar[registers[rail]];
-        double voltage = 1.55 - ((value >> 16) & 0xff) * 0.00625;
-        double current = (value & 0xff) * (calibration[rail].max_current - calibration[rail].offset) / 255.0
+        // SVI2 returns VID in byte 2; the regulator defines 1.55 V minus 6.25 mV per code.
+        double voltage = SVI2_VOLTAGE_MAX - ((value >> SVI2_VOLTAGE_SHIFT) & SVI2_VOLTAGE_MASK) * SVI2_VOLTAGE_STEP;
+        // AtomBIOS stores the calibrated current endpoints at codes 0 and 255.
+        double current = (value & SVI2_CURRENT_MASK) * (calibration[rail].max_current - calibration[rail].offset) / SVI2_CURRENT_CODE_MAX
                          + calibration[rail].offset;
         printf("    %-24s : %.5f V  %.3f A\n", names[rail], voltage, current);
     }
@@ -176,9 +259,10 @@ static int read_gpu(const char *bdf, const struct current_calibration *calibrati
         return -1;
     }
     printf("GPU %s\n", bdf);
-    print_tmon(bar, 0, TMON0_RDIL0);
-    print_tmon(bar, 1, TMON1_RDIL0);
+    print_tmon(bar, 0, TMON0_RDI_FIRST_DWORD);
+    print_tmon(bar, 1, TMON1_RDI_FIRST_DWORD);
     print_hbm(bar);
+    print_thermal_metrics(bar);
     if (calibration)
         print_svi2(bar, calibration);
     munmap((void *)bar, BAR5_SIZE);
@@ -187,7 +271,7 @@ static int read_gpu(const char *bdf, const struct current_calibration *calibrati
 }
 
 int main(int argc, char *argv[]) {
-    struct current_calibration calibration[4];
+    struct current_calibration calibration[ATOM_SMC_DPM_V4_4_RAIL_COUNT];
     const struct current_calibration *current = NULL;
     if (argc == 3 && !strcmp(argv[1], "--vbios")) {
         if (read_current_calibration(argv[2], calibration)) {

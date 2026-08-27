@@ -81,6 +81,21 @@ standalone reader deliberately does not access that path. `vega20-rdi --vbios`
 parses the AtomBIOS calibration table and combines it with the read-only
 measured telemetry registers.
 
+## Thermal policy and gradient
+
+`CVega20ThermalControl::GetThermalSensorReading` (`sub_ABD2FC`) exposes the
+additional read-only thermal values printed by `atitool -vctfstatus`:
+
+- thermal policy temperature: `bar[0x1665f] & 0x1ff` C;
+- hardware CTF limit: `((bar[0x16602] >> 6) & 0xff) - 49` C;
+- TGRADIENT: the hottest TMON 0 RDI minus `TMON_0_RDIL0`.
+
+On the test bench, GDB traced raw values `0x562b` at `0x1665f` and `0x27e1` at
+`0x16602`, yielding 43 C thermal policy and 110 C hardware CTF respectively.
+The TGRADIENT implementation walks sensor IDs 50--81, which map exactly to the
+32 TMON 0 RDI registers; it subtracts sensor ID 50 rather than the global
+minimum RDI temperature.
+
 ## Test bench observations
 
 - Host: `kube-worker6.arkprojects.lan`

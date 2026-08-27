@@ -11,8 +11,9 @@ sudo ./vega20-rdi
 ```
 
 Root access is required because the program maps each supported GPU's BAR5 via
-`/dev/mem`. It discovers all matching PCI devices and prints 64 TMON RDI values
-and four HBM stack temperatures for each one.
+`/dev/mem`. It discovers all matching PCI devices and prints 64 TMON RDI values,
+four HBM stack temperatures, thermal-policy temperature, the hardware CTF limit,
+and TGRADIENT for each one.
 
 To include calibrated SVI2 voltage/current channels, provide the adapter's
 VBIOS ROM explicitly:
@@ -29,6 +30,9 @@ a ROM from a different board: its current endpoints can differ.
 - TMON 0 RDI: BAR5 dword indices `0x1660d` through `0x1662c`.
 - TMON 1 RDI: BAR5 dword indices `0x16631` through `0x16650`.
 - RDI decoding: `((value >> 12) & 0xfff) * 0.125 - 49.0` C when bit 11 is set.
+- Thermal policy: `bar[0x1665f] & 0x1ff` C.
+- Hardware CTF limit: `((bar[0x16602] >> 6) & 0xff) - 49` C.
+- TGRADIENT: hottest TMON 0 RDI less `TMON_0_RDIL0`.
 - HBM temperatures: SMN offsets `0x57148 + stack * 0x200000`; the unsigned
   value in bits 23:16 is degrees C.
 
