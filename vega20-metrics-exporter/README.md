@@ -1,7 +1,21 @@
 # vega20-metrics-exporter
 
 `vega20-metrics` is a Go Prometheus exporter for MI50/Vega 20. It combines
-amdgpu sysfs data with direct RDI register telemetry.
+amdgpu sysfs telemetry with direct RDI register telemetry and serves metrics on
+port `9487` by default.
+
+## Requirements
+
+- Linux host with an AMD Vega 20 GPU, such as MI50.
+- `debugfs` mounted for the default `debugfs` register backend.
+- A process permitted to read and write
+  `/sys/kernel/debug/dri/<BDF>/amdgpu_regs` for register telemetry.
+- Go 1.24 to build from source, or Docker with Buildx to build the package and
+  image.
+
+Use `--register-backend none` when only amdgpu sysfs metrics are required.
+`--register-backend bar5` maps GPU BAR5 through `/dev/mem`; it requires raw
+I/O access and should be used only when debugfs is unavailable.
 
 ## Metrics
 
@@ -57,10 +71,10 @@ minus `tmon_0_rdil0`.
 These are not GFXCLK, memory clock, or SoC clock. They remain useful on a
 headless MI50 as hardware clock-counter telemetry.
 
-## Run
+## Run From Source
 
 ```sh
-make
+cd build-context && go build -o ../vega20-metrics ./cmd/vega20-metrics
 sudo ./vega20-metrics --listen :9487 --register-backend debugfs
 curl localhost:9487/metrics
 ```
@@ -78,26 +92,60 @@ calibrated SVI2 current metrics; do not use a ROM from another board.
 Configure `OTEL_EXPORTER_OTLP_ENDPOINT` to enable OTLP/gRPC traces; without it,
 no external OpenTelemetry collector is required.
 
-## Debian Package And Image
+## Debian Package
 
-Build a Debian package with Docker Buildx:
+Build the package with Docker Buildx:
 
 ```sh
-METRICS_PUSH=0 make deb
+METRICS_PUSH=0 ./build-and-push.deb.sh
 ```
 
 The package is written to
-`output/rocm<version>/vega20-metrics-exporter-<package-version>/` and installs
+`output/vega20-metrics-exporter-<package-version>/` and installs
 `/usr/bin/vega20-metrics`. `build-and-push.deb.sh` pushes the package and its
 `index.txt` by default; set `METRICS_PUSH=0` for a local build.
 
-Build the container image from the locally built package:
+Install a locally built package with:
 
 ```sh
-METRICS_PUSH=0 make image
+sudo apt install ./output/vega20-metrics-exporter-*/*.deb
 ```
 
-The image runs the exporter on `:9487` with the debugfs backend. Mount host
-`/sys`, host debugfs, and grant the required device permissions when deploying
-it. `METRICS_PACKAGES_SOURCE=apt` is reserved for an APT package source and
-currently exits with a not-implemented error.
+## Container Image
+
+The image is based on Ubuntu 24.04 and starts the exporter with the `debugfs`
+backend. Build it from the locally built package:
+
+```sh
+METRICS_PUSH=0 ./build-and-push.image.sh
+```
+
+Buildx must push the image (`METRICS_PUSH=1`) or otherwise export it before it
+can be run outside the Buildx cache. A debugfs deployment needs the host sysfs
+and debugfs mounts. The following example uses `--privileged` because the RDI
+interface requires read/write driver-debugfs access; reduce privileges only
+after verifying the required device policy on the target host.
+
+```sh
+docker run --rm --network host --privileged \
+  --mount type=bind,src=/sys,dst=/sys,readonly \
+  --mount type=bind,src=/sys/kernel/debug,dst=/sys/kernel/debug \
+  docker.io/mixa3607/vega20-metrics-exporter:<tag>
+```
+
+Use `--register-backend none` for a container that should expose only sysfs
+metrics. `METRICS_PACKAGES_SOURCE=apt` is reserved for an APT package source
+and currently exits with a not-implemented error.
+
+## Build Variables
+
+Defaults are defined in [`env.sh`](./env.sh). Export a variable to override it.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `METRICS_VERSION` | `0.1.0` | Exporter version included in package and image tags |
+| `METRICS_IMAGE` | `docker.io/mixa3607/vega20-metrics-exporter` | Destination image name |
+| `METRICS_PUSH` | `1` | Set to `0` for a local package/image build without publishing |
+| `METRICS_FORCE_BUILD` | *(unset)* | Set to `1` to rebuild an existing output directory or image tag |
+| `METRICS_PACKAGES_SOURCE` | `context` | Image package input; `apt` is not implemented |
+| `REPO_GIT_REF` | *(git tag, else short SHA)* | Build revision appended to the version suffix |

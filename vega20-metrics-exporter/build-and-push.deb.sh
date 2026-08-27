@@ -2,11 +2,11 @@
 set -eo pipefail
 
 cd "$(dirname "$0")"
-source ../env.sh "vega20-metrics-exporter" "rocm"
+source ../env.sh "vega20-metrics-exporter"
 
-METRICS_VERSION_SUFFIX="${ROCM_VERSION}+${ROCM_ARCH}+${REPO_GIT_REF}"
+METRICS_VERSION_SUFFIX="${REPO_GIT_REF}"
 METRICS_PACKAGE_VERSION="${METRICS_VERSION}+${METRICS_VERSION_SUFFIX}"
-METRICS_PACKAGES_DIR="$PWD/output/rocm${ROCM_VERSION}/vega20-metrics-exporter-${METRICS_PACKAGE_VERSION}"
+METRICS_PACKAGES_DIR="$PWD/output/vega20-metrics-exporter-${METRICS_PACKAGE_VERSION}"
 
 echo "Start building vega20-metrics-exporter deb package..."
 echo "METRICS VERSION:      ${METRICS_VERSION}"
