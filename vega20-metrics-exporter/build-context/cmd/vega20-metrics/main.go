@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/mixa3607/ML-gfx906/vega20-metrics-exporter/internal/config"
 	"github.com/mixa3607/ML-gfx906/vega20-metrics-exporter/internal/gpu"
 	"github.com/mixa3607/ML-gfx906/vega20-metrics-exporter/internal/observe"
 	"github.com/prometheus/client_golang/prometheus"
@@ -17,11 +18,12 @@ import (
 )
 
 func main() {
-	listen := flag.String("listen", ":9487", "HTTP listen address")
-	sysfs := flag.String("sysfs", "/sys", "sysfs root")
-	backend := flag.String("register-backend", "debugfs", "register backend: debugfs, bar5, or none")
-	vbios := flag.String("vbios", "", "VBIOS ROM used for calibrated SVI2 current")
+	configPath := flag.String("config", config.DefaultPath, "configuration file path")
 	flag.Parse()
+	runtimeConfig, err := config.Load(*configPath)
+	if err != nil {
+		log.Fatalf("load configuration: %v", err)
+	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
@@ -35,14 +37,14 @@ func main() {
 		}
 	}()
 
-	collector, err := gpu.NewCollector(*sysfs, *backend, *vbios)
+	collector, err := gpu.NewCollector(runtimeConfig.Sysfs, runtimeConfig.RegisterBackend, runtimeConfig.VBIOS, runtimeConfig.Devices.VendorProducts, runtimeConfig.Devices.PCIDevices)
 	if err != nil {
 		log.Fatalf("configure GPU collector: %v", err)
 	}
 	registry := prometheus.NewRegistry()
 	registry.MustRegister(collector)
 	server := &http.Server{
-		Addr:              *listen,
+		Addr:              runtimeConfig.Listen,
 		Handler:           promhttp.HandlerFor(registry, promhttp.HandlerOpts{}),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
@@ -55,7 +57,7 @@ func main() {
 		}
 	}()
 
-	log.Printf("serving Prometheus metrics on %s", *listen)
+	log.Printf("serving Prometheus metrics on %s", runtimeConfig.Listen)
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatal(err)
 	}

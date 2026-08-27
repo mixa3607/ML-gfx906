@@ -12,15 +12,17 @@ import (
 	"go.opentelemetry.io/otel"
 )
 
-const (
-	amdVendor = "0x1002"
-	vega20ID  = "0x66a1"
-)
+type DeviceID struct {
+	VendorID  string `koanf:"vendor_id"`
+	ProductID string `koanf:"product_id"`
+}
 
 type Collector struct {
 	sysfs       string
 	backend     string
 	calibration []calibration
+	devices     []DeviceID
+	pcieDevices []string
 	vram        *prometheus.Desc
 	visibleVRAM *prometheus.Desc
 	gtt         *prometheus.Desc
@@ -41,7 +43,7 @@ type Collector struct {
 	current     *prometheus.Desc
 }
 
-func NewCollector(sysfs, backend, vbios string) (*Collector, error) {
+func NewCollector(sysfs, backend, vbios string, devices []DeviceID, pcieDevices []string) (*Collector, error) {
 	var calibration []calibration
 	var err error
 	if vbios != "" {
@@ -54,6 +56,8 @@ func NewCollector(sysfs, backend, vbios string) (*Collector, error) {
 		sysfs:       sysfs,
 		backend:     backend,
 		calibration: calibration,
+		devices:     devices,
+		pcieDevices: pcieDevices,
 		vram:        prometheus.NewDesc("vega20_vram_bytes", "VRAM capacity and current allocation.", []string{"gpu", "state"}, nil),
 		visibleVRAM: prometheus.NewDesc("vega20_visible_vram_bytes", "CPU-visible VRAM capacity and current allocation.", []string{"gpu", "state"}, nil),
 		gtt:         prometheus.NewDesc("vega20_gtt_bytes", "GTT capacity and current allocation.", []string{"gpu", "state"}, nil),
@@ -100,68 +104,83 @@ func (c *Collector) Collect(ch chan<- prometheus.Metric) {
 	_, span := otel.Tracer("vega20-metrics").Start(context.Background(), "gpu.collect")
 	defer span.End()
 
+	if len(c.pcieDevices) > 0 {
+		for _, bdf := range c.pcieDevices {
+			gpu, err := readGPUDevice(filepath.Join(c.sysfs, "bus/pci/devices", bdf), c.devices)
+			if err != nil {
+				ch <- prometheus.MustNewConstMetric(c.up, prometheus.GaugeValue, 0, bdf)
+				continue
+			}
+			c.collectGPU(ch, gpu)
+		}
+		return
+	}
 	cards, err := filepath.Glob(filepath.Join(c.sysfs, "class/drm/card[0-9]*"))
 	if err != nil {
 		return
 	}
 	for _, card := range cards {
-		gpu, err := readGPU(card)
+		gpu, err := readGPUDevice(filepath.Join(card, "device"), c.devices)
 		if err != nil {
 			continue
 		}
-		ch <- prometheus.MustNewConstMetric(c.up, prometheus.GaugeValue, 1, gpu.bdf)
-		ch <- prometheus.MustNewConstMetric(c.vram, prometheus.GaugeValue, float64(gpu.vramTotal), gpu.bdf, "total")
-		ch <- prometheus.MustNewConstMetric(c.vram, prometheus.GaugeValue, float64(gpu.vramUsed), gpu.bdf, "used")
-		ch <- prometheus.MustNewConstMetric(c.vram, prometheus.GaugeValue, float64(gpu.vramTotal-gpu.vramUsed), gpu.bdf, "free")
-		for state, value := range gpu.visibleVRAM {
-			ch <- prometheus.MustNewConstMetric(c.visibleVRAM, prometheus.GaugeValue, float64(value), gpu.bdf, state)
-		}
-		for state, value := range gpu.gtt {
-			ch <- prometheus.MustNewConstMetric(c.gtt, prometheus.GaugeValue, float64(value), gpu.bdf, state)
-		}
-		for source, value := range gpu.power {
-			ch <- prometheus.MustNewConstMetric(c.power, prometheus.GaugeValue, float64(value)/1_000_000, gpu.bdf, source)
-		}
-		for limit, value := range gpu.limits {
-			ch <- prometheus.MustNewConstMetric(c.limit, prometheus.GaugeValue, float64(value)/1_000_000, gpu.bdf, limit)
-		}
-		if gpu.activity != nil {
-			ch <- prometheus.MustNewConstMetric(c.activity, prometheus.GaugeValue, float64(*gpu.activity), gpu.bdf)
-		}
-		for state, value := range gpu.pcieSpeed {
-			ch <- prometheus.MustNewConstMetric(c.pcieSpeed, prometheus.GaugeValue, value, gpu.bdf, state)
-		}
-		for state, value := range gpu.pcieWidth {
-			ch <- prometheus.MustNewConstMetric(c.pcieWidth, prometheus.GaugeValue, float64(value), gpu.bdf, state)
-		}
-		ch <- prometheus.MustNewConstMetric(c.info, prometheus.GaugeValue, 1, gpu.bdf, gpu.vendor, gpu.model, gpu.series, gpu.driverVersion, gpu.serial, gpu.vbios)
-		if gpu.fan != nil {
-			ch <- prometheus.MustNewConstMetric(c.fan, prometheus.GaugeValue, *gpu.fan, gpu.bdf)
-		}
-		if c.backend == "none" {
-			continue
-		}
-		telemetry, err := readTelemetry(c.backend, gpu.bdf, c.calibration)
-		if err != nil {
-			ch <- prometheus.MustNewConstMetric(c.registerUp, prometheus.GaugeValue, 0, gpu.bdf, c.backend)
-			continue
-		}
-		ch <- prometheus.MustNewConstMetric(c.registerUp, prometheus.GaugeValue, 1, gpu.bdf, c.backend)
-		for sensor, value := range telemetry.temperatures {
-			ch <- prometheus.MustNewConstMetric(c.temperature, prometheus.GaugeValue, value, gpu.bdf, sensor)
-		}
-		ch <- prometheus.MustNewConstMetric(c.thermal, prometheus.GaugeValue, telemetry.policy, gpu.bdf, "policy")
-		ch <- prometheus.MustNewConstMetric(c.thermal, prometheus.GaugeValue, telemetry.ctf, gpu.bdf, "hardware_ctf")
-		ch <- prometheus.MustNewConstMetric(c.gradient, prometheus.GaugeValue, telemetry.gradient, gpu.bdf)
-		for clock, value := range telemetry.clocks {
-			ch <- prometheus.MustNewConstMetric(c.clock, prometheus.GaugeValue, value, gpu.bdf, clock)
-		}
-		for rail, value := range telemetry.voltages {
-			ch <- prometheus.MustNewConstMetric(c.voltage, prometheus.GaugeValue, value, gpu.bdf, rail)
-		}
-		for rail, value := range telemetry.currents {
-			ch <- prometheus.MustNewConstMetric(c.current, prometheus.GaugeValue, value, gpu.bdf, rail)
-		}
+		c.collectGPU(ch, gpu)
+	}
+}
+
+func (c *Collector) collectGPU(ch chan<- prometheus.Metric, gpu sample) {
+	ch <- prometheus.MustNewConstMetric(c.up, prometheus.GaugeValue, 1, gpu.bdf)
+	ch <- prometheus.MustNewConstMetric(c.vram, prometheus.GaugeValue, float64(gpu.vramTotal), gpu.bdf, "total")
+	ch <- prometheus.MustNewConstMetric(c.vram, prometheus.GaugeValue, float64(gpu.vramUsed), gpu.bdf, "used")
+	ch <- prometheus.MustNewConstMetric(c.vram, prometheus.GaugeValue, float64(gpu.vramTotal-gpu.vramUsed), gpu.bdf, "free")
+	for state, value := range gpu.visibleVRAM {
+		ch <- prometheus.MustNewConstMetric(c.visibleVRAM, prometheus.GaugeValue, float64(value), gpu.bdf, state)
+	}
+	for state, value := range gpu.gtt {
+		ch <- prometheus.MustNewConstMetric(c.gtt, prometheus.GaugeValue, float64(value), gpu.bdf, state)
+	}
+	for source, value := range gpu.power {
+		ch <- prometheus.MustNewConstMetric(c.power, prometheus.GaugeValue, float64(value)/1_000_000, gpu.bdf, source)
+	}
+	for limit, value := range gpu.limits {
+		ch <- prometheus.MustNewConstMetric(c.limit, prometheus.GaugeValue, float64(value)/1_000_000, gpu.bdf, limit)
+	}
+	if gpu.activity != nil {
+		ch <- prometheus.MustNewConstMetric(c.activity, prometheus.GaugeValue, float64(*gpu.activity), gpu.bdf)
+	}
+	for state, value := range gpu.pcieSpeed {
+		ch <- prometheus.MustNewConstMetric(c.pcieSpeed, prometheus.GaugeValue, value, gpu.bdf, state)
+	}
+	for state, value := range gpu.pcieWidth {
+		ch <- prometheus.MustNewConstMetric(c.pcieWidth, prometheus.GaugeValue, float64(value), gpu.bdf, state)
+	}
+	ch <- prometheus.MustNewConstMetric(c.info, prometheus.GaugeValue, 1, gpu.bdf, gpu.vendor, gpu.model, gpu.series, gpu.driverVersion, gpu.serial, gpu.vbios)
+	if gpu.fan != nil {
+		ch <- prometheus.MustNewConstMetric(c.fan, prometheus.GaugeValue, *gpu.fan, gpu.bdf)
+	}
+	if c.backend == "none" {
+		return
+	}
+	telemetry, err := readTelemetry(c.backend, gpu.bdf, c.calibration)
+	if err != nil {
+		ch <- prometheus.MustNewConstMetric(c.registerUp, prometheus.GaugeValue, 0, gpu.bdf, c.backend)
+		return
+	}
+	ch <- prometheus.MustNewConstMetric(c.registerUp, prometheus.GaugeValue, 1, gpu.bdf, c.backend)
+	for sensor, value := range telemetry.temperatures {
+		ch <- prometheus.MustNewConstMetric(c.temperature, prometheus.GaugeValue, value, gpu.bdf, sensor)
+	}
+	ch <- prometheus.MustNewConstMetric(c.thermal, prometheus.GaugeValue, telemetry.policy, gpu.bdf, "policy")
+	ch <- prometheus.MustNewConstMetric(c.thermal, prometheus.GaugeValue, telemetry.ctf, gpu.bdf, "hardware_ctf")
+	ch <- prometheus.MustNewConstMetric(c.gradient, prometheus.GaugeValue, telemetry.gradient, gpu.bdf)
+	for clock, value := range telemetry.clocks {
+		ch <- prometheus.MustNewConstMetric(c.clock, prometheus.GaugeValue, value, gpu.bdf, clock)
+	}
+	for rail, value := range telemetry.voltages {
+		ch <- prometheus.MustNewConstMetric(c.voltage, prometheus.GaugeValue, value, gpu.bdf, rail)
+	}
+	for rail, value := range telemetry.currents {
+		ch <- prometheus.MustNewConstMetric(c.current, prometheus.GaugeValue, value, gpu.bdf, rail)
 	}
 }
 
@@ -185,10 +204,11 @@ type sample struct {
 	fan           *float64
 }
 
-func readGPU(card string) (sample, error) {
-	device := filepath.Join(card, "device")
-	if readText(filepath.Join(device, "vendor")) != amdVendor || readText(filepath.Join(device, "device")) != vega20ID {
-		return sample{}, fmt.Errorf("not Vega 20")
+func readGPUDevice(device string, devices []DeviceID) (sample, error) {
+	vendor := readText(filepath.Join(device, "vendor"))
+	product := readText(filepath.Join(device, "device"))
+	if !matchesDevice(vendor, product, devices) {
+		return sample{}, fmt.Errorf("device %s:%s is not configured", vendor, product)
 	}
 	devicePath, err := filepath.EvalSymlinks(device)
 	if err != nil {
@@ -243,6 +263,15 @@ func readGPU(card string) (sample, error) {
 		}
 	}
 	return result, nil
+}
+
+func matchesDevice(vendor, product string, devices []DeviceID) bool {
+	for _, device := range devices {
+		if vendor == device.VendorID && product == device.ProductID {
+			return true
+		}
+	}
+	return false
 }
 
 func readText(path string) string {

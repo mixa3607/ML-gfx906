@@ -7,15 +7,55 @@ port `9487` by default.
 ## Requirements
 
 - Linux host with an AMD Vega 20 GPU, such as MI50.
+- A YAML configuration file. The Debian package installs one at
+  `/etc/vega20-metrics-exporter/config.yaml`.
 - `debugfs` mounted for the default `debugfs` register backend.
 - A process permitted to read and write
   `/sys/kernel/debug/dri/<BDF>/amdgpu_regs` for register telemetry.
 - Go 1.24 to build from source, or Docker with Buildx to build the package and
   image.
 
-Use `--register-backend none` when only amdgpu sysfs metrics are required.
-`--register-backend bar5` maps GPU BAR5 through `/dev/mem`; it requires raw
+Use `register_backend: none` when only amdgpu sysfs metrics are required.
+`register_backend: bar5` maps GPU BAR5 through `/dev/mem`; it requires raw
 I/O access and should be used only when debugfs is unavailable.
+
+## Configuration
+
+The exporter loads `/etc/vega20-metrics-exporter/config.yaml` by default. Use
+`--config PATH` only to select another configuration file. Runtime settings are
+not CLI flags.
+
+```yaml
+listen: ":9487"
+sysfs: /sys
+register_backend: debugfs # debugfs, bar5, or none
+vbios: ""                 # board-matching ROM for calibrated SVI2 metrics
+devices:
+  vendor_products:
+    - vendor_id: "1002"
+      product_id: "66a1"
+  pci_devices: []          # empty: discover matching DRM devices automatically
+```
+
+`devices.vendor_products` is an allowlist; add multiple vendor/product pairs
+to collect more device variants. IDs may be written with or without `0x`.
+
+Set `devices.pci_devices` to an explicit list of PCIe BDFs to disable automatic
+discovery. Each configured BDF is exported even when it is absent or cannot be
+read, with `vega20_gpu_up{gpu="<BDF>"} 0`. An explicit device must still match
+`vendor_products` before its other metrics are collected.
+
+Environment variables overlay the YAML using .NET-style indexed keys: each key
+overrides only its corresponding value, so unmentioned YAML array elements are
+preserved.
+
+```sh
+VEGA20_REGISTER_BACKEND=none
+VEGA20_DEVICES_VENDOR_PRODUCTS_1_VENDOR_ID=1002
+VEGA20_DEVICES_VENDOR_PRODUCTS_1_PRODUCT_ID=66a2
+VEGA20_DEVICES_PCI_DEVICES_0=0000:33:00.0
+VEGA20_DEVICES_PCI_DEVICES_1=0000:36:00.0
+```
 
 ## Metrics
 
@@ -35,7 +75,7 @@ I/O access and should be used only when debugfs is unavailable.
 - `vega20_thermal_limit_celsius{gpu,limit="policy|hardware_ctf"}`
 - `vega20_temperature_gradient_celsius`
 - `vega20_clock_mhz{gpu,clock="dclk|vclk|eclk"}`
-- `vega20_voltage_volts` and `vega20_current_amperes` with `--vbios`
+- `vega20_voltage_volts` and `vega20_current_amperes` when `vbios` is configured
 
 Power files are in microwatts in sysfs and are exported as watts. GPU labels
 use PCI BDFs, rather than mutable DRM card indices.
@@ -74,19 +114,19 @@ headless MI50 as hardware clock-counter telemetry.
 ## Run From Source
 
 ```sh
-cd build-context && go build -o ../vega20-metrics ./cmd/vega20-metrics
-sudo ./vega20-metrics --listen :9487 --register-backend debugfs
+(cd build-context && go build -o ../vega20-metrics ./cmd/vega20-metrics)
+sudo ./vega20-metrics --config build-context/config.yaml
 curl localhost:9487/metrics
 ```
 
-Use `--sysfs PATH` with a mounted host sysfs when the exporter runs in a
-container. `--register-backend debugfs` accesses
+Set `sysfs` in the YAML to a mounted host sysfs when the exporter runs in a
+container. The `debugfs` backend accesses
 `/sys/kernel/debug/dri/<BDF>/amdgpu_regs`; debugfs must be mounted. Use
-`--register-backend bar5` for direct `/dev/mem` BAR5 access, or `none` to
+`register_backend: bar5` for direct `/dev/mem` BAR5 access, or `none` to
 disable register telemetry.
 
 HBM metrics temporarily write the volatile SMN index register and restore its
-previous value. Provide a board-matching ROM with `--vbios ROM` to enable
+previous value. Set `vbios` to a board-matching ROM path to enable
 calibrated SVI2 current metrics; do not use a ROM from another board.
 
 Configure `OTEL_EXPORTER_OTLP_ENDPOINT` to enable OTLP/gRPC traces; without it,
@@ -133,8 +173,8 @@ docker run --rm --network host --privileged \
   docker.io/mixa3607/vega20-metrics-exporter:<tag>
 ```
 
-Use `--register-backend none` for a container that should expose only sysfs
-metrics. `METRICS_PACKAGES_SOURCE=apt` is reserved for an APT package source
+Mount a configuration file with `register_backend: none` for a container that
+should expose only sysfs metrics. `METRICS_PACKAGES_SOURCE=apt` is reserved for an APT package source
 and currently exits with a not-implemented error.
 
 ## Build Variables

@@ -4,6 +4,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 func TestReadGPU(t *testing.T) {
@@ -62,7 +64,7 @@ func TestReadGPU(t *testing.T) {
 		}
 	}
 
-	sample, err := readGPU(card)
+	sample, err := readGPUDevice(filepath.Join(card, "device"), []DeviceID{{VendorID: "0x1002", ProductID: "0x66a1"}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -84,4 +86,27 @@ func TestReadGPU(t *testing.T) {
 	if sample.fan == nil || *sample.fan != float64(64)*100/255 {
 		t.Fatalf("unexpected fan data: %#v", sample.fan)
 	}
+}
+
+func TestCollectorForcedDeviceMissingReportsDown(t *testing.T) {
+	collector, err := NewCollector(t.TempDir(), "none", "", []DeviceID{{VendorID: "0x1002", ProductID: "0x66a1"}}, []string{"0000:33:00.0"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	registry := prometheus.NewRegistry()
+	registry.MustRegister(collector)
+	families, err := registry.Gather()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, family := range families {
+		if family.GetName() != "vega20_gpu_up" {
+			continue
+		}
+		if len(family.Metric) != 1 || family.Metric[0].GetGauge().GetValue() != 0 || family.Metric[0].Label[0].GetValue() != "0000:33:00.0" {
+			t.Fatalf("unexpected up metric: %#v", family.Metric)
+		}
+		return
+	}
+	t.Fatal("vega20_gpu_up was not collected")
 }

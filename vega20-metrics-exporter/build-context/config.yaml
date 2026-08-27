@@ -1,0 +1,9 @@
+listen: ":9487"
+sysfs: /sys
+register_backend: debugfs
+vbios: ""
+devices:
+  vendor_products:
+    - vendor_id: "1002"
+      product_id: "66a1"
+  pci_devices: []
