@@ -2,11 +2,11 @@
 set -eo pipefail
 
 cd "$(dirname "$0")"
-source ../env.sh "rocm-metrics" "rocm"
+source ../env.sh "vega20-metrics-exporter" "rocm"
 
 METRICS_VERSION_SUFFIX="${ROCM_VERSION}+${ROCM_ARCH}+${REPO_GIT_REF}"
 METRICS_PACKAGE_VERSION="${METRICS_VERSION}+${METRICS_VERSION_SUFFIX}"
-METRICS_PACKAGES_DIR="$PWD/output/rocm${ROCM_VERSION}/rocm-metrics-${METRICS_PACKAGE_VERSION}"
+METRICS_PACKAGES_DIR="$PWD/output/rocm${ROCM_VERSION}/vega20-metrics-exporter-${METRICS_PACKAGE_VERSION}"
 IMAGE_TAGS=(
   "${METRICS_IMAGE}:${METRICS_VERSION}-rocm-${ROCM_VERSION}-${REPO_GIT_REF}"
   "${METRICS_IMAGE}:${METRICS_VERSION}-rocm-${ROCM_VERSION}"

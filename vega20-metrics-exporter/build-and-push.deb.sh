@@ -2,13 +2,13 @@
 set -eo pipefail
 
 cd "$(dirname "$0")"
-source ../env.sh "rocm-metrics" "rocm"
+source ../env.sh "vega20-metrics-exporter" "rocm"
 
 METRICS_VERSION_SUFFIX="${ROCM_VERSION}+${ROCM_ARCH}+${REPO_GIT_REF}"
 METRICS_PACKAGE_VERSION="${METRICS_VERSION}+${METRICS_VERSION_SUFFIX}"
-METRICS_PACKAGES_DIR="$PWD/output/rocm${ROCM_VERSION}/rocm-metrics-${METRICS_PACKAGE_VERSION}"
+METRICS_PACKAGES_DIR="$PWD/output/rocm${ROCM_VERSION}/vega20-metrics-exporter-${METRICS_PACKAGE_VERSION}"
 
-echo "Start building rocm-metrics deb package..."
+echo "Start building vega20-metrics-exporter deb package..."
 echo "METRICS VERSION:      ${METRICS_VERSION}"
 echo "PACKAGE VERSION:      ${METRICS_PACKAGE_VERSION}"
 echo "PACKAGES DIR:         ${METRICS_PACKAGES_DIR}"
@@ -32,6 +32,6 @@ docker buildx build \
 find "$METRICS_PACKAGES_DIR" -maxdepth 1 -type f -name '*.deb' -printf '%f\n' | sort > "$METRICS_PACKAGES_DIR/index.txt"
 
 if [ "$METRICS_PUSH" = "1" ]; then
-  SCP_DST="k3s@kube-worker6.arkprojects.lan:/home/k3s/rocm-dev-packages/rocm-metrics"
+  SCP_DST="k3s@kube-worker6.arkprojects.lan:/home/k3s/rocm-dev-packages/vega20-metrics-exporter"
   scp "$METRICS_PACKAGES_DIR"/*.deb "$METRICS_PACKAGES_DIR/index.txt" "$SCP_DST"
 fi

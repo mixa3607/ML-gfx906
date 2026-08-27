@@ -1,4 +1,4 @@
-# Vega 20 Metrics Exporter
+# vega20-metrics-exporter
 
 `vega20-metrics` is a Go Prometheus exporter for MI50/Vega 20. It combines
 amdgpu sysfs data with direct RDI register telemetry.
@@ -87,7 +87,7 @@ METRICS_PUSH=0 make deb
 ```
 
 The package is written to
-`output/rocm<version>/rocm-metrics-<package-version>/` and installs
+`output/rocm<version>/vega20-metrics-exporter-<package-version>/` and installs
 `/usr/bin/vega20-metrics`. `build-and-push.deb.sh` pushes the package and its
 `index.txt` by default; set `METRICS_PUSH=0` for a local build.
 

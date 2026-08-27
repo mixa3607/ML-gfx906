@@ -10,8 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mixa3607/ML-gfx906/rocm-metrics/internal/gpu"
-	"github.com/mixa3607/ML-gfx906/rocm-metrics/internal/observe"
+	"github.com/mixa3607/ML-gfx906/vega20-metrics-exporter/internal/gpu"
+	"github.com/mixa3607/ML-gfx906/vega20-metrics-exporter/internal/observe"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )

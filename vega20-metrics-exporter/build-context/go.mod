@@ -1,4 +1,4 @@
-module github.com/mixa3607/ML-gfx906/rocm-metrics
+module github.com/mixa3607/ML-gfx906/vega20-metrics-exporter
 
 go 1.24.0
 
