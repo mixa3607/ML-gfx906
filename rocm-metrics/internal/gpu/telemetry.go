@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/mixa3607/ML-gfx906/rocm-metrics-go/internal/registers"
+	"github.com/mixa3607/ML-gfx906/rocm-metrics/internal/registers"
 )
 
 const (

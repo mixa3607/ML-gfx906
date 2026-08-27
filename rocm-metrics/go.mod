@@ -1,4 +1,4 @@
-module github.com/mixa3607/ML-gfx906/rocm-metrics-go
+module github.com/mixa3607/ML-gfx906/rocm-metrics
 
 go 1.24.0
 

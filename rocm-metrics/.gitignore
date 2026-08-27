@@ -1,5 +1,3 @@
-/infra.md
-/task.md
-/vega20-rdi
-/trace-thermal.gdb
-/trace-mmio.gdb
+/vega20-metrics
+/logs
+/output

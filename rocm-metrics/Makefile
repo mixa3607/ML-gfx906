@@ -1,8 +1,17 @@
-CC ?= gcc
-CFLAGS ?= -O2 -Wall -Wextra -Werror -std=c11
+GO ?= go
 
-vega20-rdi: vega20-rdi.c
-	$(CC) $(CFLAGS) -o $@ $<
+.PHONY: all test deb image
 
-vega20-rdi-debugfs: vega20-rdi-debugfs.c vega20-rdi.c
-	$(CC) $(CFLAGS) -o $@ vega20-rdi-debugfs.c
+all: vega20-metrics
+
+vega20-metrics:
+	$(GO) build -o $@ ./cmd/vega20-metrics
+
+test:
+	$(GO) test ./...
+
+deb:
+	./build-and-push.deb.sh
+
+image:
+	./build-and-push.image.sh
