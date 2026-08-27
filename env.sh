@@ -1,4 +1,4 @@
-#/bin/bash
+#!/usr/bin/env bash
 
 function docker_image_pushed {
   if docker buildx imagetools inspect "$1" > /dev/null 2> /dev/null; then

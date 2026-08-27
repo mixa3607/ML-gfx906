@@ -1,6 +1,6 @@
 ARG BASE_ROCM_IMAGE="docker.io/mixa3607/rocm-gfx906:latest"
 ARG ROCM_ARCH="gfx906"
-ARG ROCM_VERSIOIN="7.14"
+ARG ROCM_VERSION="7.14"
 ARG VERSION_SUFFIX=$ROCM_ARCH
 ARG TB_REPO="https://github.com/ROCm/TransferBench.git"
 ARG TB_BRANCH="main"
@@ -30,12 +30,12 @@ RUN git clone --depth 1 --branch "${TB_BRANCH}" "${TB_REPO}" .
 
 # Configure
 ARG ROCM_ARCH
-ARG ROCM_VERSIOIN
+ARG ROCM_VERSION
 ARG VERSION_SUFFIX
 RUN cmake -B ./build --fresh \
       -DCMAKE_BUILD_TYPE="Release" \
       -DROCM_PATH="${ROCM_PATH}" \
-      -DROCM_MAJOR_VERSION="${ROCM_VERSIOIN}" \
+      -DROCM_MAJOR_VERSION="${ROCM_VERSION}" \
       -DHIP_PLATFORM=amd \
       -DCMAKE_INSTALL_PREFIX="${ROCM_PATH}" \
       -DCPACK_PACKAGING_INSTALL_PREFIX="${ROCM_PATH}" \
