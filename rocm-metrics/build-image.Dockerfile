@@ -1,10 +1,8 @@
-ARG BASE_IMAGE="docker.io/library/debian:bookworm-slim"
+ARG BASE_IMAGE="docker.io/library/ubuntu:24.04"
 ARG PACKAGE_SOURCE=context
-ARG PACKAGES_BASE_URL=""
 
 FROM ${BASE_IMAGE} AS packages-source
 ARG PACKAGE_SOURCE
-ARG PACKAGES_BASE_URL
 
 RUN --mount=type=bind,from=packages,target=/packages-src <<'EOF_PACKAGES' bash
 set -eo pipefail
@@ -12,13 +10,9 @@ set -eo pipefail
 mkdir -p /packages
 if [ "$PACKAGE_SOURCE" = "context" ]; then
   cp /packages-src/*.deb /packages/
-elif [ "$PACKAGE_SOURCE" = "fetch" ]; then
-  apt-get update
-  apt-get install -y --no-install-recommends ca-certificates curl
-  curl --fail --output /packages/index.txt "${PACKAGES_BASE_URL}/index.txt"
-  while read -r package; do
-    curl --fail --output "/packages/${package}" "${PACKAGES_BASE_URL}/${package}"
-  done < /packages/index.txt
+elif [ "$PACKAGE_SOURCE" = "apt" ]; then
+  echo "APT package source is not implemented" >&2
+  exit 1
 else
   echo "Unsupported PACKAGE_SOURCE=$PACKAGE_SOURCE" >&2
   exit 1

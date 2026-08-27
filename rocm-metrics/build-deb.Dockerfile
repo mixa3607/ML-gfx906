@@ -1,7 +1,15 @@
-ARG BASE_BUILD_IMAGE="docker.io/library/golang:1.24-bookworm"
+ARG BASE_BUILD_IMAGE="docker.io/library/ubuntu:24.04"
+ARG GO_VERSION="1.24.0"
 
 FROM ${BASE_BUILD_IMAGE} AS build
 ARG PACKAGE_VERSION
+ARG GO_VERSION
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ca-certificates curl && \
+    curl --fail --location "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" | tar -C /usr/local -xz && \
+    rm -rf /var/lib/apt/lists/*
+ENV PATH="/usr/local/go/bin:${PATH}"
 
 WORKDIR /src
 COPY go.mod go.sum ./

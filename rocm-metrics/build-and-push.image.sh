@@ -7,7 +7,6 @@ source ../env.sh "rocm-metrics" "rocm"
 METRICS_VERSION_SUFFIX="${ROCM_VERSION}+${ROCM_ARCH}+${REPO_GIT_REF}"
 METRICS_PACKAGE_VERSION="${METRICS_VERSION}+${METRICS_VERSION_SUFFIX}"
 METRICS_PACKAGES_DIR="$PWD/output/rocm${ROCM_VERSION}/rocm-metrics-${METRICS_PACKAGE_VERSION}"
-METRICS_PACKAGES_URL="https://s3.arkprojects.space/rocm-metrics/rocm${ROCM_VERSION}/rocm-metrics-${METRICS_PACKAGE_VERSION}"
 IMAGE_TAGS=(
   "${METRICS_IMAGE}:${METRICS_VERSION}-rocm-${ROCM_VERSION}-${REPO_GIT_REF}"
   "${METRICS_IMAGE}:${METRICS_VERSION}-rocm-${ROCM_VERSION}"
@@ -20,7 +19,6 @@ fi
 
 DOCKER_EXTRA_ARGS=(
   --build-arg "PACKAGE_SOURCE=${METRICS_PACKAGES_SOURCE}"
-  --build-arg "PACKAGES_BASE_URL=${METRICS_PACKAGES_URL}"
   --progress plain
   --pull
   --target final
@@ -36,7 +34,7 @@ if [ "$METRICS_PACKAGES_SOURCE" = "context" ]; then
     exit 1
   fi
   DOCKER_EXTRA_ARGS+=(--build-context "packages=${METRICS_PACKAGES_DIR}")
-elif [ "$METRICS_PACKAGES_SOURCE" = "fetch" ]; then
+elif [ "$METRICS_PACKAGES_SOURCE" = "apt" ]; then
   DOCKER_EXTRA_ARGS+=(--build-context "packages=$(mktemp -d)")
 else
   echo "Unsupported METRICS_PACKAGES_SOURCE=$METRICS_PACKAGES_SOURCE" >&2

@@ -99,5 +99,5 @@ METRICS_PUSH=0 make image
 
 The image runs the exporter on `:9487` with the debugfs backend. Mount host
 `/sys`, host debugfs, and grant the required device permissions when deploying
-it. Set `METRICS_PACKAGES_SOURCE=fetch` to build an image from a published
-package index instead of the local `output` directory.
+it. `METRICS_PACKAGES_SOURCE=apt` is reserved for an APT package source and
+currently exits with a not-implemented error.
