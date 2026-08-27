@@ -40,10 +40,10 @@ providers:
     enabled: true
     backend: debugfs       # debugfs or bar5
     vbios_related_metrics:
-      enabled: false
-      vbios_source: null   # file or pci_rom when enabled
+      enabled: true
+      vbios_source: pci_rom # file or pci_rom
       vbios_file: null
-      vbios_device: null
+      vbios_device: "0000:33:00.0"
 ```
 
 `devices.vendor_products` is an allowlist; add multiple vendor/product pairs

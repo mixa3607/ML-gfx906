@@ -28,10 +28,10 @@ data:
         enabled: true
         backend: debugfs
         vbios_related_metrics:
-          enabled: false
-          vbios_source: null
+          enabled: true
+          vbios_source: pci_rom
           vbios_file: null
-          vbios_device: null
+          vbios_device: "0000:33:00.0"
 ---
 apiVersion: apps/v1
 kind: Deployment
