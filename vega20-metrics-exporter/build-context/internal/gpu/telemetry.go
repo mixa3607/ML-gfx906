@@ -2,7 +2,9 @@ package gpu
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/mixa3607/ML-gfx906/vega20-metrics-exporter/internal/registers"
 )
@@ -136,11 +138,48 @@ func readTelemetry(backend, bdf string, calibration []calibration) (telemetry, e
 	return result, nil
 }
 
-func readCalibration(path string) ([]calibration, error) {
+func loadCalibration(sysfs string, config VBIOSConfig) ([]calibration, error) {
+	if !config.Enabled {
+		return nil, nil
+	}
+	if config.Source == "file" {
+		log.Printf("reading VBIOS calibration from file %s", config.File)
+		data, err := os.ReadFile(config.File)
+		if err != nil {
+			return nil, fmt.Errorf("read VBIOS file: %w", err)
+		}
+		return parseCalibration(data)
+	}
+	if config.Source == "pci_rom" {
+		log.Printf("reading VBIOS calibration from PCI ROM %s", config.Device)
+		data, err := readPCIROM(sysfs, config.Device)
+		if err != nil {
+			return nil, err
+		}
+		return parseCalibration(data)
+	}
+	return nil, fmt.Errorf("unsupported VBIOS source %q", config.Source)
+}
+
+func readPCIROM(sysfs, bdf string) ([]byte, error) {
+	path := filepath.Join(sysfs, "bus/pci/devices", bdf, "rom")
+	if err := os.WriteFile(path, []byte("1"), 0); err != nil {
+		return nil, fmt.Errorf("enable PCI ROM %s: %w", bdf, err)
+	}
+	defer func() {
+		if err := os.WriteFile(path, []byte("0"), 0); err != nil {
+			log.Printf("disable PCI ROM %s: %v", bdf, err)
+		}
+	}()
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("read VBIOS: %w", err)
+		return nil, fmt.Errorf("read PCI ROM %s: %w", bdf, err)
 	}
+	log.Printf("read %d-byte PCI ROM from %s", len(data), bdf)
+	return data, nil
+}
+
+func parseCalibration(data []byte) ([]calibration, error) {
 	if len(data) < 0x4a {
 		return nil, fmt.Errorf("VBIOS is too short")
 	}

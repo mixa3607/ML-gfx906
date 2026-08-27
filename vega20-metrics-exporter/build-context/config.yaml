@@ -1,9 +1,18 @@
 listen: ":9487"
-sysfs: /sys
-register_backend: debugfs
-vbios: ""
 devices:
   vendor_products:
     - vendor_id: "1002"
       product_id: "66a1"
   pci_devices: []
+providers:
+  sysfs:
+    enabled: true
+    path: /sys
+  registers:
+    enabled: true
+    backend: debugfs
+    vbios_related_metrics:
+      enabled: false
+      vbios_source: null
+      vbios_file: null
+      vbios_device: null

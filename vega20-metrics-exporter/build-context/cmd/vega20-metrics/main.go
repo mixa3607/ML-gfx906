@@ -37,7 +37,20 @@ func main() {
 		}
 	}()
 
-	collector, err := gpu.NewCollector(runtimeConfig.Sysfs, runtimeConfig.RegisterBackend, runtimeConfig.VBIOS, runtimeConfig.Devices.VendorProducts, runtimeConfig.Devices.PCIDevices)
+	collector, err := gpu.NewCollector(gpu.Config{
+		SysfsPath:        runtimeConfig.Providers.Sysfs.Path,
+		SysfsEnabled:     runtimeConfig.Providers.Sysfs.Enabled,
+		RegistersEnabled: runtimeConfig.Providers.Registers.Enabled,
+		RegisterBackend:  runtimeConfig.Providers.Registers.Backend,
+		VBIOS: gpu.VBIOSConfig{
+			Enabled: runtimeConfig.Providers.Registers.VBIOSRelatedMetrics.Enabled,
+			Source:  runtimeConfig.Providers.Registers.VBIOSRelatedMetrics.Source,
+			File:    runtimeConfig.Providers.Registers.VBIOSRelatedMetrics.File,
+			Device:  runtimeConfig.Providers.Registers.VBIOSRelatedMetrics.Device,
+		},
+		Devices:    runtimeConfig.Devices.VendorProducts,
+		PCIDevices: runtimeConfig.Devices.PCIDevices,
+	})
 	if err != nil {
 		log.Fatalf("configure GPU collector: %v", err)
 	}

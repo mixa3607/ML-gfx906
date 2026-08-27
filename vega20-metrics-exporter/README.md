@@ -15,8 +15,8 @@ port `9487` by default.
 - Go 1.24 to build from source, or Docker with Buildx to build the package and
   image.
 
-Use `register_backend: none` when only amdgpu sysfs metrics are required.
-`register_backend: bar5` maps GPU BAR5 through `/dev/mem`; it requires raw
+Set `providers.registers.enabled: false` when only amdgpu sysfs metrics are
+required. `providers.registers.backend: bar5` maps GPU BAR5 through `/dev/mem`; it requires raw
 I/O access and should be used only when debugfs is unavailable.
 
 ## Configuration
@@ -27,14 +27,23 @@ not CLI flags.
 
 ```yaml
 listen: ":9487"
-sysfs: /sys
-register_backend: debugfs # debugfs, bar5, or none
-vbios: ""                 # board-matching ROM for calibrated SVI2 metrics
 devices:
   vendor_products:
     - vendor_id: "1002"
       product_id: "66a1"
   pci_devices: []          # empty: discover matching DRM devices automatically
+providers:
+  sysfs:
+    enabled: true
+    path: /sys
+  registers:
+    enabled: true
+    backend: debugfs       # debugfs or bar5
+    vbios_related_metrics:
+      enabled: false
+      vbios_source: null   # file or pci_rom when enabled
+      vbios_file: null
+      vbios_device: null
 ```
 
 `devices.vendor_products` is an allowlist; add multiple vendor/product pairs
@@ -42,15 +51,26 @@ to collect more device variants. IDs may be written with or without `0x`.
 
 Set `devices.pci_devices` to an explicit list of PCIe BDFs to disable automatic
 discovery. Each configured BDF is exported even when it is absent or cannot be
-read, with `vega20_gpu_up{gpu="<BDF>"} 0`. An explicit device must still match
-`vendor_products` before its other metrics are collected.
+read, with `vega20_provider_up{gpu="<BDF>",provider="sysfs"} 0`. An explicit
+device must still match `vendor_products` before its other metrics are collected.
+
+Provider `enabled` settings control metric export only. Device inventory remains
+available for either provider. `providers.sysfs.path` is the sysfs root used for
+both discovery and sysfs metrics. `providers.registers` controls direct RDI
+register reads, which occur only when it is enabled.
+
+`vbios_related_metrics` enables calibrated SVI2 voltage/current metrics for all
+configured GPUs. `vbios_source: file` reads the shared ROM once at startup;
+`vbios_source: pci_rom` reads the configured `vbios_device` ROM into memory once
+at startup and immediately disables ROM decode. For `file`, set only
+`vbios_file`; for `pci_rom`, set only `vbios_device`.
 
 Environment variables overlay the YAML using .NET-style indexed keys: each key
 overrides only its corresponding value, so unmentioned YAML array elements are
 preserved.
 
 ```sh
-VEGA20_REGISTER_BACKEND=none
+VEGA20_PROVIDERS_REGISTERS_ENABLED=false
 VEGA20_DEVICES_VENDOR_PRODUCTS_1_VENDOR_ID=1002
 VEGA20_DEVICES_VENDOR_PRODUCTS_1_PRODUCT_ID=66a2
 VEGA20_DEVICES_PCI_DEVICES_0=0000:33:00.0
@@ -69,13 +89,13 @@ VEGA20_DEVICES_PCI_DEVICES_1=0000:36:00.0
 - `vega20_pcie_link_width_lanes{gpu,state="current|maximum"}` for the PCIe parent-chain bottleneck
 - `vega20_power_watts{gpu,source="average|instant"}` when hwmon exposes it
 - `vega20_power_limit_watts{gpu,limit="current|minimum|maximum"}` when exposed
-- `vega20_gpu_up`
-- `vega20_register_telemetry_up{gpu,backend}`
+- `vega20_provider_up{gpu,provider="sysfs|registers"}`
 - `vega20_temperature_celsius{gpu,sensor}` for TMON RDI and HBM stacks
 - `vega20_thermal_limit_celsius{gpu,limit="policy|hardware_ctf"}`
 - `vega20_temperature_gradient_celsius`
 - `vega20_clock_mhz{gpu,clock="dclk|vclk|eclk"}`
-- `vega20_voltage_volts` and `vega20_current_amperes` when `vbios` is configured
+- `vega20_voltage_volts` and `vega20_current_amperes` when
+  `vbios_related_metrics` is enabled
 
 Power files are in microwatts in sysfs and are exported as watts. GPU labels
 use PCI BDFs, rather than mutable DRM card indices.
@@ -119,15 +139,15 @@ sudo ./vega20-metrics --config build-context/config.yaml
 curl localhost:9487/metrics
 ```
 
-Set `sysfs` in the YAML to a mounted host sysfs when the exporter runs in a
-container. The `debugfs` backend accesses
+Set `providers.sysfs.path` in the YAML to a mounted host sysfs when the exporter
+runs in a container. The `debugfs` backend accesses
 `/sys/kernel/debug/dri/<BDF>/amdgpu_regs`; debugfs must be mounted. Use
-`register_backend: bar5` for direct `/dev/mem` BAR5 access, or `none` to
-disable register telemetry.
+`providers.registers.backend: bar5` for direct `/dev/mem` BAR5 access, or set
+`providers.registers.enabled: false` to disable register telemetry.
 
 HBM metrics temporarily write the volatile SMN index register and restore its
-previous value. Set `vbios` to a board-matching ROM path to enable
-calibrated SVI2 current metrics; do not use a ROM from another board.
+previous value. Enable `vbios_related_metrics` with a board-matching shared ROM
+to export calibrated SVI2 metrics; do not use a ROM from another board.
 
 Configure `OTEL_EXPORTER_OTLP_ENDPOINT` to enable OTLP/gRPC traces; without it,
 no external OpenTelemetry collector is required.
@@ -173,9 +193,12 @@ docker run --rm --network host --privileged \
   docker.io/mixa3607/vega20-metrics-exporter:<tag>
 ```
 
-Mount a configuration file with `register_backend: none` for a container that
-should expose only sysfs metrics. `METRICS_PACKAGES_SOURCE=apt` is reserved for an APT package source
+Mount a configuration file with `providers.registers.enabled: false` for a
+container that should expose only sysfs metrics. `METRICS_PACKAGES_SOURCE=apt` is reserved for an APT package source
 and currently exits with a not-implemented error.
+
+- [Run with Docker or Docker Compose](./docs/docker.md)
+- [Deploy to Kubernetes](./docs/kubernetes.md)
 
 ## Build Variables
 

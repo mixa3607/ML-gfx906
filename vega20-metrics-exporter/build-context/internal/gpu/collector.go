@@ -3,6 +3,7 @@ package gpu
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -17,65 +18,84 @@ type DeviceID struct {
 	ProductID string `koanf:"product_id"`
 }
 
-type Collector struct {
-	sysfs       string
-	backend     string
-	calibration []calibration
-	devices     []DeviceID
-	pcieDevices []string
-	vram        *prometheus.Desc
-	visibleVRAM *prometheus.Desc
-	gtt         *prometheus.Desc
-	power       *prometheus.Desc
-	limit       *prometheus.Desc
-	activity    *prometheus.Desc
-	pcieSpeed   *prometheus.Desc
-	pcieWidth   *prometheus.Desc
-	info        *prometheus.Desc
-	fan         *prometheus.Desc
-	up          *prometheus.Desc
-	registerUp  *prometheus.Desc
-	temperature *prometheus.Desc
-	thermal     *prometheus.Desc
-	gradient    *prometheus.Desc
-	clock       *prometheus.Desc
-	voltage     *prometheus.Desc
-	current     *prometheus.Desc
+type Config struct {
+	SysfsPath        string
+	SysfsEnabled     bool
+	RegistersEnabled bool
+	RegisterBackend  string
+	VBIOS            VBIOSConfig
+	Devices          []DeviceID
+	PCIDevices       []string
 }
 
-func NewCollector(sysfs, backend, vbios string, devices []DeviceID, pcieDevices []string) (*Collector, error) {
-	var calibration []calibration
-	var err error
-	if vbios != "" {
-		calibration, err = readCalibration(vbios)
-		if err != nil {
-			return nil, err
-		}
+type VBIOSConfig struct {
+	Enabled bool
+	Source  string
+	File    string
+	Device  string
+}
+
+type Collector struct {
+	sysfsPath        string
+	sysfsEnabled     bool
+	registersEnabled bool
+	backend          string
+	calibration      []calibration
+	devices          []DeviceID
+	pcieDevices      []string
+	vram             *prometheus.Desc
+	visibleVRAM      *prometheus.Desc
+	gtt              *prometheus.Desc
+	power            *prometheus.Desc
+	limit            *prometheus.Desc
+	activity         *prometheus.Desc
+	pcieSpeed        *prometheus.Desc
+	pcieWidth        *prometheus.Desc
+	info             *prometheus.Desc
+	fan              *prometheus.Desc
+	providerUp       *prometheus.Desc
+	temperature      *prometheus.Desc
+	thermal          *prometheus.Desc
+	gradient         *prometheus.Desc
+	clock            *prometheus.Desc
+	voltage          *prometheus.Desc
+	current          *prometheus.Desc
+}
+
+func NewCollector(config Config) (*Collector, error) {
+	calibration, err := loadCalibration(config.SysfsPath, config.VBIOS)
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("configured providers: sysfs=%t registers=%t backend=%s vbios_related_metrics=%t", config.SysfsEnabled, config.RegistersEnabled, config.RegisterBackend, config.VBIOS.Enabled)
+	if config.VBIOS.Enabled {
+		log.Printf("loaded VBIOS calibration: source=%s device=%s file=%s", config.VBIOS.Source, config.VBIOS.Device, config.VBIOS.File)
 	}
 	return &Collector{
-		sysfs:       sysfs,
-		backend:     backend,
-		calibration: calibration,
-		devices:     devices,
-		pcieDevices: pcieDevices,
-		vram:        prometheus.NewDesc("vega20_vram_bytes", "VRAM capacity and current allocation.", []string{"gpu", "state"}, nil),
-		visibleVRAM: prometheus.NewDesc("vega20_visible_vram_bytes", "CPU-visible VRAM capacity and current allocation.", []string{"gpu", "state"}, nil),
-		gtt:         prometheus.NewDesc("vega20_gtt_bytes", "GTT capacity and current allocation.", []string{"gpu", "state"}, nil),
-		power:       prometheus.NewDesc("vega20_power_watts", "GPU power reported by amdgpu hwmon.", []string{"gpu", "source"}, nil),
-		limit:       prometheus.NewDesc("vega20_power_limit_watts", "GPU power-cap values reported by amdgpu hwmon.", []string{"gpu", "limit"}, nil),
-		activity:    prometheus.NewDesc("vega20_gfx_activity_percent", "GPU graphics-engine activity reported by amdgpu.", []string{"gpu"}, nil),
-		pcieSpeed:   prometheus.NewDesc("vega20_pcie_link_speed_gigatransfers_per_second", "Effective current and maximum PCIe link speed across the GPU parent chain.", []string{"gpu", "state"}, nil),
-		pcieWidth:   prometheus.NewDesc("vega20_pcie_link_width_lanes", "Effective current and maximum PCIe link width across the GPU parent chain.", []string{"gpu", "state"}, nil),
-		info:        prometheus.NewDesc("vega20_gpu_info", "Vega 20 GPU identity and driver metadata.", []string{"gpu", "card_vendor", "card_model", "card_series", "driver_version", "serial_number", "vbios_version"}, nil),
-		fan:         prometheus.NewDesc("vega20_fan_speed_percent", "GPU fan PWM duty cycle.", []string{"gpu"}, nil),
-		up:          prometheus.NewDesc("vega20_gpu_up", "Whether sysfs telemetry was read successfully for the GPU.", []string{"gpu"}, nil),
-		registerUp:  prometheus.NewDesc("vega20_register_telemetry_up", "Whether register telemetry was read successfully for the GPU.", []string{"gpu", "backend"}, nil),
-		temperature: prometheus.NewDesc("vega20_temperature_celsius", "Vega 20 temperature sensors.", []string{"gpu", "sensor"}, nil),
-		thermal:     prometheus.NewDesc("vega20_thermal_limit_celsius", "Vega 20 thermal policy and CTF limits.", []string{"gpu", "limit"}, nil),
-		gradient:    prometheus.NewDesc("vega20_temperature_gradient_celsius", "Hottest TMON0 reading less TMON0 RDIL0.", []string{"gpu"}, nil),
-		clock:       prometheus.NewDesc("vega20_clock_mhz", "Vega 20 measured clock counters.", []string{"gpu", "clock"}, nil),
-		voltage:     prometheus.NewDesc("vega20_voltage_volts", "Calibrated measured SVI2 voltage.", []string{"gpu", "rail"}, nil),
-		current:     prometheus.NewDesc("vega20_current_amperes", "Calibrated measured SVI2 current.", []string{"gpu", "rail"}, nil),
+		sysfsPath:        config.SysfsPath,
+		sysfsEnabled:     config.SysfsEnabled,
+		registersEnabled: config.RegistersEnabled,
+		backend:          config.RegisterBackend,
+		calibration:      calibration,
+		devices:          config.Devices,
+		pcieDevices:      config.PCIDevices,
+		vram:             prometheus.NewDesc("vega20_vram_bytes", "VRAM capacity and current allocation.", []string{"gpu", "state"}, nil),
+		visibleVRAM:      prometheus.NewDesc("vega20_visible_vram_bytes", "CPU-visible VRAM capacity and current allocation.", []string{"gpu", "state"}, nil),
+		gtt:              prometheus.NewDesc("vega20_gtt_bytes", "GTT capacity and current allocation.", []string{"gpu", "state"}, nil),
+		power:            prometheus.NewDesc("vega20_power_watts", "GPU power reported by amdgpu hwmon.", []string{"gpu", "source"}, nil),
+		limit:            prometheus.NewDesc("vega20_power_limit_watts", "GPU power-cap values reported by amdgpu hwmon.", []string{"gpu", "limit"}, nil),
+		activity:         prometheus.NewDesc("vega20_gfx_activity_percent", "GPU graphics-engine activity reported by amdgpu.", []string{"gpu"}, nil),
+		pcieSpeed:        prometheus.NewDesc("vega20_pcie_link_speed_gigatransfers_per_second", "Effective current and maximum PCIe link speed across the GPU parent chain.", []string{"gpu", "state"}, nil),
+		pcieWidth:        prometheus.NewDesc("vega20_pcie_link_width_lanes", "Effective current and maximum PCIe link width across the GPU parent chain.", []string{"gpu", "state"}, nil),
+		info:             prometheus.NewDesc("vega20_gpu_info", "Vega 20 GPU identity and driver metadata.", []string{"gpu", "card_vendor", "card_model", "card_series", "driver_version", "serial_number", "vbios_version"}, nil),
+		fan:              prometheus.NewDesc("vega20_fan_speed_percent", "GPU fan PWM duty cycle.", []string{"gpu"}, nil),
+		providerUp:       prometheus.NewDesc("vega20_provider_up", "Whether a telemetry provider was read successfully for the GPU.", []string{"gpu", "provider"}, nil),
+		temperature:      prometheus.NewDesc("vega20_temperature_celsius", "Vega 20 temperature sensors.", []string{"gpu", "sensor"}, nil),
+		thermal:          prometheus.NewDesc("vega20_thermal_limit_celsius", "Vega 20 thermal policy and CTF limits.", []string{"gpu", "limit"}, nil),
+		gradient:         prometheus.NewDesc("vega20_temperature_gradient_celsius", "Hottest TMON0 reading less TMON0 RDIL0.", []string{"gpu"}, nil),
+		clock:            prometheus.NewDesc("vega20_clock_mhz", "Vega 20 measured clock counters.", []string{"gpu", "clock"}, nil),
+		voltage:          prometheus.NewDesc("vega20_voltage_volts", "Calibrated measured SVI2 voltage.", []string{"gpu", "rail"}, nil),
+		current:          prometheus.NewDesc("vega20_current_amperes", "Calibrated measured SVI2 current.", []string{"gpu", "rail"}, nil),
 	}, nil
 }
 
@@ -90,8 +110,7 @@ func (c *Collector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- c.pcieWidth
 	ch <- c.info
 	ch <- c.fan
-	ch <- c.up
-	ch <- c.registerUp
+	ch <- c.providerUp
 	ch <- c.temperature
 	ch <- c.thermal
 	ch <- c.gradient
@@ -104,32 +123,75 @@ func (c *Collector) Collect(ch chan<- prometheus.Metric) {
 	_, span := otel.Tracer("vega20-metrics").Start(context.Background(), "gpu.collect")
 	defer span.End()
 
-	if len(c.pcieDevices) > 0 {
-		for _, bdf := range c.pcieDevices {
-			gpu, err := readGPUDevice(filepath.Join(c.sysfs, "bus/pci/devices", bdf), c.devices)
-			if err != nil {
-				ch <- prometheus.MustNewConstMetric(c.up, prometheus.GaugeValue, 0, bdf)
-				continue
-			}
-			c.collectGPU(ch, gpu)
-		}
-		return
-	}
-	cards, err := filepath.Glob(filepath.Join(c.sysfs, "class/drm/card[0-9]*"))
+	targets, err := c.discoverDevices()
 	if err != nil {
 		return
 	}
-	for _, card := range cards {
-		gpu, err := readGPUDevice(filepath.Join(card, "device"), c.devices)
-		if err != nil {
+	for _, target := range targets {
+		if c.sysfsEnabled {
+			sample, err := readGPUSample(target.path)
+			if err != nil {
+				ch <- prometheus.MustNewConstMetric(c.providerUp, prometheus.GaugeValue, 0, target.bdf, "sysfs")
+			} else {
+				ch <- prometheus.MustNewConstMetric(c.providerUp, prometheus.GaugeValue, 1, target.bdf, "sysfs")
+				c.collectSysfs(ch, sample)
+			}
+		}
+		if !c.registersEnabled {
 			continue
 		}
-		c.collectGPU(ch, gpu)
+		if target.path == "" {
+			ch <- prometheus.MustNewConstMetric(c.providerUp, prometheus.GaugeValue, 0, target.bdf, "registers")
+			continue
+		}
+		telemetry, err := readTelemetry(c.backend, target.bdf, c.calibration)
+		if err != nil {
+			ch <- prometheus.MustNewConstMetric(c.providerUp, prometheus.GaugeValue, 0, target.bdf, "registers")
+			continue
+		}
+		ch <- prometheus.MustNewConstMetric(c.providerUp, prometheus.GaugeValue, 1, target.bdf, "registers")
+		c.collectRegisters(ch, target.bdf, telemetry)
 	}
 }
 
-func (c *Collector) collectGPU(ch chan<- prometheus.Metric, gpu sample) {
-	ch <- prometheus.MustNewConstMetric(c.up, prometheus.GaugeValue, 1, gpu.bdf)
+type target struct {
+	bdf  string
+	path string
+}
+
+func (c *Collector) discoverDevices() ([]target, error) {
+	if len(c.pcieDevices) > 0 {
+		result := make([]target, 0, len(c.pcieDevices))
+		for _, bdf := range c.pcieDevices {
+			path := filepath.Join(c.sysfsPath, "bus/pci/devices", bdf)
+			if matchesDevice(readText(filepath.Join(path, "vendor")), readText(filepath.Join(path, "device")), c.devices) {
+				result = append(result, target{bdf: bdf, path: path})
+				continue
+			}
+			result = append(result, target{bdf: bdf})
+		}
+		return result, nil
+	}
+	cards, err := filepath.Glob(filepath.Join(c.sysfsPath, "class/drm/card[0-9]*"))
+	if err != nil {
+		return nil, err
+	}
+	var result []target
+	for _, card := range cards {
+		path := filepath.Join(card, "device")
+		if !matchesDevice(readText(filepath.Join(path, "vendor")), readText(filepath.Join(path, "device")), c.devices) {
+			continue
+		}
+		devicePath, err := filepath.EvalSymlinks(path)
+		if err != nil {
+			continue
+		}
+		result = append(result, target{bdf: filepath.Base(devicePath), path: path})
+	}
+	return result, nil
+}
+
+func (c *Collector) collectSysfs(ch chan<- prometheus.Metric, gpu sample) {
 	ch <- prometheus.MustNewConstMetric(c.vram, prometheus.GaugeValue, float64(gpu.vramTotal), gpu.bdf, "total")
 	ch <- prometheus.MustNewConstMetric(c.vram, prometheus.GaugeValue, float64(gpu.vramUsed), gpu.bdf, "used")
 	ch <- prometheus.MustNewConstMetric(c.vram, prometheus.GaugeValue, float64(gpu.vramTotal-gpu.vramUsed), gpu.bdf, "free")
@@ -158,29 +220,23 @@ func (c *Collector) collectGPU(ch chan<- prometheus.Metric, gpu sample) {
 	if gpu.fan != nil {
 		ch <- prometheus.MustNewConstMetric(c.fan, prometheus.GaugeValue, *gpu.fan, gpu.bdf)
 	}
-	if c.backend == "none" {
-		return
-	}
-	telemetry, err := readTelemetry(c.backend, gpu.bdf, c.calibration)
-	if err != nil {
-		ch <- prometheus.MustNewConstMetric(c.registerUp, prometheus.GaugeValue, 0, gpu.bdf, c.backend)
-		return
-	}
-	ch <- prometheus.MustNewConstMetric(c.registerUp, prometheus.GaugeValue, 1, gpu.bdf, c.backend)
+}
+
+func (c *Collector) collectRegisters(ch chan<- prometheus.Metric, bdf string, telemetry telemetry) {
 	for sensor, value := range telemetry.temperatures {
-		ch <- prometheus.MustNewConstMetric(c.temperature, prometheus.GaugeValue, value, gpu.bdf, sensor)
+		ch <- prometheus.MustNewConstMetric(c.temperature, prometheus.GaugeValue, value, bdf, sensor)
 	}
-	ch <- prometheus.MustNewConstMetric(c.thermal, prometheus.GaugeValue, telemetry.policy, gpu.bdf, "policy")
-	ch <- prometheus.MustNewConstMetric(c.thermal, prometheus.GaugeValue, telemetry.ctf, gpu.bdf, "hardware_ctf")
-	ch <- prometheus.MustNewConstMetric(c.gradient, prometheus.GaugeValue, telemetry.gradient, gpu.bdf)
+	ch <- prometheus.MustNewConstMetric(c.thermal, prometheus.GaugeValue, telemetry.policy, bdf, "policy")
+	ch <- prometheus.MustNewConstMetric(c.thermal, prometheus.GaugeValue, telemetry.ctf, bdf, "hardware_ctf")
+	ch <- prometheus.MustNewConstMetric(c.gradient, prometheus.GaugeValue, telemetry.gradient, bdf)
 	for clock, value := range telemetry.clocks {
-		ch <- prometheus.MustNewConstMetric(c.clock, prometheus.GaugeValue, value, gpu.bdf, clock)
+		ch <- prometheus.MustNewConstMetric(c.clock, prometheus.GaugeValue, value, bdf, clock)
 	}
 	for rail, value := range telemetry.voltages {
-		ch <- prometheus.MustNewConstMetric(c.voltage, prometheus.GaugeValue, value, gpu.bdf, rail)
+		ch <- prometheus.MustNewConstMetric(c.voltage, prometheus.GaugeValue, value, bdf, rail)
 	}
 	for rail, value := range telemetry.currents {
-		ch <- prometheus.MustNewConstMetric(c.current, prometheus.GaugeValue, value, gpu.bdf, rail)
+		ch <- prometheus.MustNewConstMetric(c.current, prometheus.GaugeValue, value, bdf, rail)
 	}
 }
 
@@ -204,12 +260,7 @@ type sample struct {
 	fan           *float64
 }
 
-func readGPUDevice(device string, devices []DeviceID) (sample, error) {
-	vendor := readText(filepath.Join(device, "vendor"))
-	product := readText(filepath.Join(device, "device"))
-	if !matchesDevice(vendor, product, devices) {
-		return sample{}, fmt.Errorf("device %s:%s is not configured", vendor, product)
-	}
+func readGPUSample(device string) (sample, error) {
 	devicePath, err := filepath.EvalSymlinks(device)
 	if err != nil {
 		return sample{}, err

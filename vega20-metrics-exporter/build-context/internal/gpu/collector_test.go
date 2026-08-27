@@ -64,7 +64,7 @@ func TestReadGPU(t *testing.T) {
 		}
 	}
 
-	sample, err := readGPUDevice(filepath.Join(card, "device"), []DeviceID{{VendorID: "0x1002", ProductID: "0x66a1"}})
+	sample, err := readGPUSample(filepath.Join(card, "device"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -89,7 +89,13 @@ func TestReadGPU(t *testing.T) {
 }
 
 func TestCollectorForcedDeviceMissingReportsDown(t *testing.T) {
-	collector, err := NewCollector(t.TempDir(), "none", "", []DeviceID{{VendorID: "0x1002", ProductID: "0x66a1"}}, []string{"0000:33:00.0"})
+	collector, err := NewCollector(Config{
+		SysfsPath:        t.TempDir(),
+		SysfsEnabled:     true,
+		RegistersEnabled: false,
+		Devices:          []DeviceID{{VendorID: "0x1002", ProductID: "0x66a1"}},
+		PCIDevices:       []string{"0000:33:00.0"},
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -100,13 +106,13 @@ func TestCollectorForcedDeviceMissingReportsDown(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, family := range families {
-		if family.GetName() != "vega20_gpu_up" {
+		if family.GetName() != "vega20_provider_up" {
 			continue
 		}
-		if len(family.Metric) != 1 || family.Metric[0].GetGauge().GetValue() != 0 || family.Metric[0].Label[0].GetValue() != "0000:33:00.0" {
+		if len(family.Metric) != 1 || family.Metric[0].GetGauge().GetValue() != 0 || family.Metric[0].Label[0].GetValue() != "0000:33:00.0" || family.Metric[0].Label[1].GetValue() != "sysfs" {
 			t.Fatalf("unexpected up metric: %#v", family.Metric)
 		}
 		return
 	}
-	t.Fatal("vega20_gpu_up was not collected")
+	t.Fatal("vega20_provider_up was not collected")
 }
