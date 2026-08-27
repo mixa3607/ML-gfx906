@@ -58,8 +58,8 @@ func NewCollector(sysfs, backend, vbios string) (*Collector, error) {
 		power:       prometheus.NewDesc("vega20_power_watts", "GPU power reported by amdgpu hwmon.", []string{"gpu", "source"}, nil),
 		limit:       prometheus.NewDesc("vega20_power_limit_watts", "GPU power-cap values reported by amdgpu hwmon.", []string{"gpu", "limit"}, nil),
 		activity:    prometheus.NewDesc("vega20_gfx_activity_percent", "GPU graphics-engine activity reported by amdgpu.", []string{"gpu"}, nil),
-		pcieSpeed:   prometheus.NewDesc("vega20_pcie_link_speed_gigatransfers_per_second", "Current and maximum PCIe link speed.", []string{"gpu", "state"}, nil),
-		pcieWidth:   prometheus.NewDesc("vega20_pcie_link_width_lanes", "Current and maximum PCIe link width.", []string{"gpu", "state"}, nil),
+		pcieSpeed:   prometheus.NewDesc("vega20_pcie_link_speed_gigatransfers_per_second", "Effective current and maximum PCIe link speed across the GPU parent chain.", []string{"gpu", "state"}, nil),
+		pcieWidth:   prometheus.NewDesc("vega20_pcie_link_width_lanes", "Effective current and maximum PCIe link width across the GPU parent chain.", []string{"gpu", "state"}, nil),
 		up:          prometheus.NewDesc("vega20_gpu_up", "Whether sysfs telemetry was read successfully for the GPU.", []string{"gpu"}, nil),
 		registerUp:  prometheus.NewDesc("vega20_register_telemetry_up", "Whether register telemetry was read successfully for the GPU.", []string{"gpu", "backend"}, nil),
 		temperature: prometheus.NewDesc("vega20_temperature_celsius", "Vega 20 temperature sensors.", []string{"gpu", "sensor"}, nil),
@@ -173,7 +173,7 @@ func readGPU(card string) (sample, error) {
 	if readText(filepath.Join(device, "vendor")) != amdVendor || readText(filepath.Join(device, "device")) != vega20ID {
 		return sample{}, fmt.Errorf("not Vega 20")
 	}
-	bdf, err := filepath.EvalSymlinks(device)
+	devicePath, err := filepath.EvalSymlinks(device)
 	if err != nil {
 		return sample{}, err
 	}
@@ -185,16 +185,17 @@ func readGPU(card string) (sample, error) {
 	if err != nil || used > total {
 		return sample{}, fmt.Errorf("invalid VRAM allocation")
 	}
+	pcie := effectivePCIeLink(devicePath)
 	result := sample{
-		bdf:         filepath.Base(bdf),
+		bdf:         filepath.Base(devicePath),
 		vramTotal:   total,
 		vramUsed:    used,
 		visibleVRAM: memoryStats(device, "mem_info_vis_vram_total", "mem_info_vis_vram_used"),
 		gtt:         memoryStats(device, "mem_info_gtt_total", "mem_info_gtt_used"),
 		power:       map[string]uint64{},
 		limits:      map[string]uint64{},
-		pcieSpeed:   linkSpeeds(device),
-		pcieWidth:   linkWidths(device),
+		pcieSpeed:   pcie.speeds,
+		pcieWidth:   pcie.widths,
 	}
 	if activity, err := readUint(filepath.Join(device, "gpu_busy_percent")); err == nil {
 		result.activity = &activity
@@ -236,26 +237,43 @@ func memoryStats(device, totalFile, usedFile string) map[string]uint64 {
 	return map[string]uint64{"total": total, "used": used, "free": total - used}
 }
 
-func linkSpeeds(device string) map[string]float64 {
-	result := map[string]float64{}
-	for state, file := range map[string]string{"current": "current_link_speed", "maximum": "max_link_speed"} {
-		fields := strings.Fields(readText(filepath.Join(device, file)))
-		if len(fields) == 0 {
-			continue
+type pcieLink struct {
+	speeds map[string]float64
+	widths map[string]uint64
+}
+
+func effectivePCIeLink(device string) pcieLink {
+	result := pcieLink{speeds: map[string]float64{}, widths: map[string]uint64{}}
+	var currentBandwidth, maximumBandwidth float64
+	for path := device; strings.Count(filepath.Base(path), ":") == 2; path = filepath.Dir(path) {
+		currentSpeed, currentSpeedErr := readLinkSpeed(filepath.Join(path, "current_link_speed"))
+		currentWidth, currentWidthErr := readUint(filepath.Join(path, "current_link_width"))
+		if currentSpeedErr == nil && currentWidthErr == nil {
+			bandwidth := currentSpeed * float64(currentWidth)
+			if currentBandwidth == 0 || bandwidth < currentBandwidth {
+				currentBandwidth = bandwidth
+				result.speeds["current"] = currentSpeed
+				result.widths["current"] = currentWidth
+			}
 		}
-		if speed, err := strconv.ParseFloat(fields[0], 64); err == nil {
-			result[state] = speed
+		maximumSpeed, maximumSpeedErr := readLinkSpeed(filepath.Join(path, "max_link_speed"))
+		maximumWidth, maximumWidthErr := readUint(filepath.Join(path, "max_link_width"))
+		if maximumSpeedErr == nil && maximumWidthErr == nil {
+			bandwidth := maximumSpeed * float64(maximumWidth)
+			if maximumBandwidth == 0 || bandwidth < maximumBandwidth {
+				maximumBandwidth = bandwidth
+				result.speeds["maximum"] = maximumSpeed
+				result.widths["maximum"] = maximumWidth
+			}
 		}
 	}
 	return result
 }
 
-func linkWidths(device string) map[string]uint64 {
-	result := map[string]uint64{}
-	for state, file := range map[string]string{"current": "current_link_width", "maximum": "max_link_width"} {
-		if width, err := readUint(filepath.Join(device, file)); err == nil {
-			result[state] = width
-		}
+func readLinkSpeed(path string) (float64, error) {
+	fields := strings.Fields(readText(path))
+	if len(fields) == 0 {
+		return 0, fmt.Errorf("missing PCIe link speed")
 	}
-	return result
+	return strconv.ParseFloat(fields[0], 64)
 }

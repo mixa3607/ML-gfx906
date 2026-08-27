@@ -9,8 +9,8 @@ amdgpu sysfs data with the RDI telemetry previously exposed by `vega20-rdi`.
 - `vega20_visible_vram_bytes{gpu,state="total|used|free"}` when exposed
 - `vega20_gtt_bytes{gpu,state="total|used|free"}` when exposed
 - `vega20_gfx_activity_percent` when exposed
-- `vega20_pcie_link_speed_gigatransfers_per_second{gpu,state="current|maximum"}` when exposed
-- `vega20_pcie_link_width_lanes{gpu,state="current|maximum"}` when exposed
+- `vega20_pcie_link_speed_gigatransfers_per_second{gpu,state="current|maximum"}` for the PCIe parent-chain bottleneck
+- `vega20_pcie_link_width_lanes{gpu,state="current|maximum"}` for the PCIe parent-chain bottleneck
 - `vega20_power_watts{gpu,source="average|instant"}` when hwmon exposes it
 - `vega20_power_limit_watts{gpu,limit="current|minimum|maximum"}` when exposed
 - `vega20_gpu_up`

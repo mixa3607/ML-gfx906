@@ -8,7 +8,7 @@ import (
 
 func TestReadGPU(t *testing.T) {
 	root := t.TempDir()
-	device := filepath.Join(root, "devices", "0000:33:00.0")
+	device := filepath.Join(root, "devices", "pci0000:30", "0000:31:00.0", "0000:32:00.0", "0000:33:00.0")
 	if err := os.MkdirAll(filepath.Join(device, "hwmon", "hwmon0"), 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -45,6 +45,16 @@ func TestReadGPU(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+	for name, value := range map[string]string{
+		"current_link_speed": "16.0 GT/s PCIe\n",
+		"max_link_speed":     "16.0 GT/s PCIe\n",
+		"current_link_width": "8\n",
+		"max_link_width":     "16\n",
+	} {
+		if err := os.WriteFile(filepath.Join(filepath.Dir(filepath.Dir(device)), name), []byte(value), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
 
 	sample, err := readGPU(card)
 	if err != nil {
@@ -59,7 +69,7 @@ func TestReadGPU(t *testing.T) {
 	if sample.visibleVRAM["free"] != 15032385536 || sample.gtt["free"] != 67645734912 {
 		t.Fatalf("unexpected memory data: %#v %#v", sample.visibleVRAM, sample.gtt)
 	}
-	if sample.activity == nil || *sample.activity != 42 || sample.pcieSpeed["current"] != 16 || sample.pcieWidth["current"] != 16 {
+	if sample.activity == nil || *sample.activity != 42 || sample.pcieSpeed["current"] != 16 || sample.pcieWidth["current"] != 8 {
 		t.Fatalf("unexpected activity or PCIe data: %#v %#v %#v", sample.activity, sample.pcieSpeed, sample.pcieWidth)
 	}
 }
