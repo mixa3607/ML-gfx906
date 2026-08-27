@@ -1,0 +1,31 @@
+name: Build Vega20 Metrics Exporter DEB
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    tags:
+      - "**"
+    paths:
+      - "vega20-metrics-exporter/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build DEB package
+        working-directory: vega20-metrics-exporter
+        env:
+          METRICS_PUSH: 0
+        run: ./build-and-push.deb.sh
+
+      - name: Upload DEB package
+        uses: actions/upload-artifact@v6
+        with:
+          name: vega20-metrics-exporter-deb
+          path: vega20-metrics-exporter/output/**/*.deb
+          if-no-files-found: error
+          retention-days: 14
