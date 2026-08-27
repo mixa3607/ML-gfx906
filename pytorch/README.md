@@ -102,6 +102,7 @@ Defaults come from [`env.sh`](./env.sh) (pytorch) and
 | `TORCH_ROCM_VERSION`    | `7.14`                              | ROCm version of the base image                            |
 | `TORCH_VERSION`         | `v2.13.0`                           | PyTorch git tag/branch to build                           |
 | `TORCH_IMAGE`           | `docker.io/mixa3607/pytorch-gfx906` | Destination image name                                    |
+| `TORCH_IS_RELEASE`      | `0`                                 | `1` publishes image release tags; otherwise only a `-pre` tag |
 | `TORCH_PUSH`            | `1`                                 | Push wheels to S3 (`whl`) / image to registry (`image`)   |
 | `TORCH_PACKAGES_SOURCE` | `fetch`                             | `fetch` — download wheels from S3; `context` — use local  |
 | `ROCM_ARCH`             | `gfx906`                            | Target GPU architecture                                   |
@@ -137,11 +138,15 @@ always pinned).
 ./build-and-push.image.sh
 ```
 
-Two tags are created:
+With `TORCH_IS_RELEASE=1`, two image tags are created:
 
 - `$TORCH_IMAGE:$TORCH_VERSION-rocm-$TORCH_ROCM_VERSION-$REPO_GIT_REF` — pinned
   to the build revision
 - `$TORCH_IMAGE:$TORCH_VERSION-rocm-$TORCH_ROCM_VERSION` — floating tag
+
+Otherwise (`TORCH_IS_RELEASE=0`, the default), only
+`$TORCH_IMAGE:$TORCH_VERSION-rocm-$TORCH_ROCM_VERSION-$REPO_GIT_REF-pre` is
+created.
 
 The image script needs wheels:
 

@@ -7,10 +7,16 @@ source ../env.sh "vega20-metrics-exporter"
 METRICS_VERSION_SUFFIX="${REPO_GIT_REF}"
 METRICS_PACKAGE_VERSION="${METRICS_VERSION}+${METRICS_VERSION_SUFFIX}"
 METRICS_PACKAGES_DIR="$PWD/output/vega20-metrics-exporter-${METRICS_PACKAGE_VERSION}"
-IMAGE_TAGS=(
-  "${METRICS_IMAGE}:${METRICS_VERSION}-${REPO_GIT_REF}"
-  "${METRICS_IMAGE}:${METRICS_VERSION}"
-)
+if [ "$METRICS_IS_RELEASE" = "1" ]; then
+  IMAGE_TAGS=(
+    "${METRICS_IMAGE}:${METRICS_VERSION}-${REPO_GIT_REF}"
+    "${METRICS_IMAGE}:${METRICS_VERSION}"
+  )
+else
+  IMAGE_TAGS=(
+    "${METRICS_IMAGE}:${METRICS_VERSION}-${REPO_GIT_REF}-pre"
+  )
+fi
 
 if docker_image_pushed "${IMAGE_TAGS[0]}" && [ "${METRICS_FORCE_BUILD:-}" != "1" ]; then
   echo "${IMAGE_TAGS[0]} already in registry. Skip."

@@ -105,6 +105,7 @@ any variable to override it.
 | `COMFYUI_REPO`           | `https://github.com/Comfy-Org/ComfyUI.git` | ComfyUI git repository               |
 | `COMFYUI_BRANCH`         | `master`                            | ComfyUI git tag/branch to build              |
 | `COMFYUI_COMMIT`         | *(empty)*                           | Pin a specific commit (on top of the branch) |
+| `COMFYUI_IS_RELEASE`     | `0`                                 | `1` publishes image release tags; otherwise only a `-pre` tag |
 | `COMFYUI_PUSH`           | `1`                                 | Push the image to the registry               |
 | `COMFYUI_FORCE_BUILD`    | *(unset)*                           | Set to `1` to rebuild even if the tag exists |
 | `REPO_GIT_REF`           | *(git tag, else short SHA)*         | Build revision appended to the tag           |
@@ -120,13 +121,17 @@ The base image is resolved as
 ./build-and-push.image.sh
 ```
 
-Five tags are created:
+With `COMFYUI_IS_RELEASE=1`, five tags are created:
 
 - `$COMFYUI_IMAGE:$BRANCH-torch-$PYTORCH_VERSION-rocm-$ROCM_VERSION-$REPO_GIT_REF` — pinned to the build revision
 - `$COMFYUI_IMAGE:$BRANCH-torch-$PYTORCH_VERSION-rocm-$ROCM_VERSION`
 - `$COMFYUI_IMAGE:$BRANCH-rocm-$ROCM_VERSION-$REPO_GIT_REF` — pinned to the build revision
 - `$COMFYUI_IMAGE:$BRANCH-rocm-$ROCM_VERSION`
 - `$COMFYUI_IMAGE:latest-rocm-$ROCM_VERSION`
+
+Otherwise (`COMFYUI_IS_RELEASE=0`, the default), only
+`$COMFYUI_IMAGE:$BRANCH-torch-$PYTORCH_VERSION-rocm-$ROCM_VERSION-$REPO_GIT_REF-pre`
+is created.
 
 The build is skipped if the pinned tag is already in the registry, unless
 `COMFYUI_FORCE_BUILD=1`.

@@ -23,16 +23,20 @@ running the script:
 | `ROCM_ARCH`            | `gfx906`                               | Target GPU architecture  |
 | `ROCM_BASE_IMAGE`      | `docker.io/library/ubuntu:24.04`      | Base Docker image        |
 | `ROCM_IMAGE`           | `docker.io/mixa3607/rocm-gfx906`      | Destination image name   |
+| `ROCM_IS_RELEASE`      | `0`                                    | `1` publishes release tags; otherwise only a `-pre` tag |
 
 The [`build-image.Dockerfile`](./build-image.Dockerfile) adds the APT repository (via
 [`install-gfx906-repo.sh`](./build-context/install-gfx906-repo.sh)), then installs all
 `amdrocm` packages matching the given version and architecture (`--target gfx906`).
 
-Two tags are created:
+With `ROCM_IS_RELEASE=1`, two release tags are created:
 
 - `$ROCM_IMAGE:$ROCM_VERSION-complete-$REPO_GIT_REF` — pinned to build
   revision
 - `$ROCM_IMAGE:$ROCM_VERSION-complete` — floating tag for the version
+
+Otherwise (`ROCM_IS_RELEASE=0`, the default), only
+`$ROCM_IMAGE:$ROCM_VERSION-complete-$REPO_GIT_REF-pre` is created.
 
 The build log is saved to `./logs/build_<timestamp>.log`.
 

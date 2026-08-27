@@ -45,7 +45,7 @@ jobs:
           LLAMA_REPO: "https://github.com/ggml-org/llama.cpp.git"
           LLAMA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
           LLAMA_BRANCH: "${{ matrix.build.llamacpp_tag }}"
-          LLAMA_IS_RELEASE: "1"
+          LLAMA_IS_RELEASE: ${{ github.ref_type == 'tag' && '1' || '0' }}
           LLAMA_CMAKE_HIP_FLAGS: "-mllvm -amdgpu-sched-strategy=max-ilp"
           GITHUB_TOKEN: "${{ github.token }}"
         run: |

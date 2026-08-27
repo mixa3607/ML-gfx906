@@ -186,6 +186,11 @@ and debugfs mounts. The following example uses `--privileged` because the RDI
 interface requires read/write driver-debugfs access; reduce privileges only
 after verifying the required device policy on the target host.
 
+With `METRICS_IS_RELEASE=1`, the image receives
+`$METRICS_IMAGE:$METRICS_VERSION-$REPO_GIT_REF` and
+`$METRICS_IMAGE:$METRICS_VERSION`. Otherwise (`METRICS_IS_RELEASE=0`, the
+default), it receives only `$METRICS_IMAGE:$METRICS_VERSION-$REPO_GIT_REF-pre`.
+
 ```sh
 docker run --rm --network host --privileged \
   --mount type=bind,src=/sys,dst=/sys,readonly \
@@ -208,6 +213,7 @@ Defaults are defined in [`env.sh`](./env.sh). Export a variable to override it.
 | --- | --- | --- |
 | `METRICS_VERSION` | `0.1.0` | Exporter version included in package and image tags |
 | `METRICS_IMAGE` | `docker.io/mixa3607/vega20-metrics-exporter` | Destination image name |
+| `METRICS_IS_RELEASE` | `0` | `1` publishes image release tags; otherwise only a `-pre` tag |
 | `METRICS_PUSH` | `1` | Set to `0` for a local package/image build without publishing |
 | `METRICS_FORCE_BUILD` | *(unset)* | Set to `1` to rebuild an existing output directory or image tag |
 | `METRICS_PACKAGES_SOURCE` | `context` | Image package input; `apt` is not implemented |

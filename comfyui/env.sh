@@ -31,4 +31,8 @@ if [ "$COMFYUI_PUSH" == "" ]; then
   COMFYUI_PUSH="1"
 fi
 
+if [ "$COMFYUI_IS_RELEASE" == "" ]; then
+  COMFYUI_IS_RELEASE="0"
+fi
+
 popd

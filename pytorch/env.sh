@@ -10,6 +10,8 @@ if [ "$TORCH_VERSION" == "" ];         then TORCH_VERSION="v2.13.0"; fi
 if [ "$TORCH_IMAGE" == "" ];           then TORCH_IMAGE="docker.io/mixa3607/pytorch-gfx906"; fi
 # push result
 if [ "$TORCH_PUSH" == "" ];            then TORCH_PUSH="1"; fi
+# publish release tags
+if [ "$TORCH_IS_RELEASE" == "" ];      then TORCH_IS_RELEASE="0"; fi
 # packages source
 if [ "$TORCH_PACKAGES_SOURCE" == "" ]; then TORCH_PACKAGES_SOURCE="fetch"; fi
 

@@ -8,10 +8,16 @@ TORCH_VERSION_SUFFIX="${ROCM_ARCH}.${REPO_GIT_REF}"
 TORCH_BASE_IMAGE="${ROCM_IMAGE}:${TORCH_ROCM_VERSION}-complete"
 TORCH_PACKAGES_DIR="$PWD/output/rocm${TORCH_ROCM_VERSION}/torch-${TORCH_VERSION}+${TORCH_VERSION_SUFFIX}"
 TORCH_PACKAGES_URL="https://s3.arkprojects.space/py-gfx906/rocm${TORCH_ROCM_VERSION}/torch-${TORCH_VERSION}+${TORCH_VERSION_SUFFIX}"
-IMAGE_TAGS=(
-  "$TORCH_IMAGE:${TORCH_VERSION}-rocm-${TORCH_ROCM_VERSION}-${REPO_GIT_REF}"
-  "$TORCH_IMAGE:${TORCH_VERSION}-rocm-${TORCH_ROCM_VERSION}"
-)
+if [ "$TORCH_IS_RELEASE" == "1" ]; then
+  IMAGE_TAGS=(
+    "$TORCH_IMAGE:${TORCH_VERSION}-rocm-${TORCH_ROCM_VERSION}-${REPO_GIT_REF}"
+    "$TORCH_IMAGE:${TORCH_VERSION}-rocm-${TORCH_ROCM_VERSION}"
+  )
+else
+  IMAGE_TAGS=(
+    "$TORCH_IMAGE:${TORCH_VERSION}-rocm-${TORCH_ROCM_VERSION}-${REPO_GIT_REF}-pre"
+  )
+fi
 
 declare -A IMAGE_ANNOTATIONS
 IMAGE_ANNOTATIONS["org.opencontainers.image.created"]="$(date --rfc-3339=seconds)"
@@ -31,6 +37,7 @@ echo "ROCM IMAGE:           ${TORCH_BASE_IMAGE}"
 echo "ROCM ARCH:            ${ROCM_ARCH}"
 echo "ROCM VERSION:         ${TORCH_ROCM_VERSION}"
 echo "PUSH:                 ${TORCH_PUSH}"
+echo "IS_RELEASE:           ${TORCH_IS_RELEASE}"
 
 DOCKER_EXTRA_ARGS=()
 for (( i=0; i<${#IMAGE_TAGS[@]}; i++ )); do

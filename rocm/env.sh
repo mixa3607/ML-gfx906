@@ -30,4 +30,8 @@ if [ "$ROCM_PUSH" == "" ]; then
   ROCM_PUSH="1"
 fi
 
+if [ "$ROCM_IS_RELEASE" == "" ]; then
+  ROCM_IS_RELEASE="0"
+fi
+
 popd

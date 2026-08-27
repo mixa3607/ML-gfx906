@@ -33,6 +33,8 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Run build script
+        env:
+          ROCM_IS_RELEASE: ${{ github.ref_type == 'tag' && '1' || '0' }}
         run: |
           cd ./rocm
           export ROCM_VERSION="${{ matrix.build.rocm_version }}"

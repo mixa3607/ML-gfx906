@@ -4,10 +4,16 @@ set -eo pipefail
 cd $(dirname $0)
 source ../env.sh "rocm"
 
-IMAGE_TAGS=(
-  "$ROCM_IMAGE:${ROCM_VERSION}-complete-${REPO_GIT_REF}"
-  "$ROCM_IMAGE:${ROCM_VERSION}-complete"
-)
+if [ "$ROCM_IS_RELEASE" == "1" ]; then
+  IMAGE_TAGS=(
+    "$ROCM_IMAGE:${ROCM_VERSION}-complete-${REPO_GIT_REF}"
+    "$ROCM_IMAGE:${ROCM_VERSION}-complete"
+  )
+else
+  IMAGE_TAGS=(
+    "$ROCM_IMAGE:${ROCM_VERSION}-complete-${REPO_GIT_REF}-pre"
+  )
+fi
 
 declare -A IMAGE_ANNOTATIONS
 IMAGE_ANNOTATIONS["org.opencontainers.image.created"]="$(date --rfc-3339=seconds)"
@@ -20,6 +26,7 @@ IMAGE_ANNOTATIONS["org.opencontainers.image.base.name"]="${ROCM_BASE_IMAGE}"
 echo "Start building ROCm image..."
 echo "ROCM_VERSION: ${ROCM_VERSION}"
 echo "ROCM_BUILD:   ${ROCM_BUILD}"
+echo "IS_RELEASE:   ${ROCM_IS_RELEASE}"
 
 DOCKER_EXTRA_ARGS=()
 for (( i=0; i<${#IMAGE_TAGS[@]}; i++ )); do
