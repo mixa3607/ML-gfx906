@@ -64,7 +64,6 @@ spec:
           volumeMounts:
             - name: host-sys
               mountPath: /sys
-              readOnly: true
             - name: host-debugfs
               mountPath: /sys/kernel/debug
             - name: config
@@ -86,7 +85,9 @@ spec:
 ```
 
 The Prometheus annotations are on the pod template because annotation-based
-discovery scrapes pods, not Deployment objects. Configure `pci_devices` in the
+discovery scrapes pods, not Deployment objects. The `/sys` mount is writable
+because `vbios_source: pci_rom` temporarily enables and then disables PCI ROM
+decode while reading the VBIOS. Configure `pci_devices` in the
 ConfigMap to force specific BDFs; a missing configured BDF emits
 `vega20_provider_up{gpu="<BDF>",provider="sysfs"} 0`.
 

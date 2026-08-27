@@ -85,15 +85,19 @@ VEGA20_DEVICES_PCI_DEVICES_1=0000:36:00.0
 - `vega20_gfx_activity_percent` when exposed
 - `vega20_gpu_info{gpu,card_vendor,card_model,card_series,driver_version,serial_number,vbios_version}`
 - `vega20_fan_speed_percent` when hwmon exposes `pwm1` and `pwm1_max`
+- `vega20_fan_speed_rpm{gpu,state="current|target|minimum|maximum"}` and `vega20_fan_enabled`
 - `vega20_pcie_link_speed_gigatransfers_per_second{gpu,state="current|maximum"}` for the PCIe parent-chain bottleneck
 - `vega20_pcie_link_width_lanes{gpu,state="current|maximum"}` for the PCIe parent-chain bottleneck
 - `vega20_power_watts{gpu,source="average|instant"}` when hwmon exposes it
-- `vega20_power_limit_watts{gpu,limit="current|minimum|maximum"}` when exposed
+- `vega20_power_limit_watts{gpu,limit="current|default|minimum|maximum"}` when exposed
+- `vega20_vram_preempt_bytes`
 - `vega20_provider_up{gpu,provider="sysfs|registers"}`
-- `vega20_temperature_celsius{gpu,sensor}` for TMON RDI and HBM stacks
-- `vega20_thermal_limit_celsius{gpu,limit="policy|hardware_ctf"}`
+- `vega20_temperature_celsius{gpu,sensor}` for TMON RDI, HBM stacks, and hwmon edge/junction/memory sensors
+- `vega20_thermal_limit_celsius` for firmware and hwmon critical/emergency thresholds
 - `vega20_temperature_gradient_celsius`
-- `vega20_clock_mhz{gpu,clock="dclk|vclk|eclk"}`
+- `vega20_clock_mhz{gpu,clock="dclk|vclk|eclk|sclk|mclk"}`
+- `vega20_voltage_volts{gpu,rail="vddgfx"}` from hwmon
+- `vega20_dpm_clock_mhz` and `vega20_dpm_pcie_link_{gigatransfers_per_second|width_lanes}` for every DPM level and its active state
 - `vega20_voltage_volts` and `vega20_current_amperes` when
   `vbios_related_metrics` is enabled
 

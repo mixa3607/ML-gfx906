@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -44,6 +45,7 @@ type Collector struct {
 	devices          []DeviceID
 	pcieDevices      []string
 	vram             *prometheus.Desc
+	preemptVRAM      *prometheus.Desc
 	visibleVRAM      *prometheus.Desc
 	gtt              *prometheus.Desc
 	power            *prometheus.Desc
@@ -53,6 +55,11 @@ type Collector struct {
 	pcieWidth        *prometheus.Desc
 	info             *prometheus.Desc
 	fan              *prometheus.Desc
+	fanRPM           *prometheus.Desc
+	fanEnabled       *prometheus.Desc
+	dpmClock         *prometheus.Desc
+	dpmPCIeSpeed     *prometheus.Desc
+	dpmPCIeWidth     *prometheus.Desc
 	providerUp       *prometheus.Desc
 	temperature      *prometheus.Desc
 	thermal          *prometheus.Desc
@@ -80,6 +87,7 @@ func NewCollector(config Config) (*Collector, error) {
 		devices:          config.Devices,
 		pcieDevices:      config.PCIDevices,
 		vram:             prometheus.NewDesc("vega20_vram_bytes", "VRAM capacity and current allocation.", []string{"gpu", "state"}, nil),
+		preemptVRAM:      prometheus.NewDesc("vega20_vram_preempt_bytes", "VRAM reserved for preemption.", []string{"gpu"}, nil),
 		visibleVRAM:      prometheus.NewDesc("vega20_visible_vram_bytes", "CPU-visible VRAM capacity and current allocation.", []string{"gpu", "state"}, nil),
 		gtt:              prometheus.NewDesc("vega20_gtt_bytes", "GTT capacity and current allocation.", []string{"gpu", "state"}, nil),
 		power:            prometheus.NewDesc("vega20_power_watts", "GPU power reported by amdgpu hwmon.", []string{"gpu", "source"}, nil),
@@ -89,6 +97,11 @@ func NewCollector(config Config) (*Collector, error) {
 		pcieWidth:        prometheus.NewDesc("vega20_pcie_link_width_lanes", "Effective current and maximum PCIe link width across the GPU parent chain.", []string{"gpu", "state"}, nil),
 		info:             prometheus.NewDesc("vega20_gpu_info", "Vega 20 GPU identity and driver metadata.", []string{"gpu", "card_vendor", "card_model", "card_series", "driver_version", "serial_number", "vbios_version"}, nil),
 		fan:              prometheus.NewDesc("vega20_fan_speed_percent", "GPU fan PWM duty cycle.", []string{"gpu"}, nil),
+		fanRPM:           prometheus.NewDesc("vega20_fan_speed_rpm", "GPU fan speeds reported by amdgpu hwmon.", []string{"gpu", "state"}, nil),
+		fanEnabled:       prometheus.NewDesc("vega20_fan_enabled", "Whether amdgpu fan control is enabled.", []string{"gpu"}, nil),
+		dpmClock:         prometheus.NewDesc("vega20_dpm_clock_mhz", "Available amdgpu DPM clock states.", []string{"gpu", "clock", "level", "active"}, nil),
+		dpmPCIeSpeed:     prometheus.NewDesc("vega20_dpm_pcie_link_gigatransfers_per_second", "Available amdgpu PCIe DPM link speeds.", []string{"gpu", "level", "active"}, nil),
+		dpmPCIeWidth:     prometheus.NewDesc("vega20_dpm_pcie_link_width_lanes", "Available amdgpu PCIe DPM link widths.", []string{"gpu", "level", "active"}, nil),
 		providerUp:       prometheus.NewDesc("vega20_provider_up", "Whether a telemetry provider was read successfully for the GPU.", []string{"gpu", "provider"}, nil),
 		temperature:      prometheus.NewDesc("vega20_temperature_celsius", "Vega 20 temperature sensors.", []string{"gpu", "sensor"}, nil),
 		thermal:          prometheus.NewDesc("vega20_thermal_limit_celsius", "Vega 20 thermal policy and CTF limits.", []string{"gpu", "limit"}, nil),
@@ -101,6 +114,7 @@ func NewCollector(config Config) (*Collector, error) {
 
 func (c *Collector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- c.vram
+	ch <- c.preemptVRAM
 	ch <- c.visibleVRAM
 	ch <- c.gtt
 	ch <- c.power
@@ -110,6 +124,11 @@ func (c *Collector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- c.pcieWidth
 	ch <- c.info
 	ch <- c.fan
+	ch <- c.fanRPM
+	ch <- c.fanEnabled
+	ch <- c.dpmClock
+	ch <- c.dpmPCIeSpeed
+	ch <- c.dpmPCIeWidth
 	ch <- c.providerUp
 	ch <- c.temperature
 	ch <- c.thermal
@@ -201,6 +220,9 @@ func (c *Collector) collectSysfs(ch chan<- prometheus.Metric, gpu sample) {
 	for state, value := range gpu.gtt {
 		ch <- prometheus.MustNewConstMetric(c.gtt, prometheus.GaugeValue, float64(value), gpu.bdf, state)
 	}
+	if gpu.preemptVRAM != nil {
+		ch <- prometheus.MustNewConstMetric(c.preemptVRAM, prometheus.GaugeValue, float64(*gpu.preemptVRAM), gpu.bdf)
+	}
 	for source, value := range gpu.power {
 		ch <- prometheus.MustNewConstMetric(c.power, prometheus.GaugeValue, float64(value)/1_000_000, gpu.bdf, source)
 	}
@@ -219,6 +241,34 @@ func (c *Collector) collectSysfs(ch chan<- prometheus.Metric, gpu sample) {
 	ch <- prometheus.MustNewConstMetric(c.info, prometheus.GaugeValue, 1, gpu.bdf, gpu.vendor, gpu.model, gpu.series, gpu.driverVersion, gpu.serial, gpu.vbios)
 	if gpu.fan != nil {
 		ch <- prometheus.MustNewConstMetric(c.fan, prometheus.GaugeValue, *gpu.fan, gpu.bdf)
+	}
+	for state, value := range gpu.fanRPM {
+		ch <- prometheus.MustNewConstMetric(c.fanRPM, prometheus.GaugeValue, value, gpu.bdf, state)
+	}
+	if gpu.fanEnabled != nil {
+		ch <- prometheus.MustNewConstMetric(c.fanEnabled, prometheus.GaugeValue, float64(*gpu.fanEnabled), gpu.bdf)
+	}
+	for sensor, value := range gpu.temperatures {
+		ch <- prometheus.MustNewConstMetric(c.temperature, prometheus.GaugeValue, value, gpu.bdf, sensor)
+	}
+	for limit, value := range gpu.thermalLimits {
+		ch <- prometheus.MustNewConstMetric(c.thermal, prometheus.GaugeValue, value, gpu.bdf, limit)
+	}
+	for clock, value := range gpu.clocks {
+		ch <- prometheus.MustNewConstMetric(c.clock, prometheus.GaugeValue, value, gpu.bdf, clock)
+	}
+	for rail, value := range gpu.voltages {
+		ch <- prometheus.MustNewConstMetric(c.voltage, prometheus.GaugeValue, value, gpu.bdf, rail)
+	}
+	for clock, states := range gpu.dpmClocks {
+		for _, state := range states {
+			ch <- prometheus.MustNewConstMetric(c.dpmClock, prometheus.GaugeValue, state.frequency, gpu.bdf, clock, state.level, strconv.FormatBool(state.active))
+		}
+	}
+	for _, state := range gpu.dpmPCIe {
+		active := strconv.FormatBool(state.active)
+		ch <- prometheus.MustNewConstMetric(c.dpmPCIeSpeed, prometheus.GaugeValue, state.speed, gpu.bdf, state.level, active)
+		ch <- prometheus.MustNewConstMetric(c.dpmPCIeWidth, prometheus.GaugeValue, float64(state.width), gpu.bdf, state.level, active)
 	}
 }
 
@@ -258,6 +308,15 @@ type sample struct {
 	serial        string
 	vbios         string
 	fan           *float64
+	fanRPM        map[string]float64
+	fanEnabled    *uint64
+	preemptVRAM   *uint64
+	temperatures  map[string]float64
+	thermalLimits map[string]float64
+	clocks        map[string]float64
+	voltages      map[string]float64
+	dpmClocks     map[string][]dpmClockState
+	dpmPCIe       []dpmPCIeState
 }
 
 func readGPUSample(device string) (sample, error) {
@@ -284,6 +343,12 @@ func readGPUSample(device string) (sample, error) {
 		limits:        map[string]uint64{},
 		pcieSpeed:     pcie.speeds,
 		pcieWidth:     pcie.widths,
+		fanRPM:        map[string]float64{},
+		temperatures:  map[string]float64{},
+		thermalLimits: map[string]float64{},
+		clocks:        map[string]float64{},
+		voltages:      map[string]float64{},
+		dpmClocks:     map[string][]dpmClockState{},
 		vendor:        "AMD",
 		model:         readText(filepath.Join(device, "product_number")),
 		series:        readText(filepath.Join(device, "product_name")),
@@ -294,6 +359,13 @@ func readGPUSample(device string) (sample, error) {
 	if activity, err := readUint(filepath.Join(device, "gpu_busy_percent")); err == nil {
 		result.activity = &activity
 	}
+	if preempt, err := readUint(filepath.Join(device, "mem_info_preempt_used")); err == nil {
+		result.preemptVRAM = &preempt
+	}
+	for clock, file := range map[string]string{"fclk": "pp_dpm_fclk", "mclk": "pp_dpm_mclk", "sclk": "pp_dpm_sclk", "socclk": "pp_dpm_socclk"} {
+		result.dpmClocks[clock] = readDPMClockStates(filepath.Join(device, file))
+	}
+	result.dpmPCIe = readDPMPCIeStates(filepath.Join(device, "pp_dpm_pcie"))
 	hwmons, _ := filepath.Glob(filepath.Join(device, "hwmon/hwmon*"))
 	for _, hwmon := range hwmons {
 		for source, file := range map[string]string{"average": "power1_average", "instant": "power1_input"} {
@@ -301,7 +373,7 @@ func readGPUSample(device string) (sample, error) {
 				result.power[source] = value
 			}
 		}
-		for limit, file := range map[string]string{"current": "power1_cap", "minimum": "power1_cap_min", "maximum": "power1_cap_max"} {
+		for limit, file := range map[string]string{"current": "power1_cap", "default": "power1_cap_default", "minimum": "power1_cap_min", "maximum": "power1_cap_max"} {
 			if value, err := readUint(filepath.Join(hwmon, file)); err == nil {
 				result.limits[limit] = value
 			}
@@ -312,8 +384,95 @@ func readGPUSample(device string) (sample, error) {
 				result.fan = &fan
 			}
 		}
+		for state, file := range map[string]string{"current": "fan1_input", "target": "fan1_target", "minimum": "fan1_min", "maximum": "fan1_max"} {
+			if value, err := readUint(filepath.Join(hwmon, file)); err == nil {
+				result.fanRPM[state] = float64(value)
+			}
+		}
+		if enabled, err := readUint(filepath.Join(hwmon, "fan1_enable")); err == nil {
+			result.fanEnabled = &enabled
+		}
+		for index := 1; index <= 3; index++ {
+			sensor := readText(filepath.Join(hwmon, fmt.Sprintf("temp%d_label", index)))
+			if sensor == "" {
+				sensor = fmt.Sprintf("temp%d", index)
+			}
+			if value, err := readUint(filepath.Join(hwmon, fmt.Sprintf("temp%d_input", index))); err == nil {
+				result.temperatures[sensor] = float64(value) / 1000
+			}
+			for limit, file := range map[string]string{"critical": "crit", "critical_hysteresis": "crit_hyst", "emergency": "emergency"} {
+				if value, err := readInt(filepath.Join(hwmon, fmt.Sprintf("temp%d_%s", index, file))); err == nil {
+					result.thermalLimits[sensor+"_"+limit] = float64(value) / 1000
+				}
+			}
+		}
+		for index := 1; index <= 2; index++ {
+			clock := readText(filepath.Join(hwmon, fmt.Sprintf("freq%d_label", index)))
+			if clock == "" {
+				clock = fmt.Sprintf("freq%d", index)
+			}
+			if value, err := readUint(filepath.Join(hwmon, fmt.Sprintf("freq%d_input", index))); err == nil {
+				result.clocks[clock] = float64(value) / 1_000_000
+			}
+		}
+		if value, err := readUint(filepath.Join(hwmon, "in0_input")); err == nil {
+			rail := readText(filepath.Join(hwmon, "in0_label"))
+			if rail == "" {
+				rail = "in0"
+			}
+			result.voltages[rail] = float64(value) / 1000
+		}
 	}
 	return result, nil
+}
+
+type dpmClockState struct {
+	level     string
+	frequency float64
+	active    bool
+}
+
+type dpmPCIeState struct {
+	level  string
+	speed  float64
+	width  uint64
+	active bool
+}
+
+var (
+	dpmClockPattern = regexp.MustCompile(`^\s*(\d+):\s*(\d+(?:\.\d+)?)Mhz\s*(\*)?\s*$`)
+	dpmPCIePattern  = regexp.MustCompile(`^\s*(\d+):\s*(\d+(?:\.\d+)?)GT/s,\s*x(\d+)\s+(\d+(?:\.\d+)?)Mhz\s*(\*)?\s*$`)
+)
+
+func readDPMClockStates(path string) []dpmClockState {
+	var states []dpmClockState
+	for _, line := range strings.Split(readText(path), "\n") {
+		match := dpmClockPattern.FindStringSubmatch(line)
+		if len(match) == 0 {
+			continue
+		}
+		frequency, err := strconv.ParseFloat(match[2], 64)
+		if err == nil {
+			states = append(states, dpmClockState{level: match[1], frequency: frequency, active: match[3] == "*"})
+		}
+	}
+	return states
+}
+
+func readDPMPCIeStates(path string) []dpmPCIeState {
+	var states []dpmPCIeState
+	for _, line := range strings.Split(readText(path), "\n") {
+		match := dpmPCIePattern.FindStringSubmatch(line)
+		if len(match) == 0 {
+			continue
+		}
+		speed, speedErr := strconv.ParseFloat(match[2], 64)
+		width, widthErr := strconv.ParseUint(match[3], 10, 64)
+		if speedErr == nil && widthErr == nil {
+			states = append(states, dpmPCIeState{level: match[1], speed: speed, width: width, active: match[5] == "*"})
+		}
+	}
+	return states
 }
 
 func matchesDevice(vendor, product string, devices []DeviceID) bool {
@@ -335,6 +494,10 @@ func readText(path string) string {
 
 func readUint(path string) (uint64, error) {
 	return strconv.ParseUint(readText(path), 10, 64)
+}
+
+func readInt(path string) (int64, error) {
+	return strconv.ParseInt(readText(path), 10, 64)
 }
 
 func memoryStats(device, totalFile, usedFile string) map[string]uint64 {
