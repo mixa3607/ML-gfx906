@@ -24,6 +24,37 @@ amdgpu sysfs data with the RDI telemetry previously exposed by `vega20-rdi`.
 Power files are in microwatts in sysfs and are exported as watts. GPU labels
 use PCI BDFs, rather than mutable DRM card indices.
 
+## Temperature And Clock Labels
+
+`vega20_temperature_celsius` is composed of the following register telemetry:
+
+- `hbm_stack0` through `hbm_stack3`: temperature of each HBM2 stack in whole
+  degrees Celsius.
+- `tmon_0_rdil0` through `tmon_0_rdil15` and `tmon_0_rdir0` through
+  `tmon_0_rdir15`: 32 valid RDI readings from TMON block 0.
+- `tmon_1_rdil0` through `tmon_1_rdil15` and `tmon_1_rdir0` through
+  `tmon_1_rdir15`: 32 valid RDI readings from TMON block 1.
+
+TMON readings use Vega 20's RDI hardware labels: `rdil` and `rdir` denote its
+two directional banks and the final number is the lane within that bank. The
+public hardware documentation does not map these lanes to named physical
+locations, so they are not labelled as edge, hotspot, or memory temperatures.
+An invalid RDI lane is omitted. Valid values have 0.125 C resolution.
+
+`vega20_thermal_limit_celsius{limit="policy"}` is the firmware thermal-policy
+field. `limit="hardware_ctf"` is the hardware critical-thermal-fault limit.
+`vega20_temperature_gradient_celsius` is the hottest valid TMON 0 RDI reading
+minus `tmon_0_rdil0`.
+
+`vega20_clock_mhz` exposes auxiliary measured clock counters, in MHz:
+
+- `dclk`: display clock.
+- `vclk`: video decode clock.
+- `eclk`: video encode clock.
+
+These are not GFXCLK, memory clock, or SoC clock. They remain useful on a
+headless MI50 as hardware clock-counter telemetry.
+
 ## Run
 
 ```sh
