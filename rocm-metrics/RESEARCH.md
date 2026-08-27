@@ -96,6 +96,26 @@ The TGRADIENT implementation walks sensor IDs 50--81, which map exactly to the
 32 TMON 0 RDI registers; it subtracts sensor ID 50 rather than the global
 minimum RDI temperature.
 
+## Clock counters
+
+The `TOOLLIB_CLOCK_GetClockCounter` implementation resolves to
+`CVega20GraphicsDevice::GetClockFromCounter`, backed by
+`CVega20ClockObservationControl`. The read path fetches a counter's raw value,
+then calculates `raw * 10000 / (100 * reference)`. On the test bench the
+reference dword `0x16c9c` was `1000`, so the result is `raw / 10` MHz.
+
+Live GDB traces of `atitool -clkcounter` confirmed:
+
+- DCLK: dword `0x16ca1`; raw `9714`, reported `971 MHz`;
+- VCLK: dword `0x16ca2`; raw `11333`, reported `1133 MHz`;
+- ECLK: dword `0x16c9e`; raw `9715`, reported `971 MHz`.
+
+The counter-preparation implementation can set bit 24 of the reference-counter
+control dword, but this bit was already set before every observed sampling call;
+the standalone reader therefore reads only the three confirmed result dwords.
+`atitool -sensorsinfo` bulk-reads every advertised counter and coincided with a
+test-host reboot, so it is not used for validation.
+
 ## Test bench observations
 
 - Host: `kube-worker6.arkprojects.lan`

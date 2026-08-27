@@ -29,6 +29,11 @@
 #define TMON_HW_CTF_LIMIT_MASK 0xff
 #define TMON_TGRADIENT_SENSOR_COUNT 32
 
+#define DCLK_COUNTER_DWORD 0x16ca1
+#define VCLK_COUNTER_DWORD 0x16ca2
+#define ECLK_COUNTER_DWORD 0x16c9e
+#define CLOCK_COUNTER_CODES_PER_MHZ 10
+
 #define SMN_INDEX_DWORD 0x0e
 #define SMN_DATA_DWORD 0x0f
 #define HBM_STACK_COUNT 4
@@ -214,6 +219,12 @@ static void print_thermal_metrics(const volatile uint32_t *bar) {
     printf("    TGRADIENT                   : %.2f C\n", maximum - baseline);
 }
 
+static void print_clock_metrics(const volatile uint32_t *bar) {
+    printf("    DCLK                        : %u MHz\n", bar[DCLK_COUNTER_DWORD] / CLOCK_COUNTER_CODES_PER_MHZ);
+    printf("    VCLK                        : %u MHz\n", bar[VCLK_COUNTER_DWORD] / CLOCK_COUNTER_CODES_PER_MHZ);
+    printf("    ECLK                        : %u MHz\n", bar[ECLK_COUNTER_DWORD] / CLOCK_COUNTER_CODES_PER_MHZ);
+}
+
 static void print_svi2(
         const volatile uint32_t *bar,
         const struct current_calibration calibration[ATOM_SMC_DPM_V4_4_RAIL_COUNT]) {
@@ -263,6 +274,7 @@ static int read_gpu(const char *bdf, const struct current_calibration *calibrati
     print_tmon(bar, 1, TMON1_RDI_FIRST_DWORD);
     print_hbm(bar);
     print_thermal_metrics(bar);
+    print_clock_metrics(bar);
     if (calibration)
         print_svi2(bar, calibration);
     munmap((void *)bar, BAR5_SIZE);

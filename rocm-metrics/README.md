@@ -15,6 +15,17 @@ Root access is required because the program maps each supported GPU's BAR5 via
 four HBM stack temperatures, thermal-policy temperature, the hardware CTF limit,
 and TGRADIENT for each one.
 
+An experimental debugfs backend is available as a separate binary:
+
+```sh
+make vega20-rdi-debugfs
+sudo ./vega20-rdi-debugfs
+```
+
+It reads `amdgpu_regs` under `/sys/kernel/debug/dri/<BDF>/`; debugfs must be
+mounted and the amdgpu register file must be exposed by the kernel. HBM stack
+reads temporarily select an SMN address and restore the previous selector.
+
 To include calibrated SVI2 voltage/current channels, provide the adapter's
 VBIOS ROM explicitly:
 
@@ -33,6 +44,8 @@ a ROM from a different board: its current endpoints can differ.
 - Thermal policy: `bar[0x1665f] & 0x1ff` C.
 - Hardware CTF limit: `((bar[0x16602] >> 6) & 0xff) - 49` C.
 - TGRADIENT: hottest TMON 0 RDI less `TMON_0_RDIL0`.
+- DCLK, VCLK, ECLK: `bar[0x16ca1] / 10`, `bar[0x16ca2] / 10`, and
+  `bar[0x16c9e] / 10` MHz, respectively.
 - HBM temperatures: SMN offsets `0x57148 + stack * 0x200000`; the unsigned
   value in bits 23:16 is degrees C.
 
