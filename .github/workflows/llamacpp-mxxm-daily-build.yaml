@@ -45,10 +45,10 @@ jobs:
           LLAMA_REPO: "https://github.com/mxxm-t/mx-llama.cpp.git"
           LLAMA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
           LLAMA_BRANCH: "${{ matrix.build.llamacpp_tag }}"
-          LLAMA_IS_RELEASE: ${{ github.ref_type == 'tag' && '1' || '0' }}
           LLAMA_CMAKE_HIP_FLAGS: "-mllvm -amdgpu-sched-strategy=max-ilp"
           GITHUB_TOKEN: "${{ github.token }}"
         run: |
+          export LLAMA_IS_RELEASE=$(git describe --exact-match --tags HEAD >/dev/null 2>&1 && echo 1 || echo 0)
           cd ./llama.cpp
           if [ "$LLAMA_BRANCH" == "" ]; then
             LLAMA_BRANCH="$("$GITHUB_WORKSPACE/.github/scripts/github_get_last" --type tag --repo "$LLAMA_REPO" --github-token "$GITHUB_TOKEN")"

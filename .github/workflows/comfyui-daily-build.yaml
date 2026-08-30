@@ -44,9 +44,9 @@ jobs:
           COMFYUI_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
           COMFYUI_BRANCH: "${{ matrix.build.comfyui_tag }}"
           COMFYUI_REPO: "https://github.com/Comfy-Org/ComfyUI.git"
-          COMFYUI_IS_RELEASE: ${{ github.ref_type == 'tag' && '1' || '0' }}
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         run: |
+          export COMFYUI_IS_RELEASE=$(git describe --exact-match --tags HEAD >/dev/null 2>&1 && echo 1 || echo 0)
           cd ./comfyui
           if [ "$COMFYUI_BRANCH" == "" ]; then
             COMFYUI_BRANCH="$("$GITHUB_WORKSPACE/.github/scripts/github_get_last" --type release --repo "$COMFYUI_REPO" --github-token "$GITHUB_TOKEN")"

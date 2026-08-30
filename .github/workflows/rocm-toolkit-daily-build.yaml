@@ -37,9 +37,8 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Run build script
-        env:
-          ROCM_TOOLKIT_IS_RELEASE: ${{ github.ref_type == 'tag' && '1' || '0' }}
         run: |
-          cd ./rocm-toolkit
+          export ROCM_TOOLKIT_IS_RELEASE=$(git describe --exact-match --tags HEAD >/dev/null 2>&1 && echo 1 || echo 0)
           export ROCM_VERSION="${{ matrix.build.rocm_version }}"
+          cd ./rocm-toolkit
           ./build-and-push.image.sh

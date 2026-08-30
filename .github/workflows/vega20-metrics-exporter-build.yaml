@@ -30,9 +30,9 @@ jobs:
 
       - name: Build and push image
         working-directory: vega20-metrics-exporter
-        env:
-          METRICS_IS_RELEASE: ${{ github.ref_type == 'tag' && '1' || '0' }}
-        run: ./build-and-push.image.sh
+        run: |
+          export METRICS_IS_RELEASE=$(git describe --exact-match --tags HEAD >/dev/null 2>&1 && echo 1 || echo 0)
+          ./build-and-push.image.sh
 
       - name: Upload DEB package
         uses: actions/upload-artifact@v6
