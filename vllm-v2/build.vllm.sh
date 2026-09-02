@@ -1,4 +1,7 @@
-#!/usr/bin/env bash
+#/bin/bash
+# Local build (no registry push). Same as build-and-push.vllm.sh but uses
+# `docker buildx build --load` and skips the "already pushed" check.
+# Usage:  . ./preset.0.26.0-rocm-6.3.3-kintegrated.sh && ./build.vllm.sh
 set -e
 
 cd $(dirname $0)
@@ -9,18 +12,13 @@ IMAGE_TAGS=(
   "${VLLM_IMAGE}:${VLLM_PRESET_NAME}"
 )
 
-if docker_image_pushed ${IMAGE_TAGS[0]}; then
-  echo "${IMAGE_TAGS[0]} already in registry. Skip"
-  exit 0
-fi
-
 DOCKER_EXTRA_ARGS=()
 for (( i=0; i<${#IMAGE_TAGS[@]}; i++ )); do
   DOCKER_EXTRA_ARGS+=("-t" "${IMAGE_TAGS[$i]}")
 done
 
 mkdir -p ./logs
-docker buildx build ${DOCKER_EXTRA_ARGS[@]} --push \
+docker buildx build ${DOCKER_EXTRA_ARGS[@]} --load \
   --build-arg BASE_PYTORCH_IMAGE=${TORCH_IMAGE}:${VLLM_PYTORCH_VERSION}-rocm-${VLLM_ROCM_VERSION} \
   --build-arg MAX_JOBS="${VLLM_MAX_JOBS}" \
   --build-arg EXTRA_REQUIREMENTS="${VLLM_EXTRA_REQUIREMENTS}" \

@@ -1,0 +1,13 @@
+# Extra runtime requirements for KIntegrated vllm-gfx906-mobydick @ 19e23ffedd
+# (gfx906/v0.28.0rc2). Unchanged from the 5d960a503c main-snapshot pinset
+# (the rc1/rc2 bumps carried no extra-dependency changes).
+# Includes the hipErrorIllegalState kernel-guard restore, amdsmi device-name fix,
+# and gfx906 AWQ out_shape fix.
+# Per the fork's README, transformers 5.7.0 (<6) is the validated version.
+transformers==5.7.0
+opentelemetry-sdk
+opentelemetry-api
+opentelemetry-semantic-conventions-ai
+opentelemetry-exporter-otlp
+modelscope
+yq
