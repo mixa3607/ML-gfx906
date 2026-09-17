@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export ROCM_VERSION="10.0"
+export ROCM_BUILD="$ROCM_VERSION.0-gfx906+20260917140126"
