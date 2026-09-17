@@ -54,5 +54,5 @@ jobs:
             LLAMA_BRANCH="$("$GITHUB_WORKSPACE/.github/scripts/github_get_last" --type tag --repo "$LLAMA_REPO" --github-token "$GITHUB_TOKEN")"
             export LLAMA_BRANCH
           fi
-          export LLAMA_PRESET_NAME="${LLAMA_BRANCH}-rocm-${LLAMA_ROCM_VERSION}-mxxm"
+          export LLAMA_PRESET_NAME="${LLAMA_BRANCH}-rocm-${LLAMA_ROCM_VERSION}-milpster"
           ./build-and-push.image.sh
