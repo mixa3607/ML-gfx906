@@ -21,7 +21,8 @@ apt install -y \
   bison flex libsqlite3-dev \
   curl make debhelper libpci3 \
   libpci-dev doxygen unzip \
-  libyaml-cpp-dev libnuma-dev
+  libyaml-cpp-dev libnuma-dev \
+  tclsh
 ```
 
 ## Build TheRock
@@ -30,11 +31,11 @@ apt install -y \
 ########## Clone ##########
 mkdir $HOME/rocm/code/TheRock
 cd $HOME/rocm/code/TheRock
-git clone https://github.com/ROCm/TheRock.git .
+git clone https://github.com/ROCm/TheRock.git -b therock-10.0 .
 
 ########## Install deps ##########
 # Install ccache
-./dockerfiles/install_ccache.sh 4.12.2
+./dockerfiles/install_ccache.sh 4.11.2
 
 # Install a patched patchelf from source. For details see
 # https://github.com/ROCm/TheRock/blob/main/docs/environment_setup_guide.md#patchelf
@@ -46,6 +47,7 @@ if ! [ -d .venv ]; then
   source .venv/bin/activate
   pip install --upgrade pip
   pip install -r requirements.txt
+  pip install meson==1.7.0
 fi
 source .venv/bin/activate
 
@@ -54,7 +56,7 @@ python3 ./build_tools/fetch_sources.py
 
 ########## Configure ##########
 PACKAGES_DIR=$HOME/rocm/packages/therock
-VERSION_SUFFIX=gfx906+20260802001858
+VERSION_SUFFIX=gfx906+20260917140126
 
 eval "$(./build_tools/setup_ccache.py)"
 CMAKE_ARGS=(
@@ -74,6 +76,7 @@ CMAKE_ARGS=(
   -DTHEROCK_ENABLE_FFTW3=OFF
   -DTHEROCK_ENABLE_HIPFILE=OFF
   -DTHEROCK_ENABLE_MEDIA_LIBS=OFF
+  -DTHEROCK_ENABLE_EMULATION=OFF
   # disable tests
   #-DTHEROCK_BUILD_TESTING=OFF
 )
