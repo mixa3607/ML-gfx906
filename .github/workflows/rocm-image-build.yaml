@@ -1,4 +1,4 @@
-name: Daily ROCm build
+name: ROCm image build
 
 on:
   workflow_dispatch:
@@ -11,9 +11,9 @@ jobs:
     strategy:
       matrix:
         build:
-          - rocm_version: "7.14"
-            rocm_build: "7.14.0-gfx906+20260802001858"
-            release_tag: "20260802001858"
+          - rocm_version: "10.0"
+            rocm_build: "10.0.0-gfx906+20260917140126"
+            release_tag: "20260917140126"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v7

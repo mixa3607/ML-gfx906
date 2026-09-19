@@ -8,9 +8,10 @@ libraries, and runtimes for AI and HPC solution development on AMD GPUs.
 | Distro       | ROCm | Build                        | Image                                          | Status |
 | ------------ | ---- | ---------------------------- | ---------------------------------------------- | ------ |
 | Ubuntu 24.04 | 7.14 | 7.14.0-gfx906+20260802001858 | `docker.io/mixa3607/rocm-gfx906:7.14-complete` | ✅     |
+| Ubuntu 24.04 | 10.0 | 10.0.0-gfx906+20260917140126 | `docker.io/mixa3607/rocm-gfx906:10.0-complete` | ✅     |
 
 ```bash
-docker pull docker.io/mixa3607/rocm-gfx906:7.14-complete
+docker pull docker.io/mixa3607/rocm-gfx906:10.0-complete
 ```
 
 > See [BUILD-IMAGES.md](./BUILD-IMAGES.md) for instructions on building Docker
@@ -24,9 +25,10 @@ docker pull docker.io/mixa3607/rocm-gfx906:7.14-complete
 | Distro       | ROCm | Build                        | Status |
 | ------------ | ---- | ---------------------------- | ------ |
 | Ubuntu 24.04 | 7.14 | 7.14.0-gfx906+20260802001858 | ✅     |
+| Ubuntu 24.04 | 10.0 | 7.14.0-gfx906+20260917140126 | ✅     |
 
 ```bash
-THEROCK_VERSION="7.14"
+THEROCK_VERSION="10.0"
 ROCM_ARCH="gfx906"
 apt-get install -y amdrocm${THEROCK_VERSION}-${ROCM_ARCH}
 ```
