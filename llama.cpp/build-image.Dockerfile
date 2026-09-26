@@ -110,4 +110,5 @@ RUN apt-get update && \
     pip3 cache purge && \
     true
 COPY --from=build_llamacpp /builded/ /app
-ENTRYPOINT ["/app/tools.sh"]
+COPY /extra/ /app
+ENTRYPOINT ["/app/entrypoint.sh"]

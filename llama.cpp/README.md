@@ -25,6 +25,11 @@ flowchart LR
 
 Also see [llamacpp-offload-calculator](./llamacpp-offload-calculator/readme.md)
 
+## Server profiles
+
+See the [server profiles documentation](./build-context/extra/server-profiles/README.md)
+for optional YAML/JSON model presets.
+
 ## Build from source
 
 The build happens inside `docker buildx` on top of the ROCm base image

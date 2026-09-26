@@ -1,0 +1,16 @@
+{
+  "*": {
+    "log-colors": "on",
+    "metrics": true,
+    "props": true,
+    "slots": true,
+    "jinja": true,
+    "context-shift": false,
+    "cache-idle-slots": true,
+    "cache-ram": 8192,
+    "batch-size": 2048,
+    "ubatch-size": 2048,
+    "offline": true,
+    "load-mode": "mlock"
+  }
+}
