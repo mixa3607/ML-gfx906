@@ -30,6 +30,11 @@ Also see [llamacpp-offload-calculator](./llamacpp-offload-calculator/readme.md)
 See the [server profiles documentation](./build-context/extra/server-profiles/README.md)
 for optional YAML/JSON model presets.
 
+## Benchmark profiles
+
+See the [benchmark profiles documentation](./build-context/extra/bench-profiles/README.md)
+for YAML/JSON benchmark matrices and shell command templates.
+
 ## Build from source
 
 The build happens inside `docker buildx` on top of the ROCm base image

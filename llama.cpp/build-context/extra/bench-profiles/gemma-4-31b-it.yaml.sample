@@ -1,0 +1,30 @@
+gemma-4-31B-it:
+  command: |
+    #!/usr/bin/env bash
+    set -eo pipefail
+    {env} numactl --physcpubind=0-27,38-65 --membind=0,1 ./llama-bench {args} | tee {profile}.txt
+  env:
+    HIP_VISIBLE_DEVICES: "1,0,3,2"
+  args:
+    hf-repo: unsloth/gemma-4-31B-it-GGUF:Q8_K_XL
+    flash-attn: true
+    split-mode: [tensor]
+    device:
+      - [ROCm0, ROCm1, ROCm2, ROCm3]
+      - [ROCm0, ROCm1]
+    n-prompt: 2048
+    ubatch-size: 2048
+    n-gen: 256
+    n-depth: [0, 16384, 32768, 65536]
+    lazy-mode: "off"
+    override-tensor:
+      - - target: CPU
+          tensors:
+            - blk.0.ffn_up_exps.weight
+            - blk.0.ffn_down_exps.weight
+        - target: CPU
+          tensors:
+            - blk.10.ffn_up_exps.weight
+      - - target: CPU
+          tensors:
+            - blk.20.ffn_up_exps.weight
