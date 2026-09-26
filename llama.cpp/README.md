@@ -35,6 +35,11 @@ for optional YAML/JSON model presets.
 See the [benchmark profiles documentation](./build-context/extra/bench-profiles/README.md)
 for YAML/JSON benchmark matrices and shell command templates.
 
+## Benchmark results
+
+See the [benchmark results documentation](./build-context/extra/bench-results/README.md)
+for converting llama-bench JSONL output into YAML, JSON, or Markdown tables.
+
 ## Build from source
 
 The build happens inside `docker buildx` on top of the ROCm base image

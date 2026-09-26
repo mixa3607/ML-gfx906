@@ -1,0 +1,50 @@
+version: 1
+
+columns:
+  model:
+    field: model_type
+    name: Model
+  file:
+    field: model_filename
+    name: File
+    format: hf-path
+  size:
+    field: model_size
+    name: Size
+    format: bytes
+    unit: GiB
+    precision: 2
+  flash_attn:
+    name: Flash attention
+    format: map
+    map:
+      -1: auto
+      0: "off"
+      1: "on"
+  build:
+    field: build_commit
+    name: Build
+  split_mode:
+    name: Split mode
+  devices:
+    name: Devices
+  device_count:
+    field: devices
+    name: GPU count
+    format: count
+    separator: "/"
+  n_prompt:
+    name: Prompt toks
+  n_gen:
+    name: Gen toks
+  n_depth:
+    name: Depth toks
+  avg_ts:
+    name: Avg tok/s
+    precision: 2
+  stddev_ts:
+    name: Stddev tok/s
+    precision: 2
+  test_time:
+    enabled: false
+    name: Measured at

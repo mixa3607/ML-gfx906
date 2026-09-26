@@ -102,11 +102,12 @@ RUN mkdir -p /builded && cp -r ./build/bin/* .devops/tools.sh /builded
 FROM rocm_base AS final
 WORKDIR /app
 COPY --from=files_llamacpp_python /files/llamacpp-python /app
+COPY /extra/requirements-extra.txt /app/requirements-extra.txt
 RUN apt-get update && \
     apt-get install -y --no-install-recommends ffmpeg && \
     rm -rf /var/lib/apt/lists/* && \
-    pip3 install --upgrade setuptools && \
-    pip3 install -r requirements.txt && \
+    pip3 install -r requirements.txt -r requirements-extra.txt && \
+    pip3 install --upgrade setuptools huggingface_hub && \
     pip3 cache purge && \
     true
 COPY --from=build_llamacpp /builded/ /app
