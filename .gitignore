@@ -1,2 +1,3 @@
 /**/*.log
 /rocm-metrics/
+/**/__pycache__/**/*
