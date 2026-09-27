@@ -1,6 +1,16 @@
 """Apply runtime workarounds before ComfyUI imports torch."""
 
 try:
+    # amdsmi must be loaded before the ROCm libraries bundled with torch,
+    # otherwise torch.cuda.device_count() (amdsmi path since torch 2.13)
+    # reports 0 devices.
+    import amdsmi
+
+    amdsmi.amdsmi_init()
+except Exception:
+    pass
+
+try:
     import torch
 
     if torch.version.hip:
