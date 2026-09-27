@@ -70,6 +70,7 @@ DOCKER_EXTRA_ARGS+=(
   --target final 
   --file ./build-image.Dockerfile
   --pull
+  #--no-cache
 )
 
 if [ "$LLAMA_PUSH" == "1" ]; then

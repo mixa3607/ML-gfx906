@@ -21,6 +21,24 @@ selects the column configuration; by default the script uses
 Use `--no-header` with `--format md-table` to output only data rows, without the
 heading or separator row. It has no effect on JSON or YAML output.
 
+Use repeatable `--add-column KEY=VALUE` arguments to append metadata to every row:
+
+```bash
+python3 format-bench-results.py results.jsonl --format md-table \
+  --add-column rocm-version=7.14 --add-column image=aaaa
+```
+
+Columns already listed in the configuration keep their position and heading;
+their CLI values bypass transformations. New columns appear after configured
+columns, in CLI order, and use their IDs as Markdown headings.
+Values remain literal strings in every output format
+(for example, `7.10` stays `"7.10"`). Only the first `=` separates the key from
+the value; `key=` supplies an empty string. Quote the whole argument when it
+contains spaces. A collision with a field in any input JSONL record is an error,
+even if that field is null or not selected in the configuration. Listing the
+column in the configuration is not a collision. Repeated CLI keys use the last
+value. Keys must be non-empty.
+
 Input must contain one JSON object per non-empty line, without benchmark logs
 mixed in. Blank lines are ignored. Invalid input reports the filename and line
 number and exits unsuccessfully before printing a report.

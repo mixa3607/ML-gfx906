@@ -31,6 +31,10 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--format", choices=("yaml", "json", "md-table"), required=True)
     parser.add_argument("--no-header", action="store_true", help="omit the header and separator for md-table output")
+    parser.add_argument(
+        "--add-column", action="append", default=[], metavar="KEY=VALUE",
+        help="add a constant string column (repeatable; collisions with JSONL fields are errors)",
+    )
     parser.add_argument("--version", action="version", version=f"%(prog)s {VERSION}")
     return parser.parse_args()
 
@@ -79,6 +83,16 @@ def load_columns(path: Path) -> dict[str, dict[str, Any]]:
     return selected
 
 
+def parse_added_columns(values: list[str]) -> dict[str, str]:
+    added = {}
+    for entry in values:
+        key, separator, value = entry.partition("=")
+        if not separator or not key.strip():
+            raise ResultError(f"--add-column: expected a non-empty KEY followed by =VALUE: {entry!r}")
+        added[key] = value
+    return added
+
+
 def hf_path(value: str) -> str:
     parts = Path(value).parts
     for index, part in enumerate(parts):
@@ -116,7 +130,10 @@ def format_value(value: Any, options: dict[str, Any]) -> Any:
     return value
 
 
-def read_results(path: Path, columns: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+def read_results(
+    path: Path, columns: dict[str, dict[str, Any]], added: dict[str, str] | None = None,
+) -> list[dict[str, Any]]:
+    added = added or {}
     rows = []
     with path.open(encoding="utf-8") as source:
         for line_number, line in enumerate(source, start=1):
@@ -128,8 +145,14 @@ def read_results(path: Path, columns: dict[str, dict[str, Any]]) -> list[dict[st
                 raise ResultError(f"{path}:{line_number}: invalid JSON: {error.msg}") from error
             if not isinstance(record, dict):
                 raise ResultError(f"{path}:{line_number}: expected a JSON object")
+            for key in added:
+                if key in record:
+                    raise ResultError(f"{path}:{line_number}: --add-column conflicts with JSONL field: {key!r}")
             row = {}
             for key, options in columns.items():
+                if key in added:
+                    row[key] = added[key]
+                    continue
                 try:
                     row[key] = format_value(record.get(options.get("field", key)), options)
                 except ResultError as error:
@@ -175,7 +198,11 @@ def main() -> int:
     args = parse_args()
     try:
         columns = load_columns(args.config)
-        output = render(read_results(args.input, columns), columns, args.format, no_header=args.no_header)
+        added = parse_added_columns(args.add_column)
+        for key in added:
+            columns.setdefault(key, {})
+        rows = read_results(args.input, columns, added)
+        output = render(rows, columns, args.format, no_header=args.no_header)
     except (OSError, ValueError, yaml.YAMLError) as error:
         raise SystemExit(f"error: {error}") from error
     print(output, end="")

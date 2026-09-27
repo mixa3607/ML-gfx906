@@ -1,0 +1,16 @@
+"*":
+  command: |
+    #!/usr/bin/env bash
+    set -eo pipefail
+    mkdir -p ./bench-results
+    {env} ./llama-bench {args} | tee ./bench-results/{profile}.jsonl
+  env:
+    HIP_VISIBLE_DEVICES: "1,0,3,2"
+    HSA_FORCE_FINE_GRAIN_PCIE: "1"
+    HSA_XNACK: "0"
+  args:
+    lazy-mode: "off"
+    offline: true
+    output: jsonl
+    verbose: false
+    progress: true
