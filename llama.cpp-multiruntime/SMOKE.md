@@ -1,15 +1,19 @@
-# Smoke: 2026-09-29
+# Smoke: 2026-09-29, ROCm base
 
 ## Проверенный образ
 
-`registry.arkprojects.space/apps/llama.cpp-multiruntime:v0.5.0-rocm-7.14-cuda-13.3.0-smoke`
+`registry.arkprojects.space/apps/llama.cpp-multiruntime:v0.5.0-rocm-7.14-cuda-13.3.0-rocm-base-smoke`
 
-- Index digest: `sha256:1e282cad06a031d14831fd8c37f6d6ec07e76d78d41531f146c750cb1e383db1`.
-- linux/amd64 manifest: `sha256:e6478f8a7dc3c4483c37372297e4c5334e414df6b505786a6818b604dce0bdd1`.
-- Сжатые слои: 1 005 038 439 байт (~0.94 GiB).
-- В контейнере: `/app` — 161 MiB, `/opt/rocm` — 1.6 GiB,
+- Index digest: `sha256:4e22727c4dcab61004d63954c147c817c77caedcb460f9fbe95cd1d73e0f4a7d`.
+- linux/amd64 manifest: `sha256:5c941f322ffaf479a3ae369284b7b8c268d437a6e0cccd1636398e74dc37acd2`.
+- Сжатые слои: 2 547 952 614 байт (~2.37 GiB).
+- В контейнере: `/app` — 163 MiB, `/opt/rocm` — 5.1 GiB,
   `/usr/local/cuda-13.3` — 544 MiB.
 - llama.cpp: `v0.5.0`, commit `7fe450e19305b828c199d602c23a8337aaa1f03b`.
+
+Вариант с отдельной CPU/RPC-сборкой на Ubuntu сохранён в commit `035e763`.
+Его сжатые слои занимали 0.94 GiB; новый вариант использует готовый полный
+ROCm-образ и добавляет только CUDA runtime/backend.
 
 ## Окружение
 
@@ -41,6 +45,6 @@ temperature 0, `--no-warmup`; mixed: `--split-mode layer --tensor-split 1,1`.
 HTTP smoke использовал loopback `127.0.0.1:8081` и один slot.
 Проведены только smoke-проверки.
 
-Логи в dev-pod: `/tmp/llama-smoke.yXfti9/`, `/tmp/llama-http-smoke.log`,
+Логи в dev-pod: `/tmp/llama-smoke.aR0NTM/`, `/tmp/llama-http-smoke.log`,
 `/tmp/llama-http-response.json`. После тестов RPC/HTTP процессы остановлены,
 dev-pod оставлен с `sleep infinity`.
