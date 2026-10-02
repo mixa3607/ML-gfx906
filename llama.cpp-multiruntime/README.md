@@ -49,6 +49,11 @@ CPU выбирается через `--device none -ngl 0`.
 ## Smoke-тест
 
 Результаты проверки в текущем кластере: [SMOKE.md](./SMOKE.md).
+Практическая проверка Gemma 4 31B с MTP на NVIDIA: [GEMMA4-MTP.md](./GEMMA4-MTP.md).
+DSpark Q8 на NVIDIA и AMD: [GEMMA4-DSPARK.md](./GEMMA4-DSPARK.md).
+Vendor DSpark для LiquidAI LFM2.5-VL-3B Q8: [LFM25-VL-DSPARK.md](./LFM25-VL-DSPARK.md).
+Разделение MoE-экспертов между CUDA и ROCm на Gemma 4 26B-A4B Q8: [GEMMA4-26B-MOE-SPLIT.md](./GEMMA4-26B-MOE-SPLIT.md).
+DeepSeek V4 Flash на шести GPU с уменьшенным CPU-offload: [DS4F-SIXGPU.md](./DS4F-SIXGPU.md).
 
 Отдельный `smoke-test.sh` проверяет зависимости backend, регистрацию CPU/RPC,
 наличие двух CUDA и четырёх ROCm GPU и RPC handshake с локальным CPU-сервером.
