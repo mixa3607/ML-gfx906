@@ -13,7 +13,8 @@ ARG CCACHE_MAXSIZE="2G"
 FROM ${ROCM_IMAGE} AS rocm_base
 # Install basic utilities and Python
 RUN apt-get update && \
-    apt-get install -y curl libgomp1 git python3 python3-venv python3-pip numactl && \
+    apt-get install -y --no-install-recommends ffmpeg curl libgomp1 git python3 python3-venv python3-pip numactl && \
+    rm -rf /var/lib/apt/lists/* && \
     pip3 config set global.break-system-packages true && \
     true
 
@@ -45,16 +46,11 @@ EOF_DOCKERFILE
 COPY ./patch/${LLAMACPP_PATCH} ./${LLAMACPP_PATCH}
 RUN git apply ./${LLAMACPP_PATCH} --allow-empty && rm ./${LLAMACPP_PATCH}
 
-FROM files_llamacpp AS files_llamacpp_python
-WORKDIR /files/llamacpp-python
-RUN cp -r /files/llamacpp/requirements.txt /files/llamacpp/requirements /files/llamacpp/gguf-py /files/llamacpp/*.py /files/llamacpp-python
-RUN find .
-
 ############# Build #############
 FROM rocm_base AS build_llamacpp
 ARG CMAKE_HIP_FLAGS
 ARG CCACHE_MAXSIZE
-RUN apt-get install -y build-essential cmake libssl-dev ccache
+RUN apt-get update && apt-get install -y build-essential cmake libssl-dev ccache
 COPY --from=files_llamacpp /files/llamacpp /build/llamacpp
 WORKDIR /build/llamacpp
 
@@ -101,15 +97,11 @@ RUN mkdir -p /builded && cp -r ./build/bin/* .devops/tools.sh /builded
 ############# Copy and install all #############
 FROM rocm_base AS final
 WORKDIR /app
-COPY --from=files_llamacpp_python /files/llamacpp-python /app
+
 COPY /extra/requirements-extra.txt /app/requirements-extra.txt
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends ffmpeg && \
-    rm -rf /var/lib/apt/lists/* && \
-    pip3 install -r requirements.txt -r requirements-extra.txt && \
-    pip3 install --upgrade setuptools huggingface_hub && \
-    pip3 cache purge && \
-    true
+RUN pip3 install -r requirements-extra.txt && pip3 cache purge
+
 COPY --from=build_llamacpp /builded/ /app
 COPY /extra/ /app
+
 ENTRYPOINT ["/app/entrypoint.sh"]
