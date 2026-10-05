@@ -7,11 +7,17 @@ FROM ${CUDA_IMAGE} AS cuda_backend
 # Collect the CUDA runtime libraries used by the CUDA backend.
 RUN <<EOF_DOCKERFILE bash
 set -eu
-ldd /app/libggml-cuda.so | grep -Eo "/usr/local/cuda/[^ ]+" | 
+ldd /app/libggml-cuda.so
+ldd /app/libggml-cuda.so | awk '{print \$3}' | grep -E -e "/usr/local/cuda/[^ ]+" -e "libnccl.so" | 
   while read -r lib_path; do
-    echo "Copy \$lib_path"
-    mkdir -p "/cuda-runtime/\$(dirname "\$lib_path")"
-    cp -L "\$lib_path" "/cuda-runtime\$lib_path"
+    dest_path="\$lib_path"
+    case "\$dest_path" in
+      /lib/*) dest_path="/usr\$dest_path" ;;
+    esac
+
+    echo "Copy \$lib_path as \$dest_path"
+    mkdir -p "/cuda-runtime/\$(dirname "\$dest_path")"
+    cp -L "\$lib_path" "/cuda-runtime\$dest_path"
   done
 EOF_DOCKERFILE
 
@@ -37,6 +43,7 @@ EOF
 ldconfig
 
 # libcuda.so.1 is supplied by NVIDIA Container Toolkit when the container starts
+ldd /app/libggml-cuda.so
 ldd /app/libggml-cuda.so | awk '
     /not found/ && \$1 != "libcuda.so.1" {
         missing = 1
