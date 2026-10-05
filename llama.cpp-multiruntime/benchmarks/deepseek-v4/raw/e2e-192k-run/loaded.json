@@ -1,0 +1,32 @@
+{
+  "time": 1791186491.2671528,
+  "nvidia_smi": "index, memory.used [MiB], memory.total [MiB], utilization.gpu [%]\n0, 8659 MiB, 16311 MiB, 4 %\n1, 9210 MiB, 16311 MiB, 7 %\n",
+  "ps": [
+    "    PID   RSS",
+    "   5317 18735244",
+    "   5232 437520",
+    "   5225 22824"
+  ],
+  "meminfo": {
+    "MemTotal": "247227724 kB",
+    "MemAvailable": "217731368 kB"
+  },
+  "amd": {
+    "card3": {
+      "used": 33793949696,
+      "total": 34342961152
+    },
+    "card5": {
+      "used": 33793925120,
+      "total": 34342961152
+    },
+    "card6": {
+      "used": 33703686144,
+      "total": 34342961152
+    },
+    "card7": {
+      "used": 33793945600,
+      "total": 34342961152
+    }
+  }
+}

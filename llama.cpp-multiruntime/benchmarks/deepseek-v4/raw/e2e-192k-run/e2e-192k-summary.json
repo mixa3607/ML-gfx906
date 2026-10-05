@@ -1,0 +1,33 @@
+{
+  "ctx": 196608,
+  "kv_mib": {
+    "CUDA0": {
+      "swa": 198,
+      "main": 1920,
+      "hca": 60,
+      "indexer": 480,
+      "total": 2658
+    },
+    "CUDA1": {
+      "swa": 189,
+      "main": 2112,
+      "hca": 60,
+      "indexer": 528,
+      "total": 2889
+    }
+  },
+  "free_mib_after": {
+    "CUDA0": 7482,
+    "CUDA1": 6931
+  },
+  "margin_65gib": {
+    "CUDA0": 826,
+    "CUDA1": 275
+  },
+  "margin_65gb_decimal": {
+    "CUDA0": 1283,
+    "CUDA1": 732
+  },
+  "load_seconds": 47.1,
+  "long_prompt_tokens": 23400
+}

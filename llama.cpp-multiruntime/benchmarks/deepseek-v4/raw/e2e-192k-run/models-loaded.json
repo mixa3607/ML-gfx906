@@ -1,0 +1,740 @@
+{
+  "data": [
+    {
+      "id": "Anbeeld/gemma-4-31B-it-DSpark-GGUF:Q8_0",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "Anbeeld/gemma-4-31B-it-DSpark-GGUF:Q8_0",
+          "--hf-repo",
+          "Anbeeld/gemma-4-31B-it-DSpark-GGUF:Q8_0"
+        ],
+        "preset": "[Anbeeld/gemma-4-31B-it-DSpark-GGUF:Q8_0]\nhf-repo = Anbeeld/gemma-4-31B-it-DSpark-GGUF:Q8_0\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    },
+    {
+      "id": "DeepSeek-V4-Flash-Vision-orcarouter-constrained",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "loaded",
+        "args": [
+          "/app/llama-server",
+          "--cache-idle-slots",
+          "--no-context-shift",
+          "--host",
+          "127.0.0.1",
+          "--jinja",
+          "--log-colors",
+          "on",
+          "--metrics",
+          "--min-p",
+          "0.01",
+          "--offline",
+          "--port",
+          "40533",
+          "--props",
+          "--slots",
+          "--device-draft",
+          "ROCm3",
+          "--spec-draft-n-max",
+          "3",
+          "--n-gpu-layers-draft",
+          "all",
+          "--spec-type",
+          "none",
+          "--temperature",
+          "1.0",
+          "--top-p",
+          "1.0",
+          "--alias",
+          "DeepSeek-V4-Flash-Vision-orcarouter-constrained",
+          "--batch-size",
+          "2048",
+          "--ctx-size",
+          "196608",
+          "--cache-ram",
+          "32768",
+          "--device",
+          "CUDA0,CUDA1,ROCm0,ROCm1,ROCm2,ROCm3",
+          "--hf-repo",
+          "orcarouter/DeepSeek-V4-Flash-Vision-Uncensored-GGUF",
+          "--load-mode",
+          "mlock",
+          "--main-gpu",
+          "0",
+          "--mmproj",
+          "/root/.cache/huggingface/hub/models--unsloth--DeepSeek-V4-Flash-Vision-Exp-GGUF/snapshots/87ce15810931a270f165e5e50439cd446f6b4ba5/mmproj-F16.gguf",
+          "--mmproj-device",
+          "ROCm3",
+          "--n-gpu-layers",
+          "all",
+          "--override-tensor",
+          "(^blk\\.0\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.1\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.2\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.3\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.4\\.ffn_gate_exps\\.weight$|^blk\\.5\\.ffn_gate_exps\\.weight$|^blk\\.6\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.7\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.8\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.9\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.10\\.ffn_(up|gate|down)_exps\\.weight$)=ROCm0,(^blk\\.11\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.12\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.13\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.14\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.15\\.ffn_gate_exps\\.weight$|^blk\\.16\\.ffn_gate_exps\\.weight$|^blk\\.17\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.18\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.19\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.20\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.21\\.ffn_(up|gate|down)_exps\\.weight$)=ROCm1,(^blk\\.22\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.23\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.24\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.25\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.26\\.ffn_gate_exps\\.weight$|^blk\\.27\\.ffn_gate_exps\\.weight$|^blk\\.28\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.29\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.30\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.31\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.32\\.ffn_(up|gate|down)_exps\\.weight$)=ROCm2,(^blk\\.33\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.34\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.35\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.36\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.37\\.ffn_gate_exps\\.weight$|^blk\\.38\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.39\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.40\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.41\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.42\\.ffn_(up|gate|down)_exps\\.weight$)=ROCm3,(^blk\\.4\\.ffn_(up|down)_exps\\.weight$|^blk\\.5\\.ffn_(up|down)_exps\\.weight$|^blk\\.15\\.ffn_(up|down)_exps\\.weight$|^blk\\.16\\.ffn_(up|down)_exps\\.weight$|^blk\\.26\\.ffn_(up|down)_exps\\.weight$|^blk\\.27\\.ffn_(up|down)_exps\\.weight$|^blk\\.37\\.ffn_(up|down)_exps\\.weight$)=CPU",
+          "--split-mode",
+          "layer",
+          "--threads",
+          "32",
+          "--tensor-split",
+          "22,22,0,0,0,0",
+          "--ubatch-size",
+          "2048"
+        ],
+        "preset": "[DeepSeek-V4-Flash-Vision-orcarouter-constrained]\ncache-idle-slots = true\ncontext-shift = false\njinja = true\nlog-colors = on\nmetrics = true\nmin-p = 0.01\noffline = true\nprops = true\nslots = true\ndevice-draft = ROCm3\nspec-draft-n-max = 3\nn-gpu-layers-draft = all\nspec-type = none\ntemperature = 1.0\ntop-p = 1.0\nbatch-size = 2048\nctx-size = 196608\ncache-ram = 32768\ndevice = CUDA0,CUDA1,ROCm0,ROCm1,ROCm2,ROCm3\nhf-repo = orcarouter/DeepSeek-V4-Flash-Vision-Uncensored-GGUF\nload-mode = mlock\nmain-gpu = 0\nmmproj = /root/.cache/huggingface/hub/models--unsloth--DeepSeek-V4-Flash-Vision-Exp-GGUF/snapshots/87ce15810931a270f165e5e50439cd446f6b4ba5/mmproj-F16.gguf\nmmproj-device = ROCm3\nn-gpu-layers = all\noverride-tensor = (^blk\\.0\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.1\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.2\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.3\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.4\\.ffn_gate_exps\\.weight$|^blk\\.5\\.ffn_gate_exps\\.weight$|^blk\\.6\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.7\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.8\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.9\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.10\\.ffn_(up|gate|down)_exps\\.weight$)=ROCm0,(^blk\\.11\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.12\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.13\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.14\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.15\\.ffn_gate_exps\\.weight$|^blk\\.16\\.ffn_gate_exps\\.weight$|^blk\\.17\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.18\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.19\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.20\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.21\\.ffn_(up|gate|down)_exps\\.weight$)=ROCm1,(^blk\\.22\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.23\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.24\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.25\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.26\\.ffn_gate_exps\\.weight$|^blk\\.27\\.ffn_gate_exps\\.weight$|^blk\\.28\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.29\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.30\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.31\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.32\\.ffn_(up|gate|down)_exps\\.weight$)=ROCm2,(^blk\\.33\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.34\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.35\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.36\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.37\\.ffn_gate_exps\\.weight$|^blk\\.38\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.39\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.40\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.41\\.ffn_(up|gate|down)_exps\\.weight$|^blk\\.42\\.ffn_(up|gate|down)_exps\\.weight$)=ROCm3,(^blk\\.4\\.ffn_(up|down)_exps\\.weight$|^blk\\.5\\.ffn_(up|down)_exps\\.weight$|^blk\\.15\\.ffn_(up|down)_exps\\.weight$|^blk\\.16\\.ffn_(up|down)_exps\\.weight$|^blk\\.26\\.ffn_(up|down)_exps\\.weight$|^blk\\.27\\.ffn_(up|down)_exps\\.weight$|^blk\\.37\\.ffn_(up|down)_exps\\.weight$)=CPU\nsplit-mode = layer\nthreads = 32\ntensor-split = 22,22,0,0,0,0\nubatch-size = 2048\nload-on-startup = false\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "preset",
+      "can_remove": false,
+      "meta": {
+        "vocab_type": 2,
+        "n_vocab": 129280,
+        "n_ctx": 196608,
+        "n_ctx_train": 1048576,
+        "n_embd": 4096,
+        "n_params": 284334567511,
+        "size": 156373008732,
+        "ftype": "MXFP4 MoE"
+      }
+    },
+    {
+      "id": "DevQuasar/Qwen.Qwen3-VL-Embedding-2B-GGUF:Q4_K_S",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "DevQuasar/Qwen.Qwen3-VL-Embedding-2B-GGUF:Q4_K_S",
+          "--hf-repo",
+          "DevQuasar/Qwen.Qwen3-VL-Embedding-2B-GGUF:Q4_K_S"
+        ],
+        "preset": "[DevQuasar/Qwen.Qwen3-VL-Embedding-2B-GGUF:Q4_K_S]\nhf-repo = DevQuasar/Qwen.Qwen3-VL-Embedding-2B-GGUF:Q4_K_S\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    },
+    {
+      "id": "DevQuasar/Qwen.Qwen3-VL-Embedding-2B-GGUF:Q8_0",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "DevQuasar/Qwen.Qwen3-VL-Embedding-2B-GGUF:Q8_0",
+          "--hf-repo",
+          "DevQuasar/Qwen.Qwen3-VL-Embedding-2B-GGUF:Q8_0"
+        ],
+        "preset": "[DevQuasar/Qwen.Qwen3-VL-Embedding-2B-GGUF:Q8_0]\nhf-repo = DevQuasar/Qwen.Qwen3-VL-Embedding-2B-GGUF:Q8_0\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    },
+    {
+      "id": "Gideon531/Qwen3-Embedding-0.6B-Q8_0-GGUF:Q8_0",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "Gideon531/Qwen3-Embedding-0.6B-Q8_0-GGUF:Q8_0",
+          "--hf-repo",
+          "Gideon531/Qwen3-Embedding-0.6B-Q8_0-GGUF:Q8_0"
+        ],
+        "preset": "[Gideon531/Qwen3-Embedding-0.6B-Q8_0-GGUF:Q8_0]\nhf-repo = Gideon531/Qwen3-Embedding-0.6B-Q8_0-GGUF:Q8_0\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    },
+    {
+      "id": "LiquidAI/LFM2.5-VL-3B-DSpark-GGUF:F16",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "LiquidAI/LFM2.5-VL-3B-DSpark-GGUF:F16",
+          "--hf-repo",
+          "LiquidAI/LFM2.5-VL-3B-DSpark-GGUF:F16"
+        ],
+        "preset": "[LiquidAI/LFM2.5-VL-3B-DSpark-GGUF:F16]\nhf-repo = LiquidAI/LFM2.5-VL-3B-DSpark-GGUF:F16\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    },
+    {
+      "id": "LiquidAI/LFM2.5-VL-3B-GGUF:Q8_0",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "LiquidAI/LFM2.5-VL-3B-GGUF:Q8_0",
+          "--hf-repo",
+          "LiquidAI/LFM2.5-VL-3B-GGUF:Q8_0"
+        ],
+        "preset": "[LiquidAI/LFM2.5-VL-3B-GGUF:Q8_0]\nhf-repo = LiquidAI/LFM2.5-VL-3B-GGUF:Q8_0\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    },
+    {
+      "id": "alessandrobologna/DeepSeek-V4-Flash-DSpark-Drafter-GGUF:DFLASH",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "alessandrobologna/DeepSeek-V4-Flash-DSpark-Drafter-GGUF:DFLASH",
+          "--hf-repo",
+          "alessandrobologna/DeepSeek-V4-Flash-DSpark-Drafter-GGUF:DFLASH"
+        ],
+        "preset": "[alessandrobologna/DeepSeek-V4-Flash-DSpark-Drafter-GGUF:DFLASH]\nhf-repo = alessandrobologna/DeepSeek-V4-Flash-DSpark-Drafter-GGUF:DFLASH\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    },
+    {
+      "id": "bartowski/Qwen3.8-27B-GGUF:Q8_0",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "bartowski/Qwen3.8-27B-GGUF:Q8_0",
+          "--hf-repo",
+          "bartowski/Qwen3.8-27B-GGUF:Q8_0"
+        ],
+        "preset": "[bartowski/Qwen3.8-27B-GGUF:Q8_0]\nhf-repo = bartowski/Qwen3.8-27B-GGUF:Q8_0\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    },
+    {
+      "id": "bartowski/Qwen3.8-Flash-Next-GGUF:Q4_K_M",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "bartowski/Qwen3.8-Flash-Next-GGUF:Q4_K_M",
+          "--hf-repo",
+          "bartowski/Qwen3.8-Flash-Next-GGUF:Q4_K_M"
+        ],
+        "preset": "[bartowski/Qwen3.8-Flash-Next-GGUF:Q4_K_M]\nhf-repo = bartowski/Qwen3.8-Flash-Next-GGUF:Q4_K_M\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    },
+    {
+      "id": "bartowski/google_gemma-4-26B-A4B-it-GGUF:Q4_K_L",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "bartowski/google_gemma-4-26B-A4B-it-GGUF:Q4_K_L",
+          "--hf-repo",
+          "bartowski/google_gemma-4-26B-A4B-it-GGUF:Q4_K_L"
+        ],
+        "preset": "[bartowski/google_gemma-4-26B-A4B-it-GGUF:Q4_K_L]\nhf-repo = bartowski/google_gemma-4-26B-A4B-it-GGUF:Q4_K_L\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    },
+    {
+      "id": "bartowski/google_gemma-4-26B-A4B-it-GGUF:Q6_K",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "bartowski/google_gemma-4-26B-A4B-it-GGUF:Q6_K",
+          "--hf-repo",
+          "bartowski/google_gemma-4-26B-A4B-it-GGUF:Q6_K"
+        ],
+        "preset": "[bartowski/google_gemma-4-26B-A4B-it-GGUF:Q6_K]\nhf-repo = bartowski/google_gemma-4-26B-A4B-it-GGUF:Q6_K\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    },
+    {
+      "id": "bartowski/google_gemma-4-26B-A4B-it-GGUF:Q8_0",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "bartowski/google_gemma-4-26B-A4B-it-GGUF:Q8_0",
+          "--hf-repo",
+          "bartowski/google_gemma-4-26B-A4B-it-GGUF:Q8_0"
+        ],
+        "preset": "[bartowski/google_gemma-4-26B-A4B-it-GGUF:Q8_0]\nhf-repo = bartowski/google_gemma-4-26B-A4B-it-GGUF:Q8_0\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    },
+    {
+      "id": "bartowski/google_gemma-4-31B-it-GGUF:Q8_0",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "bartowski/google_gemma-4-31B-it-GGUF:Q8_0",
+          "--hf-repo",
+          "bartowski/google_gemma-4-31B-it-GGUF:Q8_0"
+        ],
+        "preset": "[bartowski/google_gemma-4-31B-it-GGUF:Q8_0]\nhf-repo = bartowski/google_gemma-4-31B-it-GGUF:Q8_0\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    },
+    {
+      "id": "bartowski/google_gemma-4-E2B-it-GGUF:Q8_0",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "bartowski/google_gemma-4-E2B-it-GGUF:Q8_0",
+          "--hf-repo",
+          "bartowski/google_gemma-4-E2B-it-GGUF:Q8_0"
+        ],
+        "preset": "[bartowski/google_gemma-4-E2B-it-GGUF:Q8_0]\nhf-repo = bartowski/google_gemma-4-E2B-it-GGUF:Q8_0\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text",
+          "image",
+          "audio"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    },
+    {
+      "id": "bartowski/google_gemma-4-E4B-it-GGUF:Q8_0",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "bartowski/google_gemma-4-E4B-it-GGUF:Q8_0",
+          "--hf-repo",
+          "bartowski/google_gemma-4-E4B-it-GGUF:Q8_0"
+        ],
+        "preset": "[bartowski/google_gemma-4-E4B-it-GGUF:Q8_0]\nhf-repo = bartowski/google_gemma-4-E4B-it-GGUF:Q8_0\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text",
+          "image",
+          "audio"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    },
+    {
+      "id": "nomic-ai/nomic-embed-text-v1.5-GGUF:F16",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "nomic-ai/nomic-embed-text-v1.5-GGUF:F16",
+          "--hf-repo",
+          "nomic-ai/nomic-embed-text-v1.5-GGUF:F16"
+        ],
+        "preset": "[nomic-ai/nomic-embed-text-v1.5-GGUF:F16]\nhf-repo = nomic-ai/nomic-embed-text-v1.5-GGUF:F16\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    },
+    {
+      "id": "orcarouter/DeepSeek-V4-Flash-Vision-Uncensored-GGUF:MXFP4",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "orcarouter/DeepSeek-V4-Flash-Vision-Uncensored-GGUF:MXFP4",
+          "--hf-repo",
+          "orcarouter/DeepSeek-V4-Flash-Vision-Uncensored-GGUF:MXFP4"
+        ],
+        "preset": "[orcarouter/DeepSeek-V4-Flash-Vision-Uncensored-GGUF:MXFP4]\nhf-repo = orcarouter/DeepSeek-V4-Flash-Vision-Uncensored-GGUF:MXFP4\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    },
+    {
+      "id": "orcarouter/GLM-5.3-Flash-Uncensored-GGUF:Q4_K_M",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "orcarouter/GLM-5.3-Flash-Uncensored-GGUF:Q4_K_M",
+          "--hf-repo",
+          "orcarouter/GLM-5.3-Flash-Uncensored-GGUF:Q4_K_M"
+        ],
+        "preset": "[orcarouter/GLM-5.3-Flash-Uncensored-GGUF:Q4_K_M]\nhf-repo = orcarouter/GLM-5.3-Flash-Uncensored-GGUF:Q4_K_M\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    },
+    {
+      "id": "unsloth/Qwen3.5-9B-GGUF:Q8_0",
+      "aliases": [],
+      "tags": [],
+      "object": "model",
+      "owned_by": "llamacpp",
+      "created": 1791186491,
+      "status": {
+        "value": "unloaded",
+        "args": [
+          "/app/llama-server",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "0",
+          "--alias",
+          "unsloth/Qwen3.5-9B-GGUF:Q8_0",
+          "--hf-repo",
+          "unsloth/Qwen3.5-9B-GGUF:Q8_0"
+        ],
+        "preset": "[unsloth/Qwen3.5-9B-GGUF:Q8_0]\nhf-repo = unsloth/Qwen3.5-9B-GGUF:Q8_0\n\n"
+      },
+      "architecture": {
+        "input_modalities": [
+          "text"
+        ],
+        "output_modalities": [
+          "text"
+        ]
+      },
+      "source": "cache",
+      "can_remove": true
+    }
+  ],
+  "object": "list"
+}

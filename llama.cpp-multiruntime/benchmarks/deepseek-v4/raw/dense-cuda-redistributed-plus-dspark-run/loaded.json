@@ -1,0 +1,34 @@
+{
+  "nvidia-smi": "index, name, memory.used [MiB], utilization.gpu [%], power.draw [W], temperature.gpu\n0, NVIDIA GeForce RTX 5060 Ti, 7615 MiB, 0 %, 20.14 W, 47\n1, NVIDIA GeForce RTX 5060 Ti, 10398 MiB, 0 %, 18.04 W, 48\n",
+  "ps": "    PID COMMAND         %CPU   RSS\n      1 sleep            0.0  1928\n    328 sh               0.0  1796\n    334 sh               0.0   836\n    335 bash             0.0  4228\n   3460 pkill            0.0     0\n   4330 python3          0.3 23348\n   4339 llama-server     102 25525732\n   4463 ps               0.0  4068\n",
+  "amd": {
+    "/sys/class/drm/card5/device": {
+      "vendor": "0x1002",
+      "numa_node": "0",
+      "mem_info_vram_used": "33797025792",
+      "mem_info_vram_total": "34342961152",
+      "gpu_busy_percent": "0"
+    },
+    "/sys/class/drm/card3/device": {
+      "vendor": "0x1002",
+      "numa_node": "0",
+      "mem_info_vram_used": "33797038080",
+      "mem_info_vram_total": "34342961152",
+      "gpu_busy_percent": "0"
+    },
+    "/sys/class/drm/card6/device": {
+      "vendor": "0x1002",
+      "numa_node": "0",
+      "mem_info_vram_used": "33706897408",
+      "mem_info_vram_total": "34342961152",
+      "gpu_busy_percent": "0"
+    },
+    "/sys/class/drm/card7/device": {
+      "vendor": "0x1002",
+      "numa_node": "0",
+      "mem_info_vram_used": "33803325440",
+      "mem_info_vram_total": "34342961152",
+      "gpu_busy_percent": "0"
+    }
+  }
+}

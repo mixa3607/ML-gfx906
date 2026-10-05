@@ -1,0 +1,33 @@
+{
+  "time": 1791158364.4319928,
+  "nvidia_smi": "index, memory.used [MiB], memory.total [MiB], utilization.gpu [%]\n0, 7839 MiB, 16311 MiB, 0 %\n1, 8118 MiB, 16311 MiB, 0 %\n",
+  "ps": "    PID   RSS    VSZ\n   2964 18585012 273243364\n",
+  "meminfo": {
+    "MemTotal": "247227724 kB",
+    "MemFree": "28973216 kB",
+    "MemAvailable": "218136692 kB",
+    "Cached": "207474276 kB"
+  },
+  "amd": {
+    "/sys/class/drm/card3/device": {
+      "vendor": "0x1002",
+      "mem_info_vram_used": "33793896448",
+      "mem_info_vram_total": "34342961152"
+    },
+    "/sys/class/drm/card5/device": {
+      "vendor": "0x1002",
+      "mem_info_vram_used": "33793875968",
+      "mem_info_vram_total": "34342961152"
+    },
+    "/sys/class/drm/card6/device": {
+      "vendor": "0x1002",
+      "mem_info_vram_used": "33703628800",
+      "mem_info_vram_total": "34342961152"
+    },
+    "/sys/class/drm/card7/device": {
+      "vendor": "0x1002",
+      "mem_info_vram_used": "33793892352",
+      "mem_info_vram_total": "34342961152"
+    }
+  }
+}
