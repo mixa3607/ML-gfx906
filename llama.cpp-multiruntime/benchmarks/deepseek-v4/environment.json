@@ -1,0 +1,23 @@
+{
+  "captured_at": "2026-10-04T22:59:38.715115+00:00",
+  "pod": "llama-server-multi-llamacpp-6b5594cd69-8tjxc",
+  "node": "kube-worker6.arkprojects.lan",
+  "image": "registry.arkprojects.space/apps/llama.cpp-multiruntime:v0.5.0-rocm-7.14-cuda-13.3-fac1c70-pre",
+  "image_id": "registry.arkprojects.space/apps/llama.cpp-multiruntime@sha256:2598849de2d0e56e588a760cea88ef15dde0533cf7acf4faad24ead8f8007447",
+  "resources": {
+    "limits": {
+      "memory": "152G"
+    },
+    "requests": {
+      "cpu": "2",
+      "memory": "8G"
+    }
+  },
+  "environment": {
+    "LLAMA_ARG_LOG_VERBOSITY": "4",
+    "HIP_VISIBLE_DEVICES": "1,0,3,2",
+    "HSA_FORCE_FINE_GRAIN_PCIE": "1",
+    "HSA_XNACK": "0"
+  },
+  "source_commit": "7fe450e19305b828c199d602c23a8337aaa1f03b"
+}

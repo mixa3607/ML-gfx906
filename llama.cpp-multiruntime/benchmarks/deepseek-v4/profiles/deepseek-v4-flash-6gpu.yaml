@@ -1,0 +1,35 @@
+DeepSeek-V4-Flash-Vision-orcarouter-6gpu:
+  enabled: true
+  load-on-startup: false
+  load-mode: mlock
+  offline: true
+  hf-repo: orcarouter/DeepSeek-V4-Flash-Vision-Uncensored-GGUF
+  mmproj: /root/.cache/huggingface/hub/models--unsloth--DeepSeek-V4-Flash-Vision-Exp-GGUF/snapshots/87ce15810931a270f165e5e50439cd446f6b4ba5/mmproj-F16.gguf
+  mmproj-device: ROCm3
+  cache-ram: 32768
+  cache-idle-slots: true
+  ctx-size: 131072
+  context-shift: false
+  batch-size: 2048
+  ubatch-size: 512
+  jinja: true
+  metrics: true
+  props: true
+  slots: true
+  log-colors: "on"
+  temp: "1.0"
+  top-p: "1.0"
+  min-p: "0.01"
+  spec:
+    type: none
+  device: CUDA0,CUDA1,ROCm0,ROCm1,ROCm2,ROCm3
+  threads: 32
+  main-gpu: 0
+  n-gpu-layers: all
+  split-mode: layer
+  tensor-split: [4, 4, 9, 9, 9, 9]
+  # Keeps output on ROCm3 and disables pipeline parallelism's extra buffers.
+  override-tensor:
+    - target: ROCm3
+      tensors:
+        - '^output\.weight$'
