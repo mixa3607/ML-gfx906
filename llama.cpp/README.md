@@ -128,4 +128,4 @@ export ROCM_IMAGE=registry.example.com/apps/rocm-gfx906
 ./build-and-push.image.sh
 ```
 
-See [`../.env-local.sh`](../.env-local.sh) for a ready-made local override file.
+See [`../.build/.env-local.sh`](../.build/.env-local.sh) for a ready-made local override file.

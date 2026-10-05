@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+cd "$(dirname "$0")/.."
 source ./env.sh
 
 if ! [ -z "$(git status --porcelain)" ]; then 

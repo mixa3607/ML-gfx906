@@ -10,7 +10,7 @@ function docker_image_pushed {
 
 function git_get_current_tag {
   if [ "$1" != "" ]; then pushd "$1" > /dev/null; fi
-  git tag --points-at HEAD | sed 's|+||g'
+  git tag --points-at HEAD --sort=-creatordate | sed -n '1{s|+||g;p;}'
   if [ "$1" != "" ]; then popd > /dev/null; fi
 }
 

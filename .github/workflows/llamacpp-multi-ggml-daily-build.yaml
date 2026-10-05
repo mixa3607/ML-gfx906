@@ -1,0 +1,90 @@
+name: Daily llama.cpp multiruntime build (ggml)
+
+on:
+  workflow_dispatch:
+    inputs:
+      llamacpp_tag:
+        description: "llama.cpp tag to build (empty = latest)"
+        required: false
+        default: ""
+      force_build:
+        description: "Rebuild even if the image is already published"
+        type: boolean
+        default: false
+  schedule:
+    - cron: "0 15 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build:
+          - rocm_version: "7.14"
+            cuda_version: "13.4.2"
+            llamacpp_tag: "${{ inputs.llamacpp_tag }}"
+            release_tag: "master"
+    env:
+      LLAMA_REPO: "https://github.com/ggml-org/llama.cpp.git"
+      LLAMA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
+      LLAMA_CUDA_VERSION: "${{ matrix.build.cuda_version }}"
+      LLAMA_BRANCH: "${{ matrix.build.llamacpp_tag }}"
+      LLAMA_FORCE_BUILD: "${{ inputs.force_build && '1' || '0' }}"
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ matrix.build.release_tag }}
+          fetch-depth: 0
+
+      - name: Install yq
+        uses: ./.github/workflows/actions/install-yq-action
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Resolve build parameters
+        env:
+          GITHUB_TOKEN: "${{ github.token }}"
+        run: |
+          source ./env.sh
+          LLAMA_IS_RELEASE=0
+          if [ -n "$(git_get_current_tag)" ]; then
+            LLAMA_IS_RELEASE=1
+          fi
+          if [ "$LLAMA_BRANCH" == "" ]; then
+            LLAMA_BRANCH="$("$GITHUB_WORKSPACE/.github/scripts/github_get_last" --type release --repo "$LLAMA_REPO" --github-token "$GITHUB_TOKEN")"
+          fi
+
+          echo "LLAMA_IS_RELEASE=$LLAMA_IS_RELEASE" >> "$GITHUB_ENV"
+          echo "REPO_GIT_REF=$REPO_GIT_REF" >> "$GITHUB_ENV"
+          echo "LLAMA_BRANCH=$LLAMA_BRANCH" >> "$GITHUB_ENV"
+          echo "LLAMA_ROCM_IMAGE=docker.io/mixa3607/llama.cpp-gfx906:$LLAMA_BRANCH-rocm-$LLAMA_ROCM_VERSION" >> "$GITHUB_ENV"
+          echo "LLAMA_CUDA_IMAGE=docker.io/mixa3607/llama.cpp-sm120:$LLAMA_BRANCH-cuda-$LLAMA_CUDA_VERSION-cudnn" >> "$GITHUB_ENV"
+          echo "LLAMA_PRESET_NAME=$LLAMA_BRANCH-rocm-$LLAMA_ROCM_VERSION-cuda-$LLAMA_CUDA_VERSION" >> "$GITHUB_ENV"
+
+      - name: Check build
+        id: check
+        run: |
+          needed="$(./llama.cpp-multiruntime/build-and-push.image.sh check)"
+          echo "needed=$needed" >> "$GITHUB_OUTPUT"
+
+      - name: Check base images
+        if: steps.check.outputs.needed == 'true'
+        run: |
+          source ./.build/build-common.sh
+          build_require_images "$LLAMA_ROCM_IMAGE" "$LLAMA_CUDA_IMAGE"
+
+      - name: Aggressive cleanup
+        if: steps.check.outputs.needed == 'true'
+        uses: ./.github/workflows/actions/cleanup-space-action
+
+      - name: Build multiruntime image
+        if: steps.check.outputs.needed == 'true'
+        run: ./llama.cpp-multiruntime/build-and-push.image.sh build

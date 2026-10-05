@@ -180,7 +180,7 @@ export TORCH_MAX_JOBS=32
 ./build-and-push.whl.sh
 ```
 
-See [`../.env-local.sh`](../.env-local.sh) for a ready-made local override file.
+See [`../.build/.env-local.sh`](../.build/.env-local.sh) for a ready-made local override file.
 
 ## Prebuilt images (Legacy builds)
 

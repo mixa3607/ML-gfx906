@@ -155,7 +155,7 @@ export COMFYUI_TORCH_IMAGE=registry.example.com/apps/pytorch-gfx906
 ./build-and-push.image.sh
 ```
 
-See [`../.env-local.sh`](../.env-local.sh) for a ready-made local override file.
+See [`../.build/.env-local.sh`](../.build/.env-local.sh) for a ready-made local override file.
 
 ## Benchmarks
 
