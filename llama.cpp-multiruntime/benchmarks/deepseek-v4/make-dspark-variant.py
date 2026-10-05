@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("draft", help="path to the dflash draft GGUF")
 parser.add_argument("--device", default="none", help="--spec-draft-device value")
 parser.add_argument("--n-max", type=int, default=4, help="--spec-draft-n-max")
-parser.add_argument("--split", default=None, help="override --tensor-split")
+parser.add_argument("--split", help="override --tensor-split")
 parser.add_argument("--name", default="dense-cuda-redistributed-plus-dspark", help="output file stem")
 args = parser.parse_args()
 

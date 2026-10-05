@@ -31,8 +31,7 @@ DeepSeek-V4-Flash-Vision-orcarouter-constrained:
   n-gpu-layers: all
   split-mode: layer
   # Layers and KV on CUDA; expert weights on ROCm; layers 4, 5, 15, 16, 26, 27, 37
-  # keep up/down on CPU. Grouped by target, one list item per layer,
-  # no overlapping patterns.
+  # keep up/down on CPU.
   tensor-split: [22, 22, 0, 0, 0, 0]
   override-tensor:
     - target: ROCm0

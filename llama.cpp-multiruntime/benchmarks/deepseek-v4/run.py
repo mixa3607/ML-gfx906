@@ -100,7 +100,7 @@ def main():
                     raise RuntimeError(f"Prompt was not fully evaluated: {response['timings']}")
                 return response, elapsed
 
-            warmup, elapsed = complete(128, 16)
+            warmup, _ = complete(128, 16)
             (args.output / "warmup.json").write_text(json.dumps(warmup, indent=2))
             for length in lengths:
                 for repeat in range(args.repetitions):

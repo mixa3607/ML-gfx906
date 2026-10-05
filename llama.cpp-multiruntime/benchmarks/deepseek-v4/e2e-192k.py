@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""End-to-end check: profile YAML -> presets.ini -> router -> autoload -> inference.
-
-Reproduces the image entrypoint path: the same build-presets-ini.py builds the
-preset file, then llama-server runs in router mode with LLAMA_ARG_MODELS_PRESET.
-The model is loaded through the router API by the first request (autoload).
-"""
+"""Check profile YAML -> presets.ini -> router -> autoload -> inference."""
 import argparse
 import json
 import os
@@ -145,7 +140,6 @@ def main():
             except subprocess.TimeoutExpired:
                 server.kill()
                 server.wait()
-            subprocess.run(["pkill", "-x", "llama-server"], capture_output=True)
 
 
 if __name__ == "__main__":

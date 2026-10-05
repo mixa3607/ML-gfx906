@@ -2,8 +2,8 @@ DeepSeek-V4-Flash-Vision-orcarouter:
   enabled: true
   load-on-startup: false
   load-mode: mlock
-    hf-repo: orcarouter/DeepSeek-V4-Flash-Vision-Uncensored-GGUF
-    mmproj: /root/.cache/huggingface/hub/models--unsloth--DeepSeek-V4-Flash-Vision-Exp-GGUF/snapshots/87ce15810931a270f165e5e50439cd446f6b4ba5/mmproj-F16.gguf
+  hf-repo: orcarouter/DeepSeek-V4-Flash-Vision-Uncensored-GGUF
+  mmproj: /root/.cache/huggingface/hub/models--unsloth--DeepSeek-V4-Flash-Vision-Exp-GGUF/snapshots/87ce15810931a270f165e5e50439cd446f6b4ba5/mmproj-F16.gguf
   cache-ram: 32768
   ctx-size: 131072
   temp: "1.0"

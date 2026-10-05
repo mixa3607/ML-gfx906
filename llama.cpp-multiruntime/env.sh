@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ "$LLAMA_IMAGE" == "" ]; then
-  LLAMA_IMAGE=docker.io/mixa3607/llama.cpp-multiruntime
+  LLAMA_IMAGE=docker.io/mixa3607/llama.cpp-gfx906
 fi
 if [ "$LLAMA_ROCM_IMAGE" == "" ]; then
   LLAMA_ROCM_IMAGE=docker.io/mixa3607/llama.cpp-gfx906:v0.5.0-rocm-7.14

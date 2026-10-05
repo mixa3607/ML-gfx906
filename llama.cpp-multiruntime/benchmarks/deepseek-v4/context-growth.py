@@ -15,7 +15,7 @@ PORT = 18080
 def request(endpoint, payload=None, timeout=3600):
     data = None if payload is None else json.dumps(payload).encode()
     req = urllib.request.Request(
-        "http://127.0.0.1:%d%s" % (PORT, endpoint), data=data,
+        f"http://127.0.0.1:{PORT}{endpoint}", data=data,
         headers={"Content-Type": "application/json"},
     )
     with urllib.request.urlopen(req, timeout=timeout) as response:
@@ -110,12 +110,11 @@ def main():
                 with (args.output / "results.jsonl").open("a") as output:
                     output.write(json.dumps(row) + "\n")
                 used = [line.split(",")[1].strip() for line in row["snapshot"]["nvidia_smi"].splitlines()[1:]]
-                print(f"fill={step} prompt_n={response['timings']['prompt_n']} "
-                      f"prompt_tps={response['timings']['prompt_per_second']:.1f} "
-                      f"tg_tps={response['timings']['predicted_per_second']:.1f} cuda_used={used}", flush=True)
+                print(f"fill={step} prompt_n={timings['prompt_n']} "
+                      f"prompt_tps={timings['prompt_per_second']:.1f} "
+                      f"tg_tps={timings['predicted_per_second']:.1f} cuda_used={used}", flush=True)
 
-            # Steady-state generation at the deepest fill: one fresh token per
-            # request keeps the cached prefix, then generate 8 and 128 tokens.
+            # Measure generation at the deepest fill.
             seq = tokens[: max(steps) + 512]
             position = steps[-1] + args.generate
             for count in (8, 128):
