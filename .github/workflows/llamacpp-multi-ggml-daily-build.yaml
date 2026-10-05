@@ -23,7 +23,7 @@ jobs:
           - rocm_version: "7.14"
             cuda_version: "13.4.2"
             llamacpp_tag: "${{ inputs.llamacpp_tag }}"
-            release_tag: "master"
+            release_tag: "20261006020817"
     env:
       LLAMA_REPO: "https://github.com/ggml-org/llama.cpp.git"
       LLAMA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"

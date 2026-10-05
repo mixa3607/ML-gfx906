@@ -19,7 +19,7 @@ jobs:
           - rocm_version: "7.14"
             pytorch_version: "2.13.0"
             comfyui_tag: "${{ inputs.comfyui_tag }}"
-            release_tag: "20260826041541"
+            release_tag: "20261006020817"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v7
