@@ -17,7 +17,7 @@ export ROCM_IMAGE="registry.arkprojects.space/apps/rocm-gfx906"
 export ROCM_TOOLKIT_IMAGE="registry.arkprojects.space/apps/rocm-toolkit-gfx906"
 
 # llamacpp
-export LLAMA_IMAGE="registry.arkprojects.space/apps/llama.cpp-multiruntime"
+export LLAMA_IMAGE="registry.arkprojects.space/apps/llama.cpp-gfx906"
 
 # rocm rvs
 export RVS_PUSH=1
