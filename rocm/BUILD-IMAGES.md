@@ -17,13 +17,13 @@ all required variables. A preset file (e.g. `preset.rocm-7.14.sh`) overrides the
 TheRock version. All variables can be overridden by exporting them before
 running the script:
 
-| Variable               | Default                                | Description              |
-| ---------------------- | -------------------------------------- | ------------------------ |
-| `ROCM_VERSION`         | `7.14`                                 | TheRock release version  |
-| `ROCM_ARCH`            | `gfx906`                               | Target GPU architecture  |
-| `ROCM_BASE_IMAGE`      | `docker.io/library/ubuntu:24.04`      | Base Docker image        |
-| `ROCM_IMAGE`           | `docker.io/mixa3607/rocm-gfx906`      | Destination image name   |
-| `ROCM_IS_RELEASE`      | `0`                                    | `1` publishes release tags; otherwise only a `-pre` tag |
+| Variable          | Default                          | Description                                             |
+| ----------------- | -------------------------------- | ------------------------------------------------------- |
+| `ROCM_VERSION`    | `7.14`                           | TheRock release version                                 |
+| `ROCM_ARCH`       | `gfx906`                         | Target GPU architecture                                 |
+| `ROCM_BASE_IMAGE` | `docker.io/library/ubuntu:24.04` | Base Docker image                                       |
+| `ROCM_IMAGE`      | `docker.io/mixa3607/rocm-gfx906` | Destination image name                                  |
+| `ROCM_IS_RELEASE` | `0`                              | `1` publishes release tags; otherwise only a `-pre` tag |
 
 The [`build-image.Dockerfile`](./build-image.Dockerfile) adds the APT repository (via
 [`install-gfx906-repo.sh`](./build-context/install-gfx906-repo.sh)), then installs all
