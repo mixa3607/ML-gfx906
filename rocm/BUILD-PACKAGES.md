@@ -29,9 +29,9 @@ apt install -y \
 
 ```bash
 ########## Clone ##########
-mkdir $HOME/rocm/code/TheRock
-cd $HOME/rocm/code/TheRock
-git clone https://github.com/ROCm/TheRock.git -b therock-10.0 .
+mkdir $HOME/rocm/code/TheRock-10.1
+cd $HOME/rocm/code/TheRock-10.1
+git clone https://github.com/ROCm/TheRock.git -b therock-10.1 .
 
 ########## Install deps ##########
 # Install ccache
@@ -55,8 +55,8 @@ source .venv/bin/activate
 python3 ./build_tools/fetch_sources.py
 
 ########## Configure ##########
-PACKAGES_DIR=$HOME/rocm/packages/therock
-VERSION_SUFFIX=gfx906+20260917140126
+PACKAGES_DIR=$HOME/rocm/packages/therock-10.1
+VERSION_SUFFIX=gfx906+20261007190641
 
 eval "$(./build_tools/setup_ccache.py)"
 CMAKE_ARGS=(
