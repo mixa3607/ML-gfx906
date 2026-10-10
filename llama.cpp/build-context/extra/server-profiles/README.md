@@ -51,6 +51,11 @@ file in llama.cpp.
 
 ## Profile format
 
+The optional top-level `child-wrapper` option is reserved for the
+[profiles child wrapper](../child-wrapper/README.md#server-profiles-wrapper)
+and omitted from the generated INI. It supports per-model environment updates
+and command templates, with defaults from `*`.
+
 Every document maps preset names to option mappings. Files ending in `.yaml`,
 `.yml`, or `.json` are discovered recursively. YAML files can contain multiple
 documents separated by `---`. Files ending in `.sample` are ignored: copy a

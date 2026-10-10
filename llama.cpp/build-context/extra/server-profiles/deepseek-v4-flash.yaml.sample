@@ -49,3 +49,8 @@ DeepSeek-V4-Flash-Vision-orcarouter:
         - blk.35.ffn_(up|down)_exps.weight
         - blk.36.ffn_(up|down)_exps.weight
         - blk.37.ffn_(up|down)_exps.weight
+  child-wrapper:
+    env:
+      LLAMA_ARG_LOG_VERBOSITY: "4"
+      HIP_VISIBLE_DEVICES: null
+    command: "numactl --interleave=all {exe} {args}"

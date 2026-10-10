@@ -2,8 +2,8 @@
 """Build a llama.cpp model-presets INI file from YAML and JSON profiles.
 
 Each input document is a mapping of preset name to its options.  The special
-``enabled`` option decides whether its containing preset is emitted and is not
-written into the INI file itself.
+``enabled`` option decides whether its containing preset is emitted. Neither
+it nor the wrapper-only ``child-wrapper`` configuration is written into INI.
 """
 
 from __future__ import annotations
@@ -139,6 +139,8 @@ def flatten_options(options: Mapping[str, Any], *, path: str, prefix: str = "") 
         key = f"{prefix}-{raw_key}" if prefix else raw_key
         value_path = f"{path}.{raw_key}"
 
+        if not prefix and raw_key == "child-wrapper":
+            continue
         if key == "override-tensor":
             result.append((key, override_tensor_to_text(value, path=value_path)))
         elif key == "chat-template-kwargs":

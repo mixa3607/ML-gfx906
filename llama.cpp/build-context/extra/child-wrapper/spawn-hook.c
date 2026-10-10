@@ -37,10 +37,6 @@ static int spawn_with_wrapper(const char *symbol, pid_t *pid, const char *path,
     if (wrapper[0] != '/') {
         return EINVAL;
     }
-    if (access(wrapper, X_OK) != 0) {
-        return errno;
-    }
-
     size_t argc = 0;
     while (argv[argc]) {
         argc++;
