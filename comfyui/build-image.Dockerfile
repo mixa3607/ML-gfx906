@@ -18,8 +18,7 @@ ARG COMFY_COMMIT
 WORKDIR /files/comfy
 RUN git clone --depth 1 --recurse-submodules --shallow-submodules --jobs 4 --branch ${COMFY_BRANCH} ${COMFY_REPO} .
 RUN if [ "$COMFY_COMMIT" != "" ]; then git checkout "$COMFY_COMMIT"; fi
-COPY /entrypoint.sh /files/comfy
-COPY /sitecustomize.py /files/comfy
+COPY /extra /files/comfy
 
 FROM files_comfy AS files_comfy_requirements
 WORKDIR /files/comfy-requirements
@@ -32,4 +31,10 @@ WORKDIR /comfyui
 COPY --from=files_comfy_requirements /files/comfy-requirements /comfyui
 RUN pip install huggingface_hub modelscope yq -r requirements.txt -r manager_requirements.txt
 COPY --from=files_comfy /files/comfy /comfyui
+
+ENV PYTORCH_TUNABLEOP_ENABLED=1
+ENV PYTORCH_TUNABLEOP_TUNING=0
+ENV PYTORCH_TUNABLEOP_HIPBLASLT_ENABLED=0
+ENV PYTORCH_TUNABLEOP_FILENAME=/data/tunableop_results.csv
+
 ENTRYPOINT ["/comfyui/entrypoint.sh"]
