@@ -24,6 +24,8 @@ EOF_DOCKERFILE
 ############# Copy cuda libs #############
 FROM ${ROCM_IMAGE} AS final
 
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 

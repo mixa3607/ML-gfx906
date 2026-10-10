@@ -36,6 +36,8 @@ RUN pip install uv && \
       -r manager_requirements.txt
 COPY --from=files_comfy /files/comfy /comfyui
 
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
 ENV PYTORCH_TUNABLEOP_ENABLED=1
 ENV PYTORCH_TUNABLEOP_TUNING=0
 ENV PYTORCH_TUNABLEOP_HIPBLASLT_ENABLED=0

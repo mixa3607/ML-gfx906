@@ -5,6 +5,8 @@ ARG ROCM_BUILD="7.14.0-gfx906+20260802001858"
 FROM ${ROCM_BASE_IMAGE} AS rocm_base
 ARG ROCM_BUILD
 
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
 ENV ROCM_BUILD=$ROCM_BUILD
 ENV ROCM_PATH=/opt/rocm
 ENV PATH=/opt/rocm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin

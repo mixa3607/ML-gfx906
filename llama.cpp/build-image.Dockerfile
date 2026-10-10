@@ -102,6 +102,9 @@ RUN mkdir -p /builded && cp -r /build/child-wrapper ./build/bin/* .devops/tools.
 FROM rocm_base AS final
 WORKDIR /app
 
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+
 COPY /extra/requirements-extra.txt /app/requirements-extra.txt
 RUN pip3 install -r requirements-extra.txt && pip3 cache purge
 
