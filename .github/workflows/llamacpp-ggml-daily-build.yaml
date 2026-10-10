@@ -22,10 +22,7 @@ jobs:
         build:
           - rocm_version: "7.14"
             llamacpp_tag: "${{ inputs.llamacpp_tag }}"
-            release_tag: "20261006020817"
-          #- rocm_version: "6.3.3"
-          #  llamacpp_tag: "${{ inputs.llamacpp_tag }}"
-          #  release_tag: "20261006020817"
+            release_tag: "20261011030522"
     env:
       LLAMA_REPO: "https://github.com/ggml-org/llama.cpp.git"
       LLAMA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"

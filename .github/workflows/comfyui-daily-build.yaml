@@ -23,7 +23,7 @@ jobs:
           - rocm_version: "7.14"
             pytorch_version: "2.13.0"
             comfyui_tag: "${{ inputs.comfyui_tag }}"
-            release_tag: "20261006020817"
+            release_tag: "20261011030522"
     env:
       COMFYUI_PYTORCH_VERSION: "${{ matrix.build.pytorch_version }}"
       COMFYUI_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
