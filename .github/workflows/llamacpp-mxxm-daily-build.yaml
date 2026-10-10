@@ -7,6 +7,10 @@ on:
         description: "llama.cpp tag to build (empty = latest)"
         required: false
         default: ""
+      force_build:
+        description: "Rebuild even if the image is already published"
+        type: boolean
+        default: false
   schedule:
     - cron: "0 14 * * *"
 
@@ -22,17 +26,24 @@ jobs:
           #- rocm_version: "6.3.3"
           #  llamacpp_tag: "${{ inputs.llamacpp_tag }}"
           #  release_tag: "20261006020817"
+    env:
+      LLAMA_REPO: "https://github.com/mxxm-t/mx-llama.cpp.git"
+      LLAMA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
+      LLAMA_BRANCH: "${{ matrix.build.llamacpp_tag }}"
+      LLAMA_CMAKE_HIP_FLAGS: "-mllvm -amdgpu-sched-strategy=max-ilp"
+      LLAMA_FORCE_BUILD: "${{ inputs.force_build && '1' || '0' }}"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v7
         with:
           ref: ${{ matrix.build.release_tag }}
-
-      - name: Aggressive cleanup
-        uses: ./.github/workflows/actions/cleanup-space-action
+          fetch-depth: 0
 
       - name: Install yq
         uses: ./.github/workflows/actions/install-yq-action
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v4
@@ -40,19 +51,42 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Run build script
+      - name: Resolve build parameters
         env:
-          LLAMA_REPO: "https://github.com/mxxm-t/mx-llama.cpp.git"
-          LLAMA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
-          LLAMA_BRANCH: "${{ matrix.build.llamacpp_tag }}"
-          LLAMA_CMAKE_HIP_FLAGS: "-mllvm -amdgpu-sched-strategy=max-ilp"
           GITHUB_TOKEN: "${{ github.token }}"
         run: |
-          export LLAMA_IS_RELEASE=$(git describe --exact-match --tags HEAD >/dev/null 2>&1 && echo 1 || echo 0)
-          cd ./llama.cpp
+          source ./env.sh
+          LLAMA_IS_RELEASE=0
+          if [ -n "$(git_get_current_tag)" ]; then
+            LLAMA_IS_RELEASE=1
+          fi
           if [ "$LLAMA_BRANCH" == "" ]; then
             LLAMA_BRANCH="$("$GITHUB_WORKSPACE/.github/scripts/github_get_last" --type tag --repo "$LLAMA_REPO" --github-token "$GITHUB_TOKEN")"
-            export LLAMA_BRANCH
           fi
-          export LLAMA_PRESET_NAME="${LLAMA_BRANCH}-rocm-${LLAMA_ROCM_VERSION}-mxxm"
-          ./build-and-push.image.sh
+
+          echo "LLAMA_IS_RELEASE=$LLAMA_IS_RELEASE" >> "$GITHUB_ENV"
+          echo "REPO_GIT_REF=$REPO_GIT_REF" >> "$GITHUB_ENV"
+          echo "LLAMA_BRANCH=$LLAMA_BRANCH" >> "$GITHUB_ENV"
+          echo "LLAMA_PRESET_NAME=$LLAMA_BRANCH-rocm-$LLAMA_ROCM_VERSION-mxxm" >> "$GITHUB_ENV"
+          source ./env.sh "llama.cpp" "rocm"
+          echo "LLAMA_BASE_IMAGE=$ROCM_IMAGE:$LLAMA_ROCM_VERSION-complete" >> "$GITHUB_ENV"
+
+      - name: Check build
+        id: check
+        run: |
+          needed="$(./llama.cpp/build-and-push.image.sh check)"
+          echo "needed=$needed" >> "$GITHUB_OUTPUT"
+
+      - name: Check base images
+        if: steps.check.outputs.needed == 'true'
+        run: |
+          source ./.build/build-common.sh
+          build_require_images "$LLAMA_BASE_IMAGE"
+
+      - name: Aggressive cleanup
+        if: steps.check.outputs.needed == 'true'
+        uses: ./.github/workflows/actions/cleanup-space-action
+
+      - name: Build llama.cpp image
+        if: steps.check.outputs.needed == 'true'
+        run: ./llama.cpp/build-and-push.image.sh build

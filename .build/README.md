@@ -34,6 +34,3 @@ In CI, resolve versions once and share them through `$GITHUB_ENV`. Capture
 `check` into a step output and condition cleanup/build on `needed == 'true'`.
 Force-build must be passed to the check step too. A missing dependency fails
 before cleanup; a registry/network/authentication error must not mean absent.
-
-Only `llama.cpp-multiruntime` currently uses this interface. Workflows checking
-out older release tags need a new release ref before using the new commands.
