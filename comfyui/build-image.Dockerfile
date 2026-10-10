@@ -29,7 +29,11 @@ RUN find .
 FROM torch_base AS final
 WORKDIR /comfyui
 COPY --from=files_comfy_requirements /files/comfy-requirements /comfyui
-RUN pip install huggingface_hub modelscope yq -r requirements.txt -r manager_requirements.txt
+RUN pip install uv && \
+    uv pip install --system --break-system-packages \
+      huggingface_hub modelscope yq \
+      -r requirements.txt \
+      -r manager_requirements.txt
 COPY --from=files_comfy /files/comfy /comfyui
 
 ENV PYTORCH_TUNABLEOP_ENABLED=1
