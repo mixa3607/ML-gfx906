@@ -40,6 +40,13 @@ for YAML/JSON benchmark matrices and shell command templates.
 See the [benchmark results documentation](./build-context/extra/bench-results/README.md)
 for converting llama-bench JSONL output into YAML, JSON, or Markdown tables.
 
+## Router child wrapper
+
+See the [child wrapper](./build-context/extra/child-wrapper/README.md) for
+intercepting router child launches without modifying llama.cpp. Set
+`M36_LLAMA_CHILD_WRAPPER` to an executable script's absolute container path;
+`entrypoint.sh` enables the preload hook automatically.
+
 ## Build from source
 
 The build happens inside `docker buildx` on top of the ROCm base image

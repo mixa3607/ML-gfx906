@@ -51,6 +51,13 @@ FROM rocm_base AS build_llamacpp
 ARG CMAKE_HIP_FLAGS
 ARG CCACHE_MAXSIZE
 RUN apt-get update && apt-get install -y build-essential cmake libssl-dev ccache
+
+# build router child wrapper
+COPY /extra/child-wrapper/spawn-hook.c /build/child-wrapper/spawn-hook.c
+RUN cc -O2 -Wall -Wextra -Werror -shared -fPIC \
+    /build/child-wrapper/spawn-hook.c -o /build/child-wrapper/spawn-hook.so -ldl
+
+# build llama.cpp
 COPY --from=files_llamacpp /files/llamacpp /build/llamacpp
 WORKDIR /build/llamacpp
 
@@ -89,7 +96,7 @@ CMAKE_ARGS=(
 cmake -S . -B build "\${CMAKE_ARGS[@]}"
 cmake --build build --config Release -j$(nproc)
 EOF_DOCKERFILE
-RUN mkdir -p /builded && cp -r ./build/bin/* .devops/tools.sh /builded
+RUN mkdir -p /builded && cp -r /build/child-wrapper ./build/bin/* .devops/tools.sh /builded
 
 ############# Copy and install all #############
 FROM rocm_base AS final

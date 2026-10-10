@@ -10,10 +10,11 @@ Profile generation is optional. The container entrypoint attempts it before
 running `tools.sh`, but does not automatically enable the generated presets in
 llama.cpp.
 
-| Environment variable      | Purpose                                                   | Default                                                                                                |
-| ------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `MODELS_PRESETS_DIR`      | Directory searched recursively for profiles               | `./server-profiles`                                                                                    |
-| `LLAMA_ARG_MODELS_PRESET` | Generated INI destination; also tells llama.cpp to use it | Generation defaults to `./server-profiles/presets.ini`, but the variable is not automatically exported |
+| Environment variable            | Purpose                                                                  | Default                                                              |
+| ------------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| `M36_LLAMA_MODELS_PRESETS_DIR`  | Directory searched recursively for profiles                              | `./server-profiles`                                                  |
+| `M36_LLAMA_MODELS_PRESETS_FILE` | Generated INI destination                                                | `LLAMA_ARG_MODELS_PRESET`, otherwise `./server-profiles/presets.ini` |
+| `LLAMA_ARG_MODELS_PRESET`       | Tells llama.cpp which INI to use; also a fallback generation destination | Not automatically exported                                           |
 
 Relative paths are resolved from the container's working directory, `/app` by
 default. Mount your profiles in a separate directory so that the bundled
@@ -27,7 +28,7 @@ docker run --rm \
   -p 8080:8080 \
   -v "$PWD/profiles:/config/profiles:ro" \
   -v "$PWD/models:/models:ro" \
-  -e MODELS_PRESETS_DIR=/config/profiles \
+  -e M36_LLAMA_MODELS_PRESETS_DIR=/config/profiles \
   -e LLAMA_ARG_MODELS_PRESET=/app/server-profiles/presets.ini \
   "$LLAMACPP_IMAGE" --server --host 0.0.0.0
 ```
@@ -43,8 +44,10 @@ parsing or rendering fails, so it can remain in use. This behavior keeps profile
 generation optional for users running the image's other workflows.
 
 You can also pass `--models-preset PATH` to the server explicitly. The generator
-does not inspect CLI arguments: set `LLAMA_ARG_MODELS_PRESET` as well if you want
-to change where it writes the file.
+does not inspect CLI arguments: set `M36_LLAMA_MODELS_PRESETS_FILE` as well if
+you want to change where it writes the file. This variable only controls
+generation; use `LLAMA_ARG_MODELS_PRESET` or `--models-preset` to select that
+file in llama.cpp.
 
 ## Profile format
 
