@@ -1,0 +1,66 @@
+Accept gfx906 in setup.py and compile it with STRATA_HIP_GFX906.
+
+Upstream already builds gfx906 through -DSTRATA_HIP_GFX906=ON. setup.py still
+omits that architecture, so a container start refuses MI50 / MI60 / Radeon VII.
+This patch lets setup accept the card and rebuild it with the gfx906 recipe:
+wave64 compat, ROCm clang, and AVX2 (STRATA_PORTABLE) on an AVX2 host.
+
+diff --git a/setup.py b/setup.py
+--- a/setup.py
++++ b/setup.py
+@@ -1681,8 +1681,9 @@
+ # STRATA_EXPERIMENTAL_GFX1103=1 (opt-in, unsupported): the Radeon 780M / 760M / 740M iGPU (Ryzen 7040 / 8040, gfx1103) is taken
+ # as a unified-memory AMD card like Strix Halo, with the portable kernels (no WMMA) (measured on one machine: Ryzen 7 255).  Unset: unchanged.
+ GFX1103_OPT_IN = os.environ.get("STRATA_EXPERIMENTAL_GFX1103") == "1"
+-AMD_ARCHS = ("gfx1100", "gfx1101", "gfx1102", "gfx1200", "gfx1201", "gfx1030", "gfx1031", "gfx1151") + (("gfx1103",) if GFX1103_OPT_IN else ())
+-AMD_NAMES = {"gfx1100": "AMD Radeon RX 7900 series (gfx1100)",   # when sysfs has no product name
++AMD_ARCHS = ("gfx906", "gfx1100", "gfx1101", "gfx1102", "gfx1200", "gfx1201", "gfx1030", "gfx1031", "gfx1151") + (("gfx1103",) if GFX1103_OPT_IN else ())
++AMD_NAMES = {"gfx906": "AMD Instinct MI50 / MI60 / Radeon VII (gfx906)",
++             "gfx1100": "AMD Radeon RX 7900 series (gfx1100)",   # when sysfs has no product name
+              "gfx1101": "AMD Radeon RX 7800 XT / 7700 XT (gfx1101)",
+              "gfx1102": "AMD Radeon RX 7600 / 7600 XT (gfx1102)",
+              "gfx1200": "AMD Radeon RX 9060 series (gfx1200)",
+@@ -1694,13 +1695,17 @@
+              "gfx1150": "AMD Radeon 890M / 880M (Ryzen AI 300, Strix Point, gfx1150)",
+              "gfx1152": "AMD Radeon 860M / 840M (Ryzen AI 300, Krackan Point, gfx1152)",
+              "gfx1103": "AMD Radeon 780M / 760M / 740M (Ryzen 7040 / 8040, Phoenix / Hawk Point, gfx1103)"}
+-AMD_CARDS = ("the RX 7900 XT / XTX (gfx1100), RX 7800 XT / 7700 XT (gfx1101), RX 9060 XT (gfx1200) and "
++AMD_CARDS = ("the Instinct MI50 / MI60 and Radeon VII (gfx906), the RX 7900 XT / XTX (gfx1100), RX 7800 XT / 7700 XT (gfx1101), RX 9060 XT (gfx1200) and "
+              "RX 9070 / 9070 XT / Radeon AI PRO R9700 (gfx1201), and the RX 6800 / 6900 series (gfx1030) and RX 6700 XT "
+              "(gfx1031, #524), and the RX 7600 / 7600 XT (gfx1102, one run reported, #942), all unvalidated, and the Ryzen AI Max \"Strix Halo\" APU (Radeon 8060S / 8050S / 8040S, "
+              "gfx1151: experimental, docs/STRIX_HALO.md)")
+ 
+ 
+ def rocm_index(arch):
++    if arch == "gfx906":
++        fail("gfx906 needs a system ROCm with gfx906 libraries in /opt/rocm "
++             "(AMD's TheRock wheels do not ship them)",
++             "use docker.io/mixa3607/rocm-gfx906, or install that ROCm")
+     return os.environ.get("STRATA_ROCM_INDEX") or ROCM_INDEXES[arch]
+ 
+ 
+@@ -2504,9 +2509,22 @@
+         if meta.get("backend") == "hip" and (eng / EXE).exists() and has_archs
+         else f"  Compiling the Strata engine for your AMD GPU{'s' if len(archs) > 1 else ''} ({', '.join(archs)}; "
+              "10-20 minutes, once) ...")
++    if "gfx906" in archs and archs != ["gfx906"]:
++        fail("gfx906 uses its own HIP build and cannot share an engine with other AMD architectures",
++             "build gfx906 on its own")
++    # gfx906 is wave64 (STRATA_HIP_GFX906). On an AVX2 CPU, STRATA_PORTABLE keeps the
++    # CPU experts on AVX2 so an image built on a newer host still runs on Broadwell.
++    if archs == ["gfx906"]:
++        hip_defs = ["-DSTRATA_HIP_GFX906=ON", "-DSTRATA_ENABLE_HIP=OFF",
++                    f"-DCMAKE_C_COMPILER={root / 'llvm' / 'bin' / 'clang'}",
++                    f"-DCMAKE_CXX_COMPILER={root / 'llvm' / 'bin' / 'clang++'}"]
++        if not floor:
++            hip_defs.append("-DSTRATA_PORTABLE=ON")
++    else:
++        hip_defs = ["-DSTRATA_ENABLE_HIP=ON", "-DSTRATA_PREFILL_MMQ=ON"]
+     cmake_build(ROOT, ROOT / "build-hip", "strata",
+-                ["-DSTRATA_ENABLE_HIP=ON", "-DSTRATA_ENABLE_CUDA=OFF", "-DSTRATA_BUILD_TESTS=OFF",
+-                 "-DSTRATA_PREFILL_MMQ=ON", "-DCMAKE_HIP_ARCHITECTURES=" + ";".join(archs),
++                [*hip_defs, "-DSTRATA_ENABLE_CUDA=OFF", "-DSTRATA_BUILD_TESTS=OFF",
++                 "-DCMAKE_HIP_ARCHITECTURES=" + ";".join(archs),
+                  f"-DCMAKE_HIP_COMPILER={root / 'llvm' / 'bin' / 'clang++'}", f"-DCMAKE_HIP_COMPILER_ROCM_ROOT={root}",
+                  "-DCMAKE_PREFIX_PATH=" + ";".join([str(root), *libs]),
+                  f"-DCMAKE_HIP_FLAGS=--rocm-path={root} --rocm-device-lib-path={bitcode}",
