@@ -101,11 +101,11 @@ jobs:
         run: ./strata/build-and-push.image.sh build
 
       - name: Make the GHCR package public
-        if: steps.check.outputs.needed == 'true' && github.repository_owner != 'mixa3607'
+        if: github.repository_owner != 'mixa3607'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh api --method PATCH \
             -H "Accept: application/vnd.github+json" \
-            "/users/${GITHUB_REPOSITORY_OWNER}/packages/container/strata-gfx906" \
+            "/user/packages/container/strata-gfx906" \
             -f visibility=public
