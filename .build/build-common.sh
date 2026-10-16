@@ -8,7 +8,7 @@ function build_image_exists {
   fi
 
   case "$error" in
-    *"manifest unknown"*|*"MANIFEST_UNKNOWN"*|*"no such manifest"*|*"$image: not found"*)
+    *"manifest unknown"*|*"MANIFEST_UNKNOWN"*|*"no such manifest"*|*"$image: not found"*|*"repository does not exist"*)
       return 1
       ;;
   esac
