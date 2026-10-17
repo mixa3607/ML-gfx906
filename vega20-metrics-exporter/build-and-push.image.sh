@@ -2,7 +2,8 @@
 set -eo pipefail
 
 cd "$(dirname "$0")"
-source ../env.sh "vega20-metrics-exporter"
+source ../env.sh "vega20-metrics-exporter" >&2
+source ../.build/build-common.sh
 
 METRICS_VERSION_SUFFIX="${REPO_GIT_REF}"
 METRICS_PACKAGE_VERSION="${METRICS_VERSION}+${METRICS_VERSION_SUFFIX}"
@@ -18,38 +19,44 @@ else
   )
 fi
 
-if docker_image_pushed "${IMAGE_TAGS[0]}" && [ "${METRICS_FORCE_BUILD:-}" != "1" ]; then
-  echo "${IMAGE_TAGS[0]} already in registry. Skip."
-  exit 0
-fi
+function check {
+  build_check_image "${IMAGE_TAGS[0]}" "${METRICS_FORCE_BUILD:-0}"
+}
 
-DOCKER_EXTRA_ARGS=(
-  --build-arg "PACKAGE_SOURCE=${METRICS_PACKAGES_SOURCE}"
-  --progress plain
-  --pull
-  --target final
-  --file ./build-image.Dockerfile
-)
-for tag in "${IMAGE_TAGS[@]}"; do
-  DOCKER_EXTRA_ARGS+=(--tag "$tag")
-done
+function build {
+  build_require_images "docker.io/library/ubuntu:24.04"
 
-if [ "$METRICS_PACKAGES_SOURCE" = "context" ]; then
-  if [ ! -d "$METRICS_PACKAGES_DIR" ]; then
-    echo "$METRICS_PACKAGES_DIR does not exist. Build the deb first."
-    exit 1
+  local -a DOCKER_EXTRA_ARGS=(
+    --build-arg "PACKAGE_SOURCE=${METRICS_PACKAGES_SOURCE}"
+    --progress plain
+    --pull
+    --target final
+    --file ./build-image.Dockerfile
+  )
+  local tag
+  for tag in "${IMAGE_TAGS[@]}"; do
+    DOCKER_EXTRA_ARGS+=(--tag "$tag")
+  done
+
+  if [ "$METRICS_PACKAGES_SOURCE" = "context" ]; then
+    if [ ! -d "$METRICS_PACKAGES_DIR" ]; then
+      echo "$METRICS_PACKAGES_DIR does not exist. Build the deb first."
+      return 1
+    fi
+    DOCKER_EXTRA_ARGS+=(--build-context "packages=${METRICS_PACKAGES_DIR}")
+  elif [ "$METRICS_PACKAGES_SOURCE" = "apt" ]; then
+    DOCKER_EXTRA_ARGS+=(--build-context "packages=$(mktemp -d)")
+  else
+    echo "Unsupported METRICS_PACKAGES_SOURCE=$METRICS_PACKAGES_SOURCE" >&2
+    return 1
   fi
-  DOCKER_EXTRA_ARGS+=(--build-context "packages=${METRICS_PACKAGES_DIR}")
-elif [ "$METRICS_PACKAGES_SOURCE" = "apt" ]; then
-  DOCKER_EXTRA_ARGS+=(--build-context "packages=$(mktemp -d)")
-else
-  echo "Unsupported METRICS_PACKAGES_SOURCE=$METRICS_PACKAGES_SOURCE" >&2
-  exit 1
-fi
 
-if [ "$METRICS_PUSH" = "1" ]; then
-  DOCKER_EXTRA_ARGS+=(--push)
-fi
+  if [ "$METRICS_PUSH" = "1" ]; then
+    DOCKER_EXTRA_ARGS+=(--push)
+  fi
 
-mkdir -p ./logs
-docker buildx build "${DOCKER_EXTRA_ARGS[@]}" ./build-context 2>&1 | tee "./logs/build-image_$(date +%Y%m%d%H%M%S).log"
+  mkdir -p ./logs
+  docker buildx build "${DOCKER_EXTRA_ARGS[@]}" ./build-context 2>&1 | tee "./logs/build-image_$(date +%Y%m%d%H%M%S).log"
+}
+
+build_dispatch check build "$@"

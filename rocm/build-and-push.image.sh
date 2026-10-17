@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-cd $(dirname $0)
-source ../env.sh "rocm"
+cd "$(dirname "$0")"
+source ../env.sh "rocm" >&2
+source ../.build/build-common.sh
 
 if [ "$ROCM_IS_RELEASE" == "1" ]; then
   IMAGE_TAGS=(
@@ -15,54 +16,53 @@ else
   )
 fi
 
-declare -A IMAGE_ANNOTATIONS
-IMAGE_ANNOTATIONS["org.opencontainers.image.created"]="$(date --rfc-3339=seconds)"
-IMAGE_ANNOTATIONS["org.opencontainers.image.authors"]="mixa3607"
-IMAGE_ANNOTATIONS["org.opencontainers.image.source"]="https://github.com/mixa3607/ML-gfx906/tree/${REPO_GIT_REF}/rocm"
-IMAGE_ANNOTATIONS["org.opencontainers.image.version"]="${REPO_GIT_REF}"
-IMAGE_ANNOTATIONS["org.opencontainers.image.title"]="ROCm gfx906"
-IMAGE_ANNOTATIONS["org.opencontainers.image.base.name"]="${ROCM_BASE_IMAGE}"
+function check {
+  build_check_image "${IMAGE_TAGS[0]}" "${ROCM_FORCE_BUILD:-0}"
+}
 
-echo "Start building ROCm image..."
-echo "ROCM_VERSION: ${ROCM_VERSION}"
-echo "ROCM_BUILD:   ${ROCM_BUILD}"
-echo "IS_RELEASE:   ${ROCM_IS_RELEASE}"
+function build {
+  build_require_images "$ROCM_BASE_IMAGE"
 
-DOCKER_EXTRA_ARGS=()
-for (( i=0; i<${#IMAGE_TAGS[@]}; i++ )); do
-  echo "TAG:          ${IMAGE_TAGS[$i]}"
-  DOCKER_EXTRA_ARGS+=("--tag" "${IMAGE_TAGS[$i]}")
-done
-for key in "${!IMAGE_ANNOTATIONS[@]}"; do
-  echo "ANNOTATION:   ${key}: ${IMAGE_ANNOTATIONS[$key]}"
-  DOCKER_EXTRA_ARGS+=("--annotation" "${key}=${IMAGE_ANNOTATIONS[$key]}")
-done
+  local -A IMAGE_ANNOTATIONS
+  IMAGE_ANNOTATIONS["org.opencontainers.image.created"]="$(date --rfc-3339=seconds)"
+  IMAGE_ANNOTATIONS["org.opencontainers.image.authors"]="mixa3607"
+  IMAGE_ANNOTATIONS["org.opencontainers.image.source"]="https://github.com/mixa3607/ML-gfx906/tree/${REPO_GIT_REF}/rocm"
+  IMAGE_ANNOTATIONS["org.opencontainers.image.version"]="${REPO_GIT_REF}"
+  IMAGE_ANNOTATIONS["org.opencontainers.image.title"]="ROCm gfx906"
+  IMAGE_ANNOTATIONS["org.opencontainers.image.base.name"]="${ROCM_BASE_IMAGE}"
 
-if docker_image_pushed ${IMAGE_TAGS[0]}; then
-  echo -n "${IMAGE_TAGS[0]} already in registry. "
-  if [ "$ROCM_FORCE_BUILD" == "1" ]; then
-    echo "Force build..."
-  else
-    echo "Skip."
-    exit 0
-  fi
-fi
+  echo "Start building ROCm image..."
+  echo "ROCM_VERSION: ${ROCM_VERSION}"
+  echo "ROCM_BUILD:   ${ROCM_BUILD}"
+  echo "IS_RELEASE:   ${ROCM_IS_RELEASE}"
 
-DOCKER_EXTRA_ARGS+=(
-  --build-arg "ROCM_BASE_IMAGE=${ROCM_BASE_IMAGE}"
-  --build-arg "ROCM_BUILD=${ROCM_BUILD}"
-  --progress plain
-  --target final 
-  --file ./build-image.Dockerfile
-  --pull
-)
+  local -a DOCKER_EXTRA_ARGS=()
+  local i key
+  for (( i=0; i<${#IMAGE_TAGS[@]}; i++ )); do
+    echo "TAG:          ${IMAGE_TAGS[$i]}"
+    DOCKER_EXTRA_ARGS+=("--tag" "${IMAGE_TAGS[$i]}")
+  done
+  for key in "${!IMAGE_ANNOTATIONS[@]}"; do
+    echo "ANNOTATION:   ${key}: ${IMAGE_ANNOTATIONS[$key]}"
+    DOCKER_EXTRA_ARGS+=("--annotation" "${key}=${IMAGE_ANNOTATIONS[$key]}")
+  done
 
-if [ "$ROCM_PUSH" == "1" ]; then
   DOCKER_EXTRA_ARGS+=(
-    --push
+    --build-arg "ROCM_BASE_IMAGE=${ROCM_BASE_IMAGE}"
+    --build-arg "ROCM_BUILD=${ROCM_BUILD}"
+    --progress plain
+    --target final
+    --file ./build-image.Dockerfile
+    --pull
   )
-fi
 
-mkdir -p ./logs || true
-echo "Install ROCm packages to image"
-docker buildx build "${DOCKER_EXTRA_ARGS[@]}" ./build-context 2>&1 | tee ./logs/build_$(date +%Y%m%d%H%M%S).log
+  if [ "$ROCM_PUSH" == "1" ]; then
+    DOCKER_EXTRA_ARGS+=(--push)
+  fi
+
+  mkdir -p ./logs
+  echo "Install ROCm packages to image"
+  docker buildx build "${DOCKER_EXTRA_ARGS[@]}" ./build-context 2>&1 | tee "./logs/build_$(date +%Y%m%d%H%M%S).log"
+}
+
+build_dispatch check build "$@"

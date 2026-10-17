@@ -33,5 +33,5 @@ find "$METRICS_PACKAGES_DIR" -maxdepth 1 -type f -name '*.deb' -printf '%f\n' | 
 
 if [ "$METRICS_PUSH" = "1" ]; then
   SCP_DST="k3s@kube-worker6.arkprojects.lan:/home/k3s/rocm-dev-packages/vega20-metrics-exporter"
-  scp "$METRICS_PACKAGES_DIR"/*.deb "$METRICS_PACKAGES_DIR/index.txt" "$SCP_DST"
+  find "$METRICS_PACKAGES_DIR" -maxdepth 1 -mindepth 1 -name "*.deb" -exec scp {} "$SCP_DST" \;
 fi
