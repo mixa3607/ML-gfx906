@@ -2,24 +2,29 @@
 set -eo pipefail
 
 cd "$(dirname "$0")"
-source ../env.sh "amd-memory-tweak"
+source ../.build/git-common.sh
+source ../.build/logger.sh
 
-AMT_VERSION_SUFFIX="gfx906+${REPO_GIT_REF}"
-AMT_PACKAGES_DIR="$PWD/output/amt-${AMT_VERSION}-${AMT_VERSION_SUFFIX}"
+: "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+: "${AMT_VERSION:="0.0.0"}"
+: "${AMT_PUSH:="0"}"
+: "${AMT_BASE_IMAGE:="docker.io/library/ubuntu:24.04"}"
+: "${AMT_VERSION_SUFFIX:="gfx906+${REPO_GIT_REF}"}"
+: "${AMT_PACKAGES_DIR:="$PWD/output/amt-${AMT_VERSION}-${AMT_VERSION_SUFFIX}"}"
 
-echo "Start building AMD Memory Tweak deb package..."
-echo "AMT VERSION:        ${AMT_VERSION}"
-echo "AMT VERSION SUFFIX: ${AMT_VERSION_SUFFIX}"
-echo "AMT PACKAGES DIR:   ${AMT_PACKAGES_DIR}"
-echo "BASE IMAGE:         ${AMT_BASE_IMAGE}"
-echo "PUSH:               ${AMT_PUSH}"
+print INFO "Start building AMD Memory Tweak deb package..."
+print INFO "AMT VERSION:        ${AMT_VERSION}"
+print INFO "AMT VERSION SUFFIX: ${AMT_VERSION_SUFFIX}"
+print INFO "AMT PACKAGES DIR:   ${AMT_PACKAGES_DIR}"
+print INFO "BASE IMAGE:         ${AMT_BASE_IMAGE}"
+print INFO "PUSH:               ${AMT_PUSH}"
 
 if [ -d "$AMT_PACKAGES_DIR" ]; then
-  echo "Directory $AMT_PACKAGES_DIR exists."
+  print INFO "Directory $AMT_PACKAGES_DIR exists."
   if [ "${AMT_FORCE_BUILD:-0}" = "1" ]; then
-    echo "Force build..."
+    print WARN "Force build..."
   else
-    echo "Skip."
+    print WARN "Skip."
     exit 0
   fi
 fi

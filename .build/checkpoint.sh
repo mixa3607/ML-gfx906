@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 cd "$(dirname "$0")/.."
-source ./env.sh
+source ./.build/git-common.sh
 
 if ! [ -z "$(git status --porcelain)" ]; then 
   echo "Workdir is dirty!"

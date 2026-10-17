@@ -25,11 +25,11 @@ jobs:
             comfyui_tag: "${{ inputs.comfyui_tag }}"
             release_tag: "20261011030522"
     env:
+      COMFYUI_REPO: "https://github.com/Comfy-Org/ComfyUI.git"
+      COMFYUI_BRANCH: "${{ matrix.build.comfyui_tag }}"
+      COMFYUI_FORCE_BUILD: "${{ inputs.force_build && '1' || '0' }}"
       COMFYUI_PYTORCH_VERSION: "${{ matrix.build.pytorch_version }}"
       COMFYUI_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
-      COMFYUI_BRANCH: "${{ matrix.build.comfyui_tag }}"
-      COMFYUI_REPO: "https://github.com/Comfy-Org/ComfyUI.git"
-      COMFYUI_FORCE_BUILD: "${{ inputs.force_build && '1' || '0' }}"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v7
@@ -53,20 +53,18 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ github.token }}"
         run: |
-          source ./env.sh
-          COMFYUI_IS_RELEASE=0
-          if [ -n "$(git_get_current_tag)" ]; then
-            COMFYUI_IS_RELEASE=1
-          fi
+          source ./.build/git-common.sh
           if [ "$COMFYUI_BRANCH" == "" ]; then
             COMFYUI_BRANCH="$("$GITHUB_WORKSPACE/.github/scripts/github_get_last" --type release --repo "$COMFYUI_REPO" --github-token "$GITHUB_TOKEN")"
           fi
+          : "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+          : "${COMFYUI_IS_RELEASE:="$([ -n "$(git_get_current_tag)" ] && echo 1 || echo 0)"}"
+          : "${COMFYUI_BASE_IMAGE:="docker.io/mixa3607/pytorch-gfx906:v$COMFYUI_PYTORCH_VERSION-rocm-$COMFYUI_ROCM_VERSION"}"
 
+          echo "REPO_GIT_REF=$REPO_GIT_REF"             >> "$GITHUB_ENV"
           echo "COMFYUI_IS_RELEASE=$COMFYUI_IS_RELEASE" >> "$GITHUB_ENV"
-          echo "REPO_GIT_REF=$REPO_GIT_REF" >> "$GITHUB_ENV"
-          echo "COMFYUI_BRANCH=$COMFYUI_BRANCH" >> "$GITHUB_ENV"
-          source ./env.sh "comfyui" "pytorch"
-          echo "COMFYUI_BASE_IMAGE=$COMFYUI_TORCH_IMAGE:v$COMFYUI_PYTORCH_VERSION-rocm-$COMFYUI_ROCM_VERSION" >> "$GITHUB_ENV"
+          echo "COMFYUI_BRANCH=$COMFYUI_BRANCH"         >> "$GITHUB_ENV"
+          echo "COMFYUI_BASE_IMAGE=$COMFYUI_BASE_IMAGE" >> "$GITHUB_ENV"
 
       - name: Check build
         id: check

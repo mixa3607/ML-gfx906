@@ -1,4 +1,4 @@
-name: Daily llama.cpp build (mxxm)
+name: Daily llama.cpp build (ggml)
 
 on:
   workflow_dispatch:
@@ -24,8 +24,9 @@ jobs:
             llamacpp_tag: "${{ inputs.llamacpp_tag }}"
             release_tag: "20261011030522"
     env:
-      LLAMA_REPO: "https://github.com/mxxm-t/mx-llama.cpp.git"
+      LLAMA_REPO: "https://github.com/ggml-org/llama.cpp.git"
       LLAMA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
+      LLAMA_PROFILE_SUFFIX: ""
       LLAMA_BRANCH: "${{ matrix.build.llamacpp_tag }}"
       LLAMA_CMAKE_HIP_FLAGS: "-mllvm -amdgpu-sched-strategy=max-ilp"
       LLAMA_FORCE_BUILD: "${{ inputs.force_build && '1' || '0' }}"
@@ -52,21 +53,20 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ github.token }}"
         run: |
-          source ./env.sh
-          LLAMA_IS_RELEASE=0
-          if [ -n "$(git_get_current_tag)" ]; then
-            LLAMA_IS_RELEASE=1
-          fi
+          source ./.build/git-common.sh
           if [ "$LLAMA_BRANCH" == "" ]; then
-            LLAMA_BRANCH="$("$GITHUB_WORKSPACE/.github/scripts/github_get_last" --type tag --repo "$LLAMA_REPO" --github-token "$GITHUB_TOKEN")"
+            LLAMA_BRANCH="$("$GITHUB_WORKSPACE/.github/scripts/github_get_last" --type release --repo "$LLAMA_REPO" --github-token "$GITHUB_TOKEN")"
           fi
+          : "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+          : "${LLAMA_IS_RELEASE:="$([ -n "$(git_get_current_tag)" ] && echo 1 || echo 0)"}"
+          : "${LLAMA_BASE_IMAGE:="docker.io/mixa3607/rocm-gfx906:$LLAMA_ROCM_VERSION-complete"}"
+          : "${LLAMA_PRESET_NAME:="$LLAMA_BRANCH-rocm-$LLAMA_ROCM_VERSION$LLAMA_PROFILE_SUFFIX"}"
 
-          echo "LLAMA_IS_RELEASE=$LLAMA_IS_RELEASE" >> "$GITHUB_ENV"
-          echo "REPO_GIT_REF=$REPO_GIT_REF" >> "$GITHUB_ENV"
-          echo "LLAMA_BRANCH=$LLAMA_BRANCH" >> "$GITHUB_ENV"
-          echo "LLAMA_PRESET_NAME=$LLAMA_BRANCH-rocm-$LLAMA_ROCM_VERSION-mxxm" >> "$GITHUB_ENV"
-          source ./env.sh "llama.cpp" "rocm"
-          echo "LLAMA_BASE_IMAGE=$ROCM_IMAGE:$LLAMA_ROCM_VERSION-complete" >> "$GITHUB_ENV"
+          echo "REPO_GIT_REF=$REPO_GIT_REF"             >> "$GITHUB_ENV"
+          echo "LLAMA_IS_RELEASE=$LLAMA_IS_RELEASE"     >> "$GITHUB_ENV"
+          echo "LLAMA_BRANCH=$LLAMA_BRANCH"             >> "$GITHUB_ENV"
+          echo "LLAMA_PRESET_NAME=$LLAMA_PRESET_NAME"   >> "$GITHUB_ENV"
+          echo "LLAMA_BASE_IMAGE=$LLAMA_BASE_IMAGE"     >> "$GITHUB_ENV"
 
       - name: Check build
         id: check

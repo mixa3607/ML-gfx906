@@ -2,8 +2,20 @@
 set -eo pipefail
 
 cd "$(dirname "$0")"
-source ../env.sh "comfyui" "pytorch" >&2
+source ../.build/git-common.sh
+source ../.build/logger.sh
 source ../.build/build-common.sh
+
+: "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+: "${COMFYUI_IMAGE:="docker.io/mixa3607/comfyui-gfx906"}"
+: "${COMFYUI_TORCH_IMAGE:="docker.io/mixa3607/pytorch-gfx906"}"
+: "${COMFYUI_ROCM_VERSION:="6.3.3"}"
+: "${COMFYUI_PYTORCH_VERSION:="2.7.1"}"
+: "${COMFYUI_REPO:="https://github.com/Comfy-Org/ComfyUI.git"}"
+: "${COMFYUI_BRANCH:="master"}"
+: "${COMFYUI_COMMIT:=""}"
+: "${COMFYUI_PUSH:="1"}"
+: "${COMFYUI_IS_RELEASE:="0"}"
 
 COMFYUI_BASE_IMAGE="${COMFYUI_TORCH_IMAGE}:v${COMFYUI_PYTORCH_VERSION}-rocm-${COMFYUI_ROCM_VERSION}"
 if [ "$COMFYUI_IS_RELEASE" == "1" ]; then
@@ -35,22 +47,22 @@ function build {
   IMAGE_ANNOTATIONS["org.opencontainers.image.title"]="ComfyUI gfx906"
   IMAGE_ANNOTATIONS["org.opencontainers.image.base.name"]="${COMFYUI_BASE_IMAGE}"
 
-  echo "Start building ComfyUI image..."
-  echo "REPO:          ${COMFYUI_REPO}"
-  echo "VERSION:       ${COMFYUI_BRANCH}"
-  echo "COMMIT:        ${COMFYUI_COMMIT}"
-  echo "ROCM_VERSION:  ${COMFYUI_ROCM_VERSION}"
-  echo "TORCH_VERSION: ${COMFYUI_PYTORCH_VERSION}"
-  echo "IS_RELEASE:    ${COMFYUI_IS_RELEASE}"
+  print INFO "Start building ComfyUI image..."
+  print INFO "REPO:          ${COMFYUI_REPO}"
+  print INFO "VERSION:       ${COMFYUI_BRANCH}"
+  print INFO "COMMIT:        ${COMFYUI_COMMIT}"
+  print INFO "ROCM_VERSION:  ${COMFYUI_ROCM_VERSION}"
+  print INFO "TORCH_VERSION: ${COMFYUI_PYTORCH_VERSION}"
+  print INFO "IS_RELEASE:    ${COMFYUI_IS_RELEASE}"
 
   local -a DOCKER_EXTRA_ARGS=()
   local i key
   for (( i=0; i<${#IMAGE_TAGS[@]}; i++ )); do
-    echo "TAG:          ${IMAGE_TAGS[$i]}"
+    print INFO "TAG:          ${IMAGE_TAGS[$i]}"
     DOCKER_EXTRA_ARGS+=("--tag" "${IMAGE_TAGS[$i]}")
   done
   for key in "${!IMAGE_ANNOTATIONS[@]}"; do
-    echo "ANNOTATION:   ${key}: ${IMAGE_ANNOTATIONS[$key]}"
+    print INFO "ANNOTATION:   ${key}: ${IMAGE_ANNOTATIONS[$key]}"
     DOCKER_EXTRA_ARGS+=("--annotation" "${key}=${IMAGE_ANNOTATIONS[$key]}")
   done
 
@@ -70,7 +82,7 @@ function build {
   fi
 
   mkdir -p ./logs
-  echo "Install ComfyUI to image"
+  print INFO "Install ComfyUI to image"
   docker buildx build "${DOCKER_EXTRA_ARGS[@]}" ./build-context 2>&1 | tee "./logs/build_$(date +%Y%m%d%H%M%S).log"
 }
 

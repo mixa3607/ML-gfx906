@@ -2,24 +2,29 @@
 set -eo pipefail
 
 cd "$(dirname "$0")"
-source ../env.sh "amd-tuning"
+source ../.build/git-common.sh
+source ../.build/logger.sh
 
-AMD_TUNING_VERSION_SUFFIX="gfx906+${REPO_GIT_REF}"
-AMD_TUNING_PACKAGES_DIR="$PWD/output/amd-tuning-${AMD_TUNING_VERSION}-${AMD_TUNING_VERSION_SUFFIX}"
+: "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+: "${AMD_TUNING_VERSION:="0.0.0"}"
+: "${AMD_TUNING_PUSH:="0"}"
+: "${AMD_TUNING_BASE_IMAGE:="docker.io/library/ubuntu:24.04"}"
+: "${AMD_TUNING_VERSION_SUFFIX:="gfx906+${REPO_GIT_REF}"}"
+: "${AMD_TUNING_PACKAGES_DIR:="$PWD/output/amd-tuning-${AMD_TUNING_VERSION}-${AMD_TUNING_VERSION_SUFFIX}"}"
 
-echo "Start building AMD tuning deb package..."
-echo "AMD TUNING VERSION:        ${AMD_TUNING_VERSION}"
-echo "AMD TUNING VERSION SUFFIX: ${AMD_TUNING_VERSION_SUFFIX}"
-echo "AMD TUNING PACKAGES DIR:   ${AMD_TUNING_PACKAGES_DIR}"
-echo "BASE IMAGE:                ${AMD_TUNING_BASE_IMAGE}"
-echo "PUSH:                      ${AMD_TUNING_PUSH}"
+print INFO "Start building AMD tuning deb package..."
+print INFO "AMD TUNING VERSION:        ${AMD_TUNING_VERSION}"
+print INFO "AMD TUNING VERSION SUFFIX: ${AMD_TUNING_VERSION_SUFFIX}"
+print INFO "AMD TUNING PACKAGES DIR:   ${AMD_TUNING_PACKAGES_DIR}"
+print INFO "BASE IMAGE:                ${AMD_TUNING_BASE_IMAGE}"
+print INFO "PUSH:                      ${AMD_TUNING_PUSH}"
 
 if [ -d "$AMD_TUNING_PACKAGES_DIR" ]; then
-  echo "Directory $AMD_TUNING_PACKAGES_DIR exists."
+  print INFO "Directory $AMD_TUNING_PACKAGES_DIR exists."
   if [ "${AMD_TUNING_FORCE_BUILD:-0}" = "1" ]; then
-    echo "Force build..."
+    print WARN "Force build..."
   else
-    echo "Skip."
+    print WARN "Skip."
     exit 0
   fi
 fi
