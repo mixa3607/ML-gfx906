@@ -1,0 +1,145 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: freetoken-gfx906
+  namespace: apps-ml
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: freetoken-gfx906
+  template:
+    metadata:
+      labels:
+        app: freetoken-gfx906
+    spec:
+      terminationGracePeriodSeconds: 30
+      nodeSelector:
+        kubernetes.io/hostname: kube-worker6.arkprojects.lan
+      tolerations:
+        - key: feature.node.kubernetes.io/amd-gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+        - key: feature.node.kubernetes.io/nvidia-gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+        - key: feature.node.kubernetes.io/gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+      imagePullSecrets:
+        - name: harbor-registry-pull-secret
+      containers:
+        - name: freetoken
+          image: registry.arkprojects.space/apps/freetoken-gfx906:11c1adb-rocm7.14-torch2.13
+          imagePullPolicy: Always
+          args:
+            - serve
+            - --model
+            - Qwen/Qwen3-0.6B
+            - --host
+            - 0.0.0.0
+            - --port
+            - "1919"
+            - --dtype
+            - float16
+            - --attention-backend
+            - triton
+            - --tp-size
+            - "4"
+            - --disable-pynccl
+            - --cuda-graph-max-bs
+            - "4"
+            - --max-seq-len-override
+            - "2048"
+            - --max-prefill-length
+            - "256"
+            - --num-tokens
+            - "4096"
+            - --max-running-requests
+            - "4"
+          env:
+            - name: PYTORCH_ALLOC_CONF
+              value: expandable_segments:False
+            - name: HIP_VISIBLE_DEVICES
+              value: "0,1,2,3"
+            - name: HSA_XNACK
+              value: "0"
+            - name: HSA_FORCE_FINE_GRAIN_PCIE
+              value: "1"
+            - name: HF_HOME
+              value: /root/.cache/huggingface
+          ports:
+            - name: http
+              containerPort: 1919
+          securityContext:
+            privileged: true
+            seccompProfile:
+              type: Unconfined
+          resources:
+            requests:
+              cpu: "2"
+              memory: 4Gi
+            limits:
+              memory: 32Gi
+          startupProbe:
+            exec:
+              command:
+                - python3
+                - -c
+                - "import json,sys,urllib.request; sys.exit(json.load(urllib.request.urlopen('http://127.0.0.1:1919/health', timeout=2)).get('status') != 'ok')"
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 180
+          readinessProbe:
+            exec:
+              command:
+                - python3
+                - -c
+                - "import json,sys,urllib.request; sys.exit(json.load(urllib.request.urlopen('http://127.0.0.1:1919/health', timeout=2)).get('status') != 'ok')"
+            timeoutSeconds: 3
+            periodSeconds: 10
+          volumeMounts:
+            - name: cache
+              mountPath: /root/.cache/huggingface
+            - name: kfd
+              mountPath: /dev/kfd
+            - name: dri
+              mountPath: /dev/dri
+            - name: shm
+              mountPath: /dev/shm
+            - name: kernel-cache
+              mountPath: /root/.cache/freetoken
+      volumes:
+        - name: cache
+          persistentVolumeClaim:
+            claimName: shared-hf-cache
+        - name: kfd
+          hostPath:
+            path: /dev/kfd
+        - name: dri
+          hostPath:
+            path: /dev/dri
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 8Gi
+        - name: kernel-cache
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: freetoken-gfx906
+  namespace: apps-ml
+spec:
+  selector:
+    app: freetoken-gfx906
+  ports:
+    - name: http
+      port: 1919
+      targetPort: http

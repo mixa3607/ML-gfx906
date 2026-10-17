@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: freetoken-probe
+  namespace: apps-ml
+  labels:
+    app: freetoken-probe
+spec:
+  restartPolicy: Never
+  nodeSelector:
+    kubernetes.io/hostname: kube-worker6.arkprojects.lan
+  tolerations:
+    - operator: Exists
+      effect: NoSchedule
+  imagePullSecrets:
+    - name: harbor-registry-pull-secret
+  containers:
+    - name: probe
+      image: registry.arkprojects.space/apps/freetoken-gfx906:11c1adb-rocm7.14-torch2.13
+      imagePullPolicy: Always
+      command: [sleep, infinity]
+      env:
+        - name: PYTORCH_ALLOC_CONF
+          value: expandable_segments:False
+        - name: HSA_XNACK
+          value: "0"
+        - name: HF_HOME
+          value: /root/.cache/huggingface
+      securityContext:
+        privileged: true
+        seccompProfile:
+          type: Unconfined
+      resources:
+        requests:
+          cpu: "1"
+          memory: 2Gi
+        limits:
+          memory: 16Gi
+      volumeMounts:
+        - name: cache
+          mountPath: /root/.cache/huggingface
+        - name: kfd
+          mountPath: /dev/kfd
+        - name: dri
+          mountPath: /dev/dri
+        - name: shm
+          mountPath: /dev/shm
+  volumes:
+    - name: cache
+      persistentVolumeClaim:
+        claimName: shared-hf-cache
+    - name: kfd
+      hostPath:
+        path: /dev/kfd
+    - name: dri
+      hostPath:
+        path: /dev/dri
+    - name: shm
+      emptyDir:
+        medium: Memory
+        sizeLimit: 4Gi
