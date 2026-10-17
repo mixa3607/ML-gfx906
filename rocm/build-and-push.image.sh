@@ -2,8 +2,18 @@
 set -eo pipefail
 
 cd "$(dirname "$0")"
-source ../env.sh "rocm" >&2
+source ../.build/git-common.sh
+source ../.build/logger.sh
 source ../.build/build-common.sh
+
+: "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+: "${ROCM_VERSION:="7.14"}"
+: "${ROCM_ARCH:="gfx906"}"
+: "${ROCM_BUILD:="${ROCM_VERSION}.0-${ROCM_ARCH}+${REPO_GIT_REF}"}"
+: "${ROCM_BASE_IMAGE:="docker.io/library/ubuntu:24.04"}"
+: "${ROCM_IMAGE:="docker.io/mixa3607/rocm-gfx906"}"
+: "${ROCM_PUSH:="1"}"
+: "${ROCM_IS_RELEASE:="0"}"
 
 if [ "$ROCM_IS_RELEASE" == "1" ]; then
   IMAGE_TAGS=(
@@ -31,19 +41,19 @@ function build {
   IMAGE_ANNOTATIONS["org.opencontainers.image.title"]="ROCm gfx906"
   IMAGE_ANNOTATIONS["org.opencontainers.image.base.name"]="${ROCM_BASE_IMAGE}"
 
-  echo "Start building ROCm image..."
-  echo "ROCM_VERSION: ${ROCM_VERSION}"
-  echo "ROCM_BUILD:   ${ROCM_BUILD}"
-  echo "IS_RELEASE:   ${ROCM_IS_RELEASE}"
+  print INFO "Start building ROCm image..."
+  print INFO "ROCM_VERSION: ${ROCM_VERSION}"
+  print INFO "ROCM_BUILD:   ${ROCM_BUILD}"
+  print INFO "IS_RELEASE:   ${ROCM_IS_RELEASE}"
 
   local -a DOCKER_EXTRA_ARGS=()
   local i key
   for (( i=0; i<${#IMAGE_TAGS[@]}; i++ )); do
-    echo "TAG:          ${IMAGE_TAGS[$i]}"
+    print INFO "TAG:          ${IMAGE_TAGS[$i]}"
     DOCKER_EXTRA_ARGS+=("--tag" "${IMAGE_TAGS[$i]}")
   done
   for key in "${!IMAGE_ANNOTATIONS[@]}"; do
-    echo "ANNOTATION:   ${key}: ${IMAGE_ANNOTATIONS[$key]}"
+    print INFO "ANNOTATION:   ${key}: ${IMAGE_ANNOTATIONS[$key]}"
     DOCKER_EXTRA_ARGS+=("--annotation" "${key}=${IMAGE_ANNOTATIONS[$key]}")
   done
 
@@ -61,7 +71,7 @@ function build {
   fi
 
   mkdir -p ./logs
-  echo "Install ROCm packages to image"
+  print INFO "Install ROCm packages to image"
   docker buildx build "${DOCKER_EXTRA_ARGS[@]}" ./build-context 2>&1 | tee "./logs/build_$(date +%Y%m%d%H%M%S).log"
 }
 

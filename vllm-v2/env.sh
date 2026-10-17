@@ -23,5 +23,6 @@ if [ "$VLLM_FA_PATCH" == "" ];              then VLLM_FA_PATCH="empty.patch"; fi
 if [ "$VLLM_ROCM_VERSION" == "" ];          then VLLM_ROCM_VERSION=6.3.3; fi
 # torch git checkpoint
 if [ "$VLLM_PYTORCH_VERSION" == "" ];       then VLLM_PYTORCH_VERSION="v2.10.0"; fi
+if [ "$TORCH_IMAGE" == "" ];                then TORCH_IMAGE="docker.io/mixa3607/pytorch-gfx906"; fi
 
 popd

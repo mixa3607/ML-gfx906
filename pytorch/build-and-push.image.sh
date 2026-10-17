@@ -2,8 +2,19 @@
 set -eo pipefail
 
 cd "$(dirname "$0")"
-source ../env.sh "pytorch" "rocm" >&2
+source ../.build/git-common.sh
+source ../.build/logger.sh
 source ../.build/build-common.sh
+
+: "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+: "${TORCH_ROCM_VERSION:="7.14"}"
+: "${TORCH_VERSION:="v2.13.0"}"
+: "${TORCH_IMAGE:="docker.io/mixa3607/pytorch-gfx906"}"
+: "${TORCH_PUSH:="1"}"
+: "${TORCH_IS_RELEASE:="0"}"
+: "${TORCH_PACKAGES_SOURCE:="fetch"}"
+: "${ROCM_ARCH:="gfx906"}"
+: "${ROCM_IMAGE:="docker.io/mixa3607/rocm-gfx906"}"
 
 TORCH_VERSION_SUFFIX="${ROCM_ARCH}.${REPO_GIT_REF}"
 TORCH_BASE_IMAGE="${ROCM_IMAGE}:${TORCH_ROCM_VERSION}-complete"
@@ -35,26 +46,26 @@ function build {
   IMAGE_ANNOTATIONS["org.opencontainers.image.title"]="PyTorch gfx906"
   IMAGE_ANNOTATIONS["org.opencontainers.image.base.name"]="${TORCH_BASE_IMAGE}"
 
-  echo "Start building PyTorch image..."
-  echo "TORCH_VERSION:        ${TORCH_VERSION}"
-  echo "TORCH VERSION SUFFIX: ${TORCH_VERSION_SUFFIX}"
-  echo "TORCH PACKAGES SRC:   ${TORCH_PACKAGES_SOURCE}"
-  echo "TORCH PACKAGES DIR:   ${TORCH_PACKAGES_DIR}"
-  echo "TORCH PACKAGES URL:   ${TORCH_PACKAGES_URL}"
-  echo "ROCM IMAGE:           ${TORCH_BASE_IMAGE}"
-  echo "ROCM ARCH:            ${ROCM_ARCH}"
-  echo "ROCM VERSION:         ${TORCH_ROCM_VERSION}"
-  echo "PUSH:                 ${TORCH_PUSH}"
-  echo "IS_RELEASE:           ${TORCH_IS_RELEASE}"
+  print INFO "Start building PyTorch image..."
+  print INFO "TORCH_VERSION:        ${TORCH_VERSION}"
+  print INFO "TORCH VERSION SUFFIX: ${TORCH_VERSION_SUFFIX}"
+  print INFO "TORCH PACKAGES SRC:   ${TORCH_PACKAGES_SOURCE}"
+  print INFO "TORCH PACKAGES DIR:   ${TORCH_PACKAGES_DIR}"
+  print INFO "TORCH PACKAGES URL:   ${TORCH_PACKAGES_URL}"
+  print INFO "ROCM IMAGE:           ${TORCH_BASE_IMAGE}"
+  print INFO "ROCM ARCH:            ${ROCM_ARCH}"
+  print INFO "ROCM VERSION:         ${TORCH_ROCM_VERSION}"
+  print INFO "PUSH:                 ${TORCH_PUSH}"
+  print INFO "IS_RELEASE:           ${TORCH_IS_RELEASE}"
 
   local -a DOCKER_EXTRA_ARGS=()
   local i key
   for (( i=0; i<${#IMAGE_TAGS[@]}; i++ )); do
-    echo "TAG:          ${IMAGE_TAGS[$i]}"
+    print INFO "TAG:          ${IMAGE_TAGS[$i]}"
     DOCKER_EXTRA_ARGS+=("--tag" "${IMAGE_TAGS[$i]}")
   done
   for key in "${!IMAGE_ANNOTATIONS[@]}"; do
-    echo "ANNOTATION:   ${key}: ${IMAGE_ANNOTATIONS[$key]}"
+    print INFO "ANNOTATION:   ${key}: ${IMAGE_ANNOTATIONS[$key]}"
     DOCKER_EXTRA_ARGS+=("--annotation" "${key}=${IMAGE_ANNOTATIONS[$key]}")
   done
 
@@ -83,7 +94,7 @@ function build {
     )
   elif [ "$TORCH_PACKAGES_SOURCE" == "context" ]; then
     if ! [ -d "$TORCH_PACKAGES_DIR" ]; then
-      echo "$TORCH_PACKAGES_DIR not exist. Try \"fetch\" source type"
+      print ERR "$TORCH_PACKAGES_DIR not exist. Try \"fetch\" source type"
       return 1
     fi
     DOCKER_EXTRA_ARGS+=(
@@ -91,12 +102,12 @@ function build {
       --build-context "packages=$TORCH_PACKAGES_DIR"
     )
   else
-    echo "TORCH_PACKAGES_SOURCE=$TORCH_PACKAGES_SOURCE not supported"
+    print ERR "TORCH_PACKAGES_SOURCE=$TORCH_PACKAGES_SOURCE not supported"
     return 1
   fi
 
   mkdir -p ./logs
-  echo "Install torch whl packages to image"
+  print INFO "Install torch whl packages to image"
   docker buildx build "${DOCKER_EXTRA_ARGS[@]}" ./build-context 2>&1 | tee "./logs/build_$(date +%Y%m%d%H%M%S).log"
 }
 
