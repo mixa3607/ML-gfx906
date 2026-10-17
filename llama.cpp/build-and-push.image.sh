@@ -2,10 +2,25 @@
 set -eo pipefail
 
 cd "$(dirname "$0")"
-source ../env.sh "llama.cpp" "rocm" >&2
+source ../.build/git-common.sh
+source ../.build/logger.sh
 source ../.build/build-common.sh
 
-LLAMA_BASE_IMAGE="${ROCM_IMAGE}:${LLAMA_ROCM_VERSION}-complete"
+: "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+: "${ROCM_ARCH:="gfx906"}"
+: "${ROCM_IMAGE:="docker.io/mixa3607/rocm-gfx906"}"
+: "${LLAMA_IMAGE:="docker.io/mixa3607/llama.cpp-gfx906"}"
+: "${LLAMA_ROCM_VERSION:="7.14"}"
+: "${LLAMA_REPO:="https://github.com/ggml-org/llama.cpp.git"}"
+: "${LLAMA_BRANCH:="master"}"
+: "${LLAMA_COMMIT:=""}"
+: "${LLAMA_CMAKE_HIP_FLAGS:=""}"
+: "${LLAMA_CCACHE_MAXSIZE:="2G"}"
+: "${LLAMA_IS_RELEASE:="0"}"
+: "${LLAMA_PATCH:="empty.patch"}"
+: "${LLAMA_PUSH:="1"}"
+: "${LLAMA_BASE_IMAGE:="${ROCM_IMAGE}:${LLAMA_ROCM_VERSION}-complete"}"
+
 if [ "$LLAMA_IS_RELEASE" == "1" ]; then
   IMAGE_TAGS=(
     "${LLAMA_IMAGE}:${LLAMA_PRESET_NAME}-${REPO_GIT_REF}"
@@ -32,26 +47,26 @@ function build {
   IMAGE_ANNOTATIONS["org.opencontainers.image.title"]="Llama.cpp gfx906"
   IMAGE_ANNOTATIONS["org.opencontainers.image.base.name"]="${LLAMA_BASE_IMAGE}"
 
-  echo "Start building llama.cpp image..."
-  echo "LLAMA_REPO:       ${LLAMA_REPO}"
-  echo "LLAMA_BRANCH:     ${LLAMA_BRANCH}"
-  echo "LLAMA_COMMIT:     ${LLAMA_COMMIT}"
-  echo "LLAMA_CODE_PATH:  ${LLAMA_CODE_PATH}"
-  echo "LLAMA_PATCH:      ${LLAMA_PATCH}"
-  echo "ROCM_ARCH:        ${ROCM_ARCH}"
-  echo "ROCM_VERSION:     ${LLAMA_ROCM_VERSION}"
-  echo "CMAKE_HIP_FLAGS:  ${LLAMA_CMAKE_HIP_FLAGS}"
-  echo "CCACHE_MAXSIZE:   ${LLAMA_CCACHE_MAXSIZE}"
-  echo "IS_RELEASE:       ${LLAMA_IS_RELEASE}"
+  print INFO "Start building llama.cpp image..."
+  print INFO "LLAMA_REPO:       ${LLAMA_REPO}"
+  print INFO "LLAMA_BRANCH:     ${LLAMA_BRANCH}"
+  print INFO "LLAMA_COMMIT:     ${LLAMA_COMMIT}"
+  print INFO "LLAMA_CODE_PATH:  ${LLAMA_CODE_PATH}"
+  print INFO "LLAMA_PATCH:      ${LLAMA_PATCH}"
+  print INFO "ROCM_ARCH:        ${ROCM_ARCH}"
+  print INFO "ROCM_VERSION:     ${LLAMA_ROCM_VERSION}"
+  print INFO "CMAKE_HIP_FLAGS:  ${LLAMA_CMAKE_HIP_FLAGS}"
+  print INFO "CCACHE_MAXSIZE:   ${LLAMA_CCACHE_MAXSIZE}"
+  print INFO "IS_RELEASE:       ${LLAMA_IS_RELEASE}"
 
   local -a DOCKER_EXTRA_ARGS=()
   local i key
   for (( i=0; i<${#IMAGE_TAGS[@]}; i++ )); do
-    echo "TAG:          ${IMAGE_TAGS[$i]}"
+    print INFO "TAG:          ${IMAGE_TAGS[$i]}"
     DOCKER_EXTRA_ARGS+=("--tag" "${IMAGE_TAGS[$i]}")
   done
   for key in "${!IMAGE_ANNOTATIONS[@]}"; do
-    echo "ANNOTATION:   ${key}: ${IMAGE_ANNOTATIONS[$key]}"
+    print INFO "ANNOTATION:   ${key}: ${IMAGE_ANNOTATIONS[$key]}"
     DOCKER_EXTRA_ARGS+=("--annotation" "${key}=${IMAGE_ANNOTATIONS[$key]}")
   done
 
@@ -76,7 +91,7 @@ function build {
   fi
 
   mkdir -p ./logs
-  echo "Build llama.cpp"
+  print INFO "Build llama.cpp"
   docker buildx build "${DOCKER_EXTRA_ARGS[@]}" ./build-context 2>&1 | tee "./logs/build_$(date +%Y%m%d%H%M%S).log"
 }
 

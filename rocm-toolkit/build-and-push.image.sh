@@ -2,10 +2,18 @@
 set -eo pipefail
 
 cd "$(dirname "$0")"
-source ../env.sh "rocm" "rocm-toolkit" >&2
+source ../.build/git-common.sh
+source ../.build/logger.sh
 source ../.build/build-common.sh
 
-BASE_ROCM_IMAGE="${ROCM_IMAGE}:${ROCM_VERSION}-complete"
+: "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+: "${ROCM_TOOLKIT_IMAGE:="docker.io/mixa3607/rocm-toolkit-gfx906"}"
+: "${ROCM_TOOLKIT_PUSH:="1"}"
+: "${ROCM_TOOLKIT_IS_RELEASE:="0"}"
+: "${ROCM_VERSION:="7.14"}"
+: "${ROCM_IMAGE:="docker.io/mixa3607/rocm-gfx906"}"
+: "${BASE_ROCM_IMAGE:="${ROCM_IMAGE}:${ROCM_VERSION}-complete"}"
+
 if [ "$ROCM_TOOLKIT_IS_RELEASE" == "1" ]; then
   IMAGE_TAGS=(
     "$ROCM_TOOLKIT_IMAGE:${ROCM_VERSION}-${REPO_GIT_REF}"
@@ -32,16 +40,16 @@ function build {
   IMAGE_ANNOTATIONS["org.opencontainers.image.title"]="ROCm gfx906 toolkit"
   IMAGE_ANNOTATIONS["org.opencontainers.image.base.name"]="${BASE_ROCM_IMAGE}"
 
-  echo "Start building ROCm toolkit image..."
-  echo "ROCm base image: ${BASE_ROCM_IMAGE}"
-  echo "ROCm version:    ${ROCM_VERSION}"
-  echo "Is release:      ${ROCM_TOOLKIT_IS_RELEASE}"
-  echo "Push:            ${ROCM_TOOLKIT_PUSH}"
+  print INFO "Start building ROCm toolkit image..."
+  print INFO "ROCm base image: ${BASE_ROCM_IMAGE}"
+  print INFO "ROCm version:    ${ROCM_VERSION}"
+  print INFO "Is release:      ${ROCM_TOOLKIT_IS_RELEASE}"
+  print INFO "Push:            ${ROCM_TOOLKIT_PUSH}"
 
   local -a DOCKER_EXTRA_ARGS=()
   local image_tag key
   for image_tag in "${IMAGE_TAGS[@]}"; do
-    echo "Tag:             ${image_tag}"
+    print INFO "Tag:             ${image_tag}"
     DOCKER_EXTRA_ARGS+=("--tag" "${image_tag}")
   done
   for key in "${!IMAGE_ANNOTATIONS[@]}"; do

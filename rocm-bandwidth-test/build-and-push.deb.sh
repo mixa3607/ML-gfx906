@@ -2,28 +2,35 @@
 set -eo pipefail
 
 cd "$(dirname "$0")"
-source ../env.sh "rocm-bandwidth-test" "rocm"
+source ../.build/git-common.sh
+source ../.build/logger.sh
 
-RBT_VERSION_SUFFIX="${ROCM_VERSION}+${ROCM_ARCH}+${REPO_GIT_REF}"
-RBT_BASE_IMAGE="${ROCM_IMAGE}:${ROCM_VERSION}-complete"
-RBT_PACKAGES_DIR="$PWD/output/rocm${ROCM_VERSION}/rbt-${RBT_VERSION}-${RBT_VERSION_SUFFIX}"
+: "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+: "${ROCM_VERSION:="7.14"}"
+: "${ROCM_ARCH:="gfx906"}"
+: "${ROCM_IMAGE:="docker.io/mixa3607/rocm-gfx906"}"
+: "${RBT_VERSION:="develop"}"
+: "${RBT_PUSH:="0"}"
+: "${RBT_VERSION_SUFFIX:="${ROCM_VERSION}+${ROCM_ARCH}+${REPO_GIT_REF}"}"
+: "${RBT_BASE_IMAGE:="${ROCM_IMAGE}:${ROCM_VERSION}-complete"}"
+: "${RBT_PACKAGES_DIR:="$PWD/output/rocm${ROCM_VERSION}/rbt-${RBT_VERSION}-${RBT_VERSION_SUFFIX}"}"
 
-echo "Start building ROCm Bandwidth Test deb package..."
-echo "RBT VERSION:        ${RBT_VERSION}"
-echo "RBT VERSION SUFFIX: ${RBT_VERSION_SUFFIX}"
-echo "RBT PACKAGES DIR:   ${RBT_PACKAGES_DIR}"
-echo "ROCM IMAGE:         ${RBT_BASE_IMAGE}"
-echo "ROCM ARCH:          ${ROCM_ARCH}"
-echo "ROCM VERSION:       ${ROCM_VERSION}"
-echo "PUSH:               ${RBT_PUSH}"
+print INFO "Start building ROCm Bandwidth Test deb package..."
+print INFO "RBT VERSION:        ${RBT_VERSION}"
+print INFO "RBT VERSION SUFFIX: ${RBT_VERSION_SUFFIX}"
+print INFO "RBT PACKAGES DIR:   ${RBT_PACKAGES_DIR}"
+print INFO "ROCM IMAGE:         ${RBT_BASE_IMAGE}"
+print INFO "ROCM ARCH:          ${ROCM_ARCH}"
+print INFO "ROCM VERSION:       ${ROCM_VERSION}"
+print INFO "PUSH:               ${RBT_PUSH}"
 
 if [ -d "$RBT_PACKAGES_DIR" ]; then
-  echo "Directory $RBT_PACKAGES_DIR exists."
+  print INFO "Directory $RBT_PACKAGES_DIR exists."
   if [ "$RBT_FORCE_BUILD" != "1" ]; then
-    echo "Skip."
+    print WARN "Skip."
     exit 0
   fi
-  echo "Force build..."
+  print WARN "Force build..."
 fi
 
 DOCKER_EXTRA_ARGS=(

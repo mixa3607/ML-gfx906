@@ -7,19 +7,19 @@ source ../.build/logger.sh
 source ../.build/build-common.sh
 
 : "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+: "${ROCM_ARCH:="gfx906"}"
+: "${ROCM_IMAGE:="docker.io/mixa3607/rocm-gfx906"}"
 : "${TORCH_ROCM_VERSION:="7.14"}"
 : "${TORCH_VERSION:="v2.13.0"}"
 : "${TORCH_IMAGE:="docker.io/mixa3607/pytorch-gfx906"}"
 : "${TORCH_PUSH:="1"}"
 : "${TORCH_IS_RELEASE:="0"}"
 : "${TORCH_PACKAGES_SOURCE:="fetch"}"
-: "${ROCM_ARCH:="gfx906"}"
-: "${ROCM_IMAGE:="docker.io/mixa3607/rocm-gfx906"}"
+: "${TORCH_VERSION_SUFFIX:="${ROCM_ARCH}.${REPO_GIT_REF}"}"
+: "${TORCH_BASE_IMAGE:="${ROCM_IMAGE}:${TORCH_ROCM_VERSION}-complete"}"
+: "${TORCH_PACKAGES_DIR:="$PWD/output/rocm${TORCH_ROCM_VERSION}/torch-${TORCH_VERSION}+${TORCH_VERSION_SUFFIX}"}"
+: "${TORCH_PACKAGES_URL:="https://s3.arkprojects.space/py-gfx906/rocm${TORCH_ROCM_VERSION}/torch-${TORCH_VERSION}+${TORCH_VERSION_SUFFIX}"}"
 
-TORCH_VERSION_SUFFIX="${ROCM_ARCH}.${REPO_GIT_REF}"
-TORCH_BASE_IMAGE="${ROCM_IMAGE}:${TORCH_ROCM_VERSION}-complete"
-TORCH_PACKAGES_DIR="$PWD/output/rocm${TORCH_ROCM_VERSION}/torch-${TORCH_VERSION}+${TORCH_VERSION_SUFFIX}"
-TORCH_PACKAGES_URL="https://s3.arkprojects.space/py-gfx906/rocm${TORCH_ROCM_VERSION}/torch-${TORCH_VERSION}+${TORCH_VERSION_SUFFIX}"
 if [ "$TORCH_IS_RELEASE" == "1" ]; then
   IMAGE_TAGS=(
     "$TORCH_IMAGE:${TORCH_VERSION}-rocm-${TORCH_ROCM_VERSION}-${REPO_GIT_REF}"

@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
-cd $(dirname $0)
-source ../env.sh 'rocm-tensile' 'rocm'
+cd "$(dirname "$0")"
+
+: "${ROCM_ARCH:="gfx906"}"
 
 DOCKER_EXTRA_ARGS=()
 mkdir ./logs || true

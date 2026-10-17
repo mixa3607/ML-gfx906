@@ -1,28 +1,35 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-cd $(dirname $0)
-source ../env.sh "rocm-transfer-bench" "rocm"
+cd "$(dirname "$0")"
+source ../.build/git-common.sh
+source ../.build/logger.sh
 
-TB_VERSION_SUFFIX="${ROCM_VERSION}+${ROCM_ARCH}+${REPO_GIT_REF}"
-TB_BASE_IMAGE="${ROCM_IMAGE}:${ROCM_VERSION}-complete"
-TB_PACKAGES_DIR="$PWD/output/rocm${ROCM_VERSION}/tb-${TB_VERSION}-${TB_VERSION_SUFFIX}"
+: "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+: "${ROCM_VERSION:="7.14"}"
+: "${ROCM_ARCH:="gfx906"}"
+: "${ROCM_IMAGE:="docker.io/mixa3607/rocm-gfx906"}"
+: "${TB_VERSION:="main"}"
+: "${TB_PUSH:="0"}"
+: "${TB_VERSION_SUFFIX:="${ROCM_VERSION}+${ROCM_ARCH}+${REPO_GIT_REF}"}"
+: "${TB_BASE_IMAGE:="${ROCM_IMAGE}:${ROCM_VERSION}-complete"}"
+: "${TB_PACKAGES_DIR:="$PWD/output/rocm${ROCM_VERSION}/tb-${TB_VERSION}-${TB_VERSION_SUFFIX}"}"
 
-echo "Start building TransferBench deb package..."
-echo "TB VERSION:        ${TB_VERSION}"
-echo "TB VERSION SUFFIX: ${TB_VERSION_SUFFIX}"
-echo "TB PACKAGES DIR:   ${TB_PACKAGES_DIR}"
-echo "ROCM IMAGE:        ${TB_BASE_IMAGE}"
-echo "ROCM ARCH:         ${ROCM_ARCH}"
-echo "ROCM VERSION:      ${ROCM_VERSION}"
-echo "PUSH:              ${TB_PUSH}"
+print INFO "Start building TransferBench deb package..."
+print INFO "TB VERSION:        ${TB_VERSION}"
+print INFO "TB VERSION SUFFIX: ${TB_VERSION_SUFFIX}"
+print INFO "TB PACKAGES DIR:   ${TB_PACKAGES_DIR}"
+print INFO "ROCM IMAGE:        ${TB_BASE_IMAGE}"
+print INFO "ROCM ARCH:         ${ROCM_ARCH}"
+print INFO "ROCM VERSION:      ${ROCM_VERSION}"
+print INFO "PUSH:              ${TB_PUSH}"
 
 if [ -d "$TB_PACKAGES_DIR" ]; then
-  echo "Directory $TB_PACKAGES_DIR exist. "
+  print INFO "Directory $TB_PACKAGES_DIR exist. "
   if [ "$TB_FORCE_BUILD" == "1" ]; then
-    echo "Force build..."
+    print WARN "Force build..."
   else
-    echo "Skip."
+    print WARN "Skip."
     exit 0
   fi
 fi

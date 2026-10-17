@@ -1,28 +1,35 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
-cd $(dirname $0)
-source ../env.sh "rocm-validation-suite" "rocm"
+cd "$(dirname "$0")"
+source ../.build/git-common.sh
+source ../.build/logger.sh
 
-RVS_VERSION_SUFFIX="${ROCM_VERSION}+${ROCM_ARCH}+${REPO_GIT_REF}"
-RVS_BASE_IMAGE="${ROCM_IMAGE}:${ROCM_VERSION}-complete"
-RVS_PACKAGES_DIR="$PWD/output/rocm${ROCM_VERSION}/rvs-${RVS_VERSION}-${RVS_VERSION_SUFFIX}"
+: "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+: "${ROCM_VERSION:="7.14"}"
+: "${ROCM_ARCH:="gfx906"}"
+: "${ROCM_IMAGE:="docker.io/mixa3607/rocm-gfx906"}"
+: "${RVS_VERSION:="main"}"
+: "${RVS_PUSH:="0"}"
+: "${RVS_VERSION_SUFFIX:="${ROCM_VERSION}+${ROCM_ARCH}+${REPO_GIT_REF}"}"
+: "${RVS_BASE_IMAGE:="${ROCM_IMAGE}:${ROCM_VERSION}-complete"}"
+: "${RVS_PACKAGES_DIR:="$PWD/output/rocm${ROCM_VERSION}/rvs-${RVS_VERSION}-${RVS_VERSION_SUFFIX}"}"
 
-echo "Start building ROCm Validation Suite deb package..."
-echo "RVS VERSION:        ${RVS_VERSION}"
-echo "RVS VERSION SUFFIX: ${RVS_VERSION_SUFFIX}"
-echo "RVS PACKAGES DIR:   ${RVS_PACKAGES_DIR}"
-echo "ROCM IMAGE:         ${RVS_BASE_IMAGE}"
-echo "ROCM ARCH:          ${ROCM_ARCH}"
-echo "ROCM VERSION:       ${ROCM_VERSION}"
-echo "PUSH:               ${RVS_PUSH}"
+print INFO "Start building ROCm Validation Suite deb package..."
+print INFO "RVS VERSION:        ${RVS_VERSION}"
+print INFO "RVS VERSION SUFFIX: ${RVS_VERSION_SUFFIX}"
+print INFO "RVS PACKAGES DIR:   ${RVS_PACKAGES_DIR}"
+print INFO "ROCM IMAGE:         ${RVS_BASE_IMAGE}"
+print INFO "ROCM ARCH:          ${ROCM_ARCH}"
+print INFO "ROCM VERSION:       ${ROCM_VERSION}"
+print INFO "PUSH:               ${RVS_PUSH}"
 
 if [ -d "$RVS_PACKAGES_DIR" ]; then
-  echo "Directory $RVS_PACKAGES_DIR exist. "
+  print INFO "Directory $RVS_PACKAGES_DIR exist. "
   if [ "$RVS_FORCE_BUILD" == "1" ]; then
-    echo "Force build..."
+    print WARN "Force build..."
   else
-    echo "Skip."
+    print WARN "Skip."
     exit 0
   fi
 fi

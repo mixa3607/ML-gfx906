@@ -6,16 +6,15 @@ source ../.build/git-common.sh
 source ../.build/logger.sh
 
 : "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+: "${ROCM_ARCH:="gfx906"}"
+: "${ROCM_IMAGE:="docker.io/mixa3607/rocm-gfx906"}"
 : "${TORCH_ROCM_VERSION:="7.14"}"
 : "${TORCH_VERSION:="v2.13.0"}"
 : "${TORCH_PUSH:="1"}"
-: "${ROCM_ARCH:="gfx906"}"
-: "${ROCM_IMAGE:="docker.io/mixa3607/rocm-gfx906"}"
-
-TORCH_VERSION_SUFFIX="${ROCM_ARCH}.${REPO_GIT_REF}"
-TORCH_BASE_IMAGE="${ROCM_IMAGE}:${TORCH_ROCM_VERSION}-complete"
-ROCM_PACKAGES_DIR="$PWD/output/rocm${TORCH_ROCM_VERSION}"
-TORCH_PACKAGES_DIR="$ROCM_PACKAGES_DIR/torch-${TORCH_VERSION}+${TORCH_VERSION_SUFFIX}"
+: "${TORCH_VERSION_SUFFIX:="${ROCM_ARCH}.${REPO_GIT_REF}"}"
+: "${TORCH_BASE_IMAGE:="${ROCM_IMAGE}:${TORCH_ROCM_VERSION}-complete"}"
+: "${ROCM_PACKAGES_DIR:="$PWD/output/rocm${TORCH_ROCM_VERSION}"}"
+: "${TORCH_PACKAGES_DIR:="$ROCM_PACKAGES_DIR/torch-${TORCH_VERSION}+${TORCH_VERSION_SUFFIX}"}"
 
 print INFO "Start building PyTorch packages..."
 print INFO "TORCH_VERSION:        ${TORCH_VERSION}"
