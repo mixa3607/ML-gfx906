@@ -2,8 +2,16 @@
 set -eo pipefail
 
 cd "$(dirname "$0")"
-source ../env.sh "llama.cpp-multiruntime"
+source ../.build/git-common.sh
+source ../.build/logger.sh
 source ../.build/build-common.sh
+
+: "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+: "${LLAMA_IMAGE:="docker.io/mixa3607/llama.cpp-gfx906"}"
+: "${LLAMA_ROCM_IMAGE:="docker.io/mixa3607/llama.cpp-gfx906:v0.5.0-rocm-7.14"}"
+: "${LLAMA_CUDA_IMAGE:="docker.io/mixa3607/llama.cpp-sm120:v0.5.0-cuda-13.3.0-cudnn"}"
+: "${LLAMA_IS_RELEASE:="0"}"
+: "${LLAMA_PUSH:="1"}"
 
 if [ "$LLAMA_IS_RELEASE" == "1" ]; then
   IMAGE_TAGS=(
@@ -32,19 +40,19 @@ function build {
   IMAGE_ANNOTATIONS["org.opencontainers.image.base.name"]="${LLAMA_ROCM_IMAGE}"
   IMAGE_ANNOTATIONS["org.opencontainers.image.cuda.base.name"]="${LLAMA_CUDA_IMAGE}"
 
-  echo "Start building llama.cpp multiruntime image..."
-  echo "ROCM_IMAGE:     ${LLAMA_ROCM_IMAGE}"
-  echo "CUDA_IMAGE:     ${LLAMA_CUDA_IMAGE}"
-  echo "IS_RELEASE:     ${LLAMA_IS_RELEASE}"
+  print INFO "Start building llama.cpp multiruntime image..."
+  print INFO "ROCM_IMAGE:     ${LLAMA_ROCM_IMAGE}"
+  print INFO "CUDA_IMAGE:     ${LLAMA_CUDA_IMAGE}"
+  print INFO "IS_RELEASE:     ${LLAMA_IS_RELEASE}"
 
   local -a DOCKER_EXTRA_ARGS=()
   local i key
   for (( i=0; i<${#IMAGE_TAGS[@]}; i++ )); do
-    echo "TAG:          ${IMAGE_TAGS[$i]}"
+    print INFO "TAG:          ${IMAGE_TAGS[$i]}"
     DOCKER_EXTRA_ARGS+=("--tag" "${IMAGE_TAGS[$i]}")
   done
   for key in "${!IMAGE_ANNOTATIONS[@]}"; do
-    echo "ANNOTATION:   ${key}: ${IMAGE_ANNOTATIONS[$key]}"
+    print INFO "ANNOTATION:   ${key}: ${IMAGE_ANNOTATIONS[$key]}"
     DOCKER_EXTRA_ARGS+=("--annotation" "${key}=${IMAGE_ANNOTATIONS[$key]}")
   done
 
@@ -63,7 +71,7 @@ function build {
   fi
 
   mkdir -p ./logs
-  echo "Build llama.cpp multiruntime"
+  print INFO "Build llama.cpp multiruntime"
   docker buildx build "${DOCKER_EXTRA_ARGS[@]}" ./build-context 2>&1 | tee "./logs/build_$(date +%Y%m%d%H%M%S).log"
 }
 

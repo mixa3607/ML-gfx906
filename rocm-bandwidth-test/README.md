@@ -15,9 +15,9 @@ The build runs in `docker buildx` on
 `docker.io/mixa3607/rocm-gfx906:<ver>-complete`. It clones upstream `develop`
 with its required submodules and creates a relocatable deb with CPack.
 
-| Artifact | Script | Dockerfile |
-| --- | --- | --- |
-| deb | `./build-and-push.deb.sh` | `./build-deb.Dockerfile` |
+| Artifact | Script                    | Dockerfile               |
+| -------- | ------------------------- | ------------------------ |
+| deb      | `./build-and-push.deb.sh` | `./build-deb.Dockerfile` |
 
 ### Prerequisites
 
@@ -38,14 +38,14 @@ to `logs/build_<timestamp>.log`.
 
 ### Build variables
 
-Defaults come from [`env.sh`](./env.sh) and [`../rocm/env.sh`](../rocm/env.sh).
+Defaults are defined in [`build-and-push.deb.sh`](./build-and-push.deb.sh).
 
-| Variable | Default | Description |
-| --- | --- | --- |
-| `RBT_VERSION` | `develop` | ROCm Bandwidth Test git tag or branch |
-| `RBT_PUSH` | `0` | Set to `1` to upload the deb to the apt repository |
-| `RBT_FORCE_BUILD` | *(unset)* | Set to `1` to rebuild an existing output directory |
-| `ROCM_VERSION` | `7.14` | ROCm version of the base image |
-| `ROCM_ARCH` | `gfx906` | Target GPU architecture |
-| `ROCM_IMAGE` | `docker.io/mixa3607/rocm-gfx906` | ROCm base image name |
-| `REPO_GIT_REF` | *(git tag, else short SHA)* | Build revision appended to the package release |
+| Variable          | Default                          | Description                                        |
+| ----------------- | -------------------------------- | -------------------------------------------------- |
+| `RBT_VERSION`     | `develop`                        | ROCm Bandwidth Test git tag or branch              |
+| `RBT_PUSH`        | `0`                              | Set to `1` to upload the deb to the apt repository |
+| `RBT_FORCE_BUILD` | _(unset)_                        | Set to `1` to rebuild an existing output directory |
+| `ROCM_VERSION`    | `7.14`                           | ROCm version of the base image                     |
+| `ROCM_ARCH`       | `gfx906`                         | Target GPU architecture                            |
+| `ROCM_IMAGE`      | `docker.io/mixa3607/rocm-gfx906` | ROCm base image name                               |
+| `REPO_GIT_REF`    | _(git tag, else short SHA)_      | Build revision appended to the package release     |

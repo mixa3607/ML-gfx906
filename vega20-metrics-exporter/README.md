@@ -31,14 +31,14 @@ devices:
   vendor_products:
     - vendor_id: "1002"
       product_id: "66a1"
-  pci_devices: []          # empty: discover matching DRM devices automatically
+  pci_devices: [] # empty: discover matching DRM devices automatically
 providers:
   sysfs:
     enabled: true
     path: /sys
   registers:
     enabled: true
-    backend: debugfs       # debugfs or bar5
+    backend: debugfs # debugfs or bar5
     vbios_related_metrics:
       enabled: true
       vbios_source: pci_rom # file or pci_rom
@@ -211,14 +211,14 @@ and currently exits with a not-implemented error.
 
 ## Build Variables
 
-Defaults are defined in [`env.sh`](./env.sh). Export a variable to override it.
+Defaults are defined in [`build-and-push.deb.sh`](./build-and-push.deb.sh) and [`build-and-push.image.sh`](./build-and-push.image.sh). Export a variable to override it.
 
-| Variable | Default | Description |
-| --- | --- | --- |
-| `METRICS_VERSION` | `0.1.0` | Exporter version included in package and image tags |
-| `METRICS_IMAGE` | `docker.io/mixa3607/vega20-metrics-exporter` | Destination image name |
-| `METRICS_IS_RELEASE` | `0` | `1` publishes image release tags; otherwise only a `-pre` tag |
-| `METRICS_PUSH` | `1` | Set to `0` for a local package/image build without publishing |
-| `METRICS_FORCE_BUILD` | *(unset)* | Set to `1` to rebuild an existing output directory or image tag |
-| `METRICS_PACKAGES_SOURCE` | `context` | Image package input; `apt` is not implemented |
-| `REPO_GIT_REF` | *(git tag, else short SHA)* | Build revision appended to the version suffix |
+| Variable                  | Default                                      | Description                                                     |
+| ------------------------- | -------------------------------------------- | --------------------------------------------------------------- |
+| `METRICS_VERSION`         | `0.1.0`                                      | Exporter version included in package and image tags             |
+| `METRICS_IMAGE`           | `docker.io/mixa3607/vega20-metrics-exporter` | Destination image name                                          |
+| `METRICS_IS_RELEASE`      | `0`                                          | `1` publishes image release tags; otherwise only a `-pre` tag   |
+| `METRICS_PUSH`            | `1`                                          | Set to `0` for a local package/image build without publishing   |
+| `METRICS_FORCE_BUILD`     | _(unset)_                                    | Set to `1` to rebuild an existing output directory or image tag |
+| `METRICS_PACKAGES_SOURCE` | `context`                                    | Image package input; `apt` is not implemented                   |
+| `REPO_GIT_REF`            | _(git tag, else short SHA)_                  | Build revision appended to the version suffix                   |

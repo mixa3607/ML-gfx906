@@ -74,8 +74,8 @@ To update the presets to the latest llama.cpp release, run `./upd2last-release.s
 
 ### Build variables
 
-Defaults come from [`env.sh`](./env.sh) and [`../env.sh`](../env.sh) plus the
-[rocm `env.sh`](../rocm/env.sh). Export any variable to override it.
+Defaults are defined in [`build-and-push.image.sh`](./build-and-push.image.sh).
+Export any variable to override it.
 
 | Variable                | Default                                     | Description                                        |
 | ----------------------- | ------------------------------------------- | -------------------------------------------------- |
@@ -89,8 +89,8 @@ Defaults come from [`env.sh`](./env.sh) and [`../env.sh`](../env.sh) plus the
 | `LLAMA_IS_RELEASE`      | `0`                                         | `1` — full tags; otherwise `-pre` tag only         |
 | `LLAMA_PUSH`            | `1`                                         | Push the image to the registry                     |
 | `LLAMA_FORCE_BUILD`     | _(unset)_                                   | Set to `1` to rebuild even if the tag exists       |
-| `ROCM_ARCH`             | `gfx906`                                    | Target GPU architecture (from `../rocm/env.sh`)    |
-| `ROCM_IMAGE`            | `docker.io/mixa3607/rocm-gfx906`            | ROCm base image name (from `../rocm/env.sh`)       |
+| `ROCM_ARCH`             | `gfx906`                                    | Target GPU architecture                           |
+| `ROCM_IMAGE`            | `docker.io/mixa3607/rocm-gfx906`            | ROCm base image name                              |
 | `REPO_GIT_REF`          | _(git tag, else short SHA)_                 | Build revision appended to the tag                 |
 
 The base image is resolved as

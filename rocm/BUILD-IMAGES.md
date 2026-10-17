@@ -12,7 +12,7 @@ repository and published to Docker Hub.
 
 ## How It Works
 
-The build script sources [`env.sh`](./env.sh) which sets sensible defaults for
+The build script [`build-and-push.image.sh`](./build-and-push.image.sh) defines defaults for
 all required variables. A preset file (e.g. `preset.rocm-7.14.sh`) overrides the
 TheRock version. All variables can be overridden by exporting them before
 running the script:
@@ -31,8 +31,7 @@ The [`build-image.Dockerfile`](./build-image.Dockerfile) adds the APT repository
 
 With `ROCM_IS_RELEASE=1`, two release tags are created:
 
-- `$ROCM_IMAGE:$ROCM_VERSION-complete-$REPO_GIT_REF` — pinned to build
-  revision
+- `$ROCM_IMAGE:$ROCM_VERSION-complete-$REPO_GIT_REF` — pinned to build revision
 - `$ROCM_IMAGE:$ROCM_VERSION-complete` — floating tag for the version
 
 Otherwise (`ROCM_IS_RELEASE=0`, the default), only

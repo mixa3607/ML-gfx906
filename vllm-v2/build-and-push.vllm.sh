@@ -1,16 +1,34 @@
 #!/usr/bin/env bash
 set -e
 
-cd $(dirname $0)
-source ../env.sh "vllm-v2"
+cd "$(dirname "$0")"
+source ../.build/git-common.sh
+source ../.build/logger.sh
+source ../.build/build-common.sh
+
+: "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+: "${VLLM_IMAGE:="docker.io/mixa3607/vllm-gfx906"}"
+: "${VLLM_PRESET_NAME:="default"}"
+: "${VLLM_REPO:="https://github.com/ai-infos/vllm-gfx906-mobydick.git"}"
+: "${VLLM_BRANCH:="main"}"
+: "${VLLM_PATCH:="empty.patch"}"
+: "${VLLM_TRITON_REPO:="https://github.com/ai-infos/triton-gfx906.git"}"
+: "${VLLM_TRITON_BRANCH:="v3.5.1+gfx906"}"
+: "${VLLM_TRITON_PATCH:="empty.patch"}"
+: "${VLLM_FA_REPO:="https://github.com/ai-infos/flash-attention-gfx906.git"}"
+: "${VLLM_FA_BRANCH:="gfx906/v2.8.3.x"}"
+: "${VLLM_FA_PATCH:="empty.patch"}"
+: "${VLLM_ROCM_VERSION:="6.3.3"}"
+: "${VLLM_PYTORCH_VERSION:="v2.10.0"}"
+: "${TORCH_IMAGE:="docker.io/mixa3607/pytorch-gfx906"}"
 
 IMAGE_TAGS=(
   "${VLLM_IMAGE}:${VLLM_PRESET_NAME}-${REPO_GIT_REF}"
   "${VLLM_IMAGE}:${VLLM_PRESET_NAME}"
 )
 
-if docker_image_pushed ${IMAGE_TAGS[0]}; then
-  echo "${IMAGE_TAGS[0]} already in registry. Skip"
+if build_image_exists "${IMAGE_TAGS[0]}"; then
+  print WARN "${IMAGE_TAGS[0]} already in registry. Skip"
   exit 0
 fi
 

@@ -94,23 +94,23 @@ script:
 
 ### Build variables
 
-Defaults come from [`env.sh`](./env.sh) (pytorch) and
-[`../rocm/env.sh`](../rocm/env.sh). Export any variable to override it.
+Defaults are defined in [`build-and-push.whl.sh`](./build-and-push.whl.sh) and
+[`build-and-push.image.sh`](./build-and-push.image.sh). Export any variable to override it.
 
-| Variable                | Default                             | Description                                               |
-| ----------------------- | ----------------------------------- | --------------------------------------------------------- |
-| `TORCH_ROCM_VERSION`    | `7.14`                              | ROCm version of the base image                            |
-| `TORCH_VERSION`         | `v2.13.0`                           | PyTorch git tag/branch to build                           |
-| `TORCH_IMAGE`           | `docker.io/mixa3607/pytorch-gfx906` | Destination image name                                    |
+| Variable                | Default                             | Description                                                   |
+| ----------------------- | ----------------------------------- | ------------------------------------------------------------- |
+| `TORCH_ROCM_VERSION`    | `7.14`                              | ROCm version of the base image                                |
+| `TORCH_VERSION`         | `v2.13.0`                           | PyTorch git tag/branch to build                               |
+| `TORCH_IMAGE`           | `docker.io/mixa3607/pytorch-gfx906` | Destination image name                                        |
 | `TORCH_IS_RELEASE`      | `0`                                 | `1` publishes image release tags; otherwise only a `-pre` tag |
-| `TORCH_PUSH`            | `1`                                 | Push wheels to S3 (`whl`) / image to registry (`image`)   |
-| `TORCH_PACKAGES_SOURCE` | `fetch`                             | `fetch` — download wheels from S3; `context` — use local  |
-| `ROCM_ARCH`             | `gfx906`                            | Target GPU architecture                                   |
-| `ROCM_IMAGE`            | `docker.io/mixa3607/rocm-gfx906`    | ROCm base image name                                      |
-| `TORCH_MAX_JOBS`        | *(auto: nproc)*                     | Parallel build jobs for PyTorch                           |
-| `TORCH_VISION_VERSION`  | *(PyTorch CI pin)*                  | Override torchvision git tag/branch                       |
-| `TORCH_FORCE_BUILD`     | *(unset)*                           | Set to `1` to rebuild even if the artifact already exists |
-| `REPO_GIT_REF`          | *(git tag, else short SHA)*         | Build revision appended to the version suffix             |
+| `TORCH_PUSH`            | `1`                                 | Push wheels to S3 (`whl`) / image to registry (`image`)       |
+| `TORCH_PACKAGES_SOURCE` | `fetch`                             | `fetch` — download wheels from S3; `context` — use local      |
+| `ROCM_ARCH`             | `gfx906`                            | Target GPU architecture                                       |
+| `ROCM_IMAGE`            | `docker.io/mixa3607/rocm-gfx906`    | ROCm base image name                                          |
+| `TORCH_MAX_JOBS`        | _(auto: nproc)_                     | Parallel build jobs for PyTorch                               |
+| `TORCH_VISION_VERSION`  | _(PyTorch CI pin)_                  | Override torchvision git tag/branch                           |
+| `TORCH_FORCE_BUILD`     | _(unset)_                           | Set to `1` to rebuild even if the artifact already exists     |
+| `REPO_GIT_REF`          | _(git tag, else short SHA)_         | Build revision appended to the version suffix                 |
 
 The version suffix is `<arch>.<ref>` (e.g. `gfx906.76e2dbe`), so wheels are
 named `torch-<ver>+gfx906.<ref>-cp312-cp312-linux_x86_64.whl`.

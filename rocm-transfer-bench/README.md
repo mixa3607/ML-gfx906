@@ -44,7 +44,7 @@ build script:
 
 ### Build variables
 
-Defaults come from [`env.sh`](./env.sh) and [`../rocm/env.sh`](../rocm/env.sh).
+Defaults are defined in [`build-and-push.deb.sh`](./build-and-push.deb.sh).
 Export any variable to override it.
 
 | Variable         | Default                          | Description                                   |

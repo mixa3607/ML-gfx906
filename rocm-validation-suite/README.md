@@ -1,4 +1,5 @@
 # ROCm Validation Suite (RVS)
+
 A system validation and diagnostics tool for monitoring, stress testing, detecting, and troubleshooting issues impacting AMD GPUs in high-performance computing environments.
 
 - https://github.com/ROCm/ROCmValidationSuite/
@@ -66,18 +67,18 @@ the build script:
 
 ### Build variables
 
-Defaults come from [`env.sh`](./env.sh) and [`../rocm/env.sh`](../rocm/env.sh).
+Defaults are defined in [`build-and-push.deb.sh`](./build-and-push.deb.sh).
 Export any variable to override it.
 
 | Variable          | Default                          | Description                                   |
 | ----------------- | -------------------------------- | --------------------------------------------- |
 | `RVS_VERSION`     | `main`                           | ROCmValidationSuite git tag/branch            |
 | `RVS_PUSH`        | `0`                              | Push deb package to the apt repository        |
-| `RVS_FORCE_BUILD` | *(unset)*                        | Set to `1` to rebuild even if output exists   |
+| `RVS_FORCE_BUILD` | _(unset)_                        | Set to `1` to rebuild even if output exists   |
 | `ROCM_VERSION`    | `7.14`                           | ROCm version of the base image                |
 | `ROCM_ARCH`       | `gfx906`                         | Target GPU architecture                       |
 | `ROCM_IMAGE`      | `docker.io/mixa3607/rocm-gfx906` | ROCm base image name                          |
-| `REPO_GIT_REF`    | *(git tag, else short SHA)*      | Build revision appended to the version suffix |
+| `REPO_GIT_REF`    | _(git tag, else short SHA)_      | Build revision appended to the version suffix |
 
 The version suffix is `<rocm>+<arch>+<ref>` (e.g. `7.14+gfx906+76e2dbe`), so the
 package is named `rocm-validation-suite-<ver>+gfx906.<ref>.deb`.

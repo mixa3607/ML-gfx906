@@ -2,20 +2,25 @@
 set -eo pipefail
 
 cd "$(dirname "$0")"
-source ../env.sh "vega20-metrics-exporter"
+source ../.build/git-common.sh
+source ../.build/logger.sh
+
+: "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+: "${METRICS_VERSION:="0.1.0"}"
+: "${METRICS_PUSH:="1"}"
 
 METRICS_VERSION_SUFFIX="${REPO_GIT_REF}"
 METRICS_PACKAGE_VERSION="${METRICS_VERSION}+${METRICS_VERSION_SUFFIX}"
 METRICS_PACKAGES_DIR="$PWD/output/vega20-metrics-exporter-${METRICS_PACKAGE_VERSION}"
 
-echo "Start building vega20-metrics-exporter deb package..."
-echo "METRICS VERSION:      ${METRICS_VERSION}"
-echo "PACKAGE VERSION:      ${METRICS_PACKAGE_VERSION}"
-echo "PACKAGES DIR:         ${METRICS_PACKAGES_DIR}"
-echo "PUSH:                 ${METRICS_PUSH}"
+print INFO "Start building vega20-metrics-exporter deb package..."
+print INFO "METRICS VERSION:      ${METRICS_VERSION}"
+print INFO "PACKAGE VERSION:      ${METRICS_PACKAGE_VERSION}"
+print INFO "PACKAGES DIR:         ${METRICS_PACKAGES_DIR}"
+print INFO "PUSH:                 ${METRICS_PUSH}"
 
 if [ -d "$METRICS_PACKAGES_DIR" ] && [ "${METRICS_FORCE_BUILD:-}" != "1" ]; then
-  echo "Directory $METRICS_PACKAGES_DIR exists. Skip."
+  print WARN "Directory $METRICS_PACKAGES_DIR exists. Skip."
   exit 0
 fi
 

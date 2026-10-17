@@ -19,7 +19,7 @@ https://arkprojects.space/wiki/AMD_GFX906/vllm/run
 
 ## Build
 
-See build vars in `./env.sh`. You also may use presets `./preset.*.sh`. Exec `./build-and-push.vllm.sh`:
+See build vars in `./build-and-push.vllm.sh`. You also may use presets `./preset.*.sh`. Exec `./build-and-push.vllm.sh`:
 
 ```bash
 $ . preset.0.20.1-rocm-6.3.3-aiinfos.sh

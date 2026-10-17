@@ -143,7 +143,7 @@ To update the preset to the latest ComfyUI release, run `./upd2last-release.sh`.
 
 ### Build variables
 
-Defaults come from [`env.sh`](./env.sh) and [`../env.sh`](../env.sh). Export
+Defaults are defined in [`build-and-push.image.sh`](./build-and-push.image.sh). Export
 any variable to override it.
 
 | Variable                  | Default                                    | Description                                                   |
@@ -206,24 +206,6 @@ export COMFYUI_TORCH_IMAGE=registry.example.com/apps/pytorch-gfx906
 ```
 
 See [`../.build/.env-local.sh`](../.build/.env-local.sh) for a ready-made local override file.
-
-## Benchmarks
-
-| ROCm  | Comfy   | PyTorch | Preset                             | Batch | Time (s) | Notes                           |
-| ----- | ------- | ------- | ---------------------------------- | ----- | -------- | ------------------------------- |
-| 7.14  | v0.30.0 | v2.13.0 | SD 1.5                             | 1     | 3.5      |                                 |
-| 7.14  | v0.30.0 | v2.13.0 | SD 1.5                             | 2     | 6.7      |                                 |
-| 6.4.4 | v0.3.63 | v2.7.1  | SDXL                               | 1     | 33       |                                 |
-| 6.4.4 | v0.3.63 | v2.7.1  | SDXL                               | 2     | 65       |                                 |
-| 6.4.4 | v0.3.63 | v2.7.1  | SD 1.5                             | 1     | 3.8      |                                 |
-| 6.4.4 | v0.3.63 | v2.7.1  | SD 1.5                             | 2     | 7        |                                 |
-| 6.3.3 | v0.3.63 | v2.7.1  | SDXL                               | 1     | 33       |                                 |
-| 6.3.3 | v0.3.63 | v2.7.1  | SDXL                               | 2     | 65       |                                 |
-| 6.3.3 | v0.3.63 | v2.7.1  | SD 1.5                             | 1     | 3.8      |                                 |
-| 6.3.3 | v0.3.63 | v2.7.1  | SD 1.5                             | 2     | 7        |                                 |
-| 7.0.2 | v0.3.63 | v2.7.1  | 03_video_wan2_2_14B_i2v_subgraphed | 1     | 4522     | PowerLimit 200; TdcLimitGfx 160 |
-| 7.0.2 | v0.3.65 | v2.9.0  | video_wan2_2_14B_t2v               | 1     | 1265     | PowerLimit 200; TdcLimitGfx 160 |
-| 7.0.2 | v0.3.65 | v2.9.0  | video_wan2_2_14B_t2v               | 2     | 1762     | PowerLimit 200; TdcLimitGfx 160 |
 
 ## Prebuilt images (legacy builds)
 

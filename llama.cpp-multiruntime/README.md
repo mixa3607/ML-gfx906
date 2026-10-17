@@ -17,6 +17,6 @@ and build:
 ./llama.cpp-multiruntime/build-and-push.image.sh
 ```
 
-Defaults are in [`env.sh`](./env.sh); environment variables can override them
+Defaults are in [`build-and-push.image.sh`](./build-and-push.image.sh); environment variables can override them
 after sourcing the preset. Set `LLAMA_PUSH=0` to build without pushing, or
 `LLAMA_FORCE_BUILD=1` to rebuild an existing tag. Build logs go to `logs/`.
