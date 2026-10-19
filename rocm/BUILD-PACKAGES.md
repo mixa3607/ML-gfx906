@@ -16,7 +16,7 @@ apt install -y \
   gfortran git ninja-build jq \
   cmake g++ pkg-config \
   xxd automake libtool \
-  python3-venv python3-dev \
+  python3-venv python3-dev python3-pip \
   libegl1-mesa-dev texinfo \
   bison flex libsqlite3-dev \
   curl make debhelper libpci3 \
@@ -28,10 +28,16 @@ apt install -y \
 ## Build TheRock
 
 ```bash
+ROCM_VERSION=10.1
+ROCM_ARCH=gfx906
+MLGFX_TAG=20261018172427
+
 ########## Clone ##########
-mkdir $HOME/rocm/code/TheRock-10.1
-cd $HOME/rocm/code/TheRock-10.1
-git clone https://github.com/ROCm/TheRock.git -b therock-10.1 .
+mkdir -p $HOME/rocm/code/TheRock-$ROCM_VERSION
+cd $HOME/rocm/code/TheRock-$ROCM_VERSION
+if ! [ -d $HOME/rocm/code/TheRock-$ROCM_VERSION/.git ]; then
+  git clone https://github.com/ROCm/TheRock.git -b therock-$ROCM_VERSION .
+fi
 
 ########## Install deps ##########
 # Install ccache
@@ -55,8 +61,8 @@ source .venv/bin/activate
 python3 ./build_tools/fetch_sources.py
 
 ########## Configure ##########
-PACKAGES_DIR=$HOME/rocm/packages/therock-10.1
-VERSION_SUFFIX=gfx906+20261007190641
+PACKAGES_DIR=$HOME/rocm/packages/therock-$ROCM_VERSION
+VERSION_SUFFIX=$ROCM_ARCH+$MLGFX_TAG
 
 eval "$(./build_tools/setup_ccache.py)"
 CMAKE_ARGS=(
@@ -64,21 +70,13 @@ CMAKE_ARGS=(
   -DCMAKE_C_COMPILER_LAUNCHER=ccache
   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
   # set arch
-  -DTHEROCK_AMDGPU_FAMILIES=gfx906
+  -DTHEROCK_AMDGPU_FAMILIES=$ROCM_ARCH
   # disable not supported
   -DTHEROCK_ENABLE_ROCWMMA=OFF
   -DTHEROCK_ENABLE_HIPBLASLTPROVIDER=OFF
-  # datacenter features
-  -DTHEROCK_ENABLE_DC_TOOLS=OFF
-  -DTHEROCK_ENABLE_ROCSHMEM=OFF
   # misc
   -DTHEROCK_ENABLE_ROCJITSU=OFF
-  -DTHEROCK_ENABLE_FFTW3=OFF
-  -DTHEROCK_ENABLE_HIPFILE=OFF
-  -DTHEROCK_ENABLE_MEDIA_LIBS=OFF
   -DTHEROCK_ENABLE_EMULATION=OFF
-  # disable tests
-  #-DTHEROCK_BUILD_TESTING=OFF
 )
 cmake -B ./build -G Ninja --fresh "${CMAKE_ARGS[@]}" .
 
@@ -89,7 +87,7 @@ cmake --build ./build
 # Build deb packages
 ./build_tools/packaging/linux/build_package.py \
    --artifacts-dir ./build/artifacts \
-   --target gfx906 \
+   --target $ROCM_ARCH \
    --dest-dir $PACKAGES_DIR \
    --rocm-version "$(cat version.json | jq '."rocm-version"' -r)" \
    --version-suffix $VERSION_SUFFIX \
