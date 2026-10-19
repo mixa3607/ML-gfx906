@@ -4,6 +4,7 @@ ARG STRATA_REPO="https://github.com/Niko1221/Strata.git"
 ARG STRATA_BRANCH="v0.2.0-beta"
 ARG STRATA_COMMIT=""
 ARG STRATA_PATCH="gfx906-setup.patch"
+ARG CMAKE_HIP_FLAGS=""
 ARG CCACHE_MAXSIZE="2G"
 
 ############# Base image #############
@@ -49,6 +50,7 @@ EOF_DOCKERFILE
 
 ############# Build #############
 FROM rocm_base AS build_strata
+ARG CMAKE_HIP_FLAGS
 ARG CCACHE_MAXSIZE
 
 RUN apt-get update && \
@@ -79,6 +81,7 @@ CMAKE_HIP_ARGS=(
   -DCMAKE_HIP_ARCHITECTURES=gfx906
   -DCMAKE_HIP_COMPILER="$ROCM_PATH/llvm/bin/clang++"
   -DCMAKE_HIP_COMPILER_LAUNCHER=ccache
+  -DCMAKE_HIP_FLAGS="${CMAKE_HIP_FLAGS}"
   -DCMAKE_HIP_COMPILER_ROCM_ROOT="$ROCM_PATH"
   -DCMAKE_PREFIX_PATH="$ROCM_PATH"
 )

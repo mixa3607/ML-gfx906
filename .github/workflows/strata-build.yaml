@@ -33,6 +33,7 @@ jobs:
       STRATA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
       STRATA_BRANCH: "${{ inputs.strata_tag }}"
       STRATA_PATCH: "gfx906-setup.patch"
+      STRATA_CMAKE_HIP_FLAGS: "-mllvm -amdgpu-sched-strategy=max-ilp"
       STRATA_FORCE_BUILD: "${{ inputs.force_build && '1' || '0' }}"
     steps:
       - name: Checkout repo

@@ -11,12 +11,15 @@ Log in to the destination registry and run from this directory:
 
 ```bash
 export STRATA_IMAGE=registry.arkprojects.space/apps/strata-gfx906
+export STRATA_CMAKE_HIP_FLAGS="-mllvm -amdgpu-sched-strategy=max-ilp"
 ./build-and-push.image.sh
 ```
 
 The script builds and pushes, skipping existing tags; `STRATA_FORCE_BUILD=1`
 forces a rebuild. Defaults are in the [preset](./preset.v0.2.0-beta-rocm-10.1.sh)
 and [build script](./build-and-push.image.sh).
+`STRATA_CMAKE_HIP_FLAGS` sets extra compiler flags for the engine and GPU vision
+encoder (empty by default).
 
 ## Run
 

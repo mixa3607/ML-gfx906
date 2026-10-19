@@ -14,6 +14,7 @@ source ../.build/build-common.sh
 : "${STRATA_REPO:="https://github.com/Niko1221/Strata.git"}"
 : "${STRATA_BRANCH:="v0.2.0-beta"}"
 : "${STRATA_COMMIT:=""}"
+: "${STRATA_CMAKE_HIP_FLAGS:=""}"
 : "${STRATA_CCACHE_MAXSIZE:="2G"}"
 : "${STRATA_PATCH:="gfx906-setup.patch"}"
 : "${STRATA_IS_RELEASE:="0"}"
@@ -54,6 +55,7 @@ function build {
   print INFO "STRATA_PATCH:   ${STRATA_PATCH}"
   print INFO "ROCM_ARCH:      ${ROCM_ARCH}"
   print INFO "ROCM_VERSION:   ${STRATA_ROCM_VERSION}"
+  print INFO "CMAKE_HIP_FLAGS: ${STRATA_CMAKE_HIP_FLAGS}"
   print INFO "CCACHE_MAXSIZE: ${STRATA_CCACHE_MAXSIZE}"
   print INFO "IS_RELEASE:     ${STRATA_IS_RELEASE}"
 
@@ -74,6 +76,7 @@ function build {
     --build-arg STRATA_BRANCH="${STRATA_BRANCH}"
     --build-arg STRATA_COMMIT="${STRATA_COMMIT}"
     --build-arg STRATA_PATCH="${STRATA_PATCH}"
+    --build-arg CMAKE_HIP_FLAGS="${STRATA_CMAKE_HIP_FLAGS}"
     --build-arg CCACHE_MAXSIZE="${STRATA_CCACHE_MAXSIZE}"
     --progress plain
     --target final
