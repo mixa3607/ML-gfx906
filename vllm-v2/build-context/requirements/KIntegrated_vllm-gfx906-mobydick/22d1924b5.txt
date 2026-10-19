@@ -1,0 +1,11 @@
+# Extra runtime requirements for KIntegrated vllm-gfx906-mobydick @ 22d1924b5
+# (gfx906/main snapshot, labeled 0.27.99rc0; includes the ROCm platform
+# detection fix). Per the fork's README, transformers 5.7.0 (<6) is the
+# validated version. Installed after the vllm wheel in final.
+transformers==5.7.0
+opentelemetry-sdk
+opentelemetry-api
+opentelemetry-semantic-conventions-ai
+opentelemetry-exporter-otlp
+modelscope
+yq
