@@ -30,9 +30,9 @@ jobs:
             repo: "https://github.com/ggml-org/llama.cpp.git"
             latest_type: "release"
             profile_suffix: ""
-            rocm_version: "7.14"
+            rocm_version: "10.1"
             cuda_version: "13.4.2"
-            release_tag: "20261011030522"
+            release_tag: "20261018172427"
     env:
       LLAMA_REPO: "${{ matrix.build.repo }}"
       LLAMA_LATEST_TYPE: "${{ matrix.build.latest_type }}"

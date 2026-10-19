@@ -24,10 +24,10 @@ jobs:
     strategy:
       matrix:
         build:
-          - rocm_version: "7.14"
-            pytorch_version: "2.13.0"
+          - rocm_version: "10.1"
+            pytorch_version: "2.14.1"
             comfyui_tag: "${{ inputs.comfyui_tag }}"
-            release_tag: "20261011030522"
+            release_tag: "20261018172427"
     env:
       COMFYUI_REPO: "https://github.com/Comfy-Org/ComfyUI.git"
       COMFYUI_BRANCH: "${{ matrix.build.comfyui_tag }}"

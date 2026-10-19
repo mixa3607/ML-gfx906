@@ -26,8 +26,8 @@ running the script:
 | `ROCM_IS_RELEASE` | `0`                              | `1` publishes release tags; otherwise only a `-pre` tag |
 
 The [`build-image.Dockerfile`](./build-image.Dockerfile) adds the APT repository (via
-[`install-gfx906-repo.sh`](./build-context/install-gfx906-repo.sh)), then installs all
-`amdrocm` packages matching the given version and architecture (`--target gfx906`).
+[`install-gfx906-repo.sh`](./build-context/install-gfx906-repo.sh)), then installs
+the ROCm runtime and core SDK packages at the exact `$ROCM_BUILD` version.
 
 With `ROCM_IS_RELEASE=1`, two release tags are created:
 

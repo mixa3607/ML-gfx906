@@ -18,12 +18,10 @@ flowchart LR
 
 ## Prebuilt images
 
-- [`docker.io/mixa3607/llama.cpp-gfx906:<ver>-rocm-7.14`](https://hub.docker.com/r/mixa3607/llama.cpp-gfx906/tags?name=rocm-7.14)\*
-- [`docker.io/mixa3607/llama.cpp-gfx906:<ver>-rocm-7.14-mxxm`](https://hub.docker.com/r/mixa3607/llama.cpp-gfx906/tags?name=rocm-7.14-mxxm)\*
+- [`docker.io/mixa3607/llama.cpp-gfx906:<ver>-rocm-10.1`](https://hub.docker.com/r/mixa3607/llama.cpp-gfx906/tags?name=rocm-10.1)\*
+- [`docker.io/mixa3607/llama.cpp-gfx906:<ver>-rocm-10.1-mxxm`](https://hub.docker.com/r/mixa3607/llama.cpp-gfx906/tags?name=rocm-10.1-mxxm)\*
 
 > \* have daily builds. See last tag on Docker Hub.
-
-Also see [llamacpp-offload-calculator](./llamacpp-offload-calculator/readme.md)
 
 ## Server profiles
 
@@ -66,7 +64,7 @@ The build happens inside `docker buildx` on top of the ROCm base image
 Preset files set the llama.cpp, ROCm and other versions. Source one, then run the build script:
 
 ```bash
-. preset.b10288-rocm-7.14-ggml.sh
+. preset.v0.6.0-rocm-7.14-ggml.sh
 ./build-and-push.image.sh
 ```
 
@@ -89,8 +87,8 @@ Export any variable to override it.
 | `LLAMA_IS_RELEASE`      | `0`                                         | `1` — full tags; otherwise `-pre` tag only         |
 | `LLAMA_PUSH`            | `1`                                         | Push the image to the registry                     |
 | `LLAMA_FORCE_BUILD`     | _(unset)_                                   | Set to `1` to rebuild even if the tag exists       |
-| `ROCM_ARCH`             | `gfx906`                                    | Target GPU architecture                           |
-| `ROCM_IMAGE`            | `docker.io/mixa3607/rocm-gfx906`            | ROCm base image name                              |
+| `ROCM_ARCH`             | `gfx906`                                    | Target GPU architecture                            |
+| `ROCM_IMAGE`            | `docker.io/mixa3607/rocm-gfx906`            | ROCm base image name                               |
 | `REPO_GIT_REF`          | _(git tag, else short SHA)_                 | Build revision appended to the tag                 |
 
 The base image is resolved as
@@ -102,7 +100,7 @@ via a BuildKit cache so rebuilds reuse compiled objects.
 ### Build the image
 
 ```bash
-. preset.b10288-rocm-7.14-ggml.sh
+. preset.v0.6.0-rocm-7.14-ggml.sh
 ./build-and-push.image.sh
 ```
 
@@ -121,15 +119,14 @@ The build log is saved to `./logs/build_<timestamp>.log`.
 
 ### Push
 
-Set `LLAMA_PUSH=0` to keep the image local (no `--push` passed to buildx).
+Set `LLAMA_PUSH=0` to disable publication (does not automatically load the image into Docker).
 
 ### Custom registry / local overrides
 
 Example:
 
 ```bash
-export LLAMA_ROCM_VERSION=7.14
-export LLAMA_BRANCH=b10219
+. preset.v0.6.0-rocm-7.14-ggml.sh
 export LLAMA_IMAGE=registry.example.com/apps/llama.cpp-gfx906
 export ROCM_IMAGE=registry.example.com/apps/rocm-gfx906
 ./build-and-push.image.sh

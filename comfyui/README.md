@@ -22,7 +22,7 @@ so the base ROCm/PyTorch versions are fixed per image tag.
 
 ## Prebuilt images
 
-- [`docker.io/mixa3607/comfyui-gfx906:<ver>-rocm-7.14`](https://hub.docker.com/r/mixa3607/comfyui-gfx906/tags?name=rocm-7.14)\*
+- [`docker.io/mixa3607/comfyui-gfx906:<ver>-rocm-10.1`](https://hub.docker.com/r/mixa3607/comfyui-gfx906/tags?name=rocm-10.1)\*
 
 > \* have daily builds. See last tag on Docker Hub.
 
@@ -48,7 +48,7 @@ docker run --rm \
   -p 8188:8188 \
   -e PERSISTENCE_PATH=/data \
   -v $(pwd)/data:/data \
-  docker.io/mixa3607/comfyui-gfx906:<ver>-rocm-7.14 \
+   docker.io/mixa3607/comfyui-gfx906:latest-rocm-10.1 \
   --disable-dynamic-vram
 ```
 
@@ -102,7 +102,7 @@ docker run --rm \
   -e PERSISTENCE_PATH=/data \
   -e PYTORCH_TUNABLEOP_TUNING=1 \
   -v $(pwd)/data:/data \
-  docker.io/mixa3607/comfyui-gfx906:<ver>-rocm-7.14 \
+   docker.io/mixa3607/comfyui-gfx906:latest-rocm-10.1 \
   --disable-dynamic-vram
 ```
 
@@ -135,7 +135,7 @@ Preset files set the ComfyUI, PyTorch and ROCm versions. Source one, then run
 the build script:
 
 ```bash
-. preset.v0.37.0-rocm-7.14.sh
+. preset.v0.42.1-rocm-10.1.sh
 ./build-and-push.image.sh
 ```
 
@@ -162,25 +162,25 @@ any variable to override it.
 
 The base image is resolved as
 `$COMFYUI_TORCH_IMAGE:v$COMFYUI_PYTORCH_VERSION-rocm-$COMFYUI_ROCM_VERSION`
-(e.g. `docker.io/mixa3607/pytorch-gfx906:v2.13.0-rocm-7.14`).
+(e.g. `docker.io/mixa3607/pytorch-gfx906:v2.14.1-rocm-10.1`).
 
 ### Build the image
 
 ```bash
-. preset.v0.37.0-rocm-7.14.sh
+. preset.v0.42.1-rocm-10.1.sh
 ./build-and-push.image.sh
 ```
 
 With `COMFYUI_IS_RELEASE=1`, five tags are created:
 
-- `$COMFYUI_IMAGE:$BRANCH-torch-$PYTORCH_VERSION-rocm-$ROCM_VERSION-$REPO_GIT_REF` — pinned to the build revision
-- `$COMFYUI_IMAGE:$BRANCH-torch-$PYTORCH_VERSION-rocm-$ROCM_VERSION`
-- `$COMFYUI_IMAGE:$BRANCH-rocm-$ROCM_VERSION-$REPO_GIT_REF` — pinned to the build revision
-- `$COMFYUI_IMAGE:$BRANCH-rocm-$ROCM_VERSION`
-- `$COMFYUI_IMAGE:latest-rocm-$ROCM_VERSION`
+- `$COMFYUI_IMAGE:$COMFYUI_BRANCH-torch-$COMFYUI_PYTORCH_VERSION-rocm-$COMFYUI_ROCM_VERSION-$REPO_GIT_REF` — pinned to the build revision
+- `$COMFYUI_IMAGE:$COMFYUI_BRANCH-torch-$COMFYUI_PYTORCH_VERSION-rocm-$COMFYUI_ROCM_VERSION`
+- `$COMFYUI_IMAGE:$COMFYUI_BRANCH-rocm-$COMFYUI_ROCM_VERSION-$REPO_GIT_REF` — pinned to the build revision
+- `$COMFYUI_IMAGE:$COMFYUI_BRANCH-rocm-$COMFYUI_ROCM_VERSION`
+- `$COMFYUI_IMAGE:latest-rocm-$COMFYUI_ROCM_VERSION`
 
 Otherwise (`COMFYUI_IS_RELEASE=0`, the default), only
-`$COMFYUI_IMAGE:$BRANCH-torch-$PYTORCH_VERSION-rocm-$ROCM_VERSION-$REPO_GIT_REF-pre`
+`$COMFYUI_IMAGE:$COMFYUI_BRANCH-torch-$COMFYUI_PYTORCH_VERSION-rocm-$COMFYUI_ROCM_VERSION-$REPO_GIT_REF-pre`
 is created.
 
 The build is skipped if the pinned tag is already in the registry, unless
@@ -190,16 +190,16 @@ The build log is saved to `./logs/build_<timestamp>.log`.
 
 ### Push
 
-Set `COMFYUI_PUSH=0` to keep the image local (no `--push` passed to buildx).
+Set `COMFYUI_PUSH=0` to disable publication (does not automatically load the image into Docker).
 
 ### Custom registry / local overrides
 
 Example:
 
 ```bash
-export COMFYUI_ROCM_VERSION=7.14
-export COMFYUI_PYTORCH_VERSION=2.13.0
-export COMFYUI_BRANCH=v0.37.0
+export COMFYUI_ROCM_VERSION=10.1
+export COMFYUI_PYTORCH_VERSION=2.14.1
+export COMFYUI_BRANCH=v0.42.1
 export COMFYUI_IMAGE=registry.example.com/apps/comfyui-gfx906
 export COMFYUI_TORCH_IMAGE=registry.example.com/apps/pytorch-gfx906
 ./build-and-push.image.sh

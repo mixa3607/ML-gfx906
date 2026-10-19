@@ -22,13 +22,13 @@ jobs:
         build:
           - rocm_version: "7.14"
             torch_version: "v2.14.1"
-            release_tag: "20260802001858"
+            release_tag: "20261018172427"
           - rocm_version: "10.0"
             torch_version: "v2.14.1"
-            release_tag: "20260802001858"
+            release_tag: "20261018172427"
           - rocm_version: "10.1"
             torch_version: "v2.14.1"
-            release_tag: "20260802001858"
+            release_tag: "20261018172427"
     env:
       TORCH_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
       TORCH_VERSION: "${{ matrix.build.torch_version }}"

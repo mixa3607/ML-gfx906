@@ -171,6 +171,6 @@ argument values. It does not escape llama-bench's own separators: commas in
 matrix values, `/` in device groups, and `;` / `=` in tensor overrides are still
 interpreted by llama-bench. Use values compatible with that syntax.
 
-See [global.json.sample](global.json.sample) and
+See [global.yaml.sample](global.yaml.sample) and
 [gemma-4-31b-it.yaml.sample](gemma-4-31b-it.yaml.sample). Adjust model paths,
 CPU/NUMA placement, device names, and benchmark sizes for your machine.

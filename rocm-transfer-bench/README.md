@@ -57,8 +57,8 @@ Export any variable to override it.
 | `ROCM_IMAGE`     | `docker.io/mixa3607/rocm-gfx906` | ROCm base image name                          |
 | `REPO_GIT_REF`   | *(git tag, else short SHA)*      | Build revision appended to the version suffix |
 
-The version suffix is `<rocm>+<arch>+<ref>` (e.g. `7.14+gfx906+76e2dbe`), so the
-package is named `amdrocm-transferbench-<ver>+gfx906.<ref>.deb`.
+The version suffix is `<rocm>+<arch>+<ref>` (e.g. `7.14+gfx906+76e2dbe`) and
+is passed to CPack as the package release.
 
 The build log is saved to `./logs/build_<timestamp>.log`.
 
@@ -71,5 +71,5 @@ The build log is saved to `./logs/build_<timestamp>.log`.
 
 The script clones the repo inside the container (checkout `$TB_VERSION`),
 configures and builds it, and writes the deb package to
-`output/rocm<ver>/tb-<suffix>/`. The build is skipped if the directory already
+`output/rocm<rocm>/tb-<version>-<suffix>/`. The build is skipped if the directory already
 exists, unless `TB_FORCE_BUILD=1`.
