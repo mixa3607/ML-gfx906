@@ -6,20 +6,6 @@ graph/nodes interface. https://github.com/Comfy-Org/ComfyUI
 All images are built for the deprecated `gfx906` GPU architecture and are
 **not** compatible with other AMD GPUs.
 
-## Dependencies
-
-The image is built on top of the [PyTorch image](../pytorch/README.md), which
-itself is based on the [ROCm image](../rocm/README.md):
-
-```mermaid
-flowchart LR
-  rocm[docker.io/mixa3607/rocm-gfx906] --> torch[docker.io/mixa3607/pytorch-gfx906]
-  torch --> comfyui[docker.io/mixa3607/comfyui-gfx906]
-```
-
-`ComfyUI` is cloned from the upstream repo at build time (pinned to a git tag),
-so the base ROCm/PyTorch versions are fixed per image tag.
-
 ## Prebuilt images
 
 - [`docker.io/mixa3607/comfyui-gfx906:<ver>-rocm-10.1`](https://hub.docker.com/r/mixa3607/comfyui-gfx906/tags?name=rocm-10.1)\*
@@ -31,11 +17,7 @@ so the base ROCm/PyTorch versions are fixed per image tag.
 ### ROCm 7.14+ compatibility
 
 **ComfyUI v0.34.0 and newer require `--disable-dynamic-vram` on gfx906 with
-ROCm 7.14 or newer.** Upstream enabled dynamic VRAM by default for these ROCm
-versions in [PR #15633](https://github.com/Comfy-Org/ComfyUI/pull/15633)
-("Enable dynamic vram by default on ROCm 7.14 and higher"). That default is not
-compatible with this gfx906 stack; explicitly disable it in Docker arguments
-or the Helm chart's `extraArgs`.
+ROCm 7.14 or newer.**
 
 ### Docker
 
@@ -129,17 +111,14 @@ ComfyUI image.
 | -------- | --------------------------- | -------------------------- |
 | Image    | `./build-and-push.image.sh` | `./build-image.Dockerfile` |
 
-### Presets
-
-Preset files set the ComfyUI, PyTorch and ROCm versions. Source one, then run
-the build script:
-
 ```bash
-. preset.v0.42.1-rocm-10.1.sh
+export COMFYUI_ROCM_VERSION=10.1
+export COMFYUI_PYTORCH_VERSION=2.14.1
+export COMFYUI_BRANCH=v0.42.1
+export COMFYUI_IMAGE=registry.example.com/apps/comfyui-gfx906
+export COMFYUI_TORCH_IMAGE=registry.example.com/apps/pytorch-gfx906
 ./build-and-push.image.sh
 ```
-
-To update the preset to the latest ComfyUI release, run `./upd2last-release.sh`.
 
 ### Build variables
 
@@ -159,53 +138,6 @@ any variable to override it.
 | `COMFYUI_PUSH`            | `1`                                        | Push the image to the registry                                |
 | `COMFYUI_FORCE_BUILD`     | _(unset)_                                  | Set to `1` to rebuild even if the tag exists                  |
 | `REPO_GIT_REF`            | _(git tag, else short SHA)_                | Build revision appended to the tag                            |
-
-The base image is resolved as
-`$COMFYUI_TORCH_IMAGE:v$COMFYUI_PYTORCH_VERSION-rocm-$COMFYUI_ROCM_VERSION`
-(e.g. `docker.io/mixa3607/pytorch-gfx906:v2.14.1-rocm-10.1`).
-
-### Build the image
-
-```bash
-. preset.v0.42.1-rocm-10.1.sh
-./build-and-push.image.sh
-```
-
-With `COMFYUI_IS_RELEASE=1`, five tags are created:
-
-- `$COMFYUI_IMAGE:$COMFYUI_BRANCH-torch-$COMFYUI_PYTORCH_VERSION-rocm-$COMFYUI_ROCM_VERSION-$REPO_GIT_REF` — pinned to the build revision
-- `$COMFYUI_IMAGE:$COMFYUI_BRANCH-torch-$COMFYUI_PYTORCH_VERSION-rocm-$COMFYUI_ROCM_VERSION`
-- `$COMFYUI_IMAGE:$COMFYUI_BRANCH-rocm-$COMFYUI_ROCM_VERSION-$REPO_GIT_REF` — pinned to the build revision
-- `$COMFYUI_IMAGE:$COMFYUI_BRANCH-rocm-$COMFYUI_ROCM_VERSION`
-- `$COMFYUI_IMAGE:latest-rocm-$COMFYUI_ROCM_VERSION`
-
-Otherwise (`COMFYUI_IS_RELEASE=0`, the default), only
-`$COMFYUI_IMAGE:$COMFYUI_BRANCH-torch-$COMFYUI_PYTORCH_VERSION-rocm-$COMFYUI_ROCM_VERSION-$REPO_GIT_REF-pre`
-is created.
-
-The build is skipped if the pinned tag is already in the registry, unless
-`COMFYUI_FORCE_BUILD=1`.
-
-The build log is saved to `./logs/build_<timestamp>.log`.
-
-### Push
-
-Set `COMFYUI_PUSH=0` to disable publication (does not automatically load the image into Docker).
-
-### Custom registry / local overrides
-
-Example:
-
-```bash
-export COMFYUI_ROCM_VERSION=10.1
-export COMFYUI_PYTORCH_VERSION=2.14.1
-export COMFYUI_BRANCH=v0.42.1
-export COMFYUI_IMAGE=registry.example.com/apps/comfyui-gfx906
-export COMFYUI_TORCH_IMAGE=registry.example.com/apps/pytorch-gfx906
-./build-and-push.image.sh
-```
-
-See [`../.build/.env-local.sh`](../.build/.env-local.sh) for a ready-made local override file.
 
 ## Prebuilt images (legacy builds)
 
