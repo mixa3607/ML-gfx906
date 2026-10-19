@@ -1,3 +1,15 @@
+diff --git a/docker/healthcheck.sh b/docker/healthcheck.sh
+--- a/docker/healthcheck.sh
++++ b/docker/healthcheck.sh
+@@ -4,7 +4,7 @@
+ KEY_FILE="${STRATA_KEY_FILE:-/data/state/api-key}"
+ KEY="${API_KEY:-}"
+ [ -z "$KEY" ] && [ -r "$KEY_FILE" ] && KEY=$(cat "$KEY_FILE")
+-exec /opt/strata/terminal/python/bin/python3 - "http://127.0.0.1:${PORT:-8080}/v1/models" "$KEY" <<'PY'
++exec python3 - "http://127.0.0.1:${PORT:-8080}/v1/models" "$KEY" <<'PY'
+ import sys, urllib.request, json
+ url, key = sys.argv[1], sys.argv[2]
+ req = urllib.request.Request(url, headers={"Authorization": "Bearer " + key} if key else {})
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt

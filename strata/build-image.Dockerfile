@@ -18,13 +18,13 @@ RUN apt-get update && \
       libatomic1 \
       libgomp1 \
       python3 \
-      python3-pip && \
+      python3-pip \
+      tini && \
     python3 -m pip config set global.break-system-packages true && \
     rm -rf /var/lib/apt/lists/*
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    PYTHONUNBUFFERED=1 \
-    STRATA_EXECV=1
+    PYTHONUNBUFFERED=1
 
 ############# Prepare code #############
 FROM rocm_base AS files_strata
@@ -134,22 +134,58 @@ meta = {
 (setup.ROOT / "engine" / "BUILD.json").write_text(json.dumps(meta, indent=1) + "\n", encoding="utf-8")
 PY
 
+RUN python3 packaging/package_engine.py \
+      --src engine --backend hip --arch gfx906 \
+      --version "$(python3 -c 'import setup; print(setup.source_version())')" \
+      --variant gfx906 --out /components/engine \
+      --allow-lib libhipblas.so.3 \
+      --allow-lib librocblas.so.5 \
+      --allow-lib libamdhip64.so.7
+
 ############# Copy and install all #############
 FROM rocm_base AS final
-WORKDIR /opt/strata
+WORKDIR /opt/strata/terminal
 
-COPY --from=files_strata /files/strata /opt/strata
-RUN PIP_NO_CACHE_DIR=1 python3 -c 'import setup; setup.pip_install(setup.requirement_lines(), "Python packages")'
+COPY --from=files_strata /files/strata /opt/strata/terminal
+RUN python3 -m pip install --no-cache-dir -r requirements.txt -r requirements-monitor.txt
 
-COPY --from=build_strata /opt/strata/engine /opt/strata/engine
-# setup.py reuses this checkout for gguf-py when ggml/CMakeLists.txt is present.
-COPY --from=build_strata /opt/strata/third_party/llama.cpp/ggml /opt/strata/third_party/llama.cpp/ggml
-COPY --from=build_strata /opt/strata/third_party/llama.cpp/gguf-py /opt/strata/third_party/llama.cpp/gguf-py
+COPY --from=build_strata /components/engine /opt/strata/components/engine
+COPY --from=build_strata /opt/strata/third_party/llama.cpp/ggml/CMakeLists.txt /opt/strata/seed/third_party/llama.cpp/ggml/CMakeLists.txt
+COPY --from=build_strata /opt/strata/third_party/llama.cpp/gguf-py /opt/strata/seed/third_party/llama.cpp/gguf-py
+COPY --from=files_strata /files/strata/docker/entrypoint.sh /files/strata/docker/healthcheck.sh /opt/strata/
+COPY --from=files_strata /files/strata/docker/strata-wrapper.sh /usr/local/bin/strata
+
+# ROCm libraries are supplied by the base image, not duplicated in the component.
+RUN <<'EOF_DOCKERFILE' bash
+set -eo pipefail
+for component in /opt/strata/components/engine/*; do
+  python3 -c 'import sys; from pathlib import Path; from strata_control import engine_component as ec; ec.verify(ec.read_manifest(Path(sys.argv[1])), full=True)' "$component"
+  for binary in "$component"/strata "$component"/strata-vision "$component"/strata-vision-hip; do
+    ldd "$binary" > /tmp/strata-ldd.log
+    if grep -q 'not found' /tmp/strata-ldd.log; then
+      cat /tmp/strata-ldd.log
+      exit 1
+    fi
+  done
+done
+rm -f /tmp/strata-ldd.log
+EOF_DOCKERFILE
+
+ENV STRATA_COMPONENTS_DIR=/opt/strata/components \
+    STRATA_INSTALL_DIR=/data/install \
+    XDG_STATE_HOME=/data/state \
+    XDG_CONFIG_HOME=/data/config \
+    HOME=/data/home \
+    PORT=8080 \
+    LANG=C.UTF-8 \
+    PYTHONNOUSERSITE=1 \
+    STRATA_IN_DOCKER=1
 
 VOLUME ["/data"]
 EXPOSE 8080
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=600s --retries=3 \
-  CMD curl -fs "http://127.0.0.1:${PORT:-8080}/health" || exit 1
+HEALTHCHECK --interval=30s --timeout=8s --start-period=2h --retries=3 CMD ["/opt/strata/healthcheck.sh"]
 
-CMD ["python3", "setup.py"]
+STOPSIGNAL SIGTERM
+ENTRYPOINT ["/usr/bin/tini", "--", "/opt/strata/entrypoint.sh"]
+CMD ["run"]
