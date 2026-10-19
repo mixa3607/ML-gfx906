@@ -42,8 +42,7 @@ set -eo pipefail
 apt-get update
 apt-get install -y git python3 python3-venv python3-pip python3-dev
 python3 -m pip config set global.break-system-packages true
-python3 -m pip install /opt/rocm/share/amd_smi
-pushd /packages; python3 -m pip install *.whl; popd
+python3 -m pip install /packages/*.whl
 
 rm -rf /var/lib/apt/lists/*
 EOF_DOCKERFILE

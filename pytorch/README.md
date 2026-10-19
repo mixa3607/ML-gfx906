@@ -124,8 +124,12 @@ The build log is saved to `./logs/build_<timestamp>.log`.
 ./build-and-push.whl.sh
 ```
 
-Wheels are written to `output/rocm<ver>/torch-<ver>+<suffix>/`. The script skips
-the build if the directory already exists, unless `TORCH_FORCE_BUILD=1`.
+Wheels are written to `output/rocm<ver>/torch-<ver>+<suffix>/`. The wheel script
+supports the [common build commands](../.build/README.md):
+
+- `check`: print `true` if a build is needed, or `false` to skip.
+- `build`: build and optionally publish without checking existing wheels.
+- No arguments: check, then build or skip.
 
 `torchvision` and `torchaudio` are pinned to the commit referenced in the PyTorch
 `ci_commit_pins` by default; override with `TORCH_VISION_VERSION` (audio is
@@ -161,8 +165,7 @@ The build is skipped if the pinned tag is already in the registry, unless
 
 Both scripts respect `TORCH_PUSH`:
 
-- `whl`: creates a venv, installs `s3cmd`, writes `index.txt` and uploads the
-  whole `output/rocm<ver>/` directory to `s3://py-gfx906/` with public ACL
+- `whl`: uploads the output directory to `TORCH_PACKAGES_S3` with public ACL
 - `image`: adds `--push` to the buildx build
 
 Set `TORCH_PUSH=0` to keep the artifacts locally.

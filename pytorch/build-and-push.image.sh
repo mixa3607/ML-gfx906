@@ -10,7 +10,7 @@ source ../.build/build-common.sh
 : "${ROCM_ARCH:="gfx906"}"
 : "${ROCM_IMAGE:="docker.io/mixa3607/rocm-gfx906"}"
 : "${TORCH_ROCM_VERSION:="7.14"}"
-: "${TORCH_VERSION:="v2.13.0"}"
+: "${TORCH_VERSION:="v2.14.0"}"
 : "${TORCH_IMAGE:="docker.io/mixa3607/pytorch-gfx906"}"
 : "${TORCH_PUSH:="1"}"
 : "${TORCH_IS_RELEASE:="0"}"
