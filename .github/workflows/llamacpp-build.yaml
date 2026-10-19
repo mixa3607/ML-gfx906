@@ -1,10 +1,10 @@
-name: Daily llama.cpp build (mxxm)
+name: Daily llama.cpp build
 
 on:
   workflow_dispatch:
     inputs:
       llamacpp_tag:
-        description: "llama.cpp tag to build (empty = latest)"
+        description: "llama.cpp tag for both sources (empty = latest per source)"
         required: false
         default: ""
       force_build:
@@ -14,27 +14,43 @@ on:
   schedule:
     - cron: "0 14 * * *"
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
+    name: Build llama.cpp (${{ matrix.build.source }}, ROCm ${{ matrix.build.rocm_version }})
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         build:
-          - rocm_version: "7.14"
-            llamacpp_tag: "${{ inputs.llamacpp_tag }}"
+          - source: "ggml"
+            repo: "https://github.com/ggml-org/llama.cpp.git"
+            latest_type: "release"
+            profile_suffix: ""
+            rocm_version: "7.14"
+            release_tag: "20261011030522"
+          - source: "mxxm"
+            repo: "https://github.com/mxxm-t/mx-llama.cpp.git"
+            latest_type: "tag"
+            profile_suffix: "-mxxm"
+            rocm_version: "7.14"
             release_tag: "20261011030522"
     env:
-      LLAMA_REPO: "https://github.com/mxxm-t/mx-llama.cpp.git"
+      LLAMA_REPO: "${{ matrix.build.repo }}"
+      LLAMA_LATEST_TYPE: "${{ matrix.build.latest_type }}"
       LLAMA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
-      LLAMA_PROFILE_SUFFIX: "-mxxm"
-      LLAMA_BRANCH: "${{ matrix.build.llamacpp_tag }}"
+      LLAMA_PROFILE_SUFFIX: "${{ matrix.build.profile_suffix }}"
+      LLAMA_BRANCH: "${{ inputs.llamacpp_tag }}"
       LLAMA_CMAKE_HIP_FLAGS: "-mllvm -amdgpu-sched-strategy=max-ilp"
       LLAMA_FORCE_BUILD: "${{ inputs.force_build && '1' || '0' }}"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v7
         with:
-          ref: ${{ matrix.build.release_tag }}
+          ref: ${{ vars.BUILD_REF || matrix.build.release_tag }}
           fetch-depth: 0
 
       - name: Install yq
@@ -43,26 +59,30 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v4
+      - name: Select registry and log in
+        id: registry
+        uses: ./.github/workflows/actions/registry-login
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Resolve build parameters
         env:
           GITHUB_TOKEN: "${{ github.token }}"
+          REGISTRY_ROOT: "${{ steps.registry.outputs.registry_root }}"
         run: |
           source ./.build/git-common.sh
           if [ "$LLAMA_BRANCH" == "" ]; then
-            LLAMA_BRANCH="$("$GITHUB_WORKSPACE/.github/scripts/github_get_last" --type tag --repo "$LLAMA_REPO" --github-token "$GITHUB_TOKEN")"
+            LLAMA_BRANCH="$("$GITHUB_WORKSPACE/.github/scripts/github_get_last" --type "$LLAMA_LATEST_TYPE" --repo "$LLAMA_REPO" --github-token "$GITHUB_TOKEN")"
           fi
           : "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+          : "${LLAMA_IMAGE:="$REGISTRY_ROOT/llama.cpp-gfx906"}"
           : "${LLAMA_IS_RELEASE:="$([ -n "$(git_get_current_tag)" ] && echo 1 || echo 0)"}"
           : "${LLAMA_BASE_IMAGE:="docker.io/mixa3607/rocm-gfx906:$LLAMA_ROCM_VERSION-complete"}"
           : "${LLAMA_PRESET_NAME:="$LLAMA_BRANCH-rocm-$LLAMA_ROCM_VERSION$LLAMA_PROFILE_SUFFIX"}"
 
           echo "REPO_GIT_REF=$REPO_GIT_REF"             >> "$GITHUB_ENV"
+          echo "LLAMA_IMAGE=$LLAMA_IMAGE"               >> "$GITHUB_ENV"
           echo "LLAMA_IS_RELEASE=$LLAMA_IS_RELEASE"     >> "$GITHUB_ENV"
           echo "LLAMA_BRANCH=$LLAMA_BRANCH"             >> "$GITHUB_ENV"
           echo "LLAMA_PRESET_NAME=$LLAMA_PRESET_NAME"   >> "$GITHUB_ENV"
