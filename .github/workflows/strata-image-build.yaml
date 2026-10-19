@@ -1,15 +1,12 @@
-name: Strata image build
+name: Daily Strata build
 
 on:
-  push:
-    branches:
-      - strata-gfx906
   workflow_dispatch:
     inputs:
       strata_tag:
-        description: "Strata tag to build (empty = v0.1.41)"
+        description: "Strata tag to build (empty = latest)"
         required: false
-        default: "v0.1.41"
+        default: ""
       force_build:
         description: "Rebuild even if the image is already published"
         type: boolean
@@ -17,68 +14,67 @@ on:
   schedule:
     - cron: "0 16 * * *"
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
+    name: Build Strata (ROCm ${{ matrix.build.rocm_version }})
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     strategy:
+      fail-fast: false
       matrix:
         build:
-          - rocm_version: "7.14"
-            strata_tag: "v0.1.41"
+          - rocm_version: "10.1"
+            release_tag: "20261018172427"
     env:
       STRATA_REPO: "https://github.com/Niko1221/Strata.git"
       STRATA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
-      STRATA_BRANCH: "${{ github.event.inputs.strata_tag || matrix.build.strata_tag }}"
+      STRATA_BRANCH: "${{ inputs.strata_tag }}"
       STRATA_PATCH: "gfx906-setup.patch"
       STRATA_FORCE_BUILD: "${{ inputs.force_build && '1' || '0' }}"
-      STRATA_PUSH: "1"
-      # This fork publishes to the owner's GHCR package. The upstream repo keeps
-      # the Docker Hub name used by the rest of ML-gfx906.
-      STRATA_IMAGE: ${{ github.repository_owner == 'mixa3607' && 'docker.io/mixa3607/strata-gfx906' || format('ghcr.io/{0}/strata-gfx906', github.repository_owner) }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v7
         with:
+          ref: ${{ vars.BUILD_REF || matrix.build.release_tag }}
           fetch-depth: 0
+
+      - name: Install yq
+        uses: ./.github/workflows/actions/install-yq-action
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to GHCR
-        if: github.repository_owner != 'mixa3607'
-        uses: docker/login-action@v4
+      - name: Select registry and log in
+        id: registry
+        uses: ./.github/workflows/actions/registry-login
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Log in to Docker Hub
-        if: github.repository_owner == 'mixa3607'
-        uses: docker/login-action@v4
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Resolve build parameters
+        env:
+          GITHUB_TOKEN: "${{ github.token }}"
+          REGISTRY_ROOT: "${{ steps.registry.outputs.registry_root }}"
         run: |
-          source ./env.sh
-          STRATA_IS_RELEASE=0
-          if [ -n "$(git_get_current_tag)" ]; then
-            STRATA_IS_RELEASE=1
-          fi
+          source ./.build/git-common.sh
           if [ "$STRATA_BRANCH" == "" ]; then
-            STRATA_BRANCH="${{ matrix.build.strata_tag }}"
+            STRATA_BRANCH="$("$GITHUB_WORKSPACE/.github/scripts/github_get_last" --type release --repo "$STRATA_REPO" --github-token "$GITHUB_TOKEN")"
           fi
+          : "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+          : "${STRATA_IMAGE:="$REGISTRY_ROOT/strata-gfx906"}"
+          : "${STRATA_IS_RELEASE:="$([ -n "$(git_get_current_tag)" ] && echo 1 || echo 0)"}"
+          : "${STRATA_BASE_IMAGE:="docker.io/mixa3607/rocm-gfx906:$STRATA_ROCM_VERSION-complete"}"
+          : "${STRATA_PRESET_NAME:="$STRATA_BRANCH-rocm-$STRATA_ROCM_VERSION"}"
 
-          echo "STRATA_IS_RELEASE=$STRATA_IS_RELEASE" >> "$GITHUB_ENV"
-          echo "REPO_GIT_REF=$REPO_GIT_REF" >> "$GITHUB_ENV"
-          echo "STRATA_BRANCH=$STRATA_BRANCH" >> "$GITHUB_ENV"
-          echo "STRATA_PRESET_NAME=$STRATA_BRANCH-rocm-$STRATA_ROCM_VERSION" >> "$GITHUB_ENV"
-          source ./env.sh "strata" "rocm"
-          echo "STRATA_BASE_IMAGE=$ROCM_IMAGE:$STRATA_ROCM_VERSION-complete" >> "$GITHUB_ENV"
+          echo "REPO_GIT_REF=$REPO_GIT_REF"             >> "$GITHUB_ENV"
+          echo "STRATA_IMAGE=$STRATA_IMAGE"             >> "$GITHUB_ENV"
+          echo "STRATA_IS_RELEASE=$STRATA_IS_RELEASE"   >> "$GITHUB_ENV"
+          echo "STRATA_BRANCH=$STRATA_BRANCH"           >> "$GITHUB_ENV"
+          echo "STRATA_PRESET_NAME=$STRATA_PRESET_NAME" >> "$GITHUB_ENV"
+          echo "STRATA_BASE_IMAGE=$STRATA_BASE_IMAGE"   >> "$GITHUB_ENV"
 
       - name: Check build
         id: check
@@ -99,13 +95,3 @@ jobs:
       - name: Build Strata image
         if: steps.check.outputs.needed == 'true'
         run: ./strata/build-and-push.image.sh build
-
-      - name: Make the GHCR package public
-        if: github.repository_owner != 'mixa3607'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh api --method PATCH \
-            -H "Accept: application/vnd.github+json" \
-            "/user/packages/container/strata-gfx906" \
-            -f visibility=public
