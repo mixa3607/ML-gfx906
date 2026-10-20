@@ -52,6 +52,6 @@ docker buildx build "${DOCKER_EXTRA_ARGS[@]}" ./build-context 2>&1 | tee ./logs/
 
 # Push packages
 if [ "$TB_PUSH" == "1" ]; then
-  SCP_DST="k3s@kube-worker6.arkprojects.lan:/home/k3s/rocm-dev-packages/rocm-transfer-bench"
-  find "$TB_PACKAGES_DIR" -maxdepth 1 -mindepth 1 -name "*.deb" | xargs -I {} scp {} "$SCP_DST" 
+  POD_DST="rocm-build/aptly-0:/root/packages/rocm-transfer-bench"
+  find "$TB_PACKAGES_DIR" -maxdepth 1 -mindepth 1 -name "*.deb" | xargs -I {} kubectl cp {} "$POD_DST"
 fi
