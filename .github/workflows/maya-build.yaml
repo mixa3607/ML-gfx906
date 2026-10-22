@@ -9,7 +9,6 @@ on:
         required: true
       maya_commit:
         description: Source commit (empty = tag tip)
-        default: 451f9cb6a21ea65673bdde2e57b4a670ae2b8859
       force_build:
         description: Rebuild an existing image
         type: boolean

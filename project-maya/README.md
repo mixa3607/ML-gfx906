@@ -47,9 +47,9 @@ download model weights.
 | `MAYA_BASE_IMAGE` | `docker.io/mixa3607/rocm-gfx906:<rocm>-complete` | Base image |
 | `MAYA_REPO` | `https://github.com/mw00/project-maya.git` | Source repository |
 | `MAYA_BRANCH` | `v1.1.21` | Source tag/branch |
-| `MAYA_COMMIT` | `451f9cb6a21ea65673bdde2e57b4a670ae2b8859` | Pinned source SHA |
+| `MAYA_COMMIT` | unset | Optional source SHA (the versioned preset pins it) |
 | `MAYA_PATCH` | `gfx906.patch` | Patch under `build-context/patch/` |
-| `MAYA_BUILD_JOBS` | `4` | Build parallelism |
+| `MAYA_BUILD_JOBS` | unset | Optional parallelism limit; otherwise `nproc` |
 | `MAYA_CMAKE_HIP_FLAGS` | empty | Additional HIP compiler flags |
 | `MAYA_CCACHE_MAXSIZE` | `2G` | Persistent compiler-cache limit |
 | `MAYA_PRESET_NAME` | `<source>-rocm-<rocm>` | Image tag prefix |
@@ -59,10 +59,12 @@ download model weights.
 | `MAYA_FORCE_BUILD` | `0` | Rebuild an existing tag |
 | `REPO_GIT_REF` | current Git ref | Build revision suffix |
 
-When changing the source tag, also change `MAYA_COMMIT`, or explicitly set it
-to an empty string to follow the tag/branch. Incompatible patches fail the build.
+When using a versioned preset, change or unset its `MAYA_COMMIT` when changing
+the source tag. Without a commit override, the build follows the tag/branch.
+Incompatible patches fail the build.
 `SOURCE_COMMIT` records the resolved SHA; `build-hip/MAYA-BUILD.json` records
 the patched source hash, architecture and HIP flags so setup reuses the engines.
+The final stage runs `extra/validate-build.sh` to check engine library dependencies.
 
 For optional max-ILP compilation, use a separate tag:
 

@@ -2,9 +2,9 @@
 ARG ROCM_IMAGE="docker.io/mixa3607/rocm-gfx906:10.1-complete"
 ARG MAYA_REPO="https://github.com/mw00/project-maya.git"
 ARG MAYA_BRANCH="v1.1.21"
-ARG MAYA_COMMIT="451f9cb6a21ea65673bdde2e57b4a670ae2b8859"
+ARG MAYA_COMMIT
 ARG MAYA_PATCH="gfx906.patch"
-ARG MAYA_BUILD_JOBS="4"
+ARG MAYA_BUILD_JOBS
 ARG CMAKE_HIP_FLAGS=""
 ARG CCACHE_MAXSIZE="2G"
 
@@ -29,7 +29,7 @@ ARG MAYA_COMMIT
 RUN <<'EOF' bash
   set -euo pipefail
   git clone --depth 1 --branch "$MAYA_BRANCH" "$MAYA_REPO" .
-  if [ -n "$MAYA_COMMIT" ]; then
+  if [ -n "${MAYA_COMMIT:-}" ]; then
       git fetch --depth 1 origin "$MAYA_COMMIT"
       git checkout --detach FETCH_HEAD
   fi
@@ -77,7 +77,7 @@ CMAKE_ARGS=(
     -DSTRATA_GGML_DIR="$PWD/third_party/llama.cpp"
 )
 cmake -S . -B build-hip -G Ninja "${CMAKE_ARGS[@]}"
-cmake --build build-hip --target maya maya-ds4 --parallel "$MAYA_BUILD_JOBS"
+cmake --build build-hip --target maya maya-ds4 --parallel "${MAYA_BUILD_JOBS:-$(nproc)}"
 
 # Let upstream setup reuse the precompiled engines instead of rebuilding them.
 python3 - <<'PY'
@@ -88,13 +88,13 @@ import setup
 
 rocm = os.environ['ROCM_PATH']
 meta = {
-  'backend': 'hip', 
+  'backend': 'hip',
   'src': setup.source_hash(setup.ENGINE_SOURCES),
   'archs': ['gfx906'],
   'rocm': rocm,
   'gpu_ids': [0],
   'llama': str(Path('third_party/llama.cpp').resolve()),
-  'lib_dirs': [rocm + '/lib'], 
+  'lib_dirs': [rocm + '/lib'],
   'targets': ['maya', 'maya-ds4'],
   'hip_flags': os.environ['CMAKE_HIP_FLAGS']
 }
@@ -104,39 +104,14 @@ EOF
 
 ############# Runtime #############
 FROM rocm_base AS final
-COPY --from=files_maya /opt/maya /opt/maya
-
 RUN python3 -m venv .venv
 ENV PATH="/opt/maya/.venv/bin:${PATH}"
-RUN python - <<'PY'
-import json
-from pathlib import Path
-import subprocess
-import sys
-import setup
-
-packages = [p for p in setup.PY_PACKAGES if p not in ('cmake', 'ninja')]
-subprocess.run([sys.executable, '-m', 'pip', 'install', '--no-cache-dir', *packages,
-                'tokenizers', 'huggingface_hub', 'safetensors', './third_party/llama.cpp/gguf-py'], check=True)
-# Engines are prebuilt; the installer's build-only dependencies are handled above.
-(Path(sys.prefix) / '.strata-pip.json').write_text(json.dumps(setup.PY_PACKAGES + ['tokenizers']))
-PY
-
+COPY --from=files_maya /opt/maya /opt/maya
 COPY --from=build_maya /opt/maya/build-hip/maya /opt/maya/build-hip/maya-ds4 /opt/maya/build-hip/MAYA-BUILD.json ./build-hip/
-COPY --chmod=755 extra/entrypoint.sh /usr/local/bin/maya
-RUN <<'EOF' bash
-set -euo pipefail
-for binary in build-hip/maya build-hip/maya-ds4; do
-    ldd "$binary" > /tmp/maya-ldd.log
-    if grep -q 'not found' /tmp/maya-ldd.log; then
-        cat /tmp/maya-ldd.log
-        exit 1
-    fi
-done
-rm /tmp/maya-ldd.log
-EOF
+COPY extra/ /opt/maya/extra/
+RUN /opt/maya/extra/install-python-deps.sh && /opt/maya/extra/validate-build.sh
 
 EXPOSE 8080
 VOLUME ["/data"]
-ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/maya"]
+ENTRYPOINT ["/usr/bin/tini", "--", "/opt/maya/extra/entrypoint.sh"]
 CMD ["--help"]

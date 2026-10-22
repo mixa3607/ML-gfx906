@@ -11,8 +11,6 @@ source ../.build/logger.sh
 : "${MAYA_BASE_IMAGE:="docker.io/mixa3607/rocm-gfx906:${MAYA_ROCM_VERSION}-complete"}"
 : "${MAYA_REPO:="https://github.com/mw00/project-maya.git"}"
 : "${MAYA_BRANCH:="v1.1.21"}"
-: "${MAYA_COMMIT="451f9cb6a21ea65673bdde2e57b4a670ae2b8859"}"
-: "${MAYA_BUILD_JOBS:="4"}"
 : "${MAYA_CMAKE_HIP_FLAGS:=""}"
 : "${MAYA_CCACHE_MAXSIZE:="2G"}"
 : "${MAYA_PATCH:="gfx906.patch"}"
@@ -32,22 +30,25 @@ function build {
     --build-arg ROCM_IMAGE="$MAYA_BASE_IMAGE"
     --build-arg MAYA_REPO="$MAYA_REPO"
     --build-arg MAYA_BRANCH="$MAYA_BRANCH"
-    --build-arg MAYA_COMMIT="$MAYA_COMMIT"
     --build-arg MAYA_PATCH="$MAYA_PATCH"
-    --build-arg MAYA_BUILD_JOBS="$MAYA_BUILD_JOBS"
     --build-arg CMAKE_HIP_FLAGS="$MAYA_CMAKE_HIP_FLAGS"
     --build-arg CCACHE_MAXSIZE="$MAYA_CCACHE_MAXSIZE"
     --label org.opencontainers.image.source="https://github.com/mixa3607/ML-gfx906/tree/${REPO_GIT_REF}/project-maya"
     --label org.opencontainers.image.version="$MAYA_BRANCH"
-    --label org.opencontainers.image.revision="$MAYA_COMMIT"
     --progress plain --target final --file ./build-image.Dockerfile --pull
   )
+  if [ -n "${MAYA_COMMIT:-}" ]; then
+    args+=(--build-arg MAYA_COMMIT="$MAYA_COMMIT" --label org.opencontainers.image.revision="$MAYA_COMMIT")
+  fi
+  if [ -n "${MAYA_BUILD_JOBS:-}" ]; then
+    args+=(--build-arg MAYA_BUILD_JOBS="$MAYA_BUILD_JOBS")
+  fi
   if [ "$MAYA_IS_RELEASE" = 1 ]; then
     args+=(--tag "${MAYA_IMAGE}:${MAYA_PRESET_NAME}")
   fi
   if [ "$MAYA_PUSH" = 1 ]; then args+=(--push); else args+=(--load); fi
   mkdir -p logs
-  print INFO "Build Maya ${MAYA_BRANCH} (${MAYA_COMMIT}), gfx906, patch ${MAYA_PATCH}"
+  print INFO "Build Maya ${MAYA_BRANCH} (${MAYA_COMMIT:-tag/branch tip}), gfx906, patch ${MAYA_PATCH}"
   docker buildx build "${args[@]}" ./build-context 2>&1 | tee "logs/build_$(date +%Y%m%d%H%M%S).log"
 }
 
