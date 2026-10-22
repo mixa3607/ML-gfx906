@@ -1,0 +1,281 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a96fe52..b1c8441 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -164,6 +164,8 @@ target_compile_definitions(strata-dequant PRIVATE STRATA_DEQUANT_SELFTEST)
+ if(STRATA_BUILD_TESTS)
+   add_executable(ds4_prefill_stats_test tests/ds4_prefill_stats_test.cpp)
+   add_test(NAME ds4_prefill_stats_test COMMAND ds4_prefill_stats_test)
++  add_executable(ds4_ram_slice_test tests/ds4_ram_slice_test.cpp)
++  add_test(NAME ds4_ram_slice_test COMMAND ds4_ram_slice_test)
+   # the reader refuses a duplicate tensor name at open, naming it (a synthetic GGUF: no model, no GPU)
+   add_executable(gguf_reader_test src/artifact/gguf_reader_test.cpp)
+   target_link_libraries(gguf_reader_test PRIVATE strata_artifact)
+diff --git a/README.md b/README.md
+index 836419a..0cd694e 100644
+--- a/README.md
++++ b/README.md
+@@ -282,3 +282,9 @@ Speed reports, bug reports and pull requests are welcome: [CONTRIBUTING.md](CONT
+ - The dashboard's font: Outfit (SIL Open Font License 1.1, `serve/web/fonts/OFL.txt`).
+ - Maya is open source under the [MIT License](LICENSE); the notices of Strata, ggml, exllamav3 and beellama.cpp stay
+   with every copy.
++
++### Experimental HIP DeepSeek prefill tuning
++
++| Environment variable | Default | Effect |
++| --- | --- | --- |
++| `DS4_SKIP_UNPICKED` | `0` | HIP only: skip zero-row expert transfers after routing; stage only each TP member's required RAM-copy gate/up rows. [Validation and limitations](docs/ds4-skip-unpicked.md). |
+diff --git a/docs/ds4-skip-unpicked.md b/docs/ds4-skip-unpicked.md
+new file mode 100644
+index 0000000..effb024
+--- /dev/null
++++ b/docs/ds4-skip-unpicked.md
+@@ -0,0 +1,34 @@
++# Opt-in HIP DeepSeek prefill transfers
++
++Set `DS4_SKIP_UNPICKED=1` in the engine environment. Default is off; CUDA ignores it. This affects the normal chunked prefill streamer, not `DS4_FLOW_TP` or decode. `DS4_FLOW_STATS=1` reports copied/skipped expert counts.
++
++Wait for each layer/chunk routing result and skip zero-row experts without compacting virtual slots or changing batches, kernels or accumulation order. Transfers still overlap computation within each layer. With explicit RAM copies, stage only the TP member's gate/up rows into existing blob offsets; keep full down matrices for strided DMA. File-backed reads retain their existing layout. Deferring cross-layer prefetch may hurt workloads with many active experts.
++
++## Measured on the earlier base
++
++Base: `abc09c74ba692d808062dfa92d2b7c081831ac03`. Ryzen 9950X, 256 GB RAM, two Radeon AI PRO R9700 32 GB cards (PCIe 5 x8 upstream each), one 16 GB RX 9070-family card behind PCIe 4 x4, ROCm 7.14.1. DeepSeek-V4.1-Flash-1017 UD-Q8_K_XL, context 262144, TP2 plus singleton, `DS4_SPLIT=36,4`, `--reserve-mib 2048 --mmap-experts off --dspark none`. Both arms use identical hardware/split. `DS4_FLOW_TP` and `DS4_PROF` off.
++
++Fresh synthetic API prompts, one output token, temperature zero, reasoning none, every response `cache_n=0`:
++
++| Prompt tokens | Baseline seconds | Enabled seconds | Speedup |
++| --- | --- | --- | --- |
++| 1043 A | 42.293 | 17.988 | 2.35x |
++| 1043 B | 40.671 | 16.698 | 2.44x |
++| 2067 C | 42.167 | 19.558 | 2.16x |
++
++Individual measurements, not confidence intervals or a general performance claim. Routing diversity and cache warmness matter. Other quants, NUMA hardware and CUDA have not been measured.
++
++## Correctness
++
++Original and enabled binaries on that base consumed identical 512 input IDs and separate copies of a frozen initial expert profile, identical weights and settings. CLI: `--ids <comma-separated IDs> --window 512 --n 0 --dump-logits <output.f32>`. All 512 x 129280 float32 logits were bit-identical, maximum absolute difference zero. An independent original repeat was also bit-identical. Copy a frozen profile for each arm; do not reuse the profile modified by the preceding run.
++
++The current-main port still needs a full-model parity/performance rerun before merge. The earlier numbers do not establish parity or performance on the newer upstream engine.
++
++CPU regression coverage: random byte payloads, TP widths 1/2/4, RAM parts 1/2, gate/up and full-down slices, bounds and destination guards. Run:
++
++```sh
++g++ -std=c++20 -O2 -DNDEBUG -Wall -Wextra -fsanitize=address,undefined tests/ds4_ram_slice_test.cpp -o /tmp/ds4_ram_slice_test
++/tmp/ds4_ram_slice_test
++```
++
++Also registered as `ds4_ram_slice_test` with `STRATA_BUILD_TESTS=ON`. Byte-slicing checks do not replace full-model parity.
+diff --git a/src/ds4/ds4_model.cu b/src/ds4/ds4_model.cu
+index 7dada35..af3c3e5 100644
+--- a/src/ds4/ds4_model.cu
++++ b/src/ds4/ds4_model.cu
+@@ -22,6 +22,7 @@
+ #include "ds4_pcie.hpp"
+ #include "ds4_pool.hpp"
+ #include "ds4_prefill_stats.hpp"
++#include "ds4_ram_slice.hpp"
+ #include "ds4_vision.cuh"
+ #include "strata/kernels/cpu/exl3_cpu.hpp"
+ #include "strata/kernels/exl3.hpp"
+@@ -2061,6 +2062,26 @@ struct Model::Impl {
+         }
+         return read_mx_file(l, e, blob);
+     }
++    // Keep the full-blob offsets expected by stream_expert, but stage only the
++    // rows this TP member consumes. Down retains its full rows for strided DMA.
++    bool read_mx_member(const Layer& l, int e, int mi, uint8_t* blob) const {
++        if (!copy_mode || l.nm == 1 || l.ram[(size_t) e] < 0) return read_mx(l, e, blob);
++        for (int r = 0; r < 3; ++r) {
++            const size_t nb = (size_t) (mx_n(r) / NH) * mx_row_b(l, r);
++            const size_t off = mx_read_off(l, mi, r);
++            std::array<RamSlice, 2> spans;
++            const int ns = ram_slices(nb, NH, off, mx_read_len(l, r), spans);
++            if (ns < 0) return false;
++            for (int i = 0; i < ns; ++i) {
++                const RamSlice& span = spans[(size_t) i];
++                std::memcpy(blob + l.lay.trellis[r] + off + span.destination,
++                            ram_part[(size_t) l.ram[(size_t) e]][(size_t) span.part] +
++                                cp_lay[(size_t) l.il][(size_t) r] + span.source,
++                            span.bytes);
++            }
++        }
++        return true;
++    }
+     bool read_mx_file(const Layer& l, int e, uint8_t* blob) const {   // (the movers: never a slot that may change)
+         for (int r = 0; r < 3; ++r)
+             if (!pk.read_at(l.mx_file[r], l.mx_off[r] + (uint64_t) e * l.mx_stride[r], mx_part_bytes(l, r),
+@@ -3503,6 +3524,9 @@ struct Model::Impl {
+                          (unsigned long long) prefill.vram_picks, (unsigned long long) prefill.unique_uses,
+                          (unsigned long long) prefill.vram_unique_uses, (unsigned long long) streamed_bytes);
+         }
++        int routed_layer = -1, routed_chunk = -1;
++        std::vector<int> routed_bounds;
++        size_t skipped = 0, copied = 0;
+     };
+     // in place (file_experts): the batches' file regions read ahead of their copies - POSIX_FADV_WILLNEED, the kernel
+     // reading them in the background in large requests, where the copies alone fault the pages in a few at a time -
+@@ -3544,10 +3568,25 @@ struct Model::Impl {
+     }
+     bool copy_ahead(Dev& d, Chunk& c, Streamer& S, int di, std::string& err) {
+         const int P = Chunk::kParts;
++#if defined(STRATA_USE_HIP)
++        static const bool skip_unpicked = std::getenv("DS4_SKIP_UNPICKED") != nullptr &&
++                                          std::atoi(std::getenv("DS4_SKIP_UNPICKED")) != 0;
++#else
++        constexpr bool skip_unpicked = false;
++#endif
+         while (S.cp < S.b.size() && S.cp < S.kp + P) {
+             const Batch& bt = S.b[S.cp];
++            // Wait for this layer's routing rather than staging every expert
++            // speculatively. Copies still overlap compute within the layer.
++            if (skip_unpicked && (bt.il != S.routed_layer || bt.k != S.routed_chunk)) break;
+             const int half = (int) (S.cp % P);
+             const Layer& l0 = L[(size_t) bt.il];
++            // Preserve the original virtual slots, batches and accumulation order.
++            const auto picked = [&](int i) {
++                if (!skip_unpicked || bt.il != S.routed_layer || bt.k != S.routed_chunk) return true;
++                const size_t v = (size_t) l0.n_slots + bt.j0 + i;
++                return S.routed_bounds[v + 1] > S.routed_bounds[v];
++            };
+             int mi = 0;
+             for (int m = 0; m < l0.nm; ++m)
+                 if (member(l0, m).dev == di) mi = m;
+@@ -3558,8 +3597,11 @@ struct Model::Impl {
+                 sb = c.stage + (size_t) half * (c.ring_n / P) * c.stage_stride;
+                 std::atomic<bool> bad{false};
+                 c.readers->run(bt.n, [&](int i) {
++                    if (!picked(i)) return;
+                     const int e = l0.host_list[(size_t) (bt.j0 + i)];
+-                    if (l0.lay.fmt == gg::kFmtMXFP4 ? !read_mx(l0, e, sb + (size_t) i * c.stage_stride)
++                    uint8_t* dest = sb + (size_t) i * c.stage_stride;
++                    if (l0.lay.fmt == gg::kFmtMXFP4 ? !(skip_unpicked ? read_mx_member(l0, e, mi, dest)
++                                                                   : read_mx(l0, e, dest))
+                                                     : !pk.read_at(l0.region_file[(size_t) e], l0.region_off[(size_t) e],
+                                                                   l0.region_bytes[(size_t) e],
+                                                                   sb + (size_t) i * c.stage_stride))
+@@ -3571,6 +3613,8 @@ struct Model::Impl {
+                 }
+             }
+             for (int i = 0; i < bt.n; ++i) {
++                if (!picked(i)) { ++S.skipped; continue; }
++                if (skip_unpicked) ++S.copied;
+                 uint8_t* dst = c.ring + ((size_t) half * (c.ring_n / P) + i) * c.ring_stride;
+                 if (!stream_expert(l0, mi, l0.host_list[(size_t) (bt.j0 + i)], dst, c.cs, err,
+                                    sb != nullptr ? sb + (size_t) i * c.stage_stride : nullptr))
+@@ -8560,6 +8604,14 @@ struct Model::Impl {
+         // the streamed experts as their batches arrive (each batch's slots freed for the copies at once), the VRAM ones
+         // in shares between them (the device works while the copies run)
+         const int di = l.dev, P = Chunk::kParts;
++#if defined(STRATA_USE_HIP)
++        if (std::getenv("DS4_SKIP_UNPICKED") != nullptr && std::atoi(std::getenv("DS4_SKIP_UNPICKED")) != 0) {
++            S.routed_layer = L0.il;
++            S.routed_chunk = wp.k;
++            S.routed_bounds = b;
++            if (!copy_ahead(d, c, S, di, err)) return false;
++        }
++#endif
+         int nb = 0;
+         for (size_t q = S.kp; q < S.b.size() && S.b[q].il == L0.il && S.b[q].k == wp.k; ++q) ++nb;
+         int v_done = 0;
+@@ -9008,6 +9060,9 @@ struct Model::Impl {
+             }
+         }
+         S.report_prefill(d.id, std::accumulate(run.T.begin(), run.T.end(), 0), chunk, c.stream_bytes - stream_start);
++        if (!c.flow && S.copied + S.skipped > 0 && std::getenv("DS4_FLOW_STATS") != nullptr)
++            std::fprintf(stderr, "ds4 prompt batches, CUDA%d: %zu experts copied, %zu unpicked experts skipped\n",
++                         devs[(size_t) di].id, S.copied, S.skipped);
+         return true;
+     }
+ 
+diff --git a/src/ds4/ds4_ram_slice.hpp b/src/ds4/ds4_ram_slice.hpp
+new file mode 100644
+index 0000000..9c0a557
+--- /dev/null
++++ b/src/ds4/ds4_ram_slice.hpp
+@@ -0,0 +1,28 @@
++#pragma once
++
++#include <algorithm>
++#include <array>
++#include <cstddef>
++
++namespace strata::ds4 {
++struct RamSlice {
++    int part;
++    size_t source, destination, bytes;
++};
++
++// The RAM copy is split into equal contiguous row ranges on NH NUMA nodes.
++// Reassemble only [offset, offset + bytes) into a packed staging region.
++inline int ram_slices(size_t part_bytes, int parts, size_t offset, size_t bytes,
++                      std::array<RamSlice, 2>& out) {
++    if (parts < 1 || parts > 2 || offset > part_bytes * parts || bytes > part_bytes * parts - offset)
++        return -1;
++    int count = 0;
++    for (int part = 0; part < parts; ++part) {
++        const size_t begin = std::max(offset, (size_t) part * part_bytes);
++        const size_t end = std::min(offset + bytes, (size_t) (part + 1) * part_bytes);
++        if (begin < end)
++            out[count++] = {part, begin - (size_t) part * part_bytes, begin - offset, end - begin};
++    }
++    return count;
++}
++}  // namespace strata::ds4
+diff --git a/tests/ds4_ram_slice_test.cpp b/tests/ds4_ram_slice_test.cpp
+new file mode 100644
+index 0000000..9749954
+--- /dev/null
++++ b/tests/ds4_ram_slice_test.cpp
+@@ -0,0 +1,52 @@
++#ifdef NDEBUG
++#undef NDEBUG
++#endif
++#include "../src/ds4/ds4_ram_slice.hpp"
++#include <cassert>
++#include <cstring>
++#include <random>
++#include <vector>
++#include <cstdio>
++
++int main() {
++    std::mt19937 rng(20261019);
++    for (int parts : {1, 2}) {
++        for (int members : {1, 2, 4}) {
++            for (int trial = 0; trial < 100; ++trial) {
++                const size_t rows = 128 * (1 + rng() % 16), stride = 18 * (1 + rng() % 16);
++                std::vector<unsigned char> matrix(rows * stride);
++                for (auto& byte : matrix) byte = (unsigned char) rng();
++                const size_t pb = matrix.size() / parts;
++                for (int member = 0; member < members; ++member) {
++                    // Gate/up select contiguous rows. Down requires the whole matrix
++                    // in staging before the GPU's strided column-slice copy.
++                    for (bool down : {false, true}) {
++                        const size_t length = down ? matrix.size() : matrix.size() / members;
++                        const size_t offset = down ? 0 : member * length;
++                        std::vector<unsigned char> staged(length + 32, 0xa5);
++                        std::array<strata::ds4::RamSlice, 2> slices;
++                        int n = strata::ds4::ram_slices(pb, parts, offset, length, slices);
++                        assert(n > 0 && n <= parts);
++                        size_t copied = 0;
++                        for (int i = 0; i < n; ++i) {
++                            const auto& s = slices[i];
++                            assert(s.source + s.bytes <= pb);
++                            assert(s.destination + s.bytes <= length);
++                            std::memcpy(staged.data() + 16 + s.destination,
++                                        matrix.data() + s.part * pb + s.source, s.bytes);
++                            copied += s.bytes;
++                        }
++                        assert(copied == length);
++                        assert(std::memcmp(staged.data() + 16, matrix.data() + offset, length) == 0);
++                        for (int i = 0; i < 16; ++i)
++                            assert(staged[i] == 0xa5 && staged[length + 16 + i] == 0xa5);
++                    }
++                }
++            }
++        }
++    }
++    std::array<strata::ds4::RamSlice, 2> slices;
++    assert(strata::ds4::ram_slices(32, 2, 60, 8, slices) == -1);
++    assert(strata::ds4::ram_slices(32, 2, 0, 0, slices) == 0);
++    std::puts("PASS: packed gate/up and full down staging, TP 1/2/4, NUMA 1/2, guards and bounds");
++}

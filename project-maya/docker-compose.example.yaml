@@ -1,0 +1,25 @@
+services:
+  maya:
+    image: registry.arkprojects.space/apps/maya-gfx906:v1.1.21-rocm-10.1
+    command: [serve]
+    environment:
+      MAYA_CONFIG: /data/config/maya-maya-s24-hip.json
+      HIP_VISIBLE_DEVICES: "0,1,2,3"
+      HSA_XNACK: "0"
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ./data:/data
+      - ~/.cache/huggingface:/root/.cache/huggingface
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    cap_add:
+      - IPC_LOCK
+    security_opt:
+      - seccomp=unconfined
+    shm_size: 1gb
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1

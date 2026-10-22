@@ -1,0 +1,62 @@
+name: Maya gfx906 build (experimental)
+
+on:
+  workflow_dispatch:
+    inputs:
+      maya_tag:
+        description: Maya source tag
+        default: v1.1.21
+        required: true
+      maya_commit:
+        description: Source commit (empty = tag tip)
+        default: 451f9cb6a21ea65673bdde2e57b4a670ae2b8859
+      target:
+        description: Image target
+        type: choice
+        options: [final, test]
+        default: final
+      force_build:
+        description: Rebuild an existing image
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      MAYA_BRANCH: ${{ inputs.maya_tag }}
+      MAYA_COMMIT: ${{ inputs.maya_commit }}
+      MAYA_TARGET: ${{ inputs.target }}
+      MAYA_FORCE_BUILD: ${{ inputs.force_build && '1' || '0' }}
+      MAYA_BUILD_JOBS: "2"
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: docker/setup-buildx-action@v3
+      - name: Select registry and log in
+        id: registry
+        uses: ./.github/workflows/actions/registry-login
+        with:
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Resolve build parameters
+        env:
+          REGISTRY_ROOT: ${{ steps.registry.outputs.registry_root }}
+        run: |
+          echo "MAYA_IMAGE=$REGISTRY_ROOT/maya-gfx906" >> "$GITHUB_ENV"
+      - name: Check build
+        id: check
+        run: |
+          needed="$(./project-maya/build-and-push.image.sh check)"
+          echo "needed=$needed" >> "$GITHUB_OUTPUT"
+      - name: Aggressive cleanup
+        if: steps.check.outputs.needed == 'true'
+        uses: ./.github/workflows/actions/cleanup-space-action
+      - name: Build Maya image
+        if: steps.check.outputs.needed == 'true'
+        run: ./project-maya/build-and-push.image.sh build
