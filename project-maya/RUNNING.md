@@ -32,21 +32,25 @@ for Kubernetes preparation Jobs.
 ### 1. Vision tower
 
 The revision and files are pinned by upstream's
-`tools/ds4/download_gguf.json`:
+`tools/ds4/download_gguf.json`. The image includes the `hf` CLI; it downloads
+into the shared cache, which must be writable:
 
 ```bash
 MAYA_REV=1bae0e1088993b9b82de08f59de5be5a34e42170
-MAYA_HF=https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017/resolve/$MAYA_REV
+hf download deepseek-ai/DeepSeek-V4.1-Flash-1017 \
+  model-00001-of-00048.safetensors config.json \
+  --revision "$MAYA_REV"
+
+VISION_SNAP=/root/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-V4.1-Flash-1017/snapshots/$MAYA_REV
 mkdir -p /data/vision
-curl -fL --retry 5 -C - -o /data/vision/model-00001-of-00048.safetensors \
-  "$MAYA_HF/model-00001-of-00048.safetensors"
-curl -fL --retry 5 -C - -o /data/vision/config.json \
-  "$MAYA_HF/config.json"
+ln -sf "$VISION_SNAP/model-00001-of-00048.safetensors" /data/vision/
+ln -sf "$VISION_SNAP/config.json" /data/vision/
+
 cd /opt/maya
 python tools/ds4/vision_pack.py --dir /data/vision
 ```
 
-Allow about 2 GB for the downloaded shard and the generated `vision.bin` /
+Allow about 2 GB for the cached shard and the generated `vision.bin` /
 `vision.json`. This is separate from the language-model cache and is downloaded
 once. The converter reads the three image-marker rows from shard 2 with an HTTP
 Range request, so that whole shard is not downloaded. DS4's native vision path
@@ -54,8 +58,8 @@ does not use the cached `mmproj-F16.gguf`.
 
 ### 2. Build the language-model pack
 
-The cache already contains the language model. The snapshot below is the one
-used by the cluster's llama-server; replace it if your cache has another one:
+The cache already contains the language model. The snapshot below is an
+example; use the snapshot that is present in your cache:
 
 ```bash
 SNAPSHOT=/root/.cache/huggingface/hub/models--unsloth--DeepSeek-V4.1-Flash-1017-GGUF/snapshots/60ad3651641b5c97679c807e064ab1d7a3ca1455
@@ -189,15 +193,21 @@ enables the native tower.
 2. Mount writable persistent storage at `/data`, the shared HF cache at
    `/root/.cache/huggingface`, and a memory-backed `emptyDir` at `/dev/shm`.
    Mount the whole cache, not just a snapshot, because its files are symlinks
-   into `blobs/`. The cluster's cache is the `shared-hf-cache` volume
-   (`/srv/ml/shared-hf-cache` on the worker):
+   into `blobs/`. The cache must be writable so `hf` can add the vision files.
+   Example paths are `/srv/ml/maya` for `/data` and
+   `/srv/ml/shared-hf-cache` for the cache:
 
 ```yaml
 extraVolumes:
+  - name: maya-data
+    hostPath:
+      path: /srv/ml/maya
   - name: shared-hf-cache
     hostPath:
       path: /srv/ml/shared-hf-cache
 extraVolumeMounts:
+  - name: maya-data
+    mountPath: /data
   - name: shared-hf-cache
     mountPath: /root/.cache/huggingface
 ```

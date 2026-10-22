@@ -2,8 +2,8 @@
 
 [Project Maya](https://github.com/mw00/project-maya) for Vega20 / MI50 / MI60.
 The image contains the HIP `maya` (GLM) and `maya-ds4` (DeepSeek) engines, the
-CPU GLM vision helper, upstream tools and Python dependencies. Model weights
-and PyTorch conversion are not included.
+CPU GLM vision helper, upstream tools, Python dependencies and the `hf` CLI.
+Model weights and PyTorch conversion are not included.
 
 ## Compatibility
 
