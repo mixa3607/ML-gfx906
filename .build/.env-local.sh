@@ -27,3 +27,6 @@ export RVS_PUSH=1
 
 # rocm tb
 export TB_PUSH=1
+
+# maya
+export MAYA_IMAGE="registry.arkprojects.space/apps/maya-gfx906"

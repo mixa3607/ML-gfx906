@@ -13,7 +13,7 @@ ARG CCACHE_MAXSIZE="2G"
 FROM ${ROCM_IMAGE} AS rocm_base
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      bash ca-certificates python3 python3-venv tini libatomic1 libgomp1 git && \
+      bash ca-certificates curl python3 python3-venv tini libatomic1 libgomp1 git && \
     rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONUNBUFFERED=1 \
@@ -88,7 +88,7 @@ import os
 from pathlib import Path
 import setup
 
-rocm = os.environ['ROCM_PATH']
+rocm = str(Path(os.environ.get('ROCM_PATH', '/opt/rocm')).resolve())
 meta = {
   'backend': 'hip',
   'src': setup.source_hash(setup.ENGINE_SOURCES),
@@ -98,9 +98,8 @@ meta = {
   'llama': str(Path('third_party/llama.cpp').resolve()),
   'lib_dirs': [rocm + '/lib'],
   'targets': ['maya', 'maya-ds4'],
-  'hip_flags': os.environ['CMAKE_HIP_FLAGS']
 }
-Path('build-hip/MAYA-BUILD.json').write_text(json.dumps(meta, indent=2) + '\n')
+Path('build-hip/MAYA-BUILD.json').write_text(json.dumps(meta, indent=1) + '\n')
 PY
 EOF
 
@@ -109,13 +108,20 @@ set -euo pipefail
 cmake -S tools/vision -B build-vision-cpu -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
     -DLLAMA_DIR="$PWD/third_party/llama.cpp" \
-    -DSTRATA_PORTABLE=ON -DSTRATA_VISION_CUDA=OFF -DGGML_HIP=OFF \
+    -DSTRATA_PORTABLE=ON -DSTRATA_VISION_CUDA=OFF \
     -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
 cmake --build build-vision-cpu --target maya-vision --parallel "${MAYA_BUILD_JOBS:-$(nproc)}"
 EOF
 
 ############# Runtime #############
 FROM rocm_base AS final
+# `setup` checks for a host C++ compiler even when it reuses the prebuilt
+# engines; keep one so the advertised setup path works. Ninja comes from pip;
+# make is the fallback generator.
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends g++ make && \
+    rm -rf /var/lib/apt/lists/*
+ENV CMAKE_GENERATOR=Ninja
 RUN python3 -m venv .venv
 ENV PATH="/opt/maya/.venv/bin:${PATH}"
 COPY --from=files_maya /opt/maya /opt/maya

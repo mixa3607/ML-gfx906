@@ -1,35 +1,48 @@
 # Running Maya
 
-The image contains prebuilt HIP text engines and a CPU `maya-vision` helper.
-DeepSeek 4.1 uses its own GPU vision tower inside `maya-ds4`; GLM uses the CPU
-helper. Model weights are not part of the image.
+The image contains prebuilt HIP text engines (`maya`, `maya-ds4`), the CPU
+`maya-vision` helper, upstream tools and their Python dependencies. Model
+weights are not part of the image.
 
-Use the same model/data mount paths during preparation and serving. In the
-commands below, `/models` contains GGUF files and `/data` is writable persistent
-storage. Run preparation commands inside the image, not on the Kubernetes host.
-
-## DeepSeek 4.1: manual JSON
-
-### 1. Prepare the vision tower
-
-Use the original vision weights and upstream's converter. The revision below
-is pinned by v1.1.24's `tools/ds4/download_gguf.json`:
+Use the same model and data mount paths during preparation and serving. Below,
+`/models` contains GGUF files and `/data` is writable persistent storage. Run
+preparation commands inside the image, for example:
 
 ```bash
-hf download deepseek-ai/DeepSeek-V4.1-Flash-1017 \
-  model-00001-of-00048.safetensors config.json \
-  --revision 1bae0e1088993b9b82de08f59de5be5a34e42170 \
-  --local-dir /data/vision
+docker run --rm -it \
+  --device /dev/kfd --device /dev/dri \
+  --group-add video --group-add "$(getent group render | cut -d: -f3)" \
+  --cap-add IPC_LOCK --shm-size 2g --ulimit memlock=-1:-1 \
+  -v "$PWD/data:/data" -v /path/to/models:/models:ro \
+  --entrypoint bash YOUR_IMAGE
+```
+
+## DeepSeek 4.1: manual preparation
+
+This path is reproducible and needs no interactive prompts, so it is suitable
+for Kubernetes preparation Jobs.
+
+### 1. Vision tower
+
+The revision and files are pinned by upstream's
+`tools/ds4/download_gguf.json`:
+
+```bash
+MAYA_REV=1bae0e1088993b9b82de08f59de5be5a34e42170
+MAYA_HF=https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017/resolve/$MAYA_REV
+mkdir -p /data/vision
+curl -fL --retry 5 -C - -o /data/vision/model-00001-of-00048.safetensors \
+  "$MAYA_HF/model-00001-of-00048.safetensors"
+curl -fL --retry 5 -C - -o /data/vision/config.json \
+  "$MAYA_HF/config.json"
 cd /opt/maya
 python tools/ds4/vision_pack.py --dir /data/vision
 ```
 
-The download is about 971 MB. The converter fetches three image-marker rows
-(30 KB plus the safetensors header) from shard 2 using HTTP Range; it does not
-download that whole shard. It writes `vision.bin` and `vision.json`, preserving
-the checkpoint values. Allow about 1.94 GB for the source and generated pack.
-The language-model weights are not downloaded again. DS4's native vision path
-does not use `mmproj-F16.gguf`.
+Allow about 2 GB for the downloaded shard and the generated `vision.bin` /
+`vision.json`. The converter reads the three image-marker rows from shard 2
+with an HTTP Range request, so that whole shard is not downloaded. DS4's native
+vision path does not use `mmproj-F16.gguf`.
 
 ### 2. Build the language-model pack
 
@@ -41,9 +54,13 @@ python tools/ds4/pack_gguf.py \
 
 This writes an index and tokenizer, not another copy of the weights.
 `/models` can remain read-only. The pack records absolute paths to its source
-model and relative paths to the vision data: keep all mounts unchanged.
+model and relative paths to the vision data, so keep the mounts unchanged.
 
 ### 3. Write `/data/config/maya-ds4-hip.json`
+
+The values below are a starting point for four MI50s; adjust GPU indices, CPU
+threads and context for your hardware. The extra VRAM reserve leaves room for
+vision; measure the actual free VRAM under image requests.
 
 ```json
 {
@@ -54,6 +71,7 @@ model and relative paths to the vision data: keep all mounts unchanged.
   "model_name": "deepseek-v4.1-flash",
   "tokenizer": "/data/ds4/tokenizer",
   "log": "/data/maya-ds4.log",
+  "lib_dirs": ["/opt/rocm/lib"],
   "args": [
     "--pack", "/data/ds4",
     "--max-context", "8704",
@@ -69,59 +87,63 @@ model and relative paths to the vision data: keep all mounts unchanged.
     "DS4_RING_MB": "400",
     "DS4_ENGRAM_CACHE_MB": "256",
     "DS4_HIP_ATTN_SWIZZLE": "1",
-    "STRATA_DS4_RAM_TIER": "0",
-    "STRATA_DS4_DISK_SKIP_W": "0",
-    "STRATA_DS4_PROMPT_SKIP": "0"
+    "MAYA_DS4_RAM_TIER": "0",
+    "MAYA_DS4_DISK_SKIP_W": "0",
+    "MAYA_DS4_PROMPT_SKIP": "0"
   }
 }
 ```
 
-Adjust GPU indices, CPU threads and context for your hardware. The extra VRAM
-reserve leaves room for vision; measure actual free VRAM under image requests.
 The example disables speculative decoding and computation skips. With a 192 GB
-RAM limit, do not substitute `--mmap-experts off`: the tested v1.1.24 load tried
-to copy 181.7 GB of experts into RAM and was OOM-killed before serving.
+RAM limit, do not substitute `--mmap-experts off`: it tries to copy the experts
+into RAM and can be OOM-killed before serving.
 
 ### 4. Start the server
 
-Set `MAYA_CONFIG=/data/config/maya-ds4-hip.json` and pass `serve` as the
-container arguments. The entrypoint starts the API on `0.0.0.0:8080` without
-running setup or downloading weights. Use `serve --api-key YOUR_KEY` when
-exposing the API; in Kubernetes obtain the key from a Secret.
+```bash
+docker run -d --name maya \
+  --device /dev/kfd --device /dev/dri \
+  --group-add video --group-add "$(getent group render | cut -d: -f3)" \
+  --cap-add IPC_LOCK --shm-size 2g --ulimit memlock=-1:-1 \
+  -p 127.0.0.1:8080:8080 \
+  -v "$PWD/data:/data" -v /path/to/models:/models:ro \
+  -e MAYA_CONFIG=/data/config/maya-ds4-hip.json \
+  YOUR_IMAGE serve
+```
+
+The entrypoint runs `maya.py`, which validates the config, pack and engine,
+then starts the API and dashboard on `0.0.0.0:8080`. Pass `--api-key YOUR_KEY`
+after `serve` when exposing the API; in Kubernetes obtain the key from a
+Secret. The same flags can be set in the config.
 
 ## DeepSeek 4.1: through setup
 
-Unlike the manual pack command, upstream setup writes its pack inside the
-model directory. For a read-only HF cache, create a writable directory of
-symlinks; do not make the snapshot writable or copy its full contents:
+Upstream setup writes its pack inside the model directory, so that directory
+must be writable. For a read-only HF cache, use the manual path above.
 
 ```bash
-mkdir -p /data/models/UD-Q8_K_XL
-ln -s /models/UD-Q8_K_XL/*.gguf /data/models/UD-Q8_K_XL/
-
-/opt/maya/extra/entrypoint.sh setup \
+docker run --rm -it \
+  --device /dev/kfd --device /dev/dri \
+  --group-add video --group-add "$(getent group render | cut -d: -f3)" \
+  --cap-add IPC_LOCK --shm-size 2g --ulimit memlock=-1:-1 \
+  -v "$PWD/data:/data" -v /path/to/writable-models:/models \
+  YOUR_IMAGE setup \
   --model DeepSeek-V4.1-Flash-1017 --ds4-quant gguf-q8 \
-  --model-dir /data/models/UD-Q8_K_XL \
-  --models-dir /data/models \
+  --model-dir /models/UD-Q8_K_XL \
+  --models-dir /models \
   --gpus 0,1,2,3 --context 8704 --vram-reserve-mib 1280 \
-  --drafting off --repack --plain \
-  --env STRATA_DS4_DISK_SKIP_W=0 --env STRATA_DS4_PROMPT_SKIP=0
+  --drafting off --repack \
+  --env MAYA_DS4_DISK_SKIP_W=0 --env MAYA_DS4_PROMPT_SKIP=0
 ```
 
-Answer **n** to the DSpark download offer and **y** to the vision-tower download
-offer (about 971 MB). Setup runs its own `tools/ds4/vision_pack.py`, writes the
-vision pack to `/data/models/vision`, and adds it to the model index. No custom
-conversion scripts or setup patches are needed. If the vision pack is already
-there, setup reuses it; `--repack` refreshes the model index.
+Setup asks before downloading model files, the DSpark drafter and the vision
+tower. Approve only what you need; the drafter is optional. The entrypoint
+copies the generated `maya-*-hip.json` files to `/data/config/`. Review the
+DeepSeek config before serving: ensure `--dspark none`, add
+`--mmap-experts auto`, and set `"log"` to a path on `/data`.
 
-In v1.1.24, `--drafting off` does not skip the DSpark download offer. Do not pass
-`--download-model`: approve only the vision download. If setup offers to download
-language-model shards, decline and check the mounts and shard list.
-
-Setup copies the generated JSON to `/data/config/maya-ds4-hip.json`. Review it
-before serving: set `--dspark none`, `--mmap-experts auto` and
-`"log": "/data/maya-ds4.log"`. The manual JSON above shows the remaining settings
-of the tested profile. Use the resulting file with `MAYA_CONFIG` and `serve`.
+Do not run this interactive setup as a Kubernetes Job; use the manual path
+above for unattended preparation.
 
 ## GLM vision
 
@@ -140,31 +162,30 @@ to the JSON yourself; a DeepSeek projector cannot be used for GLM:
 
 These are the matching files from upstream's
 [CPU vision instructions](https://github.com/mw00/project-maya/blob/v1.1.24/docs/AMD_MAYA.md#cpu-image-encoder-on-linux).
-The CPU helper is prebuilt using upstream's `glm5next_patch.py`: this adds GLM's
-projector to its pinned llama.cpp. No custom setup changes are applied.
-DeepSeek does **not** use this `vision` JSON member: its vision tensors belong
-to the model pack, and `--vision on` enables the native tower.
+The CPU helper is prebuilt with upstream's `glm5next_patch.py`, which adds
+GLM's projector to its pinned llama.cpp. DeepSeek does **not** use this
+`vision` member: its vision tensors belong to the model pack, and `--vision on`
+enables the native tower.
 
-## Kubernetes flow
+## Kubernetes
 
 1. Build/publish the image, then pin its tag or digest for both preparation and
    serving. Ensure the node's AMD kernel driver works.
 2. Mount writable persistent storage at `/data`, model storage read-only at
    `/models`, and a memory-backed `emptyDir` at `/dev/shm`. Mount an entire HF
    cache rather than just its snapshot when the files are symlinks into `blobs`.
-3. Run a preparation Job with the manual commands or setup above. For manual
-   preparation override `command` with `["bash", "-ec"]`; otherwise pass
-   `["setup", ...]` in `args`, keeping the image entrypoint. Wait for the Job to
-   complete before starting inference.
+3. Run a preparation Job with the manual commands above. Override `command`
+   with `["bash", "-ec"]` and the commands as its argument; keep the image
+   entrypoint for the serving Deployment. Wait for the Job to complete before
+   starting inference.
 4. Start a Deployment with `replicas: 1`, `strategy: {type: Recreate}`,
    `args: ["serve"]` and `MAYA_CONFIG` pointing at the persistent JSON. Reuse
    exactly the same mount paths and node placement as the preparation Job.
 5. Request GPUs using your AMD device plugin. Without a plugin, passing
    `/dev/kfd` and `/dev/dri` requires a device-enabled runtime configuration
-   (the test cluster uses a privileged Pod with explicit device mounts).
-   Do not combine plugin allocation with arbitrary device visibility overrides.
-6. Give the runtime `IPC_LOCK` capability and sufficient CPU/RAM. A memory limit
-   of `192G` is 192 GB decimal; `/dev/shm` and the charged file cache count
+   (the test cluster used a privileged Pod with explicit device mounts).
+6. Give the runtime `IPC_LOCK` and sufficient CPU/RAM. A memory limit of
+   `192G` is 192 GB decimal; `/dev/shm` and the charged file cache count
    against it. Use a startup probe on `/health` with enough time to load the
    model, then a readiness probe. Avoid an aggressive liveness probe during
    long prompts.
@@ -182,35 +203,19 @@ Keep model updates and repacking in explicit preparation Jobs, not in the
 serving container. Never start a second inference process on already occupied
 GPUs just to update the config.
 
-### Existing DS4.1 cache on worker6
-
-Mount `/srv/ml/shared-hf-cache` read-only at `/hf`. The tested snapshot is:
-
-```bash
-SNAPSHOT=/hf/hub/models--unsloth--DeepSeek-V4.1-Flash-1017-GGUF/snapshots/60ad3651641b5c97679c807e064ab1d7a3ca1455
-cd /opt/maya
-python tools/ds4/pack_gguf.py \
-  --model "$SNAPSHOT/UD-Q8_K_XL" --out /data/ds4 --vision /data/vision
-```
-
-Prepare `/data/vision` with the standard commands in step 1 first. The existing
-GGUF language-model shards are reused read-only. Use a separate writable
-hostPath for `/data` and pin both preparation and serving to
-`kube-worker6.arkprojects.lan`. The test uses `/srv/ml/maya-vision-tests` for
-its packs, logs and copied input picture; it does not modify the HF cache.
-
 ## Send a picture
 
-Run this on the machine holding the picture after forwarding port 8080:
+With port 8080 forwarded:
 
 ```bash
-python3 - <<'PY'
+python3 - "$PWD/image.jpg" <<'PY'
 import base64
 import json
-from pathlib import Path
+import sys
 import urllib.request
+from pathlib import Path
 
-image = Path('/mnt/c/Users/mixa3607/Downloads/IMG_20260922_232444_095.jpg')
+image = Path(sys.argv[1])
 payload = {
     'model': 'deepseek-v4.1-flash',
     'messages': [{'role': 'user', 'content': [
@@ -221,8 +226,10 @@ payload = {
     'reasoning_effort': 'none',
     'max_tokens': 256,
 }
-request = urllib.request.Request('http://127.0.0.1:8080/v1/chat/completions',
-    data=json.dumps(payload).encode(), headers={'Content-Type': 'application/json'})
+request = urllib.request.Request(
+    'http://127.0.0.1:8080/v1/chat/completions',
+    data=json.dumps(payload).encode(),
+    headers={'Content-Type': 'application/json'})
 with urllib.request.urlopen(request, timeout=600) as response:
     print(json.dumps(json.load(response), ensure_ascii=False, indent=2))
 PY
@@ -230,30 +237,14 @@ PY
 
 Add an `Authorization: Bearer ...` header if you configured an API key.
 
-## gfx906 vision smoke test
+## Validation
 
-Tested v1.1.24 (`75798d4280dc`), ROCm 10.1, max-ILP, 4 x MI50 32 GB,
-UD-Q8_K_XL, TP2, context 8704, 56 CPU threads and the manual profile above.
-The binaries were built with this Dockerfile and copied into an isolated
-ROCm test Pod; the API test used a manually prepared pack and JSON, not setup.
-That vision pack was converted from the cached mmproj; these GPU measurements
-are not an end-to-end test of the standard safetensors preparation flow above.
-No new image was published.
+Tested with upstream v1.1.24 (`75798d4280dc`), ROCm 10.1, four MI50 32 GB,
+UD-Q8_K_XL, TP2, context 8704 and 56 CPU threads.
 
-- The supplied picture becomes 966 x 1288 pixels and 746 embedding rows.
-  Native GPU encoding takes about 7 seconds; rebuilding gives identical rows.
-- `/health` reports `images: true`; `/v1/models` advertises text/image input.
-- The image API request correctly describes Firefox-chan, fox ears/tail,
-  clothing and the Firefox Add-ons background. A white-image control returns
-  “The image is completely blank and contains no visible content.”
-- Original-image request: 46.4 s total, 767 prompt tokens at 23.8 tok/s,
-  160 generated tokens at 11.4 tok/s. The answer hits the test's 160-token cap.
-- Sampled minimum free VRAM: 994 / 1319 / 1002 / 1010 MiB. RAM limit:
-  192,000,000,000 bytes; peak charged memory about 192.0 GB including file
-  cache. `memory.events`: `max=52`, `oom=0`, `oom_kill=0` — this is a
-  cache-reclaiming run at the limit, not a profile with spare RAM.
-- GLM's CPU helper builds; end-to-end GLM image inference was not tested.
-
-Worker-side artifacts: `/srv/ml/maya-vision-tests/vision-smoke.json`,
-`server.log`, `engine.log`, `setup-final.log`, `manual-config.json` and the
-generated packs. Existing services and the read-only HF cache were unchanged.
+- DS4's native GPU vision tower encodes a test picture in about 7 seconds and
+  gives identical rows when rebuilt. `/health` reports `images: true`, and
+  `/v1/models` advertises text/image input.
+- A real image request returned a correct description; a blank-image control
+  returned "The image is completely blank and contains no visible content."
+- GLM's CPU vision helper builds. End-to-end GLM image inference was not tested.

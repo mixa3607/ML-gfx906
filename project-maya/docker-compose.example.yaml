@@ -1,24 +1,34 @@
+# export MAYA_IMAGE=registry.example.com/apps/maya-gfx906:YOUR_TAG
+# export MAYA_CONFIG=/data/config/maya-ds4-hip.json
+# export MODELS_DIR=./models
+# export RENDER_GID=$(getent group render | cut -d: -f3)
+# docker compose -f docker-compose.example.yaml up -d
+
 services:
   maya:
-    image: registry.arkprojects.space/apps/maya-gfx906:v1.1.24-rocm-10.1
+    image: ${MAYA_IMAGE:?set MAYA_IMAGE}
+    container_name: maya
     command: [serve]
     environment:
-      MAYA_CONFIG: /data/config/maya-maya-s24-hip.json
-      HIP_VISIBLE_DEVICES: "0,1,2,3"
+      MAYA_CONFIG: ${MAYA_CONFIG:?set MAYA_CONFIG}
+      HIP_VISIBLE_DEVICES: "${HIP_VISIBLE_DEVICES:-0,1,2,3}"
       HSA_XNACK: "0"
     ports:
       - "127.0.0.1:8080:8080"
     volumes:
       - ./data:/data
-      - ~/.cache/huggingface:/root/.cache/huggingface
+      - ${MODELS_DIR:-./models}:/models:ro
     devices:
-      - /dev/kfd
-      - /dev/dri
+      - /dev/kfd:/dev/kfd
+      - /dev/dri:/dev/dri
+    group_add:
+      - video
+      - "${RENDER_GID:?set RENDER_GID}"
     cap_add:
       - IPC_LOCK
     security_opt:
       - seccomp=unconfined
-    shm_size: 1gb
+    shm_size: 2gb
     ulimits:
       memlock:
         soft: -1
