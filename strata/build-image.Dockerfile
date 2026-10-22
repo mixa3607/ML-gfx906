@@ -1,7 +1,7 @@
 ARG ROCM_IMAGE="docker.io/mixa3607/rocm-gfx906:10.1-complete"
 
 ARG STRATA_REPO="https://github.com/Niko1221/Strata.git"
-ARG STRATA_BRANCH="v0.2.0-beta"
+ARG STRATA_BRANCH="v0.2.2"
 ARG STRATA_COMMIT=""
 ARG STRATA_PATCH="gfx906-setup.patch"
 ARG CMAKE_HIP_FLAGS=""
@@ -137,7 +137,8 @@ meta = {
 (setup.ROOT / "engine" / "BUILD.json").write_text(json.dumps(meta, indent=1) + "\n", encoding="utf-8")
 PY
 
-RUN python3 packaging/package_engine.py \
+RUN python3 packaging/stage_tuning.py --stage engine --archs gfx906 --rocm "$ROCM_PATH" && \
+    python3 packaging/package_engine.py \
       --src engine --backend hip --arch gfx906 \
       --version "$(python3 -c 'import setup; print(setup.source_version())')" \
       --variant gfx906 --out /components/engine \

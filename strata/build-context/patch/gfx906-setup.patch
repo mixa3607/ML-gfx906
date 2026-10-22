@@ -10,38 +10,10 @@ diff --git a/docker/healthcheck.sh b/docker/healthcheck.sh
  import sys, urllib.request, json
  url, key = sys.argv[1], sys.argv[2]
  req = urllib.request.Request(url, headers={"Authorization": "Bearer " + key} if key else {})
-diff --git a/CMakeLists.txt b/CMakeLists.txt
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -2163,6 +2163,12 @@
-   if(_strata_mmq)
-     file(GLOB _strata_mmq_cu ${_strata_mmq}/*.cu ${_strata_mmq}/template-instances/*.cu)
-     list(APPEND _strata_cu ${_strata_mmq_cu})
-+    if(_strata_mmq_tq_overlay)
-+      file(GLOB _strata_tq_cu ${_strata_tq_overlay_dir}/*.cu ${_strata_tq_overlay_dir}/template-instances/*.cu)
-+      list(APPEND _strata_cu ${_strata_tq_cu})
-+    endif()
-+    target_sources(strata_mmq PRIVATE src/prefill/moe_f16_kq.cu)
-     target_compile_definitions(strata_mmq PRIVATE GGML_USE_HIP)
-+    target_compile_definitions(strata_mmq_w4a4 PRIVATE GGML_USE_HIP)
-   endif()
-   set_source_files_properties(${_strata_cu} PROPERTIES LANGUAGE HIP)
-diff --git a/include/strata/platform/hip_compat/cublas_v2.h b/include/strata/platform/hip_compat/cublas_v2.h
---- a/include/strata/platform/hip_compat/cublas_v2.h
-+++ b/include/strata/platform/hip_compat/cublas_v2.h
-@@ -13,6 +13,8 @@
- #define cublasDestroy hipblasDestroy
- #define cublasSetStream hipblasSetStream
- #define cublasGemmEx hipblasGemmEx
-+#define cublasSgemm hipblasSgemm
-+#define cublasGemmStridedBatchedEx hipblasGemmStridedBatchedEx
- #define CUBLAS_OP_N HIPBLAS_OP_N
- #define CUBLAS_OP_T HIPBLAS_OP_T
- #define CUBLAS_GEMM_DEFAULT HIPBLAS_GEMM_DEFAULT
 diff --git a/setup.py b/setup.py
 --- a/setup.py
 +++ b/setup.py
-@@ -2829,7 +2829,7 @@
+@@ -3233,7 +3233,7 @@
  # build one with `STRATA_HIP_ARCHS=gfx1150 tools\hip\build_windows.bat` and start setup with `--prebuilt dist\`.
  # Unset: unchanged.
  GFX1150_OPT_IN = os.environ.get("STRATA_EXPERIMENTAL_GFX1150") == "1"

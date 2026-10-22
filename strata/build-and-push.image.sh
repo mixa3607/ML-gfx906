@@ -12,7 +12,7 @@ source ../.build/build-common.sh
 : "${STRATA_IMAGE:="docker.io/mixa3607/strata-gfx906"}"
 : "${STRATA_ROCM_VERSION:="10.1"}"
 : "${STRATA_REPO:="https://github.com/Niko1221/Strata.git"}"
-: "${STRATA_BRANCH:="v0.2.0-beta"}"
+: "${STRATA_BRANCH:="v0.2.2"}"
 : "${STRATA_COMMIT:=""}"
 : "${STRATA_CMAKE_HIP_FLAGS:=""}"
 : "${STRATA_CCACHE_MAXSIZE:="2G"}"
