@@ -1,6 +1,6 @@
 services:
   maya:
-    image: registry.arkprojects.space/apps/maya-gfx906:v1.1.21-rocm-10.1
+    image: registry.arkprojects.space/apps/maya-gfx906:v1.1.24-rocm-10.1
     command: [serve]
     environment:
       MAYA_CONFIG: /data/config/maya-maya-s24-hip.json

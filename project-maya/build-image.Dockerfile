@@ -2,7 +2,7 @@
 ARG ROCM_IMAGE="docker.io/mixa3607/rocm-gfx906:10.1-complete"
 ARG ROCM_ARCH="gfx906"
 ARG MAYA_REPO="https://github.com/mw00/project-maya.git"
-ARG MAYA_BRANCH="v1.1.21"
+ARG MAYA_BRANCH="v1.1.24"
 ARG MAYA_COMMIT
 ARG MAYA_PATCH="gfx906.patch"
 ARG MAYA_BUILD_JOBS
@@ -41,6 +41,7 @@ ARG MAYA_PATCH
 COPY patch/${MAYA_PATCH} /tmp/maya.patch
 RUN git apply --allow-empty /tmp/maya.patch && rm -rf .git
 RUN python3 -c 'import setup; setup.get_llama_cpp()'
+RUN python3 tools/vision/glm5next_patch.py third_party/llama.cpp
 
 ############# Build #############
 FROM rocm_base AS build_maya
@@ -103,12 +104,23 @@ Path('build-hip/MAYA-BUILD.json').write_text(json.dumps(meta, indent=2) + '\n')
 PY
 EOF
 
+RUN --mount=type=cache,target=/ccache <<'EOF' bash
+set -euo pipefail
+cmake -S tools/vision -B build-vision-cpu -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DLLAMA_DIR="$PWD/third_party/llama.cpp" \
+    -DSTRATA_PORTABLE=ON -DSTRATA_VISION_CUDA=OFF -DGGML_HIP=OFF \
+    -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+cmake --build build-vision-cpu --target maya-vision --parallel "${MAYA_BUILD_JOBS:-$(nproc)}"
+EOF
+
 ############# Runtime #############
 FROM rocm_base AS final
 RUN python3 -m venv .venv
 ENV PATH="/opt/maya/.venv/bin:${PATH}"
 COPY --from=files_maya /opt/maya /opt/maya
 COPY --from=build_maya /opt/maya/build-hip/maya /opt/maya/build-hip/maya-ds4 /opt/maya/build-hip/MAYA-BUILD.json ./build-hip/
+COPY --from=build_maya /opt/maya/build-vision-cpu/bin/maya-vision ./build-vision-cpu/bin/
 COPY extra/ /opt/maya/extra/
 RUN /opt/maya/extra/install-python-deps.sh && /opt/maya/extra/validate-build.sh
 
