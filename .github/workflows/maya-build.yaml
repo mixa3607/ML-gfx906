@@ -10,11 +10,6 @@ on:
       maya_commit:
         description: Source commit (empty = tag tip)
         default: 451f9cb6a21ea65673bdde2e57b4a670ae2b8859
-      target:
-        description: Image target
-        type: choice
-        options: [final, test]
-        default: final
       force_build:
         description: Rebuild an existing image
         type: boolean
@@ -30,7 +25,6 @@ jobs:
     env:
       MAYA_BRANCH: ${{ inputs.maya_tag }}
       MAYA_COMMIT: ${{ inputs.maya_commit }}
-      MAYA_TARGET: ${{ inputs.target }}
       MAYA_FORCE_BUILD: ${{ inputs.force_build && '1' || '0' }}
       MAYA_BUILD_JOBS: "2"
     steps:
