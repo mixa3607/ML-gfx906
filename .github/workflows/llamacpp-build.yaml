@@ -38,12 +38,6 @@ jobs:
             profile_suffix: "-mxxm"
             rocm_version: "10.1"
             release_tag: "20261018172427"
-          - source: "unsloth"
-            repo: "https://github.com/unslothai/llama.cpp.git"
-            latest_type: "release"
-            profile_suffix: "-unsloth"
-            rocm_version: "10.1"
-            release_tag: "20261018172427"
     env:
       LLAMA_REPO: "${{ matrix.build.repo }}"
       LLAMA_LATEST_TYPE: "${{ matrix.build.latest_type }}"
