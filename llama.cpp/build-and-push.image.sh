@@ -39,6 +39,16 @@ function check {
 function build {
   build_require_images "$LLAMA_BASE_IMAGE"
 
+  local source_url="" source_sha256="" source
+  if [[ "${LLAMA_REPO%.git}" == "https://github.com/unslothai/llama.cpp" && "$LLAMA_BRANCH" == b*-mix-* ]]; then
+    if [ -n "$LLAMA_COMMIT" ]; then
+      print ERROR "LLAMA_COMMIT cannot override an Unsloth mix release archive."
+      return 1
+    fi
+    source="$(python3 ./resolve-unsloth-source.py "$LLAMA_BRANCH")"
+    read -r source_url source_sha256 <<< "$source"
+  fi
+
   local -A IMAGE_ANNOTATIONS
   IMAGE_ANNOTATIONS["org.opencontainers.image.created"]="$(date --rfc-3339=seconds)"
   IMAGE_ANNOTATIONS["org.opencontainers.image.authors"]="mixa3607"
@@ -51,6 +61,8 @@ function build {
   print INFO "LLAMA_REPO:       ${LLAMA_REPO}"
   print INFO "LLAMA_BRANCH:     ${LLAMA_BRANCH}"
   print INFO "LLAMA_COMMIT:     ${LLAMA_COMMIT}"
+  print INFO "SOURCE_URL:       ${source_url}"
+  print INFO "SOURCE_SHA256:    ${source_sha256}"
   print INFO "LLAMA_CODE_PATH:  ${LLAMA_CODE_PATH}"
   print INFO "LLAMA_PATCH:      ${LLAMA_PATCH}"
   print INFO "ROCM_ARCH:        ${ROCM_ARCH}"
@@ -76,6 +88,8 @@ function build {
     --build-arg LLAMACPP_REPO="${LLAMA_REPO}"
     --build-arg LLAMACPP_BRANCH="${LLAMA_BRANCH}"
     --build-arg LLAMACPP_COMMIT="${LLAMA_COMMIT}"
+    --build-arg LLAMACPP_SOURCE_URL="${source_url}"
+    --build-arg LLAMACPP_SOURCE_SHA256="${source_sha256}"
     --build-arg LLAMACPP_CODE_PATH="${LLAMA_CODE_PATH}"
     --build-arg LLAMACPP_PATCH="${LLAMA_PATCH}"
     --build-arg CMAKE_HIP_FLAGS="${LLAMA_CMAKE_HIP_FLAGS}"

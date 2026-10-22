@@ -4,6 +4,8 @@ ARG ROCM_ARCH="gfx906"
 ARG LLAMACPP_REPO="https://github.com/ggml-org/llama.cpp.git"
 ARG LLAMACPP_BRANCH="master"
 ARG LLAMACPP_COMMIT=""
+ARG LLAMACPP_SOURCE_URL=""
+ARG LLAMACPP_SOURCE_SHA256=""
 ARG LLAMACPP_CODE_PATH=""
 ARG LLAMACPP_PATCH="empty.patch"
 ARG CMAKE_HIP_FLAGS=""
@@ -26,6 +28,8 @@ FROM rocm_base AS files_llamacpp
 ARG LLAMACPP_REPO
 ARG LLAMACPP_BRANCH
 ARG LLAMACPP_COMMIT
+ARG LLAMACPP_SOURCE_URL
+ARG LLAMACPP_SOURCE_SHA256
 ARG LLAMACPP_CODE_PATH
 ARG LLAMACPP_PATCH
 
@@ -33,9 +37,18 @@ ARG LLAMACPP_PATCH
 WORKDIR /files/llamacpp
 RUN <<EOF_DOCKERFILE bash
 set -eo pipefail
-git clone --depth 1 --recurse-submodules --shallow-submodules --jobs 4 --branch ${LLAMACPP_BRANCH} ${LLAMACPP_REPO} .
-if [ "$LLAMACPP_COMMIT" != "" ]; then 
-  git checkout "$LLAMACPP_COMMIT"
+if [ -n "$LLAMACPP_SOURCE_URL" ]; then
+  [[ "$LLAMACPP_SOURCE_SHA256" =~ ^[0-9a-f]{64}$ ]]
+  [ -z "$LLAMACPP_COMMIT" ]
+  curl --fail --location --retry 3 "$LLAMACPP_SOURCE_URL" --output /tmp/llamacpp-source.tar.gz
+  echo "$LLAMACPP_SOURCE_SHA256  /tmp/llamacpp-source.tar.gz" | sha256sum --check --strict
+  tar -xzf /tmp/llamacpp-source.tar.gz --strip-components=1
+  rm /tmp/llamacpp-source.tar.gz
+else
+  git clone --depth 1 --recurse-submodules --shallow-submodules --jobs 4 --branch "${LLAMACPP_BRANCH}" "${LLAMACPP_REPO}" .
+  if [ "$LLAMACPP_COMMIT" != "" ]; then
+    git checkout "$LLAMACPP_COMMIT"
+  fi
 fi
 if [ "$LLAMACPP_CODE_PATH" != "" ]; then 
   cd "$LLAMACPP_CODE_PATH" && find ./ -maxdepth 1 -mindepth 1 -exec mv -t /files/llamacpp {} +

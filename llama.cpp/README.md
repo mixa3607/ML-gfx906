@@ -79,3 +79,23 @@ export LLAMA_CMAKE_HIP_FLAGS="-mllvm -amdgpu-sched-strategy=max-ilp"
 ```
 
 The build log is saved to `./logs/build_<timestamp>.log`.
+
+### Unsloth mix releases
+
+For `LLAMA_REPO=https://github.com/unslothai/llama.cpp.git` and `bNNNNN-mix-HASH`
+tags, the build resolves the release's `llama.cpp-source-<tag>.tar.gz` asset and
+verifies its SHA256 from the GitHub release metadata. Unsloth's Git tag points
+to the build workflow, **not** the upstream tree with the pinned PRs merged.
+Cloning that tag does not reproduce the release's model support.
+
+Missing source assets or checksums fail the build; there is no Git-tag fallback.
+`LLAMA_COMMIT` is unsupported in this mode. Other forks retain the Git clone path.
+Source resolution requires Python 3 on the build host.
+
+```bash
+source preset.b11734-mix-c208e5f-rocm-10.1-unsloth.sh
+export LLAMA_IMAGE=registry.arkprojects.space/apps/llama.cpp-gfx906
+./build-and-push.image.sh
+```
+
+Run the resolver tests with `python3 test-resolve-unsloth-source.py`.
