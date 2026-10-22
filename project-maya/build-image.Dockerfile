@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:1
 ARG ROCM_IMAGE="docker.io/mixa3607/rocm-gfx906:10.1-complete"
+ARG ROCM_ARCH="gfx906"
 ARG MAYA_REPO="https://github.com/mw00/project-maya.git"
 ARG MAYA_BRANCH="v1.1.21"
 ARG MAYA_COMMIT
@@ -39,11 +40,11 @@ EOF
 ARG MAYA_PATCH
 COPY patch/${MAYA_PATCH} /tmp/maya.patch
 RUN git apply --allow-empty /tmp/maya.patch && rm -rf .git
-# The installer pins the llama.cpp sources needed by MMQ and the GGUF tools.
 RUN python3 -c 'import setup; setup.get_llama_cpp()'
 
 ############# Build #############
 FROM rocm_base AS build_maya
+ARG ROCM_ARCH
 ARG MAYA_BUILD_JOBS
 ARG CMAKE_HIP_FLAGS
 ARG CCACHE_MAXSIZE
@@ -66,7 +67,7 @@ CMAKE_ARGS=(
     -DCMAKE_HIP_COMPILER_LAUNCHER=ccache
     -DCMAKE_PREFIX_PATH="$ROCM_PATH"
     -DCMAKE_HIP_COMPILER_ROCM_ROOT="$ROCM_PATH"
-    -DCMAKE_HIP_ARCHITECTURES=gfx906
+    -DCMAKE_HIP_ARCHITECTURES="$ROCM_ARCH"
     -DCMAKE_HIP_FLAGS="$CMAKE_HIP_FLAGS"
     -DSTRATA_ENABLE_HIP=ON
     -DSTRATA_ENABLE_CUDA=OFF
@@ -90,7 +91,7 @@ rocm = os.environ['ROCM_PATH']
 meta = {
   'backend': 'hip',
   'src': setup.source_hash(setup.ENGINE_SOURCES),
-  'archs': ['gfx906'],
+  'archs': os.environ['ROCM_ARCH'].split(';'),
   'rocm': rocm,
   'gpu_ids': [0],
   'llama': str(Path('third_party/llama.cpp').resolve()),

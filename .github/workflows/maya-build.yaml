@@ -1,18 +1,18 @@
-name: Maya gfx906 build (experimental)
+name: Project Maya build
 
 on:
   workflow_dispatch:
     inputs:
       maya_tag:
-        description: Maya source tag
-        default: v1.1.21
-        required: true
-      maya_commit:
-        description: Source commit (empty = tag tip)
+        description: "Project Maya tag for all sources (empty = latest per source)"
+        required: false
+        default: ""
       force_build:
-        description: Rebuild an existing image
+        description: "Rebuild even if the image is already published"
         type: boolean
         default: false
+  schedule:
+    - cron: "0 14 * * *"
 
 permissions:
   contents: read
@@ -20,36 +20,84 @@ permissions:
 
 jobs:
   build:
+    name: Build Project Maya (${{ matrix.build.source }}, ROCm ${{ matrix.build.rocm_version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build:
+          - source: "maya"
+            repo: "https://github.com/mw00/project-maya.git"
+            latest_type: "release"
+            profile_suffix: ""
+            rocm_version: "10.1"
+            release_tag: "${{ github.ref }}"
     env:
-      MAYA_BRANCH: ${{ inputs.maya_tag }}
-      MAYA_COMMIT: ${{ inputs.maya_commit }}
-      MAYA_FORCE_BUILD: ${{ inputs.force_build && '1' || '0' }}
-      MAYA_BUILD_JOBS: "2"
+      MAYA_REPO: "${{ matrix.build.repo }}"
+      MAYA_LATEST_TYPE: "${{ matrix.build.latest_type }}"
+      MAYA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
+      MAYA_PROFILE_SUFFIX: "${{ matrix.build.profile_suffix }}"
+      MAYA_BRANCH: "${{ inputs.maya_tag }}"
+      MAYA_CMAKE_HIP_FLAGS: "-mllvm -amdgpu-sched-strategy=max-ilp"
+      MAYA_FORCE_BUILD: "${{ inputs.force_build && '1' || '0' }}"
     steps:
-      - uses: actions/checkout@v7
+      - name: Checkout repo
+        uses: actions/checkout@v7
         with:
+          ref: ${{ vars.BUILD_REF || matrix.build.release_tag }}
           fetch-depth: 0
-      - uses: docker/setup-buildx-action@v3
+
+      - name: Install yq
+        uses: ./.github/workflows/actions/install-yq-action
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Select registry and log in
         id: registry
         uses: ./.github/workflows/actions/registry-login
         with:
           dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Resolve build parameters
         env:
-          REGISTRY_ROOT: ${{ steps.registry.outputs.registry_root }}
+          GITHUB_TOKEN: "${{ github.token }}"
+          REGISTRY_ROOT: "${{ steps.registry.outputs.registry_root }}"
         run: |
-          echo "MAYA_IMAGE=$REGISTRY_ROOT/maya-gfx906" >> "$GITHUB_ENV"
+          source ./.build/git-common.sh
+          if [ "$MAYA_BRANCH" == "" ]; then
+            MAYA_BRANCH="$("$GITHUB_WORKSPACE/.github/scripts/github_get_last" --type "$MAYA_LATEST_TYPE" --repo "$MAYA_REPO" --github-token "$GITHUB_TOKEN")"
+          fi
+          : "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+          : "${MAYA_IMAGE:="$REGISTRY_ROOT/maya-gfx906"}"
+          : "${MAYA_IS_RELEASE:="$([ -n "$(git_get_current_tag)" ] && echo 1 || echo 0)"}"
+          : "${MAYA_BASE_IMAGE:="docker.io/mixa3607/rocm-gfx906:$MAYA_ROCM_VERSION-complete"}"
+          : "${MAYA_PRESET_NAME:="$MAYA_BRANCH-rocm-$MAYA_ROCM_VERSION$MAYA_PROFILE_SUFFIX"}"
+
+          echo "REPO_GIT_REF=$REPO_GIT_REF"           >> "$GITHUB_ENV"
+          echo "MAYA_IMAGE=$MAYA_IMAGE"               >> "$GITHUB_ENV"
+          echo "MAYA_IS_RELEASE=$MAYA_IS_RELEASE"     >> "$GITHUB_ENV"
+          echo "MAYA_BRANCH=$MAYA_BRANCH"             >> "$GITHUB_ENV"
+          echo "MAYA_PRESET_NAME=$MAYA_PRESET_NAME"   >> "$GITHUB_ENV"
+          echo "MAYA_BASE_IMAGE=$MAYA_BASE_IMAGE"     >> "$GITHUB_ENV"
+
       - name: Check build
         id: check
         run: |
           needed="$(./project-maya/build-and-push.image.sh check)"
           echo "needed=$needed" >> "$GITHUB_OUTPUT"
+
+      - name: Check base images
+        if: steps.check.outputs.needed == 'true'
+        run: |
+          source ./.build/build-common.sh
+          build_require_images "$MAYA_BASE_IMAGE"
+
       - name: Aggressive cleanup
         if: steps.check.outputs.needed == 'true'
         uses: ./.github/workflows/actions/cleanup-space-action
-      - name: Build Maya image
+
+      - name: Build Project Maya image
         if: steps.check.outputs.needed == 'true'
         run: ./project-maya/build-and-push.image.sh build

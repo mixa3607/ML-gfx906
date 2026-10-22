@@ -1,81 +1,39 @@
 # Project Maya gfx906 (experimental)
 
 [Project Maya](https://github.com/mw00/project-maya) for Vega20 / MI50 / MI60.
-The image includes the HIP `maya` (GLM) and `maya-ds4` (DeepSeek) engines and
-the Python dashboard/API. Models are not included or downloaded at startup.
-Vision helpers and PyTorch-based model conversion are not included.
+Includes the HIP `maya` (GLM) and `maya-ds4` (DeepSeek) engines and Python
+dashboard/API. Models, vision helpers and PyTorch conversion are not included.
 
 ## Compatibility
 
-- Build for **gfx906**; do not use `HSA_OVERRIDE_GFX_VERSION` to spoof gfx908.
-- The [gfx906 patch](build-context/patch/gfx906.patch) enables upstream's wave64
-  compatibility layer, Vega20's signed dot4 and signed-zero preservation in
-  INT8 latent-cache reads. Vega20 has no WMMA/MFMA; portable attention is intentional.
-- The pinned llama.cpp sources are used for MMQ and native experts. No PyTorch
-  or Triton is required for inference.
+- Use **gfx906**, without `HSA_OVERRIDE_GFX_VERSION`. The
+  [patch](build-context/patch/gfx906.patch) enables wave64, signed dot4 and
+  signed-zero preservation in INT8 latent-cache reads.
 - Provide `/dev/kfd`, `/dev/dri`, shared memory and an adequate memlock limit.
-  `HSA_FORCE_FINE_GRAIN_PCIE` is not forced.
-- Budget host RAM explicitly in the model config. In particular, GLM's free-RAM
-  detection can see host memory instead of a container limit; use an appropriate
-  `MAYA_GLM_RAM_GB` and leave room for weights and buffers.
-- gfx906 smoke/parity tests and cached DS4.1 Q8 inference were exercised during
-  development. This is not a general model-quality or perplexity guarantee.
+- Set `MAYA_GLM_RAM_GB` explicitly: GLM's free-RAM detection can see host memory
+  instead of the container limit. Leave room for weights and buffers.
 
-## Build from source
+## Build
 
-The Dockerfile follows the repository's llama.cpp layout: ROCm base, source
-preparation, compilation and runtime. Only the two engines and their setup
-metadata are copied from the build stage; test executables and build outputs
-are not shipped. Python sources and the pinned llama.cpp sources remain available
-for model setup, GGUF tools and upstream's source-hash check.
+Requires Docker Buildx and the [ROCm base image](../rocm/README.md).
+Log in to the destination registry and run from this directory:
 
 ```bash
-source ./preset.v1.1.21-rocm-10.1.sh
+source ./preset.v1.1.24-rocm-10.1.sh
 export MAYA_IMAGE=registry.arkprojects.space/apps/maya-gfx906
 ./build-and-push.image.sh
 ```
 
-The script uses the shared build helpers: `check`, `build`, or check-then-build
-with no argument. It pushes by default and skips existing tags. Logs go to
-`logs/build_<timestamp>.log`. The Actions workflow is manual-only and does not
-download model weights.
-
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `MAYA_IMAGE` | `docker.io/mixa3607/maya-gfx906` | Destination image |
-| `MAYA_ROCM_VERSION` | `10.1` | ROCm version |
-| `MAYA_BASE_IMAGE` | `docker.io/mixa3607/rocm-gfx906:<rocm>-complete` | Base image |
-| `MAYA_REPO` | `https://github.com/mw00/project-maya.git` | Source repository |
-| `MAYA_BRANCH` | `v1.1.21` | Source tag/branch |
-| `MAYA_COMMIT` | unset | Optional source SHA (the versioned preset pins it) |
-| `MAYA_PATCH` | `gfx906.patch` | Patch under `build-context/patch/` |
-| `MAYA_BUILD_JOBS` | unset | Optional parallelism limit; otherwise `nproc` |
-| `MAYA_CMAKE_HIP_FLAGS` | empty | Additional HIP compiler flags |
-| `MAYA_CCACHE_MAXSIZE` | `2G` | Persistent compiler-cache limit |
-| `MAYA_PRESET_NAME` | `<source>-rocm-<rocm>` | Image tag prefix |
-| `MAYA_IMAGE_TAG` | `<preset>-<repo-ref>-pre` | Primary tag override |
-| `MAYA_IS_RELEASE` | `0` | `1`: omit `-pre` and also publish `<preset>` |
-| `MAYA_PUSH` | `1` | `0`: load into local Docker instead of pushing |
-| `MAYA_FORCE_BUILD` | `0` | Rebuild an existing tag |
-| `REPO_GIT_REF` | current Git ref | Build revision suffix |
+The script builds and pushes, skipping existing tags; `MAYA_FORCE_BUILD=1`
+forces a rebuild. Defaults are in the [build script](build-and-push.image.sh).
+`MAYA_BUILD_JOBS` limits parallelism (otherwise `nproc`);
+`MAYA_CMAKE_HIP_FLAGS` sets extra compiler flags.
 
 When using a versioned preset, change or unset its `MAYA_COMMIT` when changing
 the source tag. Without a commit override, the build follows the tag/branch.
-Incompatible patches fail the build.
-`SOURCE_COMMIT` records the resolved SHA; `build-hip/MAYA-BUILD.json` records
-the patched source hash, architecture and HIP flags so setup reuses the engines.
-The final stage runs `extra/validate-build.sh` to check engine library dependencies.
 
-For optional max-ILP compilation, use a separate tag:
-
-```bash
-MAYA_IMAGE_TAG=v1.1.21-rocm-10.1-max-ilp \
-MAYA_CMAKE_HIP_FLAGS='-mllvm -amdgpu-sched-strategy=max-ilp' \
-  ./build-and-push.image.sh build
-```
-
-Experimental PR patches, cluster-specific benchmarks and their results are
-kept in the `add-project-maya` branch, not in this runtime build.
+The [Actions workflow](../.github/workflows/maya-build.yaml) builds the latest
+upstream release unless `maya_tag` is specified.
 
 ## Setup and serving
 

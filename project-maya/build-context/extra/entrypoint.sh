@@ -11,8 +11,9 @@ case "${1:-}" in
     shift
     python maya.py --backend hip --setup --no-start "$@"
     mkdir -p /data/config
+    shopt -s nullglob
     for config in /opt/maya/maya-*-hip.json; do
-      [ ! -f "$config" ] || cp "$config" /data/config/
+      cp "$config" /data/config/
     done
     ;;
   *) exec python maya.py --backend hip "$@" ;;
