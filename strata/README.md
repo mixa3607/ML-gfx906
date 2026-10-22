@@ -16,17 +16,10 @@ export STRATA_CMAKE_HIP_FLAGS="-mllvm -amdgpu-sched-strategy=max-ilp"
 ```
 
 The script builds and pushes, skipping existing tags; `STRATA_FORCE_BUILD=1`
-forces a rebuild. Defaults (Strata `v0.2.2`, ROCm `10.1`) are in the
+forces a rebuild. Defaults are in the
 [build script](./build-and-push.image.sh).
 `STRATA_CMAKE_HIP_FLAGS` sets extra compiler flags for the engine and GPU vision
 encoder (empty by default).
-
-The patch targets `v0.2.2`: gfx906 detection in setup and the system Python for
-the healthcheck. MMQ HIP fixes are already upstream; Qwen3.6 is disabled upstream
-on gfx906 because its kernels assume wave32. Packaging records the base image's
-hipBLASLt version, but gfx906 uses plain hipBLAS (no tuning table).
-
-Build and worker6 smoke-test results: [validation](./VALIDATION.md).
 
 ## Run
 
