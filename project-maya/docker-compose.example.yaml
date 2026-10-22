@@ -1,6 +1,6 @@
 # export MAYA_IMAGE=registry.example.com/apps/maya-gfx906:YOUR_TAG
 # export MAYA_CONFIG=/data/config/maya-ds4-hip.json
-# export MODELS_DIR=./models
+# export HF_CACHE_DIR=/srv/ml/shared-hf-cache
 # export RENDER_GID=$(getent group render | cut -d: -f3)
 # docker compose -f docker-compose.example.yaml up -d
 
@@ -17,7 +17,7 @@ services:
       - "127.0.0.1:8080:8080"
     volumes:
       - ./data:/data
-      - ${MODELS_DIR:-./models}:/models:ro
+      - ${HF_CACHE_DIR:-./hf-cache}:/root/.cache/huggingface
     devices:
       - /dev/kfd:/dev/kfd
       - /dev/dri:/dev/dri

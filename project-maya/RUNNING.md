@@ -4,18 +4,25 @@ The image contains prebuilt HIP text engines (`maya`, `maya-ds4`), the CPU
 `maya-vision` helper, upstream tools and their Python dependencies. Model
 weights are not part of the image.
 
-Use the same model and data mount paths during preparation and serving. Below,
-`/models` contains GGUF files and `/data` is writable persistent storage. Run
-preparation commands inside the image, for example:
+Use the same cache and data mount paths during preparation and serving. The
+language model is read from a Hugging Face cache mounted where the HF library
+expects it, `/root/.cache/huggingface`; `/data` is writable persistent storage.
+Run preparation commands inside the image, for example:
 
 ```bash
+HF_CACHE=/srv/ml/shared-hf-cache
 docker run --rm -it \
   --device /dev/kfd --device /dev/dri \
   --group-add video --group-add "$(getent group render | cut -d: -f3)" \
   --cap-add IPC_LOCK --shm-size 2g --ulimit memlock=-1:-1 \
-  -v "$PWD/data:/data" -v /path/to/models:/models:ro \
+  -v "$PWD/data:/data" -v "$HF_CACHE:/root/.cache/huggingface" \
   --entrypoint bash YOUR_IMAGE
 ```
+
+Replace `/srv/ml/shared-hf-cache` with the directory that holds the HF cache on
+your host (or use a PVC that contains it). Without a shared cache, download the
+GGUF files anywhere and mount that directory at `/models` instead; the pack
+command below takes the model directory as an argument.
 
 ## DeepSeek 4.1: manual preparation
 
@@ -40,21 +47,27 @@ python tools/ds4/vision_pack.py --dir /data/vision
 ```
 
 Allow about 2 GB for the downloaded shard and the generated `vision.bin` /
-`vision.json`. The converter reads the three image-marker rows from shard 2
-with an HTTP Range request, so that whole shard is not downloaded. DS4's native
-vision path does not use `mmproj-F16.gguf`.
+`vision.json`. This is separate from the language-model cache and is downloaded
+once. The converter reads the three image-marker rows from shard 2 with an HTTP
+Range request, so that whole shard is not downloaded. DS4's native vision path
+does not use the cached `mmproj-F16.gguf`.
 
 ### 2. Build the language-model pack
 
+The cache already contains the language model. The snapshot below is the one
+used by the cluster's llama-server; replace it if your cache has another one:
+
 ```bash
+SNAPSHOT=/root/.cache/huggingface/hub/models--unsloth--DeepSeek-V4.1-Flash-1017-GGUF/snapshots/60ad3651641b5c97679c807e064ab1d7a3ca1455
 cd /opt/maya
 python tools/ds4/pack_gguf.py \
-  --model /models/UD-Q8_K_XL --out /data/ds4 --vision /data/vision
+  --model "$SNAPSHOT/UD-Q8_K_XL" --out /data/ds4 --vision /data/vision
 ```
 
-This writes an index and tokenizer, not another copy of the weights.
-`/models` can remain read-only. The pack records absolute paths to its source
-model and relative paths to the vision data, so keep the mounts unchanged.
+This writes an index and tokenizer, not another copy of the weights. The pack
+records absolute paths under `/root/.cache/huggingface`, so mount the same
+cache at the same path when serving. Do not copy the 500 GB of GGUF shards into
+`/data`.
 
 ### 3. Write `/data/config/maya-ds4-hip.json`
 
@@ -101,12 +114,13 @@ into RAM and can be OOM-killed before serving.
 ### 4. Start the server
 
 ```bash
+HF_CACHE=/srv/ml/shared-hf-cache
 docker run -d --name maya \
   --device /dev/kfd --device /dev/dri \
   --group-add video --group-add "$(getent group render | cut -d: -f3)" \
   --cap-add IPC_LOCK --shm-size 2g --ulimit memlock=-1:-1 \
   -p 127.0.0.1:8080:8080 \
-  -v "$PWD/data:/data" -v /path/to/models:/models:ro \
+  -v "$PWD/data:/data" -v "$HF_CACHE:/root/.cache/huggingface" \
   -e MAYA_CONFIG=/data/config/maya-ds4-hip.json \
   YOUR_IMAGE serve
 ```
@@ -118,8 +132,9 @@ Secret. The same flags can be set in the config.
 
 ## DeepSeek 4.1: through setup
 
-Upstream setup writes its pack inside the model directory, so that directory
-must be writable. For a read-only HF cache, use the manual path above.
+Upstream setup writes its pack inside the model directory, so do not point it
+at the shared cache; use the manual path above for the cluster cache. The setup
+path is for a separate writable model directory:
 
 ```bash
 docker run --rm -it \
@@ -171,16 +186,32 @@ enables the native tower.
 
 1. Build/publish the image, then pin its tag or digest for both preparation and
    serving. Ensure the node's AMD kernel driver works.
-2. Mount writable persistent storage at `/data`, model storage read-only at
-   `/models`, and a memory-backed `emptyDir` at `/dev/shm`. Mount an entire HF
-   cache rather than just its snapshot when the files are symlinks into `blobs`.
+2. Mount writable persistent storage at `/data`, the shared HF cache at
+   `/root/.cache/huggingface`, and a memory-backed `emptyDir` at `/dev/shm`.
+   Mount the whole cache, not just a snapshot, because its files are symlinks
+   into `blobs/`. The cluster's cache is the `shared-hf-cache` volume
+   (`/srv/ml/shared-hf-cache` on the worker):
+
+```yaml
+extraVolumes:
+  - name: shared-hf-cache
+    hostPath:
+      path: /srv/ml/shared-hf-cache
+extraVolumeMounts:
+  - name: shared-hf-cache
+    mountPath: /root/.cache/huggingface
+```
+
+   Use the `shared-hf-cache` PVC instead of `hostPath` where it is available,
+   or the equivalent `volumes` / `volumeMounts` in a plain manifest.
 3. Run a preparation Job with the manual commands above. Override `command`
    with `["bash", "-ec"]` and the commands as its argument; keep the image
    entrypoint for the serving Deployment. Wait for the Job to complete before
    starting inference.
 4. Start a Deployment with `replicas: 1`, `strategy: {type: Recreate}`,
    `args: ["serve"]` and `MAYA_CONFIG` pointing at the persistent JSON. Reuse
-   exactly the same mount paths and node placement as the preparation Job.
+   exactly the same `/data` and `/root/.cache/huggingface` mounts and node
+   placement as the preparation Job.
 5. Request GPUs using your AMD device plugin. Without a plugin, passing
    `/dev/kfd` and `/dev/dri` requires a device-enabled runtime configuration
    (the test cluster used a privileged Pod with explicit device mounts).
