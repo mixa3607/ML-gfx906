@@ -222,9 +222,17 @@ extraVolumeMounts:
    `args: ["serve"]` and `MAYA_CONFIG` pointing at the persistent JSON. Reuse
    exactly the same `/data` and `/root/.cache/huggingface` mounts and node
    placement as the preparation Job.
-5. Request GPUs using your AMD device plugin. Without a plugin, passing
-   `/dev/kfd` and `/dev/dri` requires a device-enabled runtime configuration
-   (the test cluster used a privileged Pod with explicit device mounts).
+5. Request GPUs using your AMD device plugin. Without a plugin, hostPath
+   mounts of `/dev/kfd` and `/dev/dri` are not enough: the container also needs
+   `securityContext.privileged: true` (or an equivalent device-cgroup
+   configuration). Otherwise the engine exits with `no CUDA device`.
+
+```yaml
+securityContext:
+  privileged: true
+  capabilities:
+    add: ["IPC_LOCK"]
+```
 6. Give the runtime `IPC_LOCK` and sufficient CPU/RAM. A memory limit of
    `192G` is 192 GB decimal; `/dev/shm` and the charged file cache count
    against it. Use a startup probe on `/health` with enough time to load the
@@ -243,6 +251,13 @@ curl -fsS http://127.0.0.1:8080/v1/models
 Keep model updates and repacking in explicit preparation Jobs, not in the
 serving container. Never start a second inference process on already occupied
 GPUs just to update the config.
+
+## Troubleshooting
+
+- `no CUDA device` in `/data/maya-ds4.log`: the engine cannot open `/dev/kfd`.
+  Use `privileged: true` or an AMD device plugin that allocates the device.
+- `/health` reports `"images": false`: the pack was built without `--vision`,
+  or `/data/vision` was not mounted when it was built.
 
 ## Send a picture
 
