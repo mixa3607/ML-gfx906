@@ -1,9 +1,11 @@
-ARG ROCM_IMAGE="docker.io/mixa3607/rocm-gfx906:10.1-complete"
+# syntax=docker/dockerfile:1
 
+ARG ROCM_IMAGE="docker.io/mixa3607/rocm-gfx906:10.1-complete"
+ARG ROCM_ARCH="gfx906"
 ARG STRATA_REPO="https://github.com/Niko1221/Strata.git"
-ARG STRATA_BRANCH="v0.2.2"
+ARG STRATA_BRANCH="v0.2.3.1"
 ARG STRATA_COMMIT=""
-ARG STRATA_PATCH="gfx906-setup.patch"
+ARG STRATA_PATCH="empty.patch"
 ARG CMAKE_HIP_FLAGS=""
 ARG CCACHE_MAXSIZE="2G"
 
@@ -12,20 +14,14 @@ FROM ${ROCM_IMAGE} AS rocm_base
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      git \
-      bash \
-      ca-certificates \
-      curl \
-      libatomic1 \
-      libgomp1 \
-      python3 \
-      python3-pip \
-      tini && \
-    python3 -m pip config set global.break-system-packages true && \
+      ca-certificates libatomic1 libgomp1 python3 tini git python3-venv && \
     rm -rf /var/lib/apt/lists/*
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8
+WORKDIR /opt/strata
 
 ############# Prepare code #############
 FROM rocm_base AS files_strata
@@ -34,36 +30,32 @@ ARG STRATA_BRANCH
 ARG STRATA_COMMIT
 ARG STRATA_PATCH
 
-WORKDIR /files/strata
-COPY patch/${STRATA_PATCH} /tmp/${STRATA_PATCH}
-RUN <<EOF_DOCKERFILE bash
-set -eo pipefail
-git clone --depth 1 --branch "${STRATA_BRANCH}" "${STRATA_REPO}" .
-if [ -n "${STRATA_COMMIT}" ]; then
-  git fetch --depth 1 origin "${STRATA_COMMIT}"
-  git checkout --detach FETCH_HEAD
-fi
-git apply --allow-empty "/tmp/${STRATA_PATCH}"
-rm -f "/tmp/${STRATA_PATCH}"
-rm -rf .git bench/results docs/media docs/paper
-EOF_DOCKERFILE
+RUN <<'EOF' bash
+  set -euo pipefail
+  git clone --depth 1 --branch "${STRATA_BRANCH}" "${STRATA_REPO}" .
+  if [ -n "${STRATA_COMMIT:-}" ]; then
+      git fetch --depth 1 origin "$STRATA_COMMIT"
+      git checkout --detach FETCH_HEAD
+  fi
+  git rev-parse HEAD > SOURCE_COMMIT
+EOF
+
+COPY patch/${STRATA_PATCH} /tmp/strata.patch
+RUN git apply --allow-empty /tmp/strata.patch && rm -rf .git bench/results/ docs/
+RUN python3 -c 'import setup; setup.get_llama_cpp()'
 
 ############# Build #############
 FROM rocm_base AS build_strata
+ARG ROCM_ARCH
 ARG CMAKE_HIP_FLAGS
 ARG CCACHE_MAXSIZE
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends build-essential cmake ninja-build ccache
+    apt-get install -y --no-install-recommends build-essential cmake ninja-build ccache && \
+    rm -rf /var/lib/apt/lists/*
+COPY --from=files_strata /opt/strata /opt/strata
 
-COPY --from=files_strata /files/strata /opt/strata
-WORKDIR /opt/strata
-
-RUN python3 -c 'import setup; setup.get_llama_cpp()'
-
-ENV CCACHE_DIR=/ccache
-ENV CCACHE_MAXSIZE=${CCACHE_MAXSIZE}
-
+ENV CCACHE_DIR=/ccache CCACHE_MAXSIZE=${CCACHE_MAXSIZE}
 RUN --mount=type=cache,target=/ccache <<'EOF_DOCKERFILE' bash
 set -eo pipefail
 
@@ -78,7 +70,7 @@ CMAKE_COMMON_ARGS=(
 
 CMAKE_HIP_ARGS=(
   "${CMAKE_COMMON_ARGS[@]}"
-  -DCMAKE_HIP_ARCHITECTURES=gfx906
+  -DCMAKE_HIP_ARCHITECTURES="$ROCM_ARCH"
   -DCMAKE_HIP_COMPILER="$ROCM_PATH/llvm/bin/clang++"
   -DCMAKE_HIP_COMPILER_LAUNCHER=ccache
   -DCMAKE_HIP_FLAGS="${CMAKE_HIP_FLAGS}"
@@ -107,7 +99,7 @@ cmake --build build-vision --target strata-vision --parallel "$(nproc)"
 CMAKE_ARGS=(
   "${CMAKE_HIP_ARGS[@]}"
   -DSTRATA_VISION_HIP=ON
-  -DSTRATA_VISION_HIP_ARCHS=gfx906
+  -DSTRATA_VISION_HIP_ARCHS="$ROCM_ARCH"
   -DLLAMA_DIR="$PWD/third_party/llama.cpp"
 )
 cmake -S tools/vision -B build-vision-hip -G Ninja "${CMAKE_ARGS[@]}"
@@ -115,81 +107,67 @@ cmake --build build-vision-hip --target strata-vision --parallel "$(nproc)"
 
 mkdir -p engine
 cp build/strata build-vision/bin/strata-vision build-vision-hip/bin/strata-vision-hip engine/
-EOF_DOCKERFILE
 
-RUN python3 - <<'PY'
+# Let upstream setup reuse the precompiled engines instead of rebuilding them.
+python3 - <<'PY'
 import json
+import os
+from pathlib import Path
 import setup
 
+rocm = str(Path(os.environ.get('ROCM_PATH', '/opt/rocm')).resolve())
 meta = {
-    "source": "local-hip",
-    "backend": "hip",
-    "version": setup.source_version(),
-    "archs": ["gfx906"],
-    "vision": "gpu",
-    "vision_archs": ["gfx906"],
-    "vision_gpu": setup.HVEXE,
-    "vision_cpu": setup.VEXE,
-    "lib_dirs": ["/opt/rocm/lib"],
-    "src": setup.source_hash(setup.ENGINE_SOURCES),
-    "vision_src": setup.source_hash(setup.VISION_SOURCES),
+  "source": "local-hip",
+  "backend": "hip",
+  "version": setup.source_version(),
+  "archs": os.environ['ROCM_ARCH'].split(';'),
+  "vision": "gpu",
+  "vision_archs": os.environ['ROCM_ARCH'].split(';'),
+  "vision_gpu": setup.HVEXE,
+  "vision_cpu": setup.VEXE,
+  "lib_dirs": ["/opt/rocm/lib"],
+  "src": setup.source_hash(setup.ENGINE_SOURCES),
+  "vision_src": setup.source_hash(setup.VISION_SOURCES),
 }
-(setup.ROOT / "engine" / "BUILD.json").write_text(json.dumps(meta, indent=1) + "\n", encoding="utf-8")
+Path(setup.ROOT / "engine" / "BUILD.json").write_text(json.dumps(meta, indent=1) + '\n')
 PY
+EOF_DOCKERFILE
 
-RUN python3 packaging/stage_tuning.py --stage engine --archs gfx906 --rocm "$ROCM_PATH" && \
+RUN build_id="$(cat SOURCE_COMMIT 2>/dev/null || echo unknown)" && \
+    python3 packaging/stage_tuning.py --stage engine --archs "$ROCM_ARCH" --rocm "$ROCM_PATH" && \
     python3 packaging/package_engine.py \
-      --src engine --backend hip --arch gfx906 \
+      --src engine --backend hip --arch "$ROCM_ARCH" \
       --version "$(python3 -c 'import setup; print(setup.source_version())')" \
-      --variant gfx906 --out /components/engine \
+      --variant "$ROCM_ARCH" --out /out/components/engine \
+      --build-id "$build_id" \
       --allow-lib libhipblas.so.3 \
       --allow-lib librocblas.so.5 \
-      --allow-lib libamdhip64.so.7
+      --allow-lib libamdhip64.so.7 && \
+    mkdir -p /out/seed/third_party/llama.cpp/ggml && \
+    cp third_party/llama.cpp/ggml/CMakeLists.txt /out/seed/third_party/llama.cpp/ggml/ && \
+    cp -a third_party/llama.cpp/gguf-py /out/seed/third_party/llama.cpp/
 
 ############# Copy and install all #############
 FROM rocm_base AS final
 WORKDIR /opt/strata/terminal
 
-COPY --from=files_strata /files/strata /opt/strata/terminal
-RUN python3 -m pip install --no-cache-dir -r requirements.txt -r requirements-monitor.txt
-
-COPY --from=build_strata /components/engine /opt/strata/components/engine
-COPY --from=build_strata /opt/strata/third_party/llama.cpp/ggml/CMakeLists.txt /opt/strata/seed/third_party/llama.cpp/ggml/CMakeLists.txt
-COPY --from=build_strata /opt/strata/third_party/llama.cpp/gguf-py /opt/strata/seed/third_party/llama.cpp/gguf-py
-COPY --from=files_strata /files/strata/docker/entrypoint.sh /files/strata/docker/healthcheck.sh /opt/strata/
-COPY --from=files_strata /files/strata/docker/strata-wrapper.sh /usr/local/bin/strata
-
-# ROCm libraries are supplied by the base image, not duplicated in the component.
-RUN <<'EOF_DOCKERFILE' bash
-set -eo pipefail
-for component in /opt/strata/components/engine/*; do
-  python3 -c 'import sys; from pathlib import Path; from strata_control import engine_component as ec; ec.verify(ec.read_manifest(Path(sys.argv[1])), full=True)' "$component"
-  for binary in "$component"/strata "$component"/strata-vision "$component"/strata-vision-hip; do
-    ldd "$binary" > /tmp/strata-ldd.log
-    if grep -q 'not found' /tmp/strata-ldd.log; then
-      cat /tmp/strata-ldd.log
-      exit 1
-    fi
-  done
-done
-rm -f /tmp/strata-ldd.log
-EOF_DOCKERFILE
+# Terminal sources and the container scripts.
+COPY --from=files_strata /opt/strata /opt/strata/terminal
+COPY --from=build_strata /out/ /opt/strata/
+COPY extra/ /opt/strata/
+RUN /opt/strata/install-python-deps.sh && /opt/strata/validate-build.sh
 
 ENV STRATA_COMPONENTS_DIR=/opt/strata/components \
     STRATA_INSTALL_DIR=/data/install \
+    STRATA_IN_DOCKER=1 \
     XDG_STATE_HOME=/data/state \
     XDG_CONFIG_HOME=/data/config \
     HOME=/data/home \
     PORT=8080 \
-    LANG=C.UTF-8 \
-    PYTHONNOUSERSITE=1 \
-    STRATA_IN_DOCKER=1
+    PYTHONNOUSERSITE=1
 
-VOLUME ["/data"]
 EXPOSE 8080
-
-HEALTHCHECK --interval=30s --timeout=8s --start-period=2h --retries=3 CMD ["/opt/strata/healthcheck.sh"]
-
-STOPSIGNAL SIGTERM
-ENTRYPOINT ["/usr/bin/tini", "--", "/opt/strata/entrypoint.sh"]
+VOLUME ["/data"]
+HEALTHCHECK --interval=30s --timeout=8s --start-period=2h --retries=3 CMD ["/opt/strata/terminal/docker/healthcheck.sh"]
+ENTRYPOINT ["/usr/bin/tini", "--", "/opt/strata/terminal/docker/entrypoint.sh"]
 CMD ["run"]

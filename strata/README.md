@@ -15,38 +15,6 @@ export STRATA_CMAKE_HIP_FLAGS="-mllvm -amdgpu-sched-strategy=max-ilp"
 ./build-and-push.image.sh
 ```
 
-The script builds and pushes, skipping existing tags; `STRATA_FORCE_BUILD=1`
-forces a rebuild. Defaults are in the
-[build script](./build-and-push.image.sh).
-`STRATA_CMAKE_HIP_FLAGS` sets extra compiler flags for the engine and GPU vision
-encoder (empty by default).
-
 ## Run
 
-Set your image tag and replace `./data` with your model-data directory if needed:
-
-```bash
-IMAGE=registry.arkprojects.space/apps/strata-gfx906:YOUR_TAG
-mkdir -p ./data
-
-docker run -d --name strata \
-  --device /dev/kfd --device /dev/dri \
-  --group-add video --group-add "$(getent group render | cut -d: -f3)" \
-  --ulimit memlock=-1:-1 --shm-size 2g --stop-timeout 120 \
-  -p 127.0.0.1:8080:8080 \
-  -v "$PWD/data:/data" \
-  -e MODEL=IQ3_XXS -e CONTEXT=32k -e VISION=gpu -e TUNE=skip \
-  "$IMAGE"
-```
-
-The first start downloads and prepares the model. Models, settings and the
-generated API key persist in `/data`. The API is published on localhost.
-After startup, retrieve the key and check the API:
-
-```bash
-KEY=$(docker exec strata strata launch --show-key --preset docker)
-curl -fsS -H "Authorization: Bearer $KEY" http://127.0.0.1:8080/v1/models
-```
-
-Model selection and other settings follow the
-[upstream Docker documentation](https://github.com/Niko1221/Strata/blob/v0.2.2/docs/DOCKER.md).
+[upstream Docker documentation](https://github.com/Niko1221/Strata/blob/v0.2.3.1/docs/DOCKER.md).
