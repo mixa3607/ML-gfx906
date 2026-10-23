@@ -18,7 +18,7 @@ source ../.build/build-common.sh
 : "${MAYA_CMAKE_HIP_FLAGS:=""}"
 : "${MAYA_CCACHE_MAXSIZE:="2G"}"
 : "${MAYA_IS_RELEASE:="0"}"
-: "${MAYA_PATCH:="gfx906.patch"}"
+: "${MAYA_PATCH:="empty.patch"}"
 : "${MAYA_PUSH:="1"}"
 : "${MAYA_PRESET_NAME:="${MAYA_BRANCH}-rocm-${MAYA_ROCM_VERSION}"}"
 : "${MAYA_BASE_IMAGE:="${ROCM_IMAGE}:${MAYA_ROCM_VERSION}-complete"}"

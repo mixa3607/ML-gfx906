@@ -1,3 +1,3 @@
 /**/*.log
-/rocm-metrics/
+/.opencode/
 /**/__pycache__/**/*

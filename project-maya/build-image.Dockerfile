@@ -4,7 +4,7 @@ ARG ROCM_ARCH="gfx906"
 ARG MAYA_REPO="https://github.com/mw00/project-maya.git"
 ARG MAYA_BRANCH="v1.1.24"
 ARG MAYA_COMMIT
-ARG MAYA_PATCH="gfx906.patch"
+ARG MAYA_PATCH="empty.patch"
 ARG MAYA_BUILD_JOBS
 ARG CMAKE_HIP_FLAGS=""
 ARG CCACHE_MAXSIZE="2G"
@@ -19,7 +19,8 @@ RUN apt-get update && \
       bash ca-certificates curl python3 python3-venv tini libatomic1 libgomp1 git g++ make && \
     rm -rf /var/lib/apt/lists/*
 
-ENV PYTHONUNBUFFERED=1 \
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8
 WORKDIR /opt/maya
@@ -29,6 +30,7 @@ FROM rocm_base AS files_maya
 ARG MAYA_REPO
 ARG MAYA_BRANCH
 ARG MAYA_COMMIT
+ARG MAYA_PATCH
 
 RUN <<'EOF' bash
   set -euo pipefail
@@ -40,7 +42,6 @@ RUN <<'EOF' bash
   git rev-parse HEAD > SOURCE_COMMIT
 EOF
 
-ARG MAYA_PATCH
 COPY patch/${MAYA_PATCH} /tmp/maya.patch
 RUN git apply --allow-empty /tmp/maya.patch && rm -rf .git
 RUN python3 -c 'import setup; setup.get_llama_cpp()'
@@ -127,10 +128,10 @@ ENV PATH="/opt/maya/.venv/bin:${PATH}"
 COPY --from=files_maya /opt/maya /opt/maya
 COPY --from=build_maya /opt/maya/build-hip/maya /opt/maya/build-hip/maya-ds4 /opt/maya/build-hip/MAYA-BUILD.json ./build-hip/
 COPY --from=build_maya /opt/maya/build-vision-cpu/bin/maya-vision ./build-vision-cpu/bin/
-COPY extra/ /opt/maya/extra/
-RUN /opt/maya/extra/install-python-deps.sh && /opt/maya/extra/validate-build.sh
+COPY extra/ /opt/maya/
+RUN /opt/maya/install-python-deps.sh && /opt/maya/validate-build.sh
 
 EXPOSE 8080
 VOLUME ["/data"]
-ENTRYPOINT ["/usr/bin/tini", "--", "/opt/maya/extra/entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/tini", "--", "/opt/maya/entrypoint.sh"]
 CMD ["--help"]
