@@ -54,7 +54,7 @@ ARG CMAKE_HIP_FLAGS
 ARG CCACHE_MAXSIZE
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends build-essential cmake ninja-build ccache && \
+    apt-get install -y --no-install-recommends cmake ninja-build ccache && \
     rm -rf /var/lib/apt/lists/*
 COPY --from=files_maya /opt/maya /opt/maya
 
@@ -66,16 +66,15 @@ CMAKE_COMMON_ARGS=(
   -DCMAKE_BUILD_TYPE=Release
   -DCMAKE_C_COMPILER="$ROCM_PATH/llvm/bin/clang"
   -DCMAKE_CXX_COMPILER="$ROCM_PATH/llvm/bin/clang++"
-  -DCMAKE_HIP_COMPILER="$ROCM_PATH/llvm/bin/clang++"
   -DCMAKE_C_COMPILER_LAUNCHER=ccache
   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
-  -DCMAKE_HIP_COMPILER_LAUNCHER=ccache
   -DSTRATA_PORTABLE=ON
-  -DSTRATA_GGML_DIR="$PWD/third_party/llama.cpp"
 )
 
 CMAKE_ARGS=(
   "${CMAKE_COMMON_ARGS[@]}"
+  -DCMAKE_HIP_COMPILER="$ROCM_PATH/llvm/bin/clang++"
+  -DCMAKE_HIP_COMPILER_LAUNCHER=ccache
   -DCMAKE_PREFIX_PATH="$ROCM_PATH"
   -DCMAKE_HIP_COMPILER_ROCM_ROOT="$ROCM_PATH"
   -DCMAKE_HIP_ARCHITECTURES="$ROCM_ARCH"
@@ -85,6 +84,7 @@ CMAKE_ARGS=(
   -DSTRATA_PREFILL_MMQ=ON
   -DSTRATA_NATIVE_EXPERTS=ON
   -DSTRATA_BUILD_TESTS=OFF
+  -DSTRATA_GGML_DIR="$PWD/third_party/llama.cpp"
 )
 cmake -S . -B build-hip -G Ninja "${CMAKE_ARGS[@]}"
 cmake --build build-hip --target maya maya-ds4 --parallel "${MAYA_BUILD_JOBS:-$(nproc)}"
