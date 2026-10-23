@@ -27,7 +27,7 @@ jobs:
       matrix:
         build:
           - rocm_version: "10.1"
-            release_tag: "20261018172427"
+            release_tag: "20261024021957"
     env:
       STRATA_REPO: "https://github.com/Niko1221/Strata.git"
       STRATA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"

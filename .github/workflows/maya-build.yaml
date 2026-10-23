@@ -31,7 +31,7 @@ jobs:
             latest_type: "release"
             profile_suffix: ""
             rocm_version: "10.1"
-            release_tag: "${{ github.ref }}"
+            release_tag: "20261024021957"
     env:
       MAYA_REPO: "${{ matrix.build.repo }}"
       MAYA_LATEST_TYPE: "${{ matrix.build.latest_type }}"
