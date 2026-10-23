@@ -12,7 +12,7 @@ source ../.build/build-common.sh
 : "${MAYA_IMAGE:="docker.io/mixa3607/maya-gfx906"}"
 : "${MAYA_ROCM_VERSION:="10.1"}"
 : "${MAYA_REPO:="https://github.com/mw00/project-maya.git"}"
-: "${MAYA_BRANCH:="v1.1.24"}"
+: "${MAYA_BRANCH:="main"}"
 : "${MAYA_COMMIT:=""}"
 : "${MAYA_BUILD_JOBS:=""}"
 : "${MAYA_CMAKE_HIP_FLAGS:=""}"

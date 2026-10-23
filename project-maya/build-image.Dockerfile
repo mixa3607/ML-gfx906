@@ -2,7 +2,7 @@
 ARG ROCM_IMAGE="docker.io/mixa3607/rocm-gfx906:10.1-complete"
 ARG ROCM_ARCH="gfx906"
 ARG MAYA_REPO="https://github.com/mw00/project-maya.git"
-ARG MAYA_BRANCH="v1.1.24"
+ARG MAYA_BRANCH="main"
 ARG MAYA_COMMIT
 ARG MAYA_PATCH="empty.patch"
 ARG MAYA_BUILD_JOBS
