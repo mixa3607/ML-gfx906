@@ -1,11 +1,41 @@
-# Measurements, 2026-10-24
+# Measurements, 2026-10-24–25
 
-> **Current disposition: no accelerated RAM-copy configuration is approved as
-> whole-engine bit-exact under the stock adaptive cache.** The complete warm
-> replay invalidated the earlier short pass, including a repeat of the same
-> CPU48 configuration. Performance numbers below remain measurements, not a
-> recommendation satisfying all requirements. Long held-out and vision runs
-> are deferred while this is investigated.
+> **Current criterion:** full model computation and context, with ordinary
+> floating-point/adaptive-cache differences allowed (approved 2026-10-25).
+> No whole-engine bit-exact claim is made. Historical strict rejections below
+> remain unchanged; they are not retroactive passes. Long-context retrieval,
+> held-out timing and actual vision inference are still pending.
+
+## Completed cache/source diagnosis (approach 1 follow-up)
+
+Recovered after the server restart without rerunning GPU work:
+`/tmp/opencode/ds41-cache-diagnosis-01`, copied from
+`/data/runs/cache-diagnosis-01`.
+
+- Frozen placement (`--no-expert-cache`): mmap CPU48 versus full-copy CPU48
+  and CPU56 each passed **512/512 full-vocabulary logit rows** across PP2048
+  and PP8192, with finite logits and matching generated tokens.
+- Adaptive full-copy CPU48 with `DS4_CHECK_SWAPS=1`: **507** logged byte checks
+  matched the model file, **zero** MISMATCH lines. The checks actually executed.
+- This bounds the evidence: no source-byte or fixed-placement discrepancy was
+  found in these cases. It does not prove global adaptive determinism, nor that
+  arbitrary token divergences are harmless. Diagnostic timings include dumps
+  and are not warm performance comparisons.
+
+## Approach 2: full-compute runtime matrix
+
+The user explicitly relaxed whole-engine bitwise repeatability, not the model's
+compute/context requirements. RAM/NUMA/CPU/chunk choices are eligible for new
+timing; approximate expert/prompt skips, reduced retention, context truncation
+and extra quantization remain forbidden. YOCO1 and flow are separate checks.
+The new runner does not consume or rewrite old strict verdicts/invalidation.
+
+Prepared matrix: full copies, Engram256, CPU48/NUMA1/chunk2048 control;
+CPU56 with NUMA1/2 and chunk2048/4096; repeated fresh control. All reuse the
+same frozen 12-warmup/six-dev history from `fair-copy48-time-01`, without dumps.
+No new performance result or final compatibility claim is available yet.
+
+## Approach 1: historical strict protocol and measurements
 
 ## Initial screening baseline (not a steady-state result)
 

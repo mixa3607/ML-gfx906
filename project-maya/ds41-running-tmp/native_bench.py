@@ -14,6 +14,8 @@ import struct
 import subprocess
 import time
 
+from full_compute import POLICY, engine_env, validate_config, validate_limits
+
 
 def read_numbers(path):
     try:
@@ -83,7 +85,8 @@ class Engine:
         self.transcript = (output / 'protocol.log').open('w')
         self.profile = output / 'expert-profile.bin'
         shutil.copyfile(cfg['seed_profile'], self.profile)
-        env = {**os.environ, **cfg['env']}
+        env = (engine_env(cfg, os.environ) if cfg.get('policy') == POLICY
+               else {**os.environ, **cfg['env']})
         env['DS4_LANE_CAL'] = str(output / 'lane-times.txt')
         env.pop('DS4_SERVE_DUMP', None)
         if dump:
@@ -162,6 +165,8 @@ class Engine:
             raise RuntimeError(f'Not PP{len(case["ids"])} / TG{tg}: {done}')
         if done['finish'] != 'length':
             raise RuntimeError(f'Request did not reach TG limit: {done}')
+        if any(not math.isfinite(done[k]) or done[k] <= 0 for k in ('prompt_ms', 'decode_ms')):
+            raise RuntimeError(f'Non-finite or nonpositive engine timing: {done}')
         if any(float(s.get('skipped', 0)) for s in stats):
             raise RuntimeError('An expert was skipped')
         if after['memory_events'].get('oom_kill', 0) > before['memory_events'].get('oom_kill', 0):
@@ -211,6 +216,10 @@ def main():
     ap.add_argument('--dump', action='store_true', help='Validation only: hash every f32 logits row')
     a = ap.parse_args()
     cfg = json.loads(a.config.read_text())
+    policy = None
+    if 'policy' in cfg:
+        policy = validate_config(cfg)
+        validate_limits(snapshot())
     cases = [json.loads(s) for s in a.cases.read_text().splitlines() if s.strip()]
     if not cases or any(not c['ids'] or len(c['ids']) % 2048 or len(c['ids']) + a.tg > 196608 for c in cases):
         raise ValueError('Cases must use PP multiples of 2048 and fit context 196608')
@@ -223,12 +232,16 @@ def main():
         'build': json.loads(Path('/opt/maya/build-hip/MAYA-BUILD.json').read_text()),
         'source_commit': Path('/opt/maya/SOURCE_COMMIT').read_text().strip(),
         'runner_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-        'dump': a.dump, 'tg': a.tg, 'cgroup': str(cgroup_dir()),
+        'dump': a.dump, 'tg': a.tg, 'cgroup': str(cgroup_dir()), 'policy': policy,
+        'policy_sha256': hashlib.sha256(Path(__file__).with_name('full_compute.py').read_bytes()).hexdigest(),
         'before': snapshot(), 'started_unix': time.time()}, indent=2) + '\n')
     engine = Engine(cfg, a.out, a.dump)
     try:
         t0 = time.monotonic()
         ready = engine.ready(a.timeout)
+        if policy and (not any(line.startswith('READY 196608 ') for line in ready)
+                       or not any(line.startswith('INFO ') and 'vision=ds4 ' in line for line in ready)):
+            raise RuntimeError('Context196608 or native DS4 vision not available')
         if cfg.get('require_full_copies'):
             log = (a.out / 'engine.log').read_text()
             match = re.search(r"(\d+) of the CPU lane's (\d+) experts copied into RAM", log)

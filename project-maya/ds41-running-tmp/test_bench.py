@@ -1,4 +1,5 @@
 import hashlib
+import copy
 import json
 from pathlib import Path
 import tempfile
@@ -10,10 +11,68 @@ import unittest
 from corpus import SOURCES
 from compare import compare
 from summary import summarize
+from full_compute import engine_env, runtime_configs, validate_config, validate_limits
 from native_bench import Engine, cgroup_dir, dump_hashes, parse_done, quantile, read_numbers
 
 
 class BenchTests(unittest.TestCase):
+    def test_full_compute_runtime_matrix(self):
+        configs = runtime_configs()
+        self.assertEqual(len(configs), 5)
+        for cfg in configs.values():
+            result = validate_config(cfg)
+            self.assertTrue(result['timing_eligible'])
+            self.assertFalse(result['quality_and_long_context_validated'])
+            self.assertFalse(result['bit_exact_required'])
+        cfg = next(iter(configs.values()))
+        cfg['env']['STRATA_DS4_PROMPT_SKIP'] = '1'
+        self.assertEqual(validate_config(cfg)['prompt_skip'], '1')
+
+    def test_full_compute_rejects_approximation_and_unknown_options(self):
+        base = next(iter(runtime_configs().values()))
+        for key, value in [('STRATA_DS4_DISK_SKIP_W', 'AUTO'),
+                           ('STRATA_DS4_DISK_SKIP_W', '0.01'),
+                           ('STRATA_DS4_PROMPT_SKIP', '2'),
+                           ('STRATA_DS4_SLOT_KEEP', '128'),
+                           ('DS4_YOCO_KEEP', '128'), ('DS4_YOCO', '1'),
+                           ('DS4_SKIP_UNPICKED', '1'), ('DS4_FLOW_TP', '1')]:
+            cfg = copy.deepcopy(base)
+            cfg['env'][key] = value
+            with self.subTest(key=key, value=value), self.assertRaises(ValueError):
+                validate_config(cfg)
+        for key, value in [('--max-context', '8192'), ('--vision', 'off'),
+                           ('--dspark', 'auto'), ('--pack', '/other-model')]:
+            cfg = copy.deepcopy(base)
+            cfg['args'][cfg['args'].index(key) + 1] = value
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                validate_config(cfg)
+        for extra in (['--no-expert-cache'], ['--quant', 'q4']):
+            cfg = copy.deepcopy(base)
+            cfg['args'] += extra
+            with self.assertRaises(ValueError):
+                validate_config(cfg)
+        cfg = copy.deepcopy(base)
+        cfg['require_full_copies'] = False
+        with self.assertRaises(ValueError):
+            validate_config(cfg)
+
+    def test_full_compute_clears_inherited_knobs(self):
+        cfg = next(iter(runtime_configs().values()))
+        env = engine_env(cfg, {'DS4_YOCO_KEEP': '128', 'DS4_YOCO': '2',
+                              'MAYA_DS4_PROMPT_SKIP': '2', 'STRATA_DS4_DISK_SKIP_W': 'AUTO',
+                              'DS4_SKIP_UNPICKED': '1', 'PATH': '/bin'})
+        self.assertEqual(env['PATH'], '/bin')
+        self.assertEqual(env['STRATA_DS4_DISK_SKIP_W'], '0')
+        for key in ('DS4_YOCO_KEEP', 'DS4_YOCO', 'MAYA_DS4_PROMPT_SKIP', 'DS4_SKIP_UNPICKED'):
+            self.assertNotIn(key, env)
+
+    def test_full_compute_resource_limits(self):
+        validate_limits({'cpu.max': 'max 100000', 'memory.max': str(192 * 2**30)})
+        for cpu, memory in [('100000 100000', str(192 * 2**30)),
+                            ('max 100000', 'max'), ('max 100000', str(193 * 2**30))]:
+            with self.assertRaises(ValueError):
+                validate_limits({'cpu.max': cpu, 'memory.max': memory})
+
     def test_pooled_rates_exclude_warmup(self):
         a = {'id': 'a', 'phase': 'dev', 'pp': 2048, 'done': {'pp': 2048, 'tg': 256,
              'reused': 0, 'prompt_ms': 100}, 'tg_tok_s': 10, 'ttft_s': 2, 'wall_s': 3}

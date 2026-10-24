@@ -1,12 +1,48 @@
 # DS4.1 single-request tuning
 
 See [REQUIREMENTS.md](REQUIREMENTS.md) for the fixed constraints. Runtime
-candidates are experimental until both numerical and performance checks pass.
+candidates are experimental until functional and performance checks pass.
 
-**Current blocker:** full replay invalidated the short RAM-copy parity pass.
-No accelerated RAM configuration is currently recommended as whole-engine
-bit-exact with the stock adaptive cache. See [RESULTS.md](RESULTS.md); do not
-interpret its speed tables or an old short-gate verdict as final acceptance.
+**Current policy (2026-10-25):** preserve model computation and context, allowing
+ordinary floating-point/adaptive-cache differences. Identical generated text
+is not required. The earlier strict parity failure remains historical evidence,
+not a blocker under this policy and not a retrospective strict pass. Finalists
+still need real long-context retrieval checks and image inference. See
+[RESULTS.md](RESULTS.md) for completed versus pending validation.
+
+## Full-compute comparison (current approach)
+
+`full_compute.py` is separate from the historical strict timing gate. It only
+accepts the fixed model/runtime/precision/context/vision/DSpark settings and an
+explicit allowlist of RAM/NUMA/CPU/chunk/cache choices. It rejects unknown args,
+expert skips (including AUTO), YOCO2, custom YOCO retention and quantization
+options. The engine clears inherited `DS4_*`, `STRATA_DS4_*`, and `MAYA_DS4_*`
+variables before applying the checked configuration. YOCO1 is allowed only via
+`STRATA_DS4_PROMPT_SKIP=1`, with no retention override; it is **off** in the
+initial runtime matrix. Flow is not yet allowlisted: inspect/validate it in a
+separate approach before enabling it. No unsupported `DS4_SKIP_UNPICKED` flag.
+
+With the existing approved pod/GPU run, reuse the already frozen development
+history rather than regenerating inputs or accessing holdout for tuning:
+
+```bash
+python /data/bench/full_compute.py \
+  --cases /data/runs/fair-copy48-time-01/cases.jsonl \
+  --out /data/runs/full-compute-runtime-01 --run
+```
+
+Omit `--run` to prepare configs/plan without GPU work. The matrix uses full
+RAM copies and Engram256 throughout: CPU48/NUMA1/chunk2048 control, then
+CPU56/NUMA1/chunk2048, CPU56/NUMA2/chunk2048, CPU56/NUMA1/chunk4096,
+CPU56/NUMA2/chunk4096, then a fresh control repeat. This isolates CPU/NUMA/chunk
+comparisons without repeating the established mmap-versus-RAM experiment.
+Each run has the same 12 warmups and six scored requests, an independent seed
+profile and lane calibration, and no logit dumps. Timing eligibility in
+`plan.json` is **not** quality/context validation or a claim that every numerical
+difference is small. Strict verdicts and invalidation markers are untouched.
+Engine errors, incomplete copies, reuse, speculation, expert skips, short EOS,
+non-finite native times, OOM and CPU throttling fail the run. Compare paired
+PP/TG/wall metrics with the repeated control; do not infer quality from speed.
 
 ## Fixed workload
 
@@ -22,7 +58,7 @@ interpret its speed tables or an old short-gate verdict as final acceptance.
 - Pod memory limit: 192 **GiB**, including charged file cache and shared memory.
   No CPU quota. CPU requests are scheduling/weight hints, not a performance
   guarantee; inspect competing work and all ancestor cgroups.
-- Keep quantization, source revision, arithmetic paths, and GPU topology fixed
+- Keep quantization, source revision, model computation, and GPU topology fixed
   while testing storage/cache/CPU scheduling changes first.
 
 ## Warm, without memorizing the test
@@ -52,7 +88,8 @@ held-out results. Include a separate held-out-domain/topic-switch stress slice.
 The native protocol automatically reuses matching KV prefixes. There is no
 generic `RESET` command. Independent prompts differ early, and the runner
 **rejects any request reporting nonzero reused tokens**. Conversation slots,
-prompt skipping and disk expert skipping are explicitly disabled. Natural EOS
+disk expert skipping are explicitly disabled. Prompt skipping is off in the
+runtime matrix; only dependency-safe YOCO1 may be tested separately. Natural EOS
 is respected: a short answer fails TG256 rather than being counted as TG256 or
 continued past EOS. No output-cache hits or speculative tokens are accepted.
 
@@ -116,7 +153,11 @@ The C++ binary consumes legacy `STRATA_DS4_*` names directly; `maya.py` normally
 translates the public `MAYA_DS4_*` names. `baseline.json` uses the native names
 deliberately rather than silently leaving computation skips enabled.
 
-## Numerical gate and metrics
+## Historical strict numerical gate
+
+The following scripts describe approach 1, committed as `467e6d2`. They retain
+their strict criteria and rejection markers for reproduction; use the separate
+full-compute entry point above for the current policy, not a bypass of this gate.
 
 Run a baseline replay **against itself first**, then compare candidates on the
 same ordered input history. Use `--dump` in separate numerical-validation runs:
