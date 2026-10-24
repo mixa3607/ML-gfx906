@@ -14,10 +14,15 @@ from summary import summarize
 from context_check import assemble, score, validate_probe_length
 from vision_check import image_checks
 from full_compute import engine_env, runtime_configs, validate_config, validate_limits
-from native_bench import Engine, cgroup_dir, dump_hashes, parse_done, quantile, read_numbers
+from native_bench import Engine, cgroup_dir, dump_hashes, parse_done, peer_budget, quantile, read_numbers
 
 
 class BenchTests(unittest.TestCase):
+    def test_peer_pod_cache_counted_in_192gi_budget(self):
+        self.assertEqual(peer_budget(185 * 2**30, 7 * 2**30), 192 * 2**30)
+        with self.assertRaises(RuntimeError):
+            peer_budget(185 * 2**30, 7 * 2**30 + 1)
+
     def test_context_probes_capped_at_user_requested_64k(self):
         for length in (2048, 32768, 65536):
             validate_probe_length(length)

@@ -31,6 +31,13 @@ def cgroup_dir():
     raise RuntimeError('cgroup v2 is required for memory and CPU accounting')
 
 
+def peer_budget(memory_limit, peer_current):
+    total = int(memory_limit) + int(peer_current)
+    if total > 192 * 2**30:
+        raise RuntimeError('Test pod limit plus retained peer-pod memory exceeds 192Gi')
+    return total
+
+
 def snapshot(pid=None):
     cg = cgroup_dir()
     out = {'cpu': read_numbers(cg / 'cpu.stat'),
@@ -43,6 +50,14 @@ def snapshot(pid=None):
     if pid:
         out['io'] = read_numbers(Path(f'/proc/{pid}/io'))
         out['status'] = Path(f'/proc/{pid}/status').read_text()
+    if peer := os.environ.get('BENCH_PEER_CGROUP'):
+        path = Path(peer).resolve()
+        if not path.is_relative_to('/sys/fs/cgroup') or path == cg.resolve():
+            raise ValueError('Peer accounting requires a different cgroup under /sys/fs/cgroup')
+        current = int((path / 'memory.current').read_text())
+        out['peer_cgroup'] = {'path': str(path), 'memory.current': current,
+                              'memory_stat': read_numbers(path / 'memory.stat'),
+                              'limit_plus_peer_bytes': peer_budget(out['memory.max'], current)}
     return out
 
 

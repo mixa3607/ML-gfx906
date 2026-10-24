@@ -77,9 +77,13 @@ context probe runner rejects PP above 65536; keep the server capacity at 196608.
 
 The user-built v1.1.27 image has a separate digest-pinned manifest,
 `pod.v1.1.27.yaml`. Its 8Gi memory request is only a scheduling reservation;
-the enforced cap is still 192Gi and there is no CPU quota. Never run GPU engines
+the enforced cap is 185Gi, leaving up to 7Gi for the stopped old pod, and there
+is no CPU quota. Never run GPU engines
 in both test pods concurrently. Account for shared file-cache charges retained
 by the old pod before treating a cross-pod comparison as a verified 192Gi result.
+Set `BENCH_PEER_CGROUP` to that pod's cgroup path for the v1.1.27 runs. Snapshots
+record peer charges and reject a new-pod limit plus peer usage above 192Gi.
+This accounts for the known peer pod, not arbitrary unrelated host cache users.
 
 ## Fixed workload
 

@@ -106,6 +106,25 @@ The original final holdout file is preserved. A new filtered
 through PP65536, with source/selected hashes in a sidecar manifest. It has not
 run. No 128K/194K request will be executed.
 
+### v1.1.26 finalist functional result
+
+`functional64k-finalist-v126-01` completed: all three 64K name/code associations
+were retrieved correctly (544758 / 497540 / 918326). The red rectangle and blue
+circle were described correctly; the blank image was described as plain white
+without objects. Context and both images used natural EOS and finite-logit
+validation, not TG256 timing. Source artifacts are retained at
+`/tmp/opencode/ds41-functional64k-finalist-v126-01`. This is bounded functional
+evidence at 64K, not verification of 192K workloads or general vision quality.
+
+Before the v1.1.27 run, the stopped old pod retained about **6.9 GiB** of file
+cache/kernel accounting. To avoid borrowing memory outside the intended budget,
+the new pod was resized in place to **185Gi** (no CPU quota). The runner's
+optional `BENCH_PEER_CGROUP` snapshots record the old pod and reject a new-pod
+limit plus peer charge above 192Gi. Full expert copies are still mandatory;
+insufficient allocation stops the test instead of accepting partial copies.
+The old kubectl client cannot name the resize subresource, so the same supported
+API update was sent with `kubectl replace --raw .../resize`; the pod stayed up.
+
 ## Approach 1: historical strict protocol and measurements
 
 ## Initial screening baseline (not a steady-state result)

@@ -41,7 +41,8 @@ spec:
           cpu: "4"
           memory: 8Gi
         limits:
-          memory: 192Gi
+          # Leave 7Gi for the stopped v1.1.26 pod's retained cache/accounting.
+          memory: 185Gi
       volumeMounts:
         - {name: hf-cache, mountPath: /root/.cache/huggingface, readOnly: true}
         - {name: data, mountPath: /data}
