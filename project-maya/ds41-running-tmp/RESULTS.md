@@ -236,7 +236,7 @@ timing above, the user-built v1.1.27 image works for these cases at the approved
 187Gi-plus-peer budget; no additional speed benefit over manual RAM copies in
 v1.1.26 was demonstrated.
 
-## Approach 4: dependency-safe YOCO1 (prepared, not yet validated)
+## Approach 4: dependency-safe YOCO1
 
 This is the previously approved YOCO1 check, not YOCO2 or reduced retention.
 Use the same v1.1.27 CPU56/NUMA2/chunk4096/Engram256/full-copy finalist and the
@@ -247,6 +247,32 @@ rows**, not merely successful startup with an environment variable. If that
 functional gate passes, time the original frozen warm development history with
 dumps/verbose off, against the existing v1.1.27 no-skip result. No held-out
 data is used for this tuning, and no YOCO1 gain is claimed yet.
+
+### YOCO1 functional gate passed
+
+The collector received the context record, both image records and exit0. The
+runtime logged exactly:
+
+```text
+ds4: prompt skip: layers 20-39 from CUDA2, 62868 early rows KV-only, 2668 kept
+```
+
+All three codes at PP65536 were retrieved correctly, natural EOS after 29
+tokens; red rectangle/blue circle and the white blank image were described
+correctly. All tested logits were finite, with no OOM/kills or CPU throttling.
+The recorded new-pod cap plus peer charge was about 190.209 GiB at the context
+checkpoint. No retention override, expert skip, speculation or KV reuse.
+
+The diagnostic prompt time was 260.935 s versus the earlier no-skip diagnostic's
+270.726 s. These are separate dump-enabled functional runs, **not a verified
+warm performance gain**. Pipeline overlap, chunk shapes and cache state can
+change the benefit; dependency-safe pruning need not accelerate this topology.
+The dump-free frozen development comparison is the next measurement.
+
+Durable local artifacts: `/tmp/opencode/ds41-yoco1-functional64k-01`, supplemented
+by `/tmp/opencode/ds41-yoco1-functional64k-01-pod`; exact candidate configs are
+saved at `/tmp/opencode/ds41-yoco1-configs-01`. This is bounded functional
+validation, not a proof of arbitrary-context equivalence or 192K inference.
 
 ## Approach 1: historical strict protocol and measurements
 
