@@ -274,6 +274,38 @@ by `/tmp/opencode/ds41-yoco1-functional64k-01-pod`; exact candidate configs are
 saved at `/tmp/opencode/ds41-yoco1-configs-01`. This is bounded functional
 validation, not a proof of arbitrary-context equivalence or 192K inference.
 
+### YOCO1 warm timing: no demonstrated gain
+
+The dump-free candidate completed all 12 warmups plus six scored development
+requests (18/18 streamed records, exit0), with the original non-verbose timing
+arguments and only prompt skip changed to 1. Both starts used the same image,
+seed profile, full copies 9934/9934, frozen inputs and 187Gi-plus-peer budget.
+
+| Pooled metric | v1.1.27 skip0 | v1.1.27 YOCO1 |
+| --- | ---: | ---: |
+| PP2048 tok/s | 92.45 | 94.68 |
+| PP4096 tok/s | 130.05 | 129.76 |
+| PP8192 tok/s | 175.07 | 173.40 |
+| All scored PP tok/s | 142.731 | 142.733 |
+| All scored TG tok/s | 21.844 | 21.895 |
+| Six scored requests, wall s | 270.943 | 270.771 |
+
+Aggregate PP differs by about +0.001%, TG +0.24%, wall -0.06%: **no useful
+speedup demonstrated**. PP2048 is below the YOCO activation threshold, so its
+small change is not a skip benefit. PP4096/8192 did not improve in this single
+comparison. This is not a new A/B/A or statistical equivalence proof.
+
+No OOM/kills, CPU throttling, KV reuse or speculative tokens. Peak was 187Gi;
+the maximum recorded hard-limit-plus-peer charge was 190.209Gi. Source/byte
+integrity and 64K/vision checks remain passed, but correctness is not evidence
+of a performance gain. **Keep YOCO off for the selected warm 2K–8K baseline.**
+The separate 64K diagnostic comparison is not promoted into a timing claim.
+
+Artifacts: `/tmp/opencode/ds41-yoco1-time-01` (durable records) and
+`/tmp/opencode/ds41-yoco1-time-01-pod` (complete in-pod artifacts). Next, inspect
+and screen flow/pump separately with YOCO off, starting with bounded inputs
+and the native TP/flow copy checker rather than another full long-context run.
+
 ## Approach 1: historical strict protocol and measurements
 
 ## Initial screening baseline (not a steady-state result)
