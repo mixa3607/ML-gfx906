@@ -81,6 +81,7 @@ def dump_hashes(path, vocab=129280):
 
 class Engine:
     def __init__(self, cfg, output, dump=False):
+        self.output = output
         self.log = (output / 'engine.log').open('w')
         self.transcript = (output / 'protocol.log').open('w')
         self.profile = output / 'expert-profile.bin'

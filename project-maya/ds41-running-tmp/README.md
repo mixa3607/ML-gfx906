@@ -59,6 +59,8 @@ These are separate from TG256 performance and do not require identical text:
   allows natural EOS up to 128 tokens, and preserves full PP/context. Use a
   checked config with trailing `--verbose` to log actual YOCO1 activation;
   enabling the flag alone is not evidence that the runtime used it.
+  Add `--vision` to check the shapes/blank images in that same loaded engine,
+  avoiding another full model load. Full-logit dumps are validation-only.
 - `vision_check.py --functional --baseline <control.json> --candidate <finalist.json>
   --out <run>` sends real GENI images through the upstream image frontend:
   red rectangle/blue circle and a white blank control. It checks finite logits

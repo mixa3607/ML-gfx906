@@ -119,6 +119,7 @@ def run(a):
                                  'policy': eligibility, 'functional_not_tg256_benchmark': True})
     tok = Tokenizer.from_dir('/data/ds4/tokenizer')
     results = []
+    vision_checks = None
     engine = Engine(cfg, a.out, dump=True)
     try:
         ready = engine.ready(a.timeout)
@@ -147,6 +148,12 @@ def run(a):
                 f.flush()
                 print(json.dumps({'id': case['id'], 'retrieved': row['retrieved'], 'text': row['text']},
                                  ensure_ascii=False), flush=True)
+        if a.vision:
+            from vision_check import check_config, create_images, image_checks
+
+            images = create_images(a.out)
+            vision_rows = check_config(a.config, images, a.out / 'vision', engine=engine, ready=ready)
+            vision_checks = image_checks(vision_rows)
     finally:
         engine.close()
     log = (a.out / 'engine.log').read_text()
@@ -155,9 +162,11 @@ def run(a):
     verdict = {'all_facts_retrieved': all(all(r['retrieved'].values()) for r in results),
                'finite_on_tested_rows': True, 'prompt_skip_activation': activation,
                'activation_verified': bool(activation) if active_required else not activation,
+               'vision_checks': vision_checks,
                'not_a_general_quality_proof': True}
     save(a.out / 'verdict.json', verdict)
-    if not verdict['all_facts_retrieved'] or not verdict['activation_verified']:
+    if (not verdict['all_facts_retrieved'] or not verdict['activation_verified'] or
+            (vision_checks is not None and not all(vision_checks.values()))):
         raise SystemExit(1)
 
 
@@ -174,6 +183,7 @@ def main():
     check.add_argument('--cases', type=Path, required=True)
     check.add_argument('--out', type=Path, required=True)
     check.add_argument('--timeout', type=int, default=14400)
+    check.add_argument('--vision', action='store_true', help='Also check images in the same loaded engine')
     a = p.parse_args()
     (prepare if a.command == 'prepare' else run)(a)
 

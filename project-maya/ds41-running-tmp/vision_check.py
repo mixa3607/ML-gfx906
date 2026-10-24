@@ -28,7 +28,20 @@ def image_checks(rows):
                                 not re.search(r'красн|син|red|blue', blank)}
 
 
-def check_config(config, images, directory):
+def create_images(directory):
+    from PIL import Image, ImageDraw
+
+    blank = Image.new('RGB', (512, 512), 'white')
+    shapes = blank.copy()
+    draw = ImageDraw.Draw(shapes)
+    draw.rectangle((30, 80, 230, 430), fill='red')
+    draw.ellipse((280, 150, 490, 360), fill='blue')
+    shapes.save(directory / 'shapes.png')
+    blank.save(directory / 'blank.png')
+    return [directory / 'shapes.png', directory / 'blank.png']
+
+
+def check_config(config, images, directory, engine=None, ready=None):
     sys.path[:0] = ['/opt/maya', '/opt/maya/tools']
     from serve.ds4_vision import Geometry, Vision
     from serve.frontend import ChatTemplate, openai_to_messages
@@ -46,10 +59,15 @@ def check_config(config, images, directory):
         'build': json.loads(Path('/opt/maya/build-hip/MAYA-BUILD.json').read_text()),
         'seed_profile_sha256': hashlib.sha256(Path(cfg['seed_profile']).read_bytes()).hexdigest(),
         'runner_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest()})
-    engine = Engine(cfg, directory, dump=True)
+    own_engine = engine is None
+    if own_engine:
+        engine = Engine(cfg, directory, dump=True)
+    elif ready is None or engine.cmd[:1 + len(cfg['args'])] != [cfg['exe'], *cfg['args']]:
+        raise ValueError('Borrowed engine must match the config and provide READY lines')
     results = []
     try:
-        ready = engine.ready(1800)
+        if own_engine:
+            ready = engine.ready(1800)
         info = {}
         for line in ready:
             if line.startswith('INFO '):
@@ -59,7 +77,7 @@ def check_config(config, images, directory):
         if info.get('vision') != 'ds4' or 'READY 196608 stop' not in ready:
             raise RuntimeError('Native vision or context 196608 not available')
         if cfg.get('require_full_copies'):
-            log = (directory / 'engine.log').read_text()
+            log = (engine.output / 'engine.log').read_text()
             counts = re.search(r"(\d+) of the CPU lane's (\d+) experts copied into RAM", log)
             if not counts or counts[1] != counts[2]:
                 raise RuntimeError('Incomplete expert copies')
@@ -101,7 +119,7 @@ def check_config(config, images, directory):
                 raise RuntimeError(f'Incomplete image response: {done}')
             if done['reused'] or done['drafted'] or done['accepted'] or done['finish'] not in ('stop', 'length'):
                 raise RuntimeError(f'Invalid image smoke: {done}')
-            path = directory / f'logits.{engine.count}.f32'
+            path = engine.output / f'logits.{engine.count}.f32'
             hashes = dump_hashes(path)
             if len(hashes['rows']) != len(tokens):
                 raise RuntimeError('Image logit row count differs from output token count')
@@ -120,7 +138,8 @@ def check_config(config, images, directory):
             print(json.dumps({'config': cfg['name'], 'case': image.stem, 'text': row['text']},
                              ensure_ascii=False), flush=True)
     finally:
-        engine.close()
+        if own_engine:
+            engine.close()
     return results
 
 
@@ -136,16 +155,7 @@ def main():
         for config in (a.baseline, a.candidate):
             validate_config(json.loads(config.read_text()))
     a.out.mkdir(parents=True, exist_ok=False)
-    from PIL import Image, ImageDraw
-
-    blank = Image.new('RGB', (512, 512), 'white')
-    shapes = blank.copy()
-    draw = ImageDraw.Draw(shapes)
-    draw.rectangle((30, 80, 230, 430), fill='red')
-    draw.ellipse((280, 150, 490, 360), fill='blue')
-    shapes.save(a.out / 'shapes.png')
-    blank.save(a.out / 'blank.png')
-    images = [a.out / 'shapes.png', a.out / 'blank.png']
+    images = create_images(a.out)
     left = check_config(a.baseline, images, a.out / 'reference')
     right = check_config(a.candidate, images, a.out / 'candidate')
     if a.functional:

@@ -82,6 +82,30 @@ identical outputs. **These GPU checks have not run.** Local checks: 23 unit
 tests pass; Python compilation and shell syntax checks pass. The best runtime
 point is a timing finalist, not yet a final context/vision recommendation.
 
+## Approach 3: v1.1.27 comparison and bounded functional validation
+
+Created the approved `apps-ml/maya-ds41-bench-v127` pod on worker6. Its source
+commit is `4615f346d9311dd1ce9f5738ab04446f023a6e42`, engine fingerprint
+`8933c5ceb60f89e7`, HIP target gfx906. Preparation uses the same read-only HF
+snapshot and converts vision locally; it does not download or copy GGUF blobs.
+The resulting `ds4.txt` and `tensors.txt` hashes **match v1.1.26 exactly**:
+
+- `ds4.txt`: `e1c6053dc995b76104af2d86ee332c85ba3a1684f28c4de2e39a26c5af9bbae9`
+- `tensors.txt`: `39a113954916e310dd42f2a39db7214c34fbb3a3d73723c4e2dc29e0d43c608b`
+- Seed profile remains `44fb8ea94ba449b1eb2218e867453ff432613ac7fa285ba7087bd683296c97e2`.
+
+Prepared one PP65536 functional probe: complete name/code spans at token ranges
+128–148, 32768–32787, and 65331–65351. The final question contains the names,
+not the codes. Both images will use the same file and the CPU56/NUMA2/chunk4096
+finalist, with skips off. Context and GENI shapes/blank checks share one loaded
+engine to avoid another expensive startup; dumps are enabled only for this
+functional validation, never for the separate performance comparison.
+
+The original final holdout file is preserved. A new filtered
+`/data/heldout64k-final-01.jsonl` retains its 12 warmups plus six holdout requests
+through PP65536, with source/selected hashes in a sidecar manifest. It has not
+run. No 128K/194K request will be executed.
+
 ## Approach 1: historical strict protocol and measurements
 
 ## Initial screening baseline (not a steady-state result)
