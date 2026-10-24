@@ -343,8 +343,27 @@ comparison against the earlier fully warmed baseline.
 
 Artifacts: `/tmp/opencode/ds41-flow-pump0-screen-01` (durable records) and
 `/tmp/opencode/ds41-flow-pump0-screen-01-pod` (complete in-pod artifacts).
-Pump1 is being checked separately on the exact same two inputs; 64K/vision and
-warm timing for flow have not run.
+Pump1 was checked separately on the exact same two inputs, as reported below;
+64K/vision and warm timing for flow have not completed.
+
+### Flow, pump1: bounded diagnostic also passed
+
+The second candidate completed both requests with exit0, 512/512 finite logit
+rows, all four GPUs active and streaming, the native numerical TP pass, and
+all four guarded byte-copy checks passed. Full copies **9935/9935**, no OOM or
+CPU throttling, recorded hard-limit-plus-peer charge about 187.754Gi. Startup
+164.9 s. Diagnostic PP was 105.78/132.61 tok/s and TG 18.63/20.97.
+
+Pump1 looks worth advancing, but **the two short dump-enabled starts do not
+prove that pump is faster**: order, placement and cache state are uncontrolled
+at this small sample size. Select pump1 as the next candidate, keeping YOCO
+off and all other flow settings unchanged. First replay the frozen PP65536
+retrieval and shapes/blank, require finite logits and actual 64K streamed work
+on all four GPUs, then (only if passed) measure the frozen warm development
+suite without dumps. No 64K result or warm flow gain is claimed yet.
+
+Artifacts: `/tmp/opencode/ds41-flow-pump1-screen-01` and its complete in-pod
+copy `/tmp/opencode/ds41-flow-pump1-screen-01-pod`.
 
 ## Approach 1: historical strict protocol and measurements
 

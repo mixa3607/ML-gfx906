@@ -147,6 +147,9 @@ Any engine/checker error stops the attempt; especially after an unknown-device
 exit, do not launch the other candidate without a clean hardware assessment.
 This short screen cannot establish warm speed or long-context quality. Only a
 promising clean variant proceeds to the longer gate and proper warm timing.
+For that next gate, `context_check.py run ... --vision` additionally requires
+streamed work on all four devices for the **actual PP65536**, not only an earlier
+short request or an environment flag, plus the numerical/byte-copy checks.
 
 ## Fixed workload
 

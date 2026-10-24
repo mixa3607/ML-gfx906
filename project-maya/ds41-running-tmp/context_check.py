@@ -177,6 +177,11 @@ def run(a):
     finally:
         engine.close()
     log = (a.out / 'engine.log').read_text()
+    flow_checks = None
+    if cfg['env'].get('DS4_FLOW_TP') == '1':
+        from flow_check import check_log
+
+        flow_checks = check_log(log, prompt_tokens=max(c['pp'] for c in cases))
     activation = re.findall(r'ds4: prompt skip:.*', log)
     active_required = cfg['env']['STRATA_DS4_PROMPT_SKIP'] == '1'
     verdict = {'all_facts_retrieved': all(all(r['retrieved'].values()) for r in results),
@@ -185,11 +190,13 @@ def run(a):
                                       if active_required else not activation,
                'expected_yoco_retention_rows': YOCO_KEEP if active_required else None,
                'vision_checks': vision_checks,
+               'flow_checks': flow_checks,
                'not_a_general_quality_proof': True}
     save(a.out / 'verdict.json', verdict)
     emit_event('verdict', verdict)
     if (not verdict['all_facts_retrieved'] or not verdict['activation_verified'] or
-            (vision_checks is not None and not all(vision_checks.values()))):
+            (vision_checks is not None and not all(vision_checks.values())) or
+            (flow_checks is not None and not flow_checks['passed'])):
         raise SystemExit(1)
 
 

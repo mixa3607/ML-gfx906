@@ -11,10 +11,13 @@ from full_compute import validate_config
 from native_bench import emit_event
 
 
-def check_log(log):
+def check_log(log, prompt_tokens=None):
     activation = re.findall(r'tensor-parallel members on the prompt path.s flow: (.*?) -', log)
     active = {int(v) for line in activation for v in re.findall(r'CUDA(\d+)', line)}
-    streamed = {int(v) for v in re.findall(r'ds4 prompt stream, CUDA(\d+):', log)}
+    stream_pattern = r'ds4 prompt stream, CUDA(\d+):'
+    if prompt_tokens is not None:
+        stream_pattern += rf' {prompt_tokens} tokens\b'
+    streamed = {int(v) for v in re.findall(stream_pattern, log)}
     copies = re.findall(r"the flow's copies passed \((\d+) of the formats'", log)
     n = int(copies[-1]) if copies else 0
     guarded = len(re.findall(r'guards intact \(DS4_FLOW_TP\)', log))

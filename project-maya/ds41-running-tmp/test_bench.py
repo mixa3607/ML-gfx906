@@ -30,6 +30,8 @@ ds4: TP check: the flow's copies passed (2 of the formats', rotations' and membe
 ds4: TP check passed (2 expert formats and rotations, all the split layers have) (DS4_TP_CHECK)
 """ + '\n'.join(f'ds4 prompt stream, CUDA{i}: 2048 tokens' for i in range(4))
         self.assertTrue(check_log(log)['passed'])
+        self.assertTrue(check_log(log, prompt_tokens=2048)['passed'])
+        self.assertFalse(check_log(log, prompt_tokens=65536)['passed'])
         self.assertFalse(check_log(log.replace('CUDA3:', 'CUDA2:'))['passed'])
         self.assertFalse(check_log(log.replace('guards intact', 'guards differ'))['passed'])
         self.assertFalse(check_log(log + '\nTP check FAILED')['passed'])
