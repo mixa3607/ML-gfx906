@@ -17,6 +17,13 @@ import time
 from full_compute import POLICY, engine_env, validate_config, validate_limits
 
 
+def emit_event(kind, value):
+    # Opt-in machine-readable records for a local collector outside the pod.
+    # Emitted only after timing is captured; never part of an engine request.
+    if os.environ.get('BENCH_STREAM_EVENTS') == '1':
+        print('BENCH_EVENT ' + json.dumps({'kind': kind, 'value': value}, ensure_ascii=False), flush=True)
+
+
 def read_numbers(path):
     try:
         return {k: int(v) for k, v in (line.split() for line in path.read_text().splitlines())}
@@ -243,7 +250,7 @@ def main():
         raise ValueError('Cases must use PP multiples of 2048 and fit context 196608')
     a.out.mkdir(parents=True, exist_ok=False)
     (a.out / 'config.json').write_text(json.dumps(cfg, indent=2) + '\n')
-    (a.out / 'manifest.json').write_text(json.dumps({
+    manifest = {
         'cases_sha256': hashlib.sha256(a.cases.read_bytes()).hexdigest(),
         'config_sha256': hashlib.sha256(a.config.read_bytes()).hexdigest(),
         'seed_profile_sha256': hashlib.sha256(Path(cfg['seed_profile']).read_bytes()).hexdigest(),
@@ -252,7 +259,9 @@ def main():
         'runner_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         'dump': a.dump, 'tg': a.tg, 'cgroup': str(cgroup_dir()), 'policy': policy,
         'policy_sha256': hashlib.sha256(Path(__file__).with_name('full_compute.py').read_bytes()).hexdigest(),
-        'before': snapshot(), 'started_unix': time.time()}, indent=2) + '\n')
+        'before': snapshot(), 'started_unix': time.time()}
+    (a.out / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    emit_event('manifest', manifest)
     engine = Engine(cfg, a.out, a.dump)
     try:
         t0 = time.monotonic()
@@ -260,13 +269,17 @@ def main():
         if policy and (not any(line.startswith('READY 196608 ') for line in ready)
                        or not any(line.startswith('INFO ') and 'vision=ds4 ' in line for line in ready)):
             raise RuntimeError('Context196608 or native DS4 vision not available')
+        full_copies = None
         if cfg.get('require_full_copies'):
             log = (a.out / 'engine.log').read_text()
             match = re.search(r"(\d+) of the CPU lane's (\d+) experts copied into RAM", log)
             if not match or match[1] != match[2]:
                 raise RuntimeError('Full-copy candidate did not copy every CPU expert; see engine.log')
-        (a.out / 'ready.json').write_text(json.dumps({
-            'load_s': time.monotonic() - t0, 'lines': ready, 'snapshot': snapshot(engine.proc.pid)}, indent=2) + '\n')
+            full_copies = {'copied': int(match[1]), 'total': int(match[2])}
+        ready_record = {'load_s': time.monotonic() - t0, 'lines': ready,
+                        'snapshot': snapshot(engine.proc.pid), 'full_copies': full_copies}
+        (a.out / 'ready.json').write_text(json.dumps(ready_record, indent=2) + '\n')
+        emit_event('ready', ready_record)
         print(f'READY {cfg["name"]}: {time.monotonic() - t0:.1f}s', flush=True)
         with (a.out / 'results.jsonl').open('w') as out:
             for case in cases:
@@ -280,11 +293,14 @@ def main():
                     p.unlink()
                 out.write(json.dumps(row, ensure_ascii=False) + '\n')
                 out.flush()
+                emit_event('result', row)
                 print(f'{case["id"]}: pp={row["pp_tok_s"]:.2f} tg={row["tg_tok_s"]:.2f} '
                       f'ttft={row["ttft_s"]:.2f}s disk={row["stats"][-1].get("disk_mb")} MB/t', flush=True)
     finally:
         engine.close()
-        (a.out / 'after.json').write_text(json.dumps(snapshot(), indent=2) + '\n')
+        after = snapshot()
+        (a.out / 'after.json').write_text(json.dumps(after, indent=2) + '\n')
+        emit_event('after', after)
 
 
 if __name__ == '__main__':

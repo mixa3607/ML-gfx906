@@ -1,5 +1,7 @@
 import hashlib
 import copy
+import contextlib
+import io
 import json
 from pathlib import Path
 import tempfile
@@ -7,6 +9,7 @@ import sys
 import subprocess
 import struct
 import unittest
+from unittest.mock import patch
 
 from corpus import SOURCES
 from compare import compare
@@ -14,12 +17,48 @@ from summary import summarize
 from context_check import assemble, score, validate_probe_length
 from vision_check import image_checks
 from full_compute import engine_env, runtime_configs, validate_config, validate_limits
-from native_bench import Engine, cgroup_dir, dump_hashes, parse_done, peer_budget, quantile, read_numbers
+from native_bench import Engine, cgroup_dir, dump_hashes, emit_event, parse_done, peer_budget, quantile, read_numbers
 
 
 class BenchTests(unittest.TestCase):
+    def test_opt_in_stream_event(self):
+        value = {'id': 'probe', 'text': 'Код: 123456\n'}
+        for enabled in ('0', '1'):
+            output = io.StringIO()
+            with patch.dict('os.environ', {'BENCH_STREAM_EVENTS': enabled}), contextlib.redirect_stdout(output):
+                emit_event('result', value)
+            if enabled == '1':
+                self.assertEqual(json.loads(output.getvalue().removeprefix('BENCH_EVENT ')),
+                                 {'kind': 'result', 'value': value})
+            else:
+                self.assertEqual(output.getvalue(), '')
+
+    def test_stream_collector_retains_records_after_failure(self):
+        script = Path(__file__).with_name('capture_run.py')
+        for remote_code, expected, code in ((0, 1, 0), (137, 2, 137), (0, 2, 1)):
+            with self.subTest(remote_code=remote_code, expected=expected), tempfile.TemporaryDirectory() as directory:
+                out = Path(directory) / 'captured'
+                fake = f'''
+import json, sys
+print('START fake', flush=True)
+print('BENCH_EVENT ' + json.dumps({{'kind': 'manifest', 'value': {{'dump': False}}}}), flush=True)
+print('BENCH_EVENT ' + json.dumps({{'kind': 'result', 'value': {{'id': 'fake', 'tokens': [42]}}}}), flush=True)
+sys.exit({remote_code})
+'''
+                result = subprocess.run([sys.executable, str(script), '--out', str(out),
+                                         '--expected-results', str(expected), '--',
+                                         sys.executable, '-u', '-c', fake], capture_output=True, text=True)
+                self.assertEqual(result.returncode, code, result.stderr)
+                self.assertEqual(json.loads((out / 'manifest.json').read_text()), {'dump': False})
+                self.assertEqual(json.loads((out / 'results.jsonl').read_text())['tokens'], [42])
+                self.assertEqual(len((out / 'events.jsonl').read_text().splitlines()), 2)
+                self.assertIn('START fake', (out / 'console.log').read_text())
+                self.assertNotIn('BENCH_EVENT', result.stdout)
+                self.assertEqual(json.loads((out / 'exit.json').read_text())['complete'], code == 0)
+
     def test_peer_pod_cache_counted_in_192gi_budget(self):
         self.assertEqual(peer_budget(185 * 2**30, 7 * 2**30), 192 * 2**30)
+        self.assertEqual(peer_budget(187 * 2**30, 5 * 2**30), 192 * 2**30)
         with self.assertRaises(RuntimeError):
             peer_budget(185 * 2**30, 7 * 2**30 + 1)
 

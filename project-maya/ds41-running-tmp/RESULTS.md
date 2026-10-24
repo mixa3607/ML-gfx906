@@ -156,6 +156,23 @@ would stay below 192Gi while adding 2Gi above the failed cap. Stream result
 records outside the container so another group OOM cannot erase the evidence.
 Do not treat this proposed retry as executed or as a guaranteed fit.
 
+### Approved 187Gi retry preparation
+
+The user approved replacing only the Failed v1.1.27 pod and retrying at
+**187Gi**, retaining the same CPU56/NUMA2/chunk4096 config and frozen inputs.
+The failed pod was deleted, and its replacement uses the same pinned image,
+read-only HF cache and no CPU quota. The old v1.1.26 pod is untouched.
+
+Added opt-in streamed records (`BENCH_STREAM_EVENTS=1`) and a local collector
+that fsyncs manifests, READY/full-copy metadata, complete result rows and
+functional records outside the pod. Missing request counts/nonzero exits stay
+failures; no partial warmup is promoted to a performance result. This changes
+artifact handling, not model math or the captured request timing interval.
+The 187Gi attempt and its subsequent 64K/vision checks are not completed yet.
+Before GPU execution, 26 local unit tests passed, including collector success,
+preservation after exit137, and rejection of an incomplete zero-exit stream.
+Python compilation and diff whitespace checks also passed.
+
 ## Approach 1: historical strict protocol and measurements
 
 ## Initial screening baseline (not a steady-state result)

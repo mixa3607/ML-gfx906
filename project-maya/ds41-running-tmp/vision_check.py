@@ -9,7 +9,7 @@ import re
 import sys
 import time
 
-from native_bench import Engine, dump_hashes, parse_done, snapshot
+from native_bench import Engine, dump_hashes, emit_event, parse_done, snapshot
 from full_compute import validate_config, validate_limits
 
 
@@ -53,12 +53,14 @@ def check_config(config, images, directory, engine=None, ready=None):
         validate_config(cfg)
         validate_limits(snapshot())
     save(directory / 'config.json', cfg)
-    save(directory / 'manifest.json', {
+    manifest = {
         'config_sha256': hashlib.sha256(config.read_bytes()).hexdigest(),
         'source_commit': Path('/opt/maya/SOURCE_COMMIT').read_text().strip(),
         'build': json.loads(Path('/opt/maya/build-hip/MAYA-BUILD.json').read_text()),
         'seed_profile_sha256': hashlib.sha256(Path(cfg['seed_profile']).read_bytes()).hexdigest(),
-        'runner_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest()})
+        'runner_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
+    save(directory / 'manifest.json', manifest)
+    emit_event('vision_manifest', manifest)
     own_engine = engine is None
     if own_engine:
         engine = Engine(cfg, directory, dump=True)
@@ -81,7 +83,9 @@ def check_config(config, images, directory, engine=None, ready=None):
             counts = re.search(r"(\d+) of the CPU lane's (\d+) experts copied into RAM", log)
             if not counts or counts[1] != counts[2]:
                 raise RuntimeError('Incomplete expert copies')
-        save(directory / 'ready.json', {'lines': ready, 'snapshot': snapshot(engine.proc.pid)})
+        ready_record = {'lines': ready, 'snapshot': snapshot(engine.proc.pid)}
+        save(directory / 'ready.json', ready_record)
+        emit_event('vision_ready', ready_record)
         tok = Tokenizer.from_dir('/data/ds4/tokenizer')
         template = ChatTemplate('/data/ds4/tokenizer/chat_template.jinja')
         vision = Vision(Geometry.from_info(info), directory,
@@ -135,6 +139,7 @@ def check_config(config, images, directory, engine=None, ready=None):
                    'done': done, 'logits': hashes, 'stats': stats, 'snapshot': after}
             results.append(row)
             save(directory / f'{image.stem}.json', row)
+            emit_event('vision_result', row)
             print(json.dumps({'config': cfg['name'], 'case': image.stem, 'text': row['text']},
                              ensure_ascii=False), flush=True)
     finally:

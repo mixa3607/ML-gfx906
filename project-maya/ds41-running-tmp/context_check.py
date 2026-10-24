@@ -9,7 +9,7 @@ import re
 import sys
 
 from full_compute import validate_config, validate_limits
-from native_bench import Engine, dump_hashes, snapshot
+from native_bench import Engine, dump_hashes, emit_event, snapshot
 
 
 MAX_PROBE_PP = 65536
@@ -110,20 +110,24 @@ def run(a):
         validate_probe_length(case['pp'])
     a.out.mkdir(parents=True, exist_ok=False)
     save(a.out / 'config.json', cfg)
-    save(a.out / 'manifest.json', {'cases_sha256': hashlib.sha256(a.cases.read_bytes()).hexdigest(),
+    manifest = {'cases_sha256': hashlib.sha256(a.cases.read_bytes()).hexdigest(),
                                  'config_sha256': hashlib.sha256(a.config.read_bytes()).hexdigest(),
                                  'seed_profile_sha256': hashlib.sha256(Path(cfg['seed_profile']).read_bytes()).hexdigest(),
                                  'source_commit': Path('/opt/maya/SOURCE_COMMIT').read_text().strip(),
                                  'build': json.loads(Path('/opt/maya/build-hip/MAYA-BUILD.json').read_text()),
                                  'runner_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-                                 'policy': eligibility, 'functional_not_tg256_benchmark': True})
+                                 'policy': eligibility, 'functional_not_tg256_benchmark': True}
+    save(a.out / 'manifest.json', manifest)
+    emit_event('manifest', manifest)
     tok = Tokenizer.from_dir('/data/ds4/tokenizer')
     results = []
     vision_checks = None
     engine = Engine(cfg, a.out, dump=True)
     try:
         ready = engine.ready(a.timeout)
-        save(a.out / 'ready.json', {'lines': ready, 'snapshot': snapshot(engine.proc.pid)})
+        ready_record = {'lines': ready, 'snapshot': snapshot(engine.proc.pid)}
+        save(a.out / 'ready.json', ready_record)
+        emit_event('ready', ready_record)
         if (not any(line.startswith('READY 196608 ') for line in ready) or
                 not any(line.startswith('INFO ') and 'vision=ds4 ' in line for line in ready)):
             raise RuntimeError('Full context or native vision unavailable')
@@ -146,6 +150,7 @@ def run(a):
                 results.append(row)
                 f.write(json.dumps(row, ensure_ascii=False) + '\n')
                 f.flush()
+                emit_event('result', row)
                 print(json.dumps({'id': case['id'], 'retrieved': row['retrieved'], 'text': row['text']},
                                  ensure_ascii=False), flush=True)
         if a.vision:
@@ -165,6 +170,7 @@ def run(a):
                'vision_checks': vision_checks,
                'not_a_general_quality_proof': True}
     save(a.out / 'verdict.json', verdict)
+    emit_event('verdict', verdict)
     if (not verdict['all_facts_retrieved'] or not verdict['activation_verified'] or
             (vision_checks is not None and not all(vision_checks.values()))):
         raise SystemExit(1)

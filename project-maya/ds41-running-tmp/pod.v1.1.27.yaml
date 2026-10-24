@@ -1,4 +1,4 @@
-# Historical 185Gi attempt: OOMKilled during warmup. Not a validated runtime cap.
+# Approved retry after the historical 185Gi OOM; capacity is not yet validated.
 apiVersion: v1
 kind: Pod
 metadata:
@@ -42,8 +42,8 @@ spec:
           cpu: "4"
           memory: 8Gi
         limits:
-          # Leave 7Gi for the stopped v1.1.26 pod's retained cache/accounting.
-          memory: 185Gi
+          # Leave 5Gi for the stopped v1.1.26 pod's retained cache/accounting.
+          memory: 187Gi
       volumeMounts:
         - {name: hf-cache, mountPath: /root/.cache/huggingface, readOnly: true}
         - {name: data, mountPath: /data}

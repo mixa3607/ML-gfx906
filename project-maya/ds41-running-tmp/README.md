@@ -77,16 +77,39 @@ context probe runner rejects PP above 65536; keep the server capacity at 196608.
 
 The user-built v1.1.27 image has a separate digest-pinned manifest,
 `pod.v1.1.27.yaml`. Its 8Gi memory request is only a scheduling reservation;
-the enforced cap is 185Gi, leaving up to 7Gi for the stopped old pod, and there
+the approved retry cap is 187Gi, leaving up to 5Gi for the stopped old pod, and there
 is no CPU quota. Never run GPU engines
 in both test pods concurrently. Account for shared file-cache charges retained
 by the old pod before treating a cross-pod comparison as a verified 192Gi result.
 Set `BENCH_PEER_CGROUP` to that pod's cgroup path for the v1.1.27 runs. Snapshots
 record peer charges and reject a new-pod limit plus peer usage above 192Gi.
 This accounts for the known peer pod, not arbitrary unrelated host cache users.
-**The 185Gi attempt OOMKilled during warmup.** This manifest now documents the
-failed configuration, not a recommended memory size. See RESULTS.md before
-retrying; replacement/deletion of the Failed pod needs explicit approval.
+**The earlier 185Gi attempt OOMKilled during warmup.** That configuration is
+retained in commit `c6312af`; the current manifest is the explicitly approved
+187Gi retry, not a validated memory recommendation. See RESULTS.md for outcomes.
+
+### Durable capture outside the pod
+
+Enable `BENCH_STREAM_EVENTS=1` for the remote runner and execute it through
+the local collector, for example:
+
+```bash
+python3 capture_run.py --out /tmp/opencode/ds41-v127-time-02 \
+  --expected-results 18 -- kubectl -n apps-ml exec maya-ds41-bench-v127 -- \
+  env BENCH_STREAM_EVENTS=1 BENCH_PEER_CGROUP="$OLD_POD_CGROUP" \
+  python /data/bench-retry-187gi/native_bench.py \
+  --config /data/finalist-timing.json --cases /data/frozen-dev.jsonl \
+  --out /data/runs/finalist-v127-time-02
+```
+
+The collector fsyncs manifest, READY metadata, complete request records, and
+functional vision/verdict records on the local machine as they arrive. A pod
+OOM cannot delete those copies. It preserves nonzero remote exit status and
+rejects an apparently successful run with fewer than the expected requests.
+Record emission happens after each request's timings are captured; performance
+dumps remain off. Completed records survive, but an in-flight killed request
+cannot be reconstructed. Keep the original frozen configs/cases locally too.
+`OLD_POD_CGROUP` must be set to the inspected old pod's `/sys/fs/cgroup/...` path.
 
 ## Fixed workload
 
