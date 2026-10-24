@@ -236,6 +236,18 @@ timing above, the user-built v1.1.27 image works for these cases at the approved
 187Gi-plus-peer budget; no additional speed benefit over manual RAM copies in
 v1.1.26 was demonstrated.
 
+## Approach 4: dependency-safe YOCO1 (prepared, not yet validated)
+
+This is the previously approved YOCO1 check, not YOCO2 or reduced retention.
+Use the same v1.1.27 CPU56/NUMA2/chunk4096/Engram256/full-copy finalist and the
+same 187Gi-plus-peer budget; change only `STRATA_DS4_PROMPT_SKIP` from 0 to 1.
+First replay the exact frozen PP65536 retrieval plus shapes/blank inputs with
+finite-logit dumps. Require real activation on layers 20–39 with **2668 kept
+rows**, not merely successful startup with an environment variable. If that
+functional gate passes, time the original frozen warm development history with
+dumps/verbose off, against the existing v1.1.27 no-skip result. No held-out
+data is used for this tuning, and no YOCO1 gain is claimed yet.
+
 ## Approach 1: historical strict protocol and measurements
 
 ## Initial screening baseline (not a steady-state result)

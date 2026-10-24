@@ -111,6 +111,19 @@ dumps remain off. Completed records survive, but an in-flight killed request
 cannot be reconstructed. Keep the original frozen configs/cases locally too.
 `OLD_POD_CGROUP` must be set to the inspected old pod's `/sys/fs/cgroup/...` path.
 
+### YOCO1 as a separate approach
+
+`variants.py --yoco1-only --out <configs>` generates the CPU56/NUMA2/chunk4096
+finalist with only `STRATA_DS4_PROMPT_SKIP=1` changed. `yoco1-validation.json`
+also enables verbose logging for the real 64K/vision gate; `yoco1.json` keeps
+the original timing arguments. No `DS4_YOCO_KEEP` override or mode2 is allowed.
+The functional gate requires an actual log entry for layers 20–39, **2668 kept
+rows** (the model's default dependency-safe calculation), and early+kept equal
+to the complete PP65536. A flag alone or a short-prompt no-op is not a pass.
+Only after this gate passes should the frozen warm development suite be timed.
+Compare with the existing v1.1.27 control at the same memory partition; do not
+use diagnostic dump-enabled prefill times as the benchmark headline.
+
 ## Fixed workload
 
 - One request at a time, TG256, greedy sampling, no speculative decoding.

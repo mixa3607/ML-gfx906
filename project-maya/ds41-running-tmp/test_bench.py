@@ -14,13 +14,35 @@ from unittest.mock import patch
 from corpus import SOURCES
 from compare import compare
 from summary import summarize
-from context_check import assemble, score, validate_probe_length
+from context_check import assemble, score, validate_probe_length, yoco_activation_verified
 from vision_check import image_checks
 from full_compute import engine_env, runtime_configs, validate_config, validate_limits
 from native_bench import Engine, cgroup_dir, dump_hashes, emit_event, parse_done, peer_budget, quantile, read_numbers
 
 
 class BenchTests(unittest.TestCase):
+    def test_yoco1_requires_full_default_retention_and_actual_activation(self):
+        line = 'ds4: prompt skip: layers 20-39 from CUDA2, 62868 early rows KV-only, 2668 kept'
+        self.assertTrue(yoco_activation_verified([line], [65536]))
+        self.assertFalse(yoco_activation_verified([], [65536]))
+        self.assertFalse(yoco_activation_verified([line.replace('2668 kept', '128 kept')], [65536]))
+        self.assertFalse(yoco_activation_verified([line], [32768]))
+
+    def test_yoco1_candidates_change_only_approved_mode(self):
+        with tempfile.TemporaryDirectory() as directory:
+            subprocess.run([sys.executable, str(Path(__file__).with_name('variants.py')),
+                            '--yoco1-only', '--out', directory], check=True)
+            paths = sorted(Path(directory).glob('*.json'))
+            self.assertEqual(len(paths), 2)
+            base = runtime_configs()['copy-c56-numa2-p4096']
+            for path in paths:
+                cfg = json.loads(path.read_text())
+                validate_config(cfg)
+                expected = base['env'] | {'STRATA_DS4_PROMPT_SKIP': '1'}
+                self.assertEqual(cfg['env'], expected)
+                self.assertEqual(cfg['args'], base['args'] + (['--verbose'] if 'validation' in path.stem else []))
+                self.assertTrue(cfg['require_full_copies'])
+
     def test_opt_in_stream_event(self):
         value = {'id': 'probe', 'text': 'Код: 123456\n'}
         for enabled in ('0', '1'):

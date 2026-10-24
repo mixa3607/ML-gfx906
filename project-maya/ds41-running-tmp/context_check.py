@@ -13,6 +13,21 @@ from native_bench import Engine, dump_hashes, emit_event, snapshot
 
 
 MAX_PROBE_PP = 65536
+YOCO_KEEP = 20 * (128 - 1) + 128  # Fixed model: layers 20–39, 128-row SWA.
+
+
+def yoco_activation_verified(lines, lengths):
+    expected = {n for n in lengths if n - YOCO_KEEP >= 1024}
+    observed = set()
+    for line in lines:
+        match = re.search(r'prompt skip: layers (\d+)-(\d+) from CUDA\d+, (\d+) early rows KV-only, (\d+) kept', line)
+        if not match:
+            return False
+        first, last, early, kept = map(int, match.groups())
+        if (first, last, kept) != (20, 39, YOCO_KEEP):
+            return False
+        observed.add(early + kept)
+    return bool(expected) and expected <= observed
 
 
 def validate_probe_length(length):
@@ -166,7 +181,9 @@ def run(a):
     active_required = cfg['env']['STRATA_DS4_PROMPT_SKIP'] == '1'
     verdict = {'all_facts_retrieved': all(all(r['retrieved'].values()) for r in results),
                'finite_on_tested_rows': True, 'prompt_skip_activation': activation,
-               'activation_verified': bool(activation) if active_required else not activation,
+               'activation_verified': yoco_activation_verified(activation, [c['pp'] for c in cases])
+                                      if active_required else not activation,
+               'expected_yoco_retention_rows': YOCO_KEEP if active_required else None,
                'vision_checks': vision_checks,
                'not_a_general_quality_proof': True}
     save(a.out / 'verdict.json', verdict)

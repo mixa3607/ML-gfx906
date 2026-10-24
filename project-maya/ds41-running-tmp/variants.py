@@ -14,6 +14,8 @@ def main():
                       help='Follow-up: all CPU experts, one or two NUMA parts')
     mode.add_argument('--combined-only', action='store_true',
                       help='Full single-part copies plus CPU56, Engram cache and chunk candidates')
+    mode.add_argument('--yoco1-only', action='store_true',
+                      help='Full-compute CPU56/NUMA2/chunk4096 finalist with YOCO1, no retention override')
     a = p.parse_args()
     baseline = json.loads(Path(__file__).with_name('baseline.json').read_text())
     a.out.mkdir(parents=True, exist_ok=True)
@@ -53,6 +55,15 @@ def main():
             cfg['env']['DS4_ENGRAM_CACHE_MB'] = cache
             cfg['require_full_copies'] = True
             variants[name] = cfg
+    if a.yoco1_only:
+        from full_compute import runtime_configs, validate_config
+
+        cfg = runtime_configs()['copy-c56-numa2-p4096']
+        cfg['env']['STRATA_DS4_PROMPT_SKIP'] = '1'
+        variants = {'yoco1': cfg, 'yoco1-validation': copy.deepcopy(cfg)}
+        variants['yoco1-validation']['args'].append('--verbose')
+        for cfg in variants.values():
+            validate_config(cfg)
     for name, cfg in variants.items():
         cfg['name'] = name
         with (a.out / f'{name}.json').open('x') as f:
