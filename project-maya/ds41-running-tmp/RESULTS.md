@@ -80,7 +80,8 @@ pod at `/data/runs/full-compute-runtime-01`.
 Functional validation tooling is prepared separately: an exact PP65536 probe
 with name/code records near the beginning/middle/end, finite-logit checks,
 natural EOS up to 128, and GENI shapes/blank content checks without requiring
-identical outputs. **These GPU checks have not run.** Local checks: 23 unit
+identical outputs. **At this matrix stage those GPU checks had not run** (later
+results are below). Local checks at that stage: 23 unit
 tests pass; Python compilation and shell syntax checks pass. The best runtime
 point is a timing finalist, not yet a final context/vision recommendation.
 
@@ -322,7 +323,8 @@ logging. First run only PP2048 and PP4096 from the frozen development history,
 TG256, finite logits, with a 600s load/request deadline. No steady-state speed
 claim from this diagnostic. A checker/runtime failure stops work, not a retry
 with checks disabled. Long-context/vision and warm timing require a promising
-clean screen; no warm flow benefit or long-context compatibility is claimed yet.
+clean screen; no warm flow benefit or general long-context compatibility proof
+is claimed. The bounded 64K result is reported below.
 
 ### Flow, pump0: bounded diagnostic passed
 
@@ -343,8 +345,8 @@ comparison against the earlier fully warmed baseline.
 
 Artifacts: `/tmp/opencode/ds41-flow-pump0-screen-01` (durable records) and
 `/tmp/opencode/ds41-flow-pump0-screen-01-pod` (complete in-pod artifacts).
-Pump1 was checked separately on the exact same two inputs, as reported below;
-64K/vision and warm timing for flow have not completed.
+Pump1 was checked separately on the exact same two inputs, as reported below.
+Its subsequent 64K/vision check passed; warm timing is still in progress.
 
 ### Flow, pump1: bounded diagnostic also passed
 
@@ -360,10 +362,53 @@ at this small sample size. Select pump1 as the next candidate, keeping YOCO
 off and all other flow settings unchanged. First replay the frozen PP65536
 retrieval and shapes/blank, require finite logits and actual 64K streamed work
 on all four GPUs, then (only if passed) measure the frozen warm development
-suite without dumps. No 64K result or warm flow gain is claimed yet.
+suite without dumps. The completed 64K result is below; no warm flow gain is
+claimed yet.
 
 Artifacts: `/tmp/opencode/ds41-flow-pump1-screen-01` and its complete in-pod
 copy `/tmp/opencode/ds41-flow-pump1-screen-01-pod`.
+
+### Flow/pump1 functional gate: 64K and vision passed
+
+The collector received the context result, both image records and exit0. All
+three name/code associations at PP65536 were retrieved correctly, with natural
+EOS after 29 tokens; the shapes and blank image were described correctly. All
+tested logits were finite, with no OOM/kills or CPU throttling. The log confirms
+actual streamed PP65536 work on **all four devices**, a native numerical TP
+pass, and four successful byte-for-byte flow-copy checks with guards intact.
+YOCO was off. Recorded hard-limit-plus-peer charge about 187.754Gi.
+
+The diagnostic long prompt took **393.034 s** (request wall394.730 s), versus
+the earlier stock no-flow diagnostic's 270.726 s. These are separate functional
+runs with dumps, not a formal warm speed comparison; the longer observed time
+is nevertheless a warning against assuming flow improves long prefill.
+The flow log reports zero expert-file reads, all streamed experts from RAM,
+and about 107–108 s waiting for reads per GPU. Those per-device waits overlap
+and must not be summed; "reads" here includes RAM staging, not proof of SSD I/O.
+This identifies an observed stall counter, not a demonstrated sole cause.
+
+Artifacts: `/tmp/opencode/ds41-flow-pump1-functional64k-01` and its in-pod copy
+`/tmp/opencode/ds41-flow-pump1-functional64k-01-pod`. A dedicated warm 2K/4K/8K
+run is now in progress, with the exact original 12-warmup/six-dev history,
+non-verbose arguments, no logits dumps, and the load-time TP diagnostic flag
+removed. Flow/whole-block TP/pump settings remain unchanged. The timing config
+is saved as `/tmp/opencode/ds41-flow-pump1-timing.json`, SHA-256
+`1b53066be703e87dcd92cf3cad36bcb1877ce7c242b421e3b0f1d0d20890d9cc`.
+
+### Unrun topology option: genuine TP4 needs whole-block mode
+
+Source inspection of v1.1.27 found an important limitation for a future TP
+comparison: this model has FFN2304, 64 attention heads and 8 output groups.
+Without whole-block mode, TP4 gives FFN576 per member, rejected by the native
+128-value alignment rule; TP3 then fails the heads/groups divisibility checks,
+so nominal `--tp 4` falls back to TP2. A calibration that only varies `--tp`
+while leaving whole-block mode off therefore need not test a genuine TP4.
+
+With whole-block mode, all-MXFP4 weights split in 32-value blocks: 72 blocks
+split 18/18/18/18, so FFN576 is allowed. A real TP4 test must verify runtime
+`tp_n=4`, pass the native checker, and discuss the potential TG-versus-PP
+tradeoff (one pipeline group rather than two). **No TP4 GPU test has been run
+or added to the currently approved TP2 flow comparison.**
 
 ## Approach 1: historical strict protocol and measurements
 
