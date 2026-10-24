@@ -306,7 +306,7 @@ Artifacts: `/tmp/opencode/ds41-yoco1-time-01` (durable records) and
 and screen flow/pump separately with YOCO off, starting with bounded inputs
 and the native TP/flow copy checker rather than another full long-context run.
 
-## Approach 5: bounded flow/pump screen (prepared)
+## Approach 5: bounded flow/pump screen
 
 Inspected the shipped v1.1.27 source: the native TP checker is gated on
 whole-block TP, and checks the flow's partial/whole staging against the exact
@@ -322,7 +322,29 @@ logging. First run only PP2048 and PP4096 from the frozen development history,
 TG256, finite logits, with a 600s load/request deadline. No steady-state speed
 claim from this diagnostic. A checker/runtime failure stops work, not a retry
 with checks disabled. Long-context/vision and warm timing require a promising
-clean screen; no flow benefit or compatibility has been established yet.
+clean screen; no warm flow benefit or long-context compatibility is claimed yet.
+
+### Flow, pump0: bounded diagnostic passed
+
+The first candidate completed PP2048/TG256 and PP4096/TG256, with finite
+**512/512** full-vocabulary logit rows, exit0 and both streamed result records.
+All four devices were actually activated on the flow and logged streamed
+prompt work. The native numerical TP checker passed; all **four** flow-copy
+checks passed byte-for-byte with their guard bytes intact. This is a real
+checker execution, not a flag-only/no-op pass, and it is not a whole-engine
+bit-exact claim.
+
+The full-copy guard reports **9935/9935** CPU experts: the flow/TP path changes
+packing slightly versus the previous 9934-expert baseline. No OOM/kills or CPU
+throttling; recorded hard-limit-plus-peer charge about 188.078Gi. Startup was
+217.5 s. Dump-enabled diagnostic PP was 88.24/120.66 tok/s and TG 16.84/20.15;
+with only one short warmup these are **not steady-state speed evidence** or a
+comparison against the earlier fully warmed baseline.
+
+Artifacts: `/tmp/opencode/ds41-flow-pump0-screen-01` (durable records) and
+`/tmp/opencode/ds41-flow-pump0-screen-01-pod` (complete in-pod artifacts).
+Pump1 is being checked separately on the exact same two inputs; 64K/vision and
+warm timing for flow have not run.
 
 ## Approach 1: historical strict protocol and measurements
 
