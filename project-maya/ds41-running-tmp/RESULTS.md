@@ -24,6 +24,19 @@ Recovered after the server restart without rerunning GPU work:
 
 ## Approach 2: full-compute runtime matrix
 
+**Subsequent user instruction:** long-context validation is capped at **64K**
+(65536 prompt tokens), while configured capacity remains 196608. The prepared
+128K/194K cases will not be executed. This limits the scope of verified context
+behavior; a 64K pass must not be reported as a tested 192K workload.
+
+The user also provided and approved sequential testing of
+`mixa3607/maya-gfx906:v1.1.27-rocm-10.1` in a separate pod after this matrix.
+Registry index digest:
+`sha256:d46312703b79af1cd70174ae9ef2faee23875db9c51f90353424aba6101ac2c1`;
+linux/amd64 manifest:
+`sha256:ef40b51b57820f5770ad3dd7d852fe14bfc9639913a19e9bd125c13618e638f2`.
+No v1.1.27 GPU result is available yet.
+
 The user explicitly relaxed whole-engine bitwise repeatability, not the model's
 compute/context requirements. RAM/NUMA/CPU/chunk choices are eligible for new
 timing; approximate expert/prompt skips, reduced retention, context truncation

@@ -49,7 +49,8 @@ PP/TG/wall metrics with the repeated control; do not infer quality from speed.
 These are separate from TG256 performance and do not require identical text:
 
 - `context_check.py prepare --source /data/wiki-final.jsonl --out <cases.jsonl>`
-  creates exact PP32768/194560 fact-retrieval probes. Three complete artificial
+  creates one exact **PP65536** fact-retrieval probe (user-requested 64K ceiling).
+  Three complete artificial
   name/code records sit near token128, halfway through the context, and near
   its end. The final question includes names but not answers. Development prose
   supplies non-repeated filler; no holdout articles are used for these probes.
@@ -69,6 +70,14 @@ pass is bounded evidence, not proof of arbitrary-context quality. A failed
 control cannot validate a candidate. Functional outputs/timings are never pooled
 into TG256 performance results. The final frozen holdout timing suite remains a
 separate check after selecting the configuration.
+The prepared 128K/194K inputs are historical only: do not execute them. The
+context probe runner rejects PP above 65536; keep the server capacity at 196608.
+
+The user-built v1.1.27 image has a separate digest-pinned manifest,
+`pod.v1.1.27.yaml`. Its 8Gi memory request is only a scheduling reservation;
+the enforced cap is still 192Gi and there is no CPU quota. Never run GPU engines
+in both test pods concurrently. Account for shared file-cache charges retained
+by the old pod before treating a cross-pod comparison as a verified 192Gi result.
 
 ## Fixed workload
 
@@ -77,8 +86,8 @@ separate check after selecting the configuration.
   Thinking workloads need separate measurements; this fixed workload choice
   is not an optimization attributed to RAM copies.
 - PP is the **complete tokenized prompt**, including the DeepSeek chat header,
-  and is a multiple of 2048. Candidate lengths: 2048, 4096, 8192, 16384, 32768,
-  65536, 131072, 194560. The last leaves room for TG256 inside context 196608.
+  and is a multiple of 2048. Current test lengths: 2048, 4096, 8192, 16384,
+  32768, 65536. The previously prepared 131072/194560 cases are not to be run.
 - Every runtime allocates for context 196608 and loads the native vision tower.
   Vision-enabled text timing is not proof of successful image inference.
 - Pod memory limit: 192 **GiB**, including charged file cache and shared memory.
@@ -157,6 +166,9 @@ Long cases need enough **unused real text**. The builder fails if the corpus is
 too small; do not fill the gap by repeating documents. A complete long-context
 suite may need additional articles. Freeze source/case manifests before a
 comparison. Do not regenerate a new random corpus for each candidate.
+For the existing `/data/heldout-final-01/cases.jsonl`, create a new filtered
+case file retaining warmups and holdout requests only through PP65536. Preserve
+the original file and record both hashes; do not execute its larger cases.
 
 For the final held-out long suite, `--task-position end` keeps the actual
 question after the documents when truncating to exact PP. This avoids putting

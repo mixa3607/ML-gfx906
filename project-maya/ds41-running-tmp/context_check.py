@@ -12,6 +12,14 @@ from full_compute import validate_config, validate_limits
 from native_bench import Engine, dump_hashes, snapshot
 
 
+MAX_PROBE_PP = 65536
+
+
+def validate_probe_length(length):
+    if length <= 0 or length % 2048 or length > MAX_PROBE_PP:
+        raise ValueError('Context probe PP must be a positive multiple of 2048, at most 65536')
+
+
 def save(path, value):
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
 
@@ -58,8 +66,7 @@ def prepare(a):
     filler = tok.encode('\n\n'.join(d['title'] + '\n' + d['text'] for d in docs), parse_special=False)
     cases, cursor = [], 0
     for index, length in enumerate(a.pp):
-        if length % 2048 or length + 128 > 196608:
-            raise ValueError('Context probe PP must be a multiple of 2048 and fit 196608')
+        validate_probe_length(length)
         rng = random.Random(a.seed + index)
         names = ('Ладога-17', 'Вега-43', 'Кедр-82')
         expected = {name: str(rng.randrange(100000, 1000000)) for name in names}
@@ -97,9 +104,10 @@ def run(a):
     eligibility = validate_config(cfg)
     validate_limits(snapshot())
     cases = [json.loads(s) for s in a.cases.read_text().splitlines() if s.strip()]
-    if not cases or any(c['phase'] != 'functional' or len(c['ids']) != c['pp'] or
-                        c['pp'] % 2048 or c['pp'] + 128 > 196608 for c in cases):
+    if not cases or any(c['phase'] != 'functional' or len(c['ids']) != c['pp'] for c in cases):
         raise ValueError('Invalid context probe cases')
+    for case in cases:
+        validate_probe_length(case['pp'])
     a.out.mkdir(parents=True, exist_ok=False)
     save(a.out / 'config.json', cfg)
     save(a.out / 'manifest.json', {'cases_sha256': hashlib.sha256(a.cases.read_bytes()).hexdigest(),
@@ -158,7 +166,7 @@ def main():
     sub = p.add_subparsers(dest='command', required=True)
     prep = sub.add_parser('prepare')
     prep.add_argument('--source', type=Path, required=True)
-    prep.add_argument('--pp', type=int, nargs='+', default=[32768, 194560])
+    prep.add_argument('--pp', type=int, nargs='+', default=[65536])
     prep.add_argument('--seed', type=int, default=20261025)
     prep.add_argument('--out', type=Path, required=True)
     check = sub.add_parser('run')
