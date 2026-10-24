@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: maya-ds41-bench
+  namespace: apps-ml
+  labels:
+    app: maya-ds41-bench
+spec:
+  restartPolicy: Never
+  terminationGracePeriodSeconds: 60
+  nodeSelector:
+    kubernetes.io/hostname: kube-worker6.arkprojects.lan
+  tolerations:
+    - key: feature.node.kubernetes.io/amd-gpu
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
+    - key: feature.node.kubernetes.io/nvidia-gpu
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
+  imagePullSecrets:
+    - name: harbor-registry-pull-secret
+  containers:
+    - name: bench
+      image: docker.io/mixa3607/maya-gfx906@sha256:f0bfc1ed9525d0f99a11d6ef1f4954da4a63b393053b65e93a31ae3dfbe581b5
+      imagePullPolicy: Always
+      command: ["/bin/bash", "-lc", "ulimit -l unlimited; exec sleep infinity"]
+      securityContext:
+        privileged: true
+        runAsUser: 0
+      env:
+        - name: HIP_VISIBLE_DEVICES
+          value: "0,1,2,3"
+        - name: HF_HUB_OFFLINE
+          value: "1"
+        - name: TRANSFORMERS_OFFLINE
+          value: "1"
+      resources:
+        requests:
+          cpu: "4"
+          memory: 192Gi
+        limits:
+          memory: 192Gi
+      volumeMounts:
+        - {name: hf-cache, mountPath: /root/.cache/huggingface, readOnly: true}
+        - {name: data, mountPath: /data}
+        - {name: dev-kfd, mountPath: /dev/kfd}
+        - {name: dev-dri, mountPath: /dev/dri}
+        - {name: shm, mountPath: /dev/shm}
+  volumes:
+    - name: hf-cache
+      persistentVolumeClaim:
+        claimName: worker6-hf-cache
+        readOnly: true
+    - name: data
+      emptyDir: {}
+    - name: dev-kfd
+      hostPath: {path: /dev/kfd}
+    - name: dev-dri
+      hostPath: {path: /dev/dri}
+    - name: shm
+      emptyDir: {medium: Memory, sizeLimit: 8Gi}

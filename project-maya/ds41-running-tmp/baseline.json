@@ -1,0 +1,29 @@
+{
+  "name": "tp2-c48-p2048-eg256",
+  "exe": "/opt/maya/build-hip/maya-ds4",
+  "cwd": "/opt/maya",
+  "seed_profile": "/data/seed-profile.bin",
+  "args": [
+    "--pack", "/data/ds4",
+    "--gpus", "0,1,2,3",
+    "--max-context", "196608",
+    "--tp", "2",
+    "--cpu-threads", "48",
+    "--prefill-chunk", "2048",
+    "--reserve-mib", "1280",
+    "--mmap-experts", "auto",
+    "--dspark", "none",
+    "--vision", "on"
+  ],
+  "env": {
+    "LD_LIBRARY_PATH": "/opt/rocm/lib",
+    "HIP_VISIBLE_DEVICES": "0,1,2,3",
+    "DS4_RING_MB": "400",
+    "DS4_ENGRAM_CACHE_MB": "256",
+    "DS4_HIP_ATTN_SWIZZLE": "1",
+    "STRATA_DS4_RAM_TIER": "0",
+    "STRATA_DS4_DISK_SKIP_W": "0",
+    "STRATA_DS4_PROMPT_SKIP": "0",
+    "STRATA_DS4_SLOT_KEEP": "0"
+  }
+}

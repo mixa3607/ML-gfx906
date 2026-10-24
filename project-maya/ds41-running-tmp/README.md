@@ -1,0 +1,229 @@
+# DS4.1 single-request tuning
+
+See [REQUIREMENTS.md](REQUIREMENTS.md) for the fixed constraints. Runtime
+candidates are experimental until both numerical and performance checks pass.
+
+**Current blocker:** full replay invalidated the short RAM-copy parity pass.
+No accelerated RAM configuration is currently recommended as whole-engine
+bit-exact with the stock adaptive cache. See [RESULTS.md](RESULTS.md); do not
+interpret its speed tables or an old short-gate verdict as final acceptance.
+
+## Fixed workload
+
+- One request at a time, TG256, greedy sampling, no speculative decoding.
+- Text cases use DeepSeek's chat/non-thinking mode (`reasoning_effort=none`).
+  Thinking workloads need separate measurements; this fixed workload choice
+  is not an optimization attributed to RAM copies.
+- PP is the **complete tokenized prompt**, including the DeepSeek chat header,
+  and is a multiple of 2048. Candidate lengths: 2048, 4096, 8192, 16384, 32768,
+  65536, 131072, 194560. The last leaves room for TG256 inside context 196608.
+- Every runtime allocates for context 196608 and loads the native vision tower.
+  Vision-enabled text timing is not proof of successful image inference.
+- Pod memory limit: 192 **GiB**, including charged file cache and shared memory.
+  No CPU quota. CPU requests are scheduling/weight hints, not a performance
+  guarantee; inspect competing work and all ancestor cgroups.
+- Keep quantization, source revision, arithmetic paths, and GPU topology fixed
+  while testing storage/cache/CPU scheduling changes first.
+
+## Warm, without memorizing the test
+
+Keep the engine alive between requests, preserving experts and Engram rows.
+Do not repeat the same prompt to warm it. Use separate warmup, development,
+and held-out articles; shuffle topics using a recorded seed. Ordinary Russian
+vocabulary can overlap; exact source passages must not. `corpus.py` records
+source byte ranges and consumes each passage at most once in a case file.
+Source article IDs must also be disjoint across the three splits.
+
+The first corpus is Russian Wikipedia prose with varied requested output forms
+(explanation, critical analysis, dialogue, presentation, etc.). This is **not**
+a validated sample of all Russian chat, slang, code, or document workloads.
+Extend with those genres before claiming general-purpose results. Medical and
+legal articles are performance inputs, not advice or correctness references.
+Sources include revision URLs, text hashes, and attribution/license metadata.
+
+Use a fixed warmup budget for every candidate. Record the first/cold requests
+separately. A two-request screening warmup is **not steady-state evidence**.
+For the full comparison start with 12 distinct PP2048/TG256 warmup requests,
+then development requests; compare the warmup's trajectory to detect remaining
+drift. If that budget is insufficient, revise it for **all** variants, not just
+the slower one. Use multiple frozen orders for finalists. Do not tune on the
+held-out results. Include a separate held-out-domain/topic-switch stress slice.
+
+The native protocol automatically reuses matching KV prefixes. There is no
+generic `RESET` command. Independent prompts differ early, and the runner
+**rejects any request reporting nonzero reused tokens**. Conversation slots,
+prompt skipping and disk expert skipping are explicitly disabled. Natural EOS
+is respected: a short answer fails TG256 rather than being counted as TG256 or
+continued past EOS. No output-cache hits or speculative tokens are accepted.
+
+## Reproduction
+
+The pod is pinned to the inspected v1.1.26 image digest (Git commit
+`f26d8bab43f9b10f0475986b541dc46ada45285e`, patched engine-source fingerprint
+`d755c2b1d3c8f655`), ROCm 10.1, gfx906. Read the test-stand skill and obtain
+permission before creating it or running GPU work. The HF PVC is read-only;
+pack/vision conversion and results go to the pod's own `/data`. Never copy GGUF
+blobs, drop the node's global page cache, or modify another pod for this test.
+
+```bash
+# Local: small HTTP downloads only, with source attribution. --resume can
+# continue an interrupted acquisition without overwriting saved source texts.
+python3 corpus.py fetch --out /tmp/opencode/ds41-wiki.jsonl
+
+# After explicit Kubernetes/GPU approval:
+kubectl apply -f pod.yaml
+kubectl -n apps-ml wait --for=condition=Ready pod/maya-ds41-bench --timeout=300s
+kubectl -n apps-ml exec -i maya-ds41-bench -- bash < prepare.sh
+kubectl -n apps-ml cp . maya-ds41-bench:/data/bench
+kubectl -n apps-ml cp /tmp/opencode/ds41-wiki.jsonl maya-ds41-bench:/data/wiki.jsonl
+```
+
+Inside the benchmark pod:
+
+```bash
+python /data/bench/corpus.py build --source /data/wiki.jsonl \
+  --out /data/warm.jsonl --split warmup --count 12 --pp 2048
+python /data/bench/corpus.py build --source /data/wiki.jsonl \
+  --out /data/dev.jsonl --split dev --count 8 --pp 2048 4096
+cat /data/warm.jsonl /data/dev.jsonl > /data/cases.jsonl
+python /data/bench/native_bench.py --config /data/bench/baseline.json \
+  --cases /data/cases.jsonl --out /data/runs/baseline-01
+```
+
+Long cases need enough **unused real text**. The builder fails if the corpus is
+too small; do not fill the gap by repeating documents. A complete long-context
+suite may need additional articles. Freeze source/case manifests before a
+comparison. Do not regenerate a new random corpus for each candidate.
+
+For the final held-out long suite, `--task-position end` keeps the actual
+question after the documents when truncating to exact PP. This avoids putting
+up to 194K tokens between the task and generation, matching document-then-question
+usage. It changes neither existing frozen inputs nor the front-task development
+timing suite. Cases record the placement; held-out performance is not a direct
+paired comparison with differently formatted development cases. The final
+held-out run uses seed 20261025 (a different warmup/source order) after the
+configuration is selected, with no further tuning on those results.
+
+`variants.py --out /data/configs` generates one-factor screening candidates:
+4 GiB Engram cache, 56 CPU threads, 38 threads confined to NUMA node 0's CPUs,
+or 64 GB of protected CPU expert copies (one NUMA part, keeping the full row
+reduction). CPU affinity is **not** a strict NUMA memory policy. All four
+inspected GPUs attach to node 0 over PCIe 4.0 x16.
+Do not run any candidates concurrently. Each run starts with its own copy of
+the same seed expert profile and an independent PCIe lane calibration file.
+
+The C++ binary consumes legacy `STRATA_DS4_*` names directly; `maya.py` normally
+translates the public `MAYA_DS4_*` names. `baseline.json` uses the native names
+deliberately rather than silently leaving computation skips enabled.
+
+## Numerical gate and metrics
+
+Run a baseline replay **against itself first**, then compare candidates on the
+same ordered input history. Use `--dump` in separate numerical-validation runs:
+every prompt-last/output-step f32 logits row is SHA-256 hashed. Raw dumps are
+removed after hashing; hashes and generated token IDs remain in results.
+
+```bash
+python /data/bench/native_bench.py --config /data/bench/baseline.json \
+  --cases /data/cases.jsonl --out /data/runs/validate-a --dump
+# Repeat as validate-b, then compare:
+python /data/bench/compare.py /data/runs/validate-a/results.jsonl \
+  /data/runs/validate-b/results.jsonl --require-logits
+```
+
+Token equality alone, a tolerance/KL test, or an identical final answer does
+not satisfy the bit-exact gate. Passing finite checks is evidence for those
+tested rows, not a mathematical proof for arbitrary prompts or contexts.
+History-dependent cache placement may itself affect numerics: if baseline
+replay fails, investigate before calling a candidate bit-exact. Changing TP,
+prefill chunk shape, or CPU/GPU computation placement is not automatically safe.
+
+After the baseline replay passes, `bash /data/bench/screening.sh` runs the four
+one-factor candidates sequentially on the frozen short case file. Each gets a
+separate numerical verdict; rejected candidates are not timing finalists.
+Engine/load failures stop the batch rather than running more work on a device
+whose state might be unknown. This screening does not establish steady-state
+speed or long-context parity.
+
+`variants.py --full-copy-only --out /data/full-copy-configs` prepares the
+historical RAM-copy strategy without lowering context or turning vision off.
+The two candidates use one/two NUMA parts; both must match baseline logits.
+The runner rejects silent partial-copy fallback. Unlike the upstream strict
+RAM test switch, this does not override the engine's RAM safety budget.
+See [RESULTS.md](RESULTS.md) for the old branch's actual 2K/8K measurements
+and the important differences in corpus, repetition, and configuration.
+
+After the full single-part copy gate passes, `bash /data/bench/extended-gate.sh`
+tests CPU56, then a 4 GiB Engram cache, then chunk4096, all with full single-part
+copies. It adds fresh PP4096/8192 development inputs to the short parity history
+and runs a new mmap reference. It does not use the held-out corpus for tuning.
+Even a combination of independently accepted changes must pass again.
+
+`bash /data/bench/timing.sh` benchmarks **only** accepted gate configs, verifying
+their saved hashes before use and recording their tested PP coverage in
+`eligibility.json`. By default it selects the extended-gate shortlist. It
+creates a new frozen case
+file: 12 distinct PP2048/TG256 warmups, then six scored development requests
+(two each at PP2048/4096/8192). Dumps are off. Run order is mmap control,
+accepted candidates sequentially, then a fresh mmap control. Outputs are also
+compared for token consistency across the complete history. No warmup is scored.
+`BENCH_RUN` selects a fresh output directory; `BENCH_SEED` selects a recorded
+source order for a repeat (default 20261024). This longer batch can take hours
+on the test stand; do not run a second GPU job alongside it. A second control
+is needed to assess carryover rather than claiming a gain from one fast sample.
+
+The accepted CPU48 full-copy point can instead be selected explicitly:
+
+```bash
+BENCH_GATE=/data/runs/full-copy-screen-01 \
+BENCH_CANDIDATES=copy-all-numa1 BENCH_RUN=fair-copy48-time-01 \
+  bash /data/bench/timing.sh
+```
+
+Its original full-logit gate covers PP2048, not PP4096/8192; the recorded
+coverage must not be silently upgraded by a token-consistency timing run.
+Rejected CPU56 combinations remain rejected.
+
+`timing.sh` also refuses a gate directory containing `invalidation.json` from
+a later failure. Historical successful verdicts remain intact for provenance.
+The CPU48 selection example above is now blocked by that marker.
+
+`bash /data/bench/diagnose-cache.sh` is a separate diagnostic: mmap and full
+copies with `--no-expert-cache` are compared on PP2048/8192, then the stock
+expert-swap byte checker is exercised with adaptive caching enabled. Freezing
+placement changes the reference policy; a pass there is **not** permission to
+claim parity with the original adaptive run or to waive a failed comparison.
+
+Pool scored rates reproducibly, excluding warmup and exposing dump-enabled runs:
+
+```bash
+python /data/bench/summary.py \
+  /data/runs/fair-copy48-time-01/control-a \
+  /data/runs/fair-copy48-time-01/copy-all-numa1 \
+  /data/runs/fair-copy48-time-01/control-b
+```
+
+Timing runs must have dumps **off**. Report PP tok/s from native prefill time;
+TG tok/s as `(N-1)/(last_token_time-first_token_time)`, excluding the first token
+already computed by prefill. Also retain the engine's native DONE times, TTFT,
+wall time, ITL p50/p95/p99, per-request expert/cache/I/O stats, cgroup memory,
+OOM events and CPU throttling. Native TTFT excludes the HTTP frontend, so label
+it accordingly. No combined PP/TG headline that hides a regression in one phase.
+Use paired comparisons by PP length and fixed order, then reverse run order to
+check persistent file-cache/thermal carryover. Do not count warmup as scored.
+
+The reboot gives an initial cold-cache reference. Later runs share the pod's
+charged file cache: report that explicitly rather than claiming each run is
+cold. Cgroup `file` and `memory.current` must be tracked alongside host memory
+because shared pages charged to other cgroups can otherwise mask the RAM cap.
+
+Copy results to local storage before any approved pod deletion; `/data` is an
+ephemeral volume. Stop the engine after each run and verify idle GPUs. Pod
+deletion is a separate Kubernetes write requiring approval.
+
+## Local checks
+
+```bash
+python3 -m unittest discover -s . -p 'test_*.py' -v
+bash -n prepare.sh
+```
