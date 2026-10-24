@@ -3,8 +3,9 @@
 > **Current criterion:** full model computation and context, with ordinary
 > floating-point/adaptive-cache differences allowed (approved 2026-10-25).
 > No whole-engine bit-exact claim is made. Historical strict rejections below
-> remain unchanged; they are not retroactive passes. Long-context retrieval,
-> held-out timing and actual vision inference are still pending.
+> remain unchanged; they are not retroactive passes. The v1.1.26 finalist passed
+> 64K retrieval and actual vision smoke. v1.1.27 functional checks and final
+> held-out timing are still pending.
 
 ## Completed cache/source diagnosis (approach 1 follow-up)
 
@@ -35,8 +36,8 @@ Registry index digest:
 `sha256:d46312703b79af1cd70174ae9ef2faee23875db9c51f90353424aba6101ac2c1`;
 linux/amd64 manifest:
 `sha256:ef40b51b57820f5770ad3dd7d852fe14bfc9639913a19e9bd125c13618e638f2`.
-No completed v1.1.27 performance comparison is available; the first attempt
-failed at the reduced 185Gi cap, as recorded below.
+The first v1.1.27 attempt failed at the reduced 185Gi cap. The approved 187Gi
+retry completed; its exploratory comparison is reported below.
 
 The user explicitly relaxed whole-engine bitwise repeatability, not the model's
 compute/context requirements. RAM/NUMA/CPU/chunk choices are eligible for new
@@ -168,10 +169,49 @@ that fsyncs manifests, READY/full-copy metadata, complete result rows and
 functional records outside the pod. Missing request counts/nonzero exits stay
 failures; no partial warmup is promoted to a performance result. This changes
 artifact handling, not model math or the captured request timing interval.
-The 187Gi attempt and its subsequent 64K/vision checks are not completed yet.
+The 187Gi timing attempt completed as reported below; its subsequent 64K/vision
+checks are still in progress.
 Before GPU execution, 26 local unit tests passed, including collector success,
 preservation after exit137, and rejection of an incomplete zero-exit stream.
 Python compilation and diff whitespace checks also passed.
+
+### v1.1.27 timing at 187Gi: completed, no demonstrated speedup
+
+The local collector received all **18/18** complete records and exit0. Each
+run used the same frozen 12 warmups plus six scored development requests,
+TG256, full CPU copies **9934/9934**, vision loaded, context196608, TP2,
+CPU56/NUMA2/chunk4096, Engram256, skips/speculation off, and no logits dumps.
+Config and case hashes match the v1.1.26 finalist exactly. Startup was 245.7 s
+and is excluded. The comparison is with that earlier finalist measurement,
+not a new interleaved image A/B/A.
+
+| Pooled metric | v1.1.26 finalist | v1.1.27 retry |
+| --- | ---: | ---: |
+| PP2048 tok/s | 103.36 | 92.45 |
+| PP4096 tok/s | 132.72 | 130.05 |
+| PP8192 tok/s | 173.59 | 175.07 |
+| All scored PP tok/s | 146.48 | 142.73 |
+| All scored TG tok/s | 22.228 | 21.844 |
+| Six scored requests, wall s | 264.585 | 270.943 |
+
+Observed v1.1.27 versus that v1.1.26 run: aggregate PP -2.6%, TG -1.7%, wall
++2.4%, with PP8192 +0.9%. **No speedup is demonstrated, and this is not proof
+of a version regression.** The starts are sequential, cache/output histories
+may differ, and memory is partitioned differently (old single pod 192Gi;
+new pod 187Gi plus retained peer accounting). Do not assign these small total
+differences to a particular upstream kernel or claim statistical significance.
+
+No OOM/kills, throttling, KV reuse or speculative tokens. New-pod peak was
+187.0 GiB, anonymous memory about 176.1 GiB, shared memory about 8.51 GiB.
+The maximum recorded new-pod hard limit plus peer charge was **191.014 GiB**.
+The peer guard accounts for the known old pod, not unrelated host cache users.
+Scored decode reads were 0.107–0.160 MB/token.
+
+Durable local records: `/tmp/opencode/ds41-v127-time-02` (manifest, READY,
+request rows, after snapshot and exit.json), supplemented by the in-pod artifact
+copy `/tmp/opencode/ds41-v127-time-02-pod`. The old successful/failed runs are
+unchanged. The same 64K retrieval and real-image checks are now running on
+v1.1.27, separately with finite-logit dumps; their timings are not benchmarks.
 
 ## Approach 1: historical strict protocol and measurements
 
