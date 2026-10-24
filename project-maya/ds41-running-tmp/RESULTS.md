@@ -35,6 +35,14 @@ CPU56 with NUMA1/2 and chunk2048/4096; repeated fresh control. All reuse the
 same frozen 12-warmup/six-dev history from `fair-copy48-time-01`, without dumps.
 No new performance result or final compatibility claim is available yet.
 
+Functional validation tooling is prepared separately: exact PP32768/194560
+probes with name/code records near the beginning/middle/end, finite-logit
+checks, natural EOS up to 128, and GENI shapes/blank content checks without
+requiring identical outputs. **These GPU checks have not run.** Local checks:
+22 unit tests pass, Python compilation and shell syntax checks pass. The
+ongoing runtime matrix uses the immutable `/data/bench-update-full-compute`
+copy; later validation-tool edits do not change its runner between candidates.
+
 ## Approach 1: historical strict protocol and measurements
 
 ## Initial screening baseline (not a steady-state result)

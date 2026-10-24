@@ -135,7 +135,7 @@ class Engine:
             if line.startswith('ERR '):
                 raise RuntimeError(line)
 
-    def request(self, case, timeout, tg):
+    def request(self, case, timeout, tg, benchmark=True):
         self.count += 1
         before = snapshot(self.proc.pid)
         started = time.monotonic()
@@ -161,10 +161,12 @@ class Engine:
         after = snapshot(self.proc.pid)
         if done['reused'] or done['drafted'] or done['accepted']:
             raise RuntimeError(f'Invalid benchmark: KV reuse or speculation: {done}')
-        if done['tg'] != tg or len(tokens) != tg or done['pp'] != len(case['ids']):
+        if not tokens or done['tg'] != len(tokens) or len(tokens) > tg or done['pp'] != len(case['ids']):
             raise RuntimeError(f'Not PP{len(case["ids"])} / TG{tg}: {done}')
-        if done['finish'] != 'length':
+        if benchmark and (done['tg'] != tg or done['finish'] != 'length'):
             raise RuntimeError(f'Request did not reach TG limit: {done}')
+        if done['finish'] not in ('length', 'stop'):
+            raise RuntimeError(f'Unexpected finish reason: {done}')
         if any(not math.isfinite(done[k]) or done[k] <= 0 for k in ('prompt_ms', 'decode_ms')):
             raise RuntimeError(f'Non-finite or nonpositive engine timing: {done}')
         if any(float(s.get('skipped', 0)) for s in stats):
@@ -177,7 +179,7 @@ class Engine:
         return {k: v for k, v in case.items() if k != 'ids'} | {
             'done': done, 'wall_s': elapsed, 'ttft_s': times[0] - started,
             'pp_tok_s': 1000 * done['pp'] / done['prompt_ms'],
-            'tg_tok_s': (len(tokens) - 1) / (times[-1] - times[0]),
+            'tg_tok_s': (len(tokens) - 1) / (times[-1] - times[0]) if len(tokens) > 1 else None,
             'itl_p50_s': quantile(intervals, .5), 'itl_p95_s': quantile(intervals, .95),
             'itl_p99_s': quantile(intervals, .99), 'tokens': tokens, 'stats': stats,
             'before': before, 'after': after,

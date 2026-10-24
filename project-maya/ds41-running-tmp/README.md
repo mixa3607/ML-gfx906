@@ -44,6 +44,32 @@ Engine errors, incomplete copies, reuse, speculation, expert skips, short EOS,
 non-finite native times, OOM and CPU throttling fail the run. Compare paired
 PP/TG/wall metrics with the repeated control; do not infer quality from speed.
 
+### Functional checks for finalists
+
+These are separate from TG256 performance and do not require identical text:
+
+- `context_check.py prepare --source /data/wiki-final.jsonl --out <cases.jsonl>`
+  creates exact PP32768/194560 fact-retrieval probes. Three complete artificial
+  name/code records sit near token128, halfway through the context, and near
+  its end. The final question includes names but not answers. Development prose
+  supplies non-repeated filler; no holdout articles are used for these probes.
+- `context_check.py run --config <finalist.json> --cases <cases.jsonl> --out <run>`
+  checks all three name/code associations and finite full-vocabulary logits,
+  allows natural EOS up to 128 tokens, and preserves full PP/context. Use a
+  checked config with trailing `--verbose` to log actual YOCO1 activation;
+  enabling the flag alone is not evidence that the runtime used it.
+- `vision_check.py --functional --baseline <control.json> --candidate <finalist.json>
+  --out <run>` sends real GENI images through the upstream image frontend:
+  red rectangle/blue circle and a white blank control. It checks finite logits
+  and descriptions, not parity. The conservative keyword checks require manual
+  inspection if they fail; they are not a broad vision-quality evaluation.
+
+Run the same context probes on the no-skip control and finalist. A retrieval
+pass is bounded evidence, not proof of arbitrary-context quality. A failed
+control cannot validate a candidate. Functional outputs/timings are never pooled
+into TG256 performance results. The final frozen holdout timing suite remains a
+separate check after selecting the configuration.
+
 ## Fixed workload
 
 - One request at a time, TG256, greedy sampling, no speculative decoding.

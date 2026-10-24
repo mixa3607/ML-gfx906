@@ -10,10 +10,22 @@ import sys
 import time
 
 from native_bench import Engine, dump_hashes, parse_done, snapshot
+from full_compute import validate_config, validate_limits
 
 
 def save(path, value):
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
+
+
+def image_checks(rows):
+    by_case = {r['case']: r['text'].lower() for r in rows}
+    shapes, blank = by_case['shapes'], by_case['blank']
+    return {'red_rectangle': bool(re.search(r'красн|red', shapes)) and
+                             bool(re.search(r'прямоуголь|rectangle', shapes)),
+            'blue_round_shape': bool(re.search(r'син|blue', shapes)) and
+                                bool(re.search(r'круг|овал|circle|ellipse', shapes)),
+            'blank_recognized': bool(re.search(r'бел|пуст|white|blank', blank)) and
+                                not re.search(r'красн|син|red|blue', blank)}
 
 
 def check_config(config, images, directory):
@@ -24,7 +36,16 @@ def check_config(config, images, directory):
 
     directory.mkdir()
     cfg = json.loads(config.read_text())
+    if 'policy' in cfg:
+        validate_config(cfg)
+        validate_limits(snapshot())
     save(directory / 'config.json', cfg)
+    save(directory / 'manifest.json', {
+        'config_sha256': hashlib.sha256(config.read_bytes()).hexdigest(),
+        'source_commit': Path('/opt/maya/SOURCE_COMMIT').read_text().strip(),
+        'build': json.loads(Path('/opt/maya/build-hip/MAYA-BUILD.json').read_text()),
+        'seed_profile_sha256': hashlib.sha256(Path(cfg['seed_profile']).read_bytes()).hexdigest(),
+        'runner_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest()})
     engine = Engine(cfg, directory, dump=True)
     results = []
     try:
@@ -48,6 +69,7 @@ def check_config(config, images, directory):
         vision = Vision(Geometry.from_info(info), directory,
                         lambda uri: base64.b64decode(uri.split(',', 1)[1]))
         for image in images:
+            before = snapshot(engine.proc.pid)
             uri = 'data:image/png;base64,' + base64.b64encode(image.read_bytes()).decode()
             body = {'messages': [{'role': 'user', 'content': [
                 {'type': 'image_url', 'image_url': {'url': uri}},
@@ -84,10 +106,15 @@ def check_config(config, images, directory):
             if len(hashes['rows']) != len(tokens):
                 raise RuntimeError('Image logit row count differs from output token count')
             path.unlink()
+            after = snapshot(engine.proc.pid)
+            if after['memory_events'].get('oom_kill', 0) > before['memory_events'].get('oom_kill', 0):
+                raise RuntimeError('OOM during image inference')
+            if after['cpu'].get('nr_throttled', 0) > before['cpu'].get('nr_throttled', 0):
+                raise RuntimeError('CPU throttling during image inference')
             row = {'case': image.stem, 'image_sha256': hashlib.sha256(image.read_bytes()).hexdigest(),
                    'prompt_tokens': len(ids), 'resized_pixels': [picture.width, picture.height],
                    'image_tokens': picture.tokens, 'tokens': tokens, 'text': tok.decode(tokens),
-                   'done': done, 'logits': hashes, 'stats': stats, 'snapshot': snapshot(engine.proc.pid)}
+                   'done': done, 'logits': hashes, 'stats': stats, 'snapshot': after}
             results.append(row)
             save(directory / f'{image.stem}.json', row)
             print(json.dumps({'config': cfg['name'], 'case': image.stem, 'text': row['text']},
@@ -102,7 +129,12 @@ def main():
     p.add_argument('--baseline', type=Path, required=True)
     p.add_argument('--candidate', type=Path, required=True)
     p.add_argument('--out', type=Path, required=True)
+    p.add_argument('--functional', action='store_true',
+                   help='Check image content and finite logits, not identical text/logits')
     a = p.parse_args()
+    if a.functional:
+        for config in (a.baseline, a.candidate):
+            validate_config(json.loads(config.read_text()))
     a.out.mkdir(parents=True, exist_ok=False)
     from PIL import Image, ImageDraw
 
@@ -116,6 +148,17 @@ def main():
     images = [a.out / 'shapes.png', a.out / 'blank.png']
     left = check_config(a.baseline, images, a.out / 'reference')
     right = check_config(a.candidate, images, a.out / 'candidate')
+    if a.functional:
+        checks = {'reference': image_checks(left), 'candidate': image_checks(right)}
+        verdict = {'functional_checks': checks, 'bit_exact_required': False,
+                   'finite_on_tested_rows': True,
+                   'passed': all(all(v.values()) for v in checks.values()),
+                   'not_a_general_vision_quality_proof': True}
+        save(a.out / 'verdict.json', verdict)
+        print(json.dumps(verdict, indent=2), flush=True)
+        if not verdict['passed']:
+            raise SystemExit(1)
+        return
     repeat = check_config(a.baseline, images, a.out / 'reference-repeat')
     cases = [{'case': x['case'], 'tokens_equal': x['tokens'] == y['tokens'],
               'full_logits_equal': x['logits']['rows'] == y['logits']['rows'],

@@ -39,6 +39,8 @@ def validate_config(cfg):
         if cfg[key] != base[key]:
             raise ValueError(f'Fixed model/runtime path changed: {key}')
     args = cfg['args']
+    if args[-1:] == ['--verbose']:
+        args = args[:-1]
     if len(args) != len(base['args']) or args[::2] != base['args'][::2]:
         raise ValueError('Unknown, duplicate, missing, or reordered engine options')
     for key, value, fixed in zip(args[::2], args[1::2], base['args'][1::2]):

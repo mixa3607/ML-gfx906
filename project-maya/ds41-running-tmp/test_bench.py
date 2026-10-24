@@ -11,11 +11,68 @@ import unittest
 from corpus import SOURCES
 from compare import compare
 from summary import summarize
+from context_check import assemble, score
+from vision_check import image_checks
 from full_compute import engine_env, runtime_configs, validate_config, validate_limits
 from native_bench import Engine, cgroup_dir, dump_hashes, parse_done, quantile, read_numbers
 
 
 class BenchTests(unittest.TestCase):
+    def test_context_fact_spans_and_unique_filler(self):
+        filler = list(range(10000, 13000))
+        facts = [[-1, -2], [-3, -4], [-5, -6]]
+        ids, spans, used = assemble([1, 2], [3, 4], filler, facts, 2048)
+        self.assertEqual(len(ids), 2048)
+        self.assertEqual([ids[a:b] for a, b in spans], facts)
+        self.assertEqual([x for x in ids if x >= 10000], filler[:used])
+        self.assertEqual(spans[0][0], 128)
+        self.assertEqual(spans[1][0], 1024)
+        self.assertGreater(spans[-1][0], 1800)
+        with self.assertRaises(ValueError):
+            assemble([1], [2], filler[:5], facts, 2048)
+
+    def test_context_score_requires_name_code_association(self):
+        expected = {'Ладога-17': '582913', 'Вега-43': '291826'}
+        self.assertTrue(all(score('**Ладога-17**: 582913\nВега-43 — 291826', expected).values()))
+        self.assertFalse(any(score('582913 291826', expected).values()))
+        self.assertFalse(any(score('Ладога-17: 291826\nВега-43: 582913', expected).values()))
+
+    def test_vision_functional_score(self):
+        shapes = {'case': 'shapes', 'text': 'Красный прямоугольник и синий круг.'}
+        blank = {'case': 'blank', 'text': 'Белое пустое изображение.'}
+        self.assertTrue(all(image_checks([shapes, blank]).values()))
+        blank['text'] = shapes['text']
+        self.assertFalse(image_checks([shapes, blank])['blank_recognized'])
+
+    def test_functional_request_respects_natural_eos(self):
+        fake = '''
+import sys
+print('READY 196608 stop', flush=True)
+for line in sys.stdin:
+    if line.strip() == 'QUIT': break
+    if line.startswith('GEN '):
+        print('T 42', flush=True)
+        print('STAT skipped=0', flush=True)
+        print('DONE 1 2048 1000.0 1.0 stop 0 0 0 0 0', flush=True)
+'''
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)
+            seed = path / 'seed.bin'
+            seed.write_bytes(b'profile')
+            cfg = {'exe': sys.executable, 'args': ['-u', '-c', fake], 'cwd': directory,
+                   'env': {}, 'seed_profile': str(seed)}
+            engine = Engine(cfg, path)
+            try:
+                engine.ready(5)
+                case = {'id': 'functional', 'ids': list(range(2048))}
+                row = engine.request(case, 5, 128, benchmark=False)
+                self.assertEqual(row['done']['tg'], 1)
+                self.assertIsNone(row['tg_tok_s'])
+                with self.assertRaisesRegex(RuntimeError, 'TG limit'):
+                    engine.request(case, 5, 256)
+            finally:
+                engine.close()
+
     def test_full_compute_runtime_matrix(self):
         configs = runtime_configs()
         self.assertEqual(len(configs), 5)
@@ -27,6 +84,8 @@ class BenchTests(unittest.TestCase):
         cfg = next(iter(configs.values()))
         cfg['env']['STRATA_DS4_PROMPT_SKIP'] = '1'
         self.assertEqual(validate_config(cfg)['prompt_skip'], '1')
+        cfg['args'].append('--verbose')
+        self.assertTrue(validate_config(cfg)['timing_eligible'])
 
     def test_full_compute_rejects_approximation_and_unknown_options(self):
         base = next(iter(runtime_configs().values()))
