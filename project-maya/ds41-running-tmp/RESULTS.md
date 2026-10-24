@@ -3,9 +3,9 @@
 > **Current criterion:** full model computation and context, with ordinary
 > floating-point/adaptive-cache differences allowed (approved 2026-10-25).
 > No whole-engine bit-exact claim is made. Historical strict rejections below
-> remain unchanged; they are not retroactive passes. The v1.1.26 finalist passed
-> 64K retrieval and actual vision smoke. v1.1.27 functional checks and final
-> held-out timing are still pending.
+> remain unchanged; they are not retroactive passes. The CPU56/NUMA2/chunk4096
+> finalist passed 64K retrieval and actual vision smoke on both v1.1.26 and
+> v1.1.27. Final held-out timing remains pending.
 
 ## Completed cache/source diagnosis (approach 1 follow-up)
 
@@ -169,8 +169,8 @@ that fsyncs manifests, READY/full-copy metadata, complete result rows and
 functional records outside the pod. Missing request counts/nonzero exits stay
 failures; no partial warmup is promoted to a performance result. This changes
 artifact handling, not model math or the captured request timing interval.
-The 187Gi timing attempt completed as reported below; its subsequent 64K/vision
-checks are still in progress.
+The 187Gi timing attempt and its subsequent 64K/vision checks completed as
+reported below.
 Before GPU execution, 26 local unit tests passed, including collector success,
 preservation after exit137, and rejection of an incomplete zero-exit stream.
 Python compilation and diff whitespace checks also passed.
@@ -210,8 +210,31 @@ Scored decode reads were 0.107–0.160 MB/token.
 Durable local records: `/tmp/opencode/ds41-v127-time-02` (manifest, READY,
 request rows, after snapshot and exit.json), supplemented by the in-pod artifact
 copy `/tmp/opencode/ds41-v127-time-02-pod`. The old successful/failed runs are
-unchanged. The same 64K retrieval and real-image checks are now running on
-v1.1.27, separately with finite-logit dumps; their timings are not benchmarks.
+unchanged. The same 64K retrieval and real-image checks on v1.1.27 are reported
+below, separately with finite-logit dumps; their timings are not benchmarks.
+
+### v1.1.27 functional result at 187Gi: 64K and vision passed
+
+The local collector reports exit0 and the complete expected context record,
+plus both vision records and the final verdict. PP65536 retrieved all three
+name/code associations correctly, with natural EOS after 29 output tokens.
+The red rectangle/blue circle and white blank control were described correctly.
+All captured context and image logits were finite, with zero KV reuse or
+speculative tokens, no OOM/kills and no CPU throttling. Prompt skipping remained
+off. The recorded new-pod cap plus peer charge was about 190.794 GiB at the
+context checkpoint; server capacity remained 196608.
+
+The diagnostic context prefill took 270.726 s and the full native request
+272.540 s. These are **functional validation timings with dumps**, not a warm
+TG256 benchmark or a paired long-context performance result. This verifies the
+bounded 64K retrieval and simple real-image cases, not all tasks at 64K or
+inference at 192K.
+
+Durable local artifacts: `/tmp/opencode/ds41-v127-functional64k-02`, supplemented
+by `/tmp/opencode/ds41-v127-functional64k-02-pod`. Together with the completed
+timing above, the user-built v1.1.27 image works for these cases at the approved
+187Gi-plus-peer budget; no additional speed benefit over manual RAM copies in
+v1.1.26 was demonstrated.
 
 ## Approach 1: historical strict protocol and measurements
 
