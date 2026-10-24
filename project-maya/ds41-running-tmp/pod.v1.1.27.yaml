@@ -1,3 +1,4 @@
+# Historical 185Gi attempt: OOMKilled during warmup. Not a validated runtime cap.
 apiVersion: v1
 kind: Pod
 metadata:

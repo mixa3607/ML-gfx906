@@ -35,7 +35,8 @@ Registry index digest:
 `sha256:d46312703b79af1cd70174ae9ef2faee23875db9c51f90353424aba6101ac2c1`;
 linux/amd64 manifest:
 `sha256:ef40b51b57820f5770ad3dd7d852fe14bfc9639913a19e9bd125c13618e638f2`.
-No v1.1.27 GPU result is available yet.
+No completed v1.1.27 performance comparison is available; the first attempt
+failed at the reduced 185Gi cap, as recorded below.
 
 The user explicitly relaxed whole-engine bitwise repeatability, not the model's
 compute/context requirements. RAM/NUMA/CPU/chunk choices are eligible for new
@@ -124,6 +125,36 @@ limit plus peer charge above 192Gi. Full expert copies are still mandatory;
 insufficient allocation stops the test instead of accepting partial copies.
 The old kubectl client cannot name the resize subresource, so the same supported
 API update was sent with `kubectl replace --raw .../resize`; the pod stayed up.
+
+### v1.1.27 attempt at 185Gi: cgroup OOM, no scored result
+
+`finalist-v127-time-01` loaded in 240.9 s and passed the full-expert-copy guard.
+It completed two warmups, then **OOMKilled the whole container** during the
+third warmup. Kubernetes reports exit137/OOMKilled; the kernel reports
+`CONSTRAINT_MEMCG` at the test pod's 185Gi limit, not host-wide exhaustion.
+At the OOM, accounting was about **175.884 GiB anonymous + 8.507 GiB shared
+memory + 0.608 GiB kernel**: essentially the entire cap, with no meaningful
+reclaimable file cache left. The shared-memory charge is not evictable page
+cache; anonymous memory alone was not a sufficient sizing estimate.
+
+**This reduced limit was an experiment-side choice to account for retained
+peer-pod cache. It was too tight; this is not evidence that v1.1.27 regresses or
+fails at the original 192Gi budget.** No development request was scored, so the
+two warmup rates cannot be used to compare image performance. The successful
+v1.1.26 timings and 64K/vision result remain unchanged.
+
+Because `memory.oom.group` killed PID1 as well, the pod is Failed/restart0 and
+cannot be entered. A read-only inspection through the toolkit's host PID view
+found that kubelet already removed its emptyDir contents; detailed in-pod
+results/logs are unavailable. Kubernetes status and kernel OOM evidence were
+saved to `/tmp/opencode/ds41-v127-oom-01`. Stdout retains the two warmup metrics.
+GPUs returned to idle; no blind retry was started and no pod was deleted.
+
+A revised retry needs an explicitly agreed replacement of the failed pod.
+The old pod now retains about 4Gi; a 187Gi replacement plus peer accounting
+would stay below 192Gi while adding 2Gi above the failed cap. Stream result
+records outside the container so another group OOM cannot erase the evidence.
+Do not treat this proposed retry as executed or as a guaranteed fit.
 
 ## Approach 1: historical strict protocol and measurements
 

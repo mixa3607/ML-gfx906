@@ -84,6 +84,9 @@ by the old pod before treating a cross-pod comparison as a verified 192Gi result
 Set `BENCH_PEER_CGROUP` to that pod's cgroup path for the v1.1.27 runs. Snapshots
 record peer charges and reject a new-pod limit plus peer usage above 192Gi.
 This accounts for the known peer pod, not arbitrary unrelated host cache users.
+**The 185Gi attempt OOMKilled during warmup.** This manifest now documents the
+failed configuration, not a recommended memory size. See RESULTS.md before
+retrying; replacement/deletion of the Failed pod needs explicit approval.
 
 ## Fixed workload
 
