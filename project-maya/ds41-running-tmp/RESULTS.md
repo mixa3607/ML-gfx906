@@ -43,18 +43,44 @@ timing; approximate expert/prompt skips, reduced retention, context truncation
 and extra quantization remain forbidden. YOCO1 and flow are separate checks.
 The new runner does not consume or rewrite old strict verdicts/invalidation.
 
-Prepared matrix: full copies, Engram256, CPU48/NUMA1/chunk2048 control;
+Completed matrix: full copies, Engram256, CPU48/NUMA1/chunk2048 control;
 CPU56 with NUMA1/2 and chunk2048/4096; repeated fresh control. All reuse the
 same frozen 12-warmup/six-dev history from `fair-copy48-time-01`, without dumps.
-No new performance result or final compatibility claim is available yet.
 
-Functional validation tooling is prepared separately: exact PP32768/194560
-probes with name/code records near the beginning/middle/end, finite-logit
-checks, natural EOS up to 128, and GENI shapes/blank content checks without
-requiring identical outputs. **These GPU checks have not run.** Local checks:
-22 unit tests pass, Python compilation and shell syntax checks pass. The
-ongoing runtime matrix uses the immutable `/data/bench-update-full-compute`
-copy; later validation-tool edits do not change its runner between candidates.
+| CPU / NUMA parts / chunk | PP2048 | PP4096 | PP8192 | Pooled TG | Scored wall s |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 48 / 1 / 2048, control A | 91.17 | 116.35 | 134.69 | 21.466 | 308.266 |
+| 56 / 1 / 2048 | 91.77 | 113.73 | 131.77 | 21.183 | 313.248 |
+| 56 / 2 / 2048 | 98.63 | 129.55 | 149.03 | 22.184 | 283.689 |
+| 56 / 1 / 4096 | 93.36 | 129.06 | 171.94 | 21.610 | 273.449 |
+| **56 / 2 / 4096** | **103.36** | **132.72** | **173.59** | **22.228** | **264.585** |
+| 48 / 1 / 2048, control repeat | 91.40 | 110.23 | 135.65 | 21.393 | 311.454 |
+
+Rates pool measured tokens/time; startup and the 12 warmups are excluded. The
+best measured point improves aggregate PP **21.1–22.6%**, TG **3.5–3.9%**, and
+scored wall **14.2–15.0%** against the two RAM controls in this series. CPU56
+alone did not help; two NUMA parts and chunk4096 matter here. These are results
+for this order, not confidence intervals or a proof of a global optimum. The
+earlier mmap-versus-RAM series remains a separate experiment; do not multiply
+gains across series with different timings and generated outputs.
+
+All six engines completed 18 requests with TG256, zero reused/drafted tokens,
+and full CPU-expert copies. No OOM/kills or CPU throttling. The 4096-chunk
+configuration held 9934 CPU experts (186.77 GB, fewer VRAM slots because of its
+larger prompt buffers); chunk2048 held 9843 (185.05 GB). Charged anonymous
+memory peaked around **176.1 GiB** with chunk4096 and **174.5 GiB** with
+chunk2048, with file-cache reclaim inside the 192Gi cap. Startup was 209–358 s,
+not scored. The original runner copy `/data/bench-update-full-compute` was used
+unchanged for every candidate. Raw artifacts and pooled `summary.json` are
+saved locally at `/tmp/opencode/ds41-full-compute-runtime-01` and remain in the
+pod at `/data/runs/full-compute-runtime-01`.
+
+Functional validation tooling is prepared separately: an exact PP65536 probe
+with name/code records near the beginning/middle/end, finite-logit checks,
+natural EOS up to 128, and GENI shapes/blank content checks without requiring
+identical outputs. **These GPU checks have not run.** Local checks: 23 unit
+tests pass; Python compilation and shell syntax checks pass. The best runtime
+point is a timing finalist, not yet a final context/vision recommendation.
 
 ## Approach 1: historical strict protocol and measurements
 
