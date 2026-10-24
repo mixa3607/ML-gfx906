@@ -16,6 +16,8 @@ def main():
                       help='Full single-part copies plus CPU56, Engram cache and chunk candidates')
     mode.add_argument('--yoco1-only', action='store_true',
                       help='Full-compute CPU56/NUMA2/chunk4096 finalist with YOCO1, no retention override')
+    mode.add_argument('--flow-only', action='store_true',
+                      help='Whole-block TP flow diagnostics, pump off/on, native copy checks enabled')
     a = p.parse_args()
     baseline = json.loads(Path(__file__).with_name('baseline.json').read_text())
     a.out.mkdir(parents=True, exist_ok=True)
@@ -64,6 +66,17 @@ def main():
         variants['yoco1-validation']['args'].append('--verbose')
         for cfg in variants.values():
             validate_config(cfg)
+    if a.flow_only:
+        from full_compute import runtime_configs, validate_config
+
+        variants = {}
+        for pump in ('0', '1'):
+            cfg = runtime_configs()['copy-c56-numa2-p4096']
+            cfg['args'].append('--verbose')
+            cfg['env'].update(DS4_TP_GGUF_UNEVEN='1', DS4_FLOW_TP='1',
+                              DS4_FLOW_PUMP_WAIT=pump, DS4_TP_CHECK='1')
+            validate_config(cfg)
+            variants[f'flow-pump{pump}-diagnostic'] = cfg
     for name, cfg in variants.items():
         cfg['name'] = name
         with (a.out / f'{name}.json').open('x') as f:

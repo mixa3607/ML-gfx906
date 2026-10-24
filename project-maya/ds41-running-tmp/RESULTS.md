@@ -306,6 +306,24 @@ Artifacts: `/tmp/opencode/ds41-yoco1-time-01` (durable records) and
 and screen flow/pump separately with YOCO off, starting with bounded inputs
 and the native TP/flow copy checker rather than another full long-context run.
 
+## Approach 5: bounded flow/pump screen (prepared)
+
+Inspected the shipped v1.1.27 source: the native TP checker is gated on
+whole-block TP, and checks the flow's partial/whole staging against the exact
+member blob with guard bytes, in addition to a finite numerical parts-versus-
+whole check. The flow/pump candidates use TP2, the same CPU56/NUMA2/chunk4096
+finalist, YOCO off, full copies and the same 187Gi-plus-peer budget. Whole-block
+TP preserves this model's 1152/1152 FFN split (all experts MXFP4, block32), while
+selecting the scratch/gather flow transfer path. It may still change packing
+and resource use, so do not attribute a result solely to pump or solely to flow.
+
+Prepared pump0 and pump1 configs with `DS4_TP_CHECK=1` and actual activation
+logging. First run only PP2048 and PP4096 from the frozen development history,
+TG256, finite logits, with a 600s load/request deadline. No steady-state speed
+claim from this diagnostic. A checker/runtime failure stops work, not a retry
+with checks disabled. Long-context/vision and warm timing require a promising
+clean screen; no flow benefit or compatibility has been established yet.
+
 ## Approach 1: historical strict protocol and measurements
 
 ## Initial screening baseline (not a steady-state result)

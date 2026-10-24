@@ -17,10 +17,40 @@ from summary import summarize
 from context_check import assemble, score, validate_probe_length, yoco_activation_verified
 from vision_check import image_checks
 from full_compute import engine_env, runtime_configs, validate_config, validate_limits
+from flow_check import check_log
 from native_bench import Engine, cgroup_dir, dump_hashes, emit_event, parse_done, peer_budget, quantile, read_numbers
 
 
 class BenchTests(unittest.TestCase):
+    def test_flow_gate_requires_real_checks_and_all_devices(self):
+        log = """ds4: tensor-parallel members on the prompt path's flow: CUDA0, CUDA1, CUDA2, CUDA3 - each streams
+ds4: TP check: guards intact (DS4_FLOW_TP)
+ds4: TP check: guards intact (DS4_FLOW_TP)
+ds4: TP check: the flow's copies passed (2 of the formats', rotations' and members' copies) (DS4_FLOW_TP)
+ds4: TP check passed (2 expert formats and rotations, all the split layers have) (DS4_TP_CHECK)
+""" + '\n'.join(f'ds4 prompt stream, CUDA{i}: 2048 tokens' for i in range(4))
+        self.assertTrue(check_log(log)['passed'])
+        self.assertFalse(check_log(log.replace('CUDA3:', 'CUDA2:'))['passed'])
+        self.assertFalse(check_log(log.replace('guards intact', 'guards differ'))['passed'])
+        self.assertFalse(check_log(log + '\nTP check FAILED')['passed'])
+        self.assertFalse(check_log('')['passed'])
+
+    def test_flow_candidates_are_separate_from_yoco(self):
+        with tempfile.TemporaryDirectory() as directory:
+            subprocess.run([sys.executable, str(Path(__file__).with_name('variants.py')),
+                            '--flow-only', '--out', directory], check=True)
+            paths = sorted(Path(directory).glob('*.json'))
+            self.assertEqual(len(paths), 2)
+            for path in paths:
+                cfg = json.loads(path.read_text())
+                self.assertEqual(validate_config(cfg)['flow_tp'], '1')
+                self.assertEqual(cfg['env']['STRATA_DS4_PROMPT_SKIP'], '0')
+                self.assertEqual(cfg['env']['DS4_TP_CHECK'], '1')
+                self.assertTrue(cfg['require_full_copies'])
+                cfg['env']['STRATA_DS4_PROMPT_SKIP'] = '1'
+                with self.assertRaises(ValueError):
+                    validate_config(cfg)
+
     def test_yoco1_requires_full_default_retention_and_actual_activation(self):
         line = 'ds4: prompt skip: layers 20-39 from CUDA2, 62868 early rows KV-only, 2668 kept'
         self.assertTrue(yoco_activation_verified([line], [65536]))

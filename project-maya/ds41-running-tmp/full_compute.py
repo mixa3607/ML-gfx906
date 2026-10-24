@@ -15,6 +15,10 @@ ENV_VALUES = {
     'DS4_COPY_NUMA': {'1', '2'},
     'DS4_ENGRAM_CACHE_MB': {'256', '4096'},
     'STRATA_DS4_PROMPT_SKIP': {'0', '1'},
+    'DS4_TP_GGUF_UNEVEN': {'1'},
+    'DS4_FLOW_TP': {'1'},
+    'DS4_FLOW_PUMP_WAIT': {'0', '1'},
+    'DS4_TP_CHECK': {'1'},
 }
 ARG_VALUES = {
     '--cpu-threads': {'48', '56'},
@@ -55,8 +59,16 @@ def validate_config(cfg):
     options = dict(zip(args[::2], args[1::2]))
     if options['--mmap-experts'] == 'off' and cfg.get('require_full_copies') is not True:
         raise ValueError('RAM timing requires verified full expert copies')
+    flow_keys = {'DS4_TP_GGUF_UNEVEN', 'DS4_FLOW_TP', 'DS4_FLOW_PUMP_WAIT', 'DS4_TP_CHECK'}
+    if flow_keys & set(env):
+        if (env.get('DS4_FLOW_TP') != '1' or env.get('DS4_TP_GGUF_UNEVEN') != '1' or
+                env.get('DS4_FLOW_PUMP_WAIT') not in ('0', '1')):
+            raise ValueError('Flow needs explicit whole-block TP and pump settings')
+        if env['STRATA_DS4_PROMPT_SKIP'] != '0' or options['--mmap-experts'] != 'off':
+            raise ValueError('Screen flow separately: YOCO off, verified full RAM copies required')
     return {'policy': POLICY, 'timing_eligible': True,
             'prompt_skip': env['STRATA_DS4_PROMPT_SKIP'],
+            'flow_tp': env.get('DS4_FLOW_TP', '0'),
             'quality_and_long_context_validated': False,
             'bit_exact_required': False}
 

@@ -19,8 +19,9 @@ expert skips (including AUTO), YOCO2, custom YOCO retention and quantization
 options. The engine clears inherited `DS4_*`, `STRATA_DS4_*`, and `MAYA_DS4_*`
 variables before applying the checked configuration. YOCO1 is allowed only via
 `STRATA_DS4_PROMPT_SKIP=1`, with no retention override; it is **off** in the
-initial runtime matrix. Flow is not yet allowlisted: inspect/validate it in a
-separate approach before enabling it. No unsupported `DS4_SKIP_UNPICKED` flag.
+initial runtime matrix. Flow has a separately guarded whole-block TP diagnostic
+below; it cannot be combined with YOCO in this experiment. No unsupported
+`DS4_SKIP_UNPICKED` flag.
 
 With the existing approved pod/GPU run, reuse the already frozen development
 history rather than regenerating inputs or accessing holdout for tuning:
@@ -123,6 +124,29 @@ to the complete PP65536. A flag alone or a short-prompt no-op is not a pass.
 Only after this gate passes should the frozen warm development suite be timed.
 Compare with the existing v1.1.27 control at the same memory partition; do not
 use diagnostic dump-enabled prefill times as the benchmark headline.
+
+### Bounded flow/pump diagnostic
+
+`variants.py --flow-only --out <configs>` creates two diagnostic configs with
+YOCO off, full RAM copies, whole-block TP, `DS4_FLOW_TP=1`, native
+`DS4_TP_CHECK=1`, verbose activation logs and pump off/on. For this all-MXFP4
+model, 2304 FFN values are 72 blocks of 32, split 36/36 by TP2: the whole-block
+flag preserves the widths but selects flow's scratch/gather DMA instead of the
+row-by-row 2D host transfer. The placement planner and scratch allocation can
+still change VRAM/RAM packing; this is a flow/TP-path experiment, not proof that
+one isolated flag caused any speed difference. No quantization or routed-expert
+computation is removed. Full-copy and peer-memory guards remain mandatory.
+
+`flow_check.py --config <diagnostic.json> --cases <two-cases.jsonl> --out <run>`
+first runs the native checker and just two frozen PP2048/4096, TG256 requests
+with finite-logit dumps. The 600s timeout applies separately to load and each
+request. The post-check requires all four GPUs actually on the flow, streamed
+work on each, a native TP numerical pass and successful byte-for-byte flow
+copy checks with guard bytes intact. Missing/no-op checks do not count as a pass.
+Any engine/checker error stops the attempt; especially after an unknown-device
+exit, do not launch the other candidate without a clean hardware assessment.
+This short screen cannot establish warm speed or long-context quality. Only a
+promising clean variant proceeds to the longer gate and proper warm timing.
 
 ## Fixed workload
 
