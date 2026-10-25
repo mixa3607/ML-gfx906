@@ -1,0 +1,15 @@
+{
+  "valid_comparison": false,
+  "reason": "200Gi cgroup OOMKilled; per-mode raw evidence lost when kubelet cleaned emptyDir",
+  "last_active_mode": "unknown",
+  "throughput_claim": null,
+  "a_b_c_results": null,
+  "pod_uid": "c6ac8b09-2cc7-4300-b1b1-667a64244cc5",
+  "oom_utc": "2026-10-25T21:20:21Z",
+  "evidence": [
+    "pod-after-failure.json",
+    "oom-evidence.txt",
+    "cases.manifest.json"
+  ],
+  "cases_sha256": "946bb7aaf184329fb15cc0330fbcecc7cc67ea090bfcda05a1b84002f9fd6b80"
+}

@@ -1,0 +1,137 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "action": "Binding",
+            "apiVersion": "v1",
+            "eventTime": "2026-10-25T21:03:47.327239Z",
+            "firstTimestamp": null,
+            "involvedObject": {
+                "apiVersion": "v1",
+                "kind": "Pod",
+                "name": "maya-ds41-spec-screen",
+                "namespace": "apps-ml",
+                "resourceVersion": "290268156",
+                "uid": "c6ac8b09-2cc7-4300-b1b1-667a64244cc5"
+            },
+            "kind": "Event",
+            "lastTimestamp": null,
+            "message": "Successfully assigned apps-ml/maya-ds41-spec-screen to kube-worker6.arkprojects.lan",
+            "metadata": {
+                "creationTimestamp": "2026-10-25T21:03:47Z",
+                "name": "maya-ds41-spec-screen.18e1e1a56f88be3f",
+                "namespace": "apps-ml",
+                "resourceVersion": "290268158",
+                "uid": "26670d02-5fa3-46d2-af51-0d83bda5efdf"
+            },
+            "reason": "Scheduled",
+            "reportingComponent": "default-scheduler",
+            "reportingInstance": "default-scheduler-kube-master2",
+            "source": {},
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-10-25T21:03:47Z",
+            "involvedObject": {
+                "apiVersion": "v1",
+                "fieldPath": "spec.containers{bench}",
+                "kind": "Pod",
+                "name": "maya-ds41-spec-screen",
+                "namespace": "apps-ml",
+                "resourceVersion": "290268157",
+                "uid": "c6ac8b09-2cc7-4300-b1b1-667a64244cc5"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-10-25T21:03:47Z",
+            "message": "Container image \"docker.io/mixa3607/maya-gfx906:v1.1.28-rocm-10.1\" already present on machine and can be accessed by the pod",
+            "metadata": {
+                "creationTimestamp": "2026-10-25T21:03:47Z",
+                "name": "maya-ds41-spec-screen.18e1e1a58fd9682f",
+                "namespace": "apps-ml",
+                "resourceVersion": "290268167",
+                "uid": "a0ce5450-7e4c-4ace-a1ff-cf5d6364f758"
+            },
+            "reason": "Pulled",
+            "reportingComponent": "kubelet",
+            "reportingInstance": "kube-worker6.arkprojects.lan",
+            "source": {
+                "component": "kubelet",
+                "host": "kube-worker6.arkprojects.lan"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-10-25T21:03:47Z",
+            "involvedObject": {
+                "apiVersion": "v1",
+                "fieldPath": "spec.containers{bench}",
+                "kind": "Pod",
+                "name": "maya-ds41-spec-screen",
+                "namespace": "apps-ml",
+                "resourceVersion": "290268157",
+                "uid": "c6ac8b09-2cc7-4300-b1b1-667a64244cc5"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-10-25T21:03:47Z",
+            "message": "Container created",
+            "metadata": {
+                "creationTimestamp": "2026-10-25T21:03:47Z",
+                "name": "maya-ds41-spec-screen.18e1e1a59215c37e",
+                "namespace": "apps-ml",
+                "resourceVersion": "290268169",
+                "uid": "f9ec257b-7598-46e4-877c-181446874e14"
+            },
+            "reason": "Created",
+            "reportingComponent": "kubelet",
+            "reportingInstance": "kube-worker6.arkprojects.lan",
+            "source": {
+                "component": "kubelet",
+                "host": "kube-worker6.arkprojects.lan"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-10-25T21:03:48Z",
+            "involvedObject": {
+                "apiVersion": "v1",
+                "fieldPath": "spec.containers{bench}",
+                "kind": "Pod",
+                "name": "maya-ds41-spec-screen",
+                "namespace": "apps-ml",
+                "resourceVersion": "290268157",
+                "uid": "c6ac8b09-2cc7-4300-b1b1-667a64244cc5"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-10-25T21:03:48Z",
+            "message": "Container started",
+            "metadata": {
+                "creationTimestamp": "2026-10-25T21:03:48Z",
+                "name": "maya-ds41-spec-screen.18e1e1a59bb0ae25",
+                "namespace": "apps-ml",
+                "resourceVersion": "290268170",
+                "uid": "0d64b02d-f6a1-4148-be04-8a6a12cb1bfe"
+            },
+            "reason": "Started",
+            "reportingComponent": "kubelet",
+            "reportingInstance": "kube-worker6.arkprojects.lan",
+            "source": {
+                "component": "kubelet",
+                "host": "kube-worker6.arkprojects.lan"
+            },
+            "type": "Normal"
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": ""
+    }
+}

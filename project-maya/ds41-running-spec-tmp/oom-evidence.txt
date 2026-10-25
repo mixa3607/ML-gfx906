@@ -1,0 +1,138 @@
+[Sun Oct 25 21:20:21 2026] maya-ds4 invoked oom-killer: gfp_mask=0xcc0(GFP_KERNEL), order=0, oom_score_adj=205
+[Sun Oct 25 21:20:21 2026] CPU: 57 PID: 3649512 Comm: maya-ds4 Tainted: G           O       6.8.0-147-generic #147-Ubuntu
+[Sun Oct 25 21:20:21 2026] Hardware name: Intel Corporation WHITLEY/WHITLEY, BIOS IMB760 V1.00; patch e498523 05/17/2022
+[Sun Oct 25 21:20:21 2026] Call Trace:
+[Sun Oct 25 21:20:21 2026]  <TASK>
+[Sun Oct 25 21:20:21 2026]  dump_stack_lvl+0x76/0xa0
+[Sun Oct 25 21:20:21 2026]  dump_stack+0x10/0x20
+[Sun Oct 25 21:20:21 2026]  dump_header+0x49/0x210
+[Sun Oct 25 21:20:21 2026]  oom_kill_process+0x118/0x280
+[Sun Oct 25 21:20:21 2026]  out_of_memory+0x103/0x350
+[Sun Oct 25 21:20:21 2026]  mem_cgroup_out_of_memory+0x145/0x170
+[Sun Oct 25 21:20:21 2026]  try_charge_memcg+0x6d6/0x7d0
+[Sun Oct 25 21:20:21 2026]  ? alloc_pages_mpol+0x91/0x210
+[Sun Oct 25 21:20:21 2026]  ? sp_lookup.isra.0+0x5f/0x80
+[Sun Oct 25 21:20:21 2026]  __mem_cgroup_charge+0x45/0xc0
+[Sun Oct 25 21:20:21 2026]  shmem_alloc_and_add_folio+0xd1/0x340
+[Sun Oct 25 21:20:21 2026]  shmem_get_folio_gfp+0x1fc/0x570
+[Sun Oct 25 21:20:21 2026]  shmem_fault+0x80/0x130
+[Sun Oct 25 21:20:21 2026]  __do_fault+0x3a/0x190
+[Sun Oct 25 21:20:21 2026]  do_shared_fault+0x2d/0x150
+[Sun Oct 25 21:20:21 2026]  do_fault+0x48/0x260
+[Sun Oct 25 21:20:21 2026]  handle_pte_fault+0x114/0x1d0
+[Sun Oct 25 21:20:21 2026]  __handle_mm_fault+0x654/0x790
+[Sun Oct 25 21:20:21 2026]  handle_mm_fault+0x18a/0x380
+[Sun Oct 25 21:20:21 2026]  hmm_vma_fault.isra.0+0x67/0xd0
+[Sun Oct 25 21:20:21 2026]  hmm_vma_walk_hole+0x11a/0x150
+[Sun Oct 25 21:20:21 2026]  walk_pud_range.isra.0+0xa6/0x240
+[Sun Oct 25 21:20:21 2026]  walk_p4d_range+0xda/0x150
+[Sun Oct 25 21:20:21 2026]  walk_pgd_range+0x15a/0x1e0
+[Sun Oct 25 21:20:21 2026]  __walk_page_range+0x1b2/0x1d0
+[Sun Oct 25 21:20:21 2026]  walk_page_range+0x117/0x1d0
+[Sun Oct 25 21:20:21 2026]  hmm_range_fault+0x52/0xa0
+[Sun Oct 25 21:20:21 2026]  amdgpu_hmm_range_get_pages+0x171/0x2b0 [amdgpu]
+[Sun Oct 25 21:20:21 2026]  amdgpu_ttm_tt_get_user_pages+0xc4/0x1b0 [amdgpu]
+[Sun Oct 25 21:20:21 2026]  init_user_pages+0xbf/0x2e0 [amdgpu]
+[Sun Oct 25 21:20:21 2026]  amdgpu_amdkfd_gpuvm_alloc_memory_of_gpu+0x570/0x9b0 [amdgpu]
+[Sun Oct 25 21:20:21 2026]  kfd_ioctl_alloc_memory_of_gpu+0x16e/0x3a0 [amdgpu]
+[Sun Oct 25 21:20:21 2026]  kfd_ioctl+0x4cf/0x600 [amdgpu]
+[Sun Oct 25 21:20:21 2026]  ? __pfx_kfd_ioctl_alloc_memory_of_gpu+0x10/0x10 [amdgpu]
+[Sun Oct 25 21:20:21 2026]  __x64_sys_ioctl+0xa0/0xf0
+[Sun Oct 25 21:20:21 2026]  x64_sys_call+0x12a3/0x25a0
+[Sun Oct 25 21:20:21 2026]  do_syscall_64+0x87/0x180
+[Sun Oct 25 21:20:21 2026]  ? handle_pte_fault+0x16e/0x1d0
+[Sun Oct 25 21:20:21 2026]  ? do_get_mempolicy+0x5dd/0x640
+[Sun Oct 25 21:20:21 2026]  ? kernel_get_mempolicy+0x72/0xf0
+[Sun Oct 25 21:20:21 2026]  ? arch_exit_to_user_mode_prepare.isra.0+0x1a/0xe0
+[Sun Oct 25 21:20:21 2026]  ? syscall_exit_to_user_mode+0x43/0x1e0
+[Sun Oct 25 21:20:21 2026]  ? do_syscall_64+0x94/0x180
+[Sun Oct 25 21:20:21 2026]  ? exc_page_fault+0x94/0x1b0
+[Sun Oct 25 21:20:21 2026]  entry_SYSCALL_64_after_hwframe+0x78/0x80
+[Sun Oct 25 21:20:21 2026] RIP: 0033:0x73c13a5480bd
+[Sun Oct 25 21:20:21 2026] Code: 04 25 28 00 00 00 48 89 45 c8 31 c0 48 8d 45 10 c7 45 b0 10 00 00 00 48 89 45 b8 48 8d 45 d0 48 89 45 c0 b8 10 00 00 00 0f 05 <89> c2 3d 00 f0 ff ff 77 1a 48 8b 45 c8 64 48 2b 04 25 28 00 00 00
+[Sun Oct 25 21:20:21 2026] RSP: 002b:00007ffda5ae5150 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+[Sun Oct 25 21:20:21 2026] RAX: ffffffffffffffda RBX: 00007ffda5ae5220 RCX: 000073c13a5480bd
+[Sun Oct 25 21:20:21 2026] RDX: 00007ffda5ae5220 RSI: 00000000c0284b16 RDI: 0000000000000024
+[Sun Oct 25 21:20:21 2026] RBP: 00007ffda5ae51a0 R08: 000064f10591dd48 R09: 000072f7fc800000
+[Sun Oct 25 21:20:21 2026] R10: 000064f108361cc0 R11: 0000000000000246 R12: 00000000629d1000
+[Sun Oct 25 21:20:21 2026] R13: 00000000629d1000 R14: 00000000c0284b16 R15: 0000000000000000
+[Sun Oct 25 21:20:21 2026]  </TASK>
+[Sun Oct 25 21:20:21 2026] memory: usage 209715200kB, limit 209715200kB, failcnt 680933
+[Sun Oct 25 21:20:21 2026] swap: usage 0kB, limit 9007199254740988kB, failcnt 0
+[Sun Oct 25 21:20:21 2026] Memory cgroup stats for /kubepods.slice/kubepods-burstable.slice/kubepods-burstable-podc6ac8b09_2cc7_4300_b1b1_667a64244cc5.slice:
+[Sun Oct 25 21:20:21 2026] anon 205550149632
+[Sun Oct 25 21:20:21 2026] file 8583254016
+[Sun Oct 25 21:20:21 2026] kernel 614961152
+[Sun Oct 25 21:20:21 2026] kernel_stack 1507328
+[Sun Oct 25 21:20:21 2026] pagetables 421089280
+[Sun Oct 25 21:20:21 2026] sec_pagetables 0
+[Sun Oct 25 21:20:21 2026] percpu 435552
+[Sun Oct 25 21:20:21 2026] sock 0
+[Sun Oct 25 21:20:21 2026] vmalloc 0
+[Sun Oct 25 21:20:21 2026] shmem 8583249920
+[Sun Oct 25 21:20:21 2026] zswap 0
+[Sun Oct 25 21:20:21 2026] zswapped 0
+[Sun Oct 25 21:20:21 2026] file_mapped 8583249920
+[Sun Oct 25 21:20:21 2026] file_dirty 0
+[Sun Oct 25 21:20:21 2026] file_writeback 0
+[Sun Oct 25 21:20:21 2026] swapcached 0
+[Sun Oct 25 21:20:21 2026] anon_thp 123637596160
+[Sun Oct 25 21:20:21 2026] file_thp 0
+[Sun Oct 25 21:20:21 2026] shmem_thp 0
+[Sun Oct 25 21:20:21 2026] inactive_anon 108851281920
+[Sun Oct 25 21:20:21 2026] active_anon 104862605312
+[Sun Oct 25 21:20:21 2026] inactive_file 0
+[Sun Oct 25 21:20:21 2026] active_file 4096
+[Sun Oct 25 21:20:21 2026] unevictable 0
+[Sun Oct 25 21:20:21 2026] slab_reclaimable 189095504
+[Sun Oct 25 21:20:21 2026] slab_unreclaimable 2755192
+[Sun Oct 25 21:20:21 2026] slab 191850696
+[Sun Oct 25 21:20:21 2026] workingset_refault_anon 0
+[Sun Oct 25 21:20:21 2026] workingset_refault_file 18315715
+[Sun Oct 25 21:20:21 2026] workingset_activate_anon 0
+[Sun Oct 25 21:20:21 2026] workingset_activate_file 18142701
+[Sun Oct 25 21:20:21 2026] workingset_restore_anon 0
+[Sun Oct 25 21:20:21 2026] workingset_restore_file 62537
+[Sun Oct 25 21:20:21 2026] workingset_nodereclaim 0
+[Sun Oct 25 21:20:21 2026] pgscan 110365897
+[Sun Oct 25 21:20:21 2026] pgsteal 110365879
+[Sun Oct 25 21:20:21 2026] pgscan_kswapd 34450588
+[Sun Oct 25 21:20:21 2026] pgscan_direct 75915309
+[Sun Oct 25 21:20:21 2026] pgscan_khugepaged 0
+[Sun Oct 25 21:20:21 2026] pgsteal_kswapd 34450588
+[Sun Oct 25 21:20:21 2026] pgsteal_direct 75915291
+[Sun Oct 25 21:20:21 2026] pgsteal_khugepaged 0
+[Sun Oct 25 21:20:21 2026] pgfault 70906819
+[Sun Oct 25 21:20:21 2026] pgmajfault 30
+[Sun Oct 25 21:20:21 2026] pgrefill 912016
+[Sun Oct 25 21:20:21 2026] pgactivate 0
+[Sun Oct 25 21:20:21 2026] pgdeactivate 0
+[Sun Oct 25 21:20:21 2026] pglazyfree 0
+[Sun Oct 25 21:20:21 2026] pglazyfreed 0
+[Sun Oct 25 21:20:21 2026] zswpin 0
+[Sun Oct 25 21:20:21 2026] zswpout 0
+[Sun Oct 25 21:20:21 2026] zswpwb 0
+[Sun Oct 25 21:20:21 2026] thp_fault_alloc 102093
+[Sun Oct 25 21:20:21 2026] thp_collapse_alloc 0
+[Sun Oct 25 21:20:21 2026] thp_swpout 0
+[Sun Oct 25 21:20:21 2026] thp_swpout_fallback 0
+[Sun Oct 25 21:20:21 2026] Tasks state (memory values in pages):
+[Sun Oct 25 21:20:21 2026] [  pid  ]   uid  tgid total_vm      rss rss_anon rss_file rss_shmem pgtables_bytes swapents oom_score_adj name
+[Sun Oct 25 21:20:21 2026] [3312663] 65535 3312663      255        0        0        0         0    28672        0          -998 pause
+[Sun Oct 25 21:20:21 2026] [3312690]     0 3312690      782      456        0      456         0    49152        0           205 sleep
+[Sun Oct 25 21:20:21 2026] [3402833]     0 3402833     6402     4256     1976     2280         0    86016        0           205 python
+[Sun Oct 25 21:20:21 2026] [3498246]     0 3498246     3836     2280      760     1520         0    69632        0           205 python
+[Sun Oct 25 21:20:21 2026] [3649512]     0 3649512 209745778 52317112 50178518    43928   2094666 420855808        0           205 maya-ds4
+[Sun Oct 25 21:20:21 2026] oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=cri-containerd-8c0d4a4f269d63d3de00654a04397e33124aaf985b28a1a34bc6a7ed069b0a10.scope,mems_allowed=0-1,oom_memcg=/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-podc6ac8b09_2cc7_4300_b1b1_667a64244cc5.slice,task_memcg=/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-podc6ac8b09_2cc7_4300_b1b1_667a64244cc5.slice/cri-containerd-8c0d4a4f269d63d3de00654a04397e33124aaf985b28a1a34bc6a7ed069b0a10.scope,task=maya-ds4,pid=3649512,uid=0
+[Sun Oct 25 21:20:21 2026] Memory cgroup out of memory: Killed process 3649512 (maya-ds4) total-vm:838983112kB, anon-rss:200714072kB, file-rss:175712kB, shmem-rss:8378664kB, UID:0 pgtables:410992kB oom_score_adj:205
+[Sun Oct 25 21:20:21 2026] Tasks in /kubepods.slice/kubepods-burstable.slice/kubepods-burstable-podc6ac8b09_2cc7_4300_b1b1_667a64244cc5.slice/cri-containerd-8c0d4a4f269d63d3de00654a04397e33124aaf985b28a1a34bc6a7ed069b0a10.scope are going to be killed due to memory.oom.group set
+[Sun Oct 25 21:20:21 2026] Memory cgroup out of memory: Killed process 3312690 (sleep) total-vm:3128kB, anon-rss:0kB, file-rss:1824kB, shmem-rss:0kB, UID:0 pgtables:48kB oom_score_adj:205
+[Sun Oct 25 21:20:21 2026] Memory cgroup out of memory: OOM victim 3402833 (python) is already exiting. Skip killing the task
+[Sun Oct 25 21:20:21 2026] Memory cgroup out of memory: OOM victim 3498246 (python) is already exiting. Skip killing the task
+[Sun Oct 25 21:20:21 2026] Memory cgroup out of memory: Killed process 3649512 (maya-ds4) total-vm:838983112kB, anon-rss:200714072kB, file-rss:175712kB, shmem-rss:8378664kB, UID:0 pgtables:410992kB oom_score_adj:205
+[Sun Oct 25 21:20:21 2026] amdgpu: init_user_pages: Failed to get user pages: -14
+[Sun Oct 25 21:20:26 2026] oom_reaper: reaped process 3649512 (maya-ds4), now anon-rss:0kB, file-rss:252kB, shmem-rss:2935016kB
+[Sun Oct 25 21:20:29 2026] cni0: port 12(vethee5d7abf) entered disabled state
+[Sun Oct 25 21:20:29 2026] vethee5d7abf (unregistering): left allmulticast mode
+[Sun Oct 25 21:20:29 2026] vethee5d7abf (unregistering): left promiscuous mode
+[Sun Oct 25 21:20:29 2026] cni0: port 12(vethee5d7abf) entered disabled state

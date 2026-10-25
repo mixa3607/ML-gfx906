@@ -1,0 +1,54 @@
+{
+  "gpu_devices": [
+    {
+      "drm": "card5",
+      "pci": "0000:50:00.0",
+      "numa_node": "0",
+      "current_link_speed": "16.0 GT/s PCIe",
+      "current_link_width": "16"
+    },
+    {
+      "drm": "card3",
+      "pci": "0000:36:00.0",
+      "numa_node": "0",
+      "current_link_speed": "16.0 GT/s PCIe",
+      "current_link_width": "16"
+    },
+    {
+      "drm": "card1",
+      "pci": "0000:17:00.0",
+      "numa_node": "0",
+      "current_link_speed": "2.5 GT/s PCIe",
+      "current_link_width": "8"
+    },
+    {
+      "drm": "card6",
+      "pci": "0000:18:00.0",
+      "numa_node": "0",
+      "current_link_speed": "2.5 GT/s PCIe",
+      "current_link_width": "8"
+    },
+    {
+      "drm": "card4",
+      "pci": "0000:4d:00.0",
+      "numa_node": "0",
+      "current_link_speed": "16.0 GT/s PCIe",
+      "current_link_width": "16"
+    },
+    {
+      "drm": "card2",
+      "pci": "0000:33:00.0",
+      "numa_node": "0",
+      "current_link_speed": "16.0 GT/s PCIe",
+      "current_link_width": "16"
+    },
+    {
+      "drm": "card0",
+      "pci": "0000:05:00.0",
+      "numa_node": "0",
+      "current_link_speed": null,
+      "current_link_width": null
+    }
+  ],
+  "meminfo": "MemTotal:       263743604 kB\nMemFree:        56291472 kB\nMemAvailable:   99693892 kB\nBuffers:          123772 kB\nCached:         48074052 kB\nSwapCached:            0 kB\nActive:         157806660 kB\nInactive:       41888616 kB\nActive(anon):   155264792 kB\nInactive(anon):   504620 kB\nActive(file):    2541868 kB\nInactive(file): 41383996 kB\nUnevictable:       39816 kB\nMlocked:           36552 kB\nSwapTotal:             0 kB\nSwapFree:              0 kB\nZswap:                 0 kB\nZswapped:              0 kB\nDirty:               328 kB\nWriteback:             0 kB\nAnonPages:      151948788 kB\nMapped:          4819184 kB\nShmem:           4256696 kB\nKReclaimable:    1324988 kB\nSlab:            2147272 kB\nSReclaimable:    1324988 kB\nSUnreclaim:       822284 kB\nKernelStack:       36192 kB\nPageTables:       324104 kB\nSecPageTables:         0 kB\nNFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:    131871800 kB\nCommitted_AS:   215273048 kB\nVmallocTotal:   13743895347199 kB\nVmallocUsed:      422680 kB\nVmallocChunk:          0 kB\nPercpu:            99520 kB\nHardwareCorrupted:     0 kB\nAnonHugePages:  84633600 kB\nShmemHugePages:        0 kB\nShmemPmdMapped:        0 kB\nFileHugePages:   7710720 kB\nFilePmdMapped:         0 kB\nUnaccepted:            0 kB\nHugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\nHugetlb:               0 kB\nDirectMap4k:      985520 kB\nDirectMap2M:    41650176 kB\nDirectMap1G:    227540992 kB\n"
+}

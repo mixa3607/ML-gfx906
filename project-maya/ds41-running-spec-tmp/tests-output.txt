@@ -1,0 +1,11 @@
+test_bad_done_format (test_screen.ProtocolTests.test_bad_done_format) ... ok
+test_baseline_and_speculation (test_screen.ProtocolTests.test_baseline_and_speculation) ... ok
+test_oom_throttling_skips_and_invalid_timing (test_screen.ProtocolTests.test_oom_throttling_skips_and_invalid_timing) ... ok
+test_pool_excludes_warmups (test_screen.ProtocolTests.test_pool_excludes_warmups) ... ok
+test_reuse_and_short_eos (test_screen.ProtocolTests.test_reuse_and_short_eos) ... ok
+test_token_comparison (test_screen.ProtocolTests.test_token_comparison) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+OK
