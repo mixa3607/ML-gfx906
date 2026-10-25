@@ -34,6 +34,9 @@
 - If clean, one matched warm whole-block TP4/TP2 pair. Only a clear improvement
   warrants the existing 64K/vision gate. OOM, failed checks or no convincing
   gain closes TP4; do not automatically retry another configuration.
+- Completed: TP4 passed the short screen, but the matched pair did not improve
+  aggregate request time. Search closed; keep the conservative TP2 profile.
+  No TP4 64K/vision gate or further variants were run. See RESULTS.md.
 
 # Известные особенности по llama.cpp
 - best cpu perf

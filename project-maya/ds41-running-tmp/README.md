@@ -10,6 +10,13 @@ not a blocker under this policy and not a retrospective strict pass. Finalists
 still need real long-context retrieval checks and image inference. See
 [RESULTS.md](RESULTS.md) for completed versus pending validation.
 
+**Search closed:** keep TP2 / CPU56 / NUMA2 / chunk4096 / full RAM copies /
+Engram256, with YOCO and flow off. The last matched TP4 test gained 25% decode
+but lost prefill speed and did not improve full request time (272.09s versus
+269.51s for the scored suite). No further variants are queued. The conservative
+TP2 profile has bounded 64K/vision passes; TP4 does not. Final holdout was not
+run. See the final recommendation in RESULTS.md for limitations and artifacts.
+
 ## Full-compute comparison (current approach)
 
 `full_compute.py` is separate from the historical strict timing gate. It only
@@ -92,7 +99,8 @@ This accounts for the known peer pod, not arbitrary unrelated host cache users.
 **The earlier 185Gi attempt OOMKilled during warmup.** That configuration is
 retained in commit `c6312af`. TP2 subsequently passed at 187Gi, but TP4 OOMKilled
 during load at both 187Gi and 190Gi. The current manifest is the final approved
-199Gi attempt, not a validated memory recommendation. See RESULTS.md for outcomes.
+199Gi experiment, now completed and deleted, not a deployment recommendation.
+See RESULTS.md for outcomes; do not recreate it as an implicit retry.
 
 ### Durable capture outside the pod
 
@@ -178,14 +186,17 @@ candidate then gets the same frozen 64K/vision check, with the native checker
 enabled. No combination with flow or YOCO is currently approved. TG may improve
 while PP worsens when replacing two pipeline groups with one; retain both
 metrics and complete-request wall time, and do not pick TP4 on TG alone.
-Both TP4 diagnostics OOMKilled during load (187Gi and 190Gi), before READY;
-no TP4 checker or performance pass exists yet. The second attempt preserved
-the exact configs/inputs and peer accounting. RESULTS.md records the staging
-budget. The user then allowed a total budget up to200Gi and asked to finish
-with minimal variants: the final screen retains the exact ring400 configs at
-199Gi plus peer accounting, not the proposed ring200 experiment. If clean, run
-one matched warm TP4/TP2 pair; only a clear gain proceeds to64K/vision. Otherwise
-close TP4 without further knob searches.
+The first two TP4 diagnostics OOMKilled during load (187Gi and 190Gi), before
+READY. The second attempt preserved the exact configs/inputs and peer accounting.
+The final unchanged screen **passed at 199Gi plus peer**, under the revised 200Gi
+budget: actual four-member topology, native numerical checks, full RAM copies
+and 512 finite logit rows. It is not a warm performance result or a 192Gi pass.
+RESULTS.md records the staging budget and artifacts. The user asked to finish
+with minimal variants: the final screen retained the exact ring400 configs at
+199Gi plus peer accounting, not the proposed ring200 experiment. The one matched
+warm TP4/TP2 pair is complete: TG +25.0%, PP −7.6%, total request wall +1.0% for
+TP4. The agreed wall-gain threshold was not met, so TP4 is closed without its
+64K/vision gate or further knob searches. Keep the conservative TP2 default.
 
 ## Fixed workload
 

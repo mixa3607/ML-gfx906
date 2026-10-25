@@ -5,7 +5,41 @@
 > No whole-engine bit-exact claim is made. Historical strict rejections below
 > remain unchanged; they are not retroactive passes. The CPU56/NUMA2/chunk4096
 > finalist passed 64K retrieval and actual vision smoke on both v1.1.26 and
-> v1.1.27. Final held-out timing remains pending.
+> v1.1.27. Search is now closed; final held-out timing was not run.
+
+## Final recommendation: search closed
+
+Keep **TP2 / CPU56 / NUMA2 / chunk4096 / full RAM expert copies / Engram256**,
+with **YOCO and flow off**, native vision on, context196608 and DSpark off.
+This conservative profile passed the bounded 64K retrieval and actual-image
+checks on both tested versions. No further runtime variants are queued.
+
+The last matched v1.1.27 whole-block comparison, at the user-approved 200Gi
+known-pod budget, completed 18/18 requests per engine (12 warmups + 6 development
+requests, TG256, no dumps):
+
+| Metric, scored requests only | TP2 control | Genuine TP4 |
+| --- | ---: | ---: |
+| Aggregate PP, tok/s | 143.427 | 132.481 |
+| Pooled TG, tok/s | 21.988 | 27.492 |
+| Complete-request wall, s | 269.508 | 272.093 |
+
+TP4 improved **TG 25.0%**, but lost **PP 7.6%** and increased complete-request
+wall time **1.0%** on this suite. It is a real decode tradeoff, not a general
+single-request win; it also needs more pinned/anonymous memory. The agreed
+5% aggregate wall-gain gate was not met. **Do not promote TP4 as the default**;
+its 64K/vision checks were not run, and its short numerical pass is not a
+long-context/vision validation. No ring/chunk sweep or combined variant followed.
+
+The earlier flow/pump1 option remains a short-prompt specialist, not the broad
+default: its small short-suite gain came with a much slower diagnostic 64K
+prefill. YOCO1 had no useful measured warm gain. Do not combine gains across
+these separate experiments or infer a global optimum from one development pair.
+Final holdout was left untouched and **not run** when closing the search.
+
+The v1.1.27 test pod was deleted after local artifact capture; all four GPUs
+were confirmed idle, about 10 MB used each. The old v1.1.26 pod and HF cache
+remain untouched. Detailed matched results and paths are in Approach 6 below.
 
 ## Completed cache/source diagnosis (approach 1 follow-up)
 
@@ -632,6 +666,86 @@ Replacement preflight confirms cap199Gi, no CPU quota, cap-plus-peer199.746Gi
 within the explicit200Gi budget, and unchanged source/model/seed/config/case
 hashes. The model pack uses only the existing read-only cache. GPUs are idle
 before the final screen.
+
+### Final TP4 short screen: passed at 199Gi plus peer
+
+The final unchanged screen reached READY in **209.669s** and completed both
+PP2048/4096, TG256 requests (exit0, **2/2**, `complete=true`). Actual topology
+is four devices with **tp_n=4, layers0–39, context196608** on each. The native
+checker passed **4 expert formats/rotations**, with **4 members in each of 4
+parts-versus-whole sum checks**. All **512/512** full-vocabulary logit rows were
+finite. All **10219/10219** CPU experts were copied into RAM; vision is loaded,
+DSpark and YOCO/flow are off, with no reused/drafted tokens, OOM kills or CPU
+throttling. This resolves the earlier startup failures under the revised
+budget; it does not turn the 187Gi/190Gi failures into passes.
+
+READY accounting was approximately **179.764Gi anonymous + 10.602Gi shmem +
+0.537Gi kernel**, with total charged memory198.997Gi including reclaimable
+file cache and a cgroup peak of 199Gi. The enforced cap plus then-current peer
+charge was **199.673Gi**, below the revised 200Gi bound. This is **not a 192Gi
+result**. Full copies and pinned memory explain the need for more headroom.
+
+Artifacts are retained in `/tmp/opencode/ds41-tp4-screen-03` and the copied
+pod run `/tmp/opencode/ds41-tp4-screen-03-pod`; the independently streamed
+startup log is `/tmp/opencode/ds41-tp4-startup-03.log`. The diagnostic's rates
+include finite-logit dumping and only two requests; they are **not warm speed
+results**. GPUs returned to idle after it.
+
+The one approved matched warm pair is now running in order **TP4, then TP2**,
+with the exact saved whole-block configs differing only in TP width and name,
+ring400, the same 199Gi cap/200Gi accounting, fresh seed/lane files, no dumps,
+and the existing 12 warmups + 6 development requests per engine. Durable capture,
+the plan and complete pod artifacts are kept under
+`/tmp/opencode/ds41-final-tp-pair-01`. No additional variants or holdout inputs
+have been introduced. No paired result is available at this stage.
+
+### Final warm pair: TG gain, no aggregate request-time gain; TP4 closed
+
+Both runs completed **18/18** requests with exit0 and complete durable captures.
+The actual topology guards passed: TP4 has all 40 layers on every member; TP2
+has paired layers 0–19 and 20–39. Copies were **10219/10219** and **9934/9934**
+respectively. Both used the same 199Gi cap and explicit 200Gi peer budget, with
+sampled cap-plus-peer maxima **199.673Gi (TP4)** and **199.472Gi (TP2)**.
+There were zero reused/drafted/accepted tokens, no OOM events/kills, no CPU
+throttling, and every request reached TG256 with length finish.
+Startup took 213.836s (TP4) and 235.855s (TP2), excluded from scored timings.
+Each run used its own seed copy and lane-cache path; neither materialized a
+lane-times file on this topology. No global calibration file was copied in.
+
+The shared case SHA remains
+`f53a29b26f6e4893cf74cb7cb3f8a75f79da4ba8d54f7b7d2a4763f5fcc78028`.
+The table excludes all 12 warmups and pools tokens/time rather than averaging
+rates. Wall columns are sums over the two scored requests at each length.
+
+| PP | TP2 PP tok/s | TP4 PP tok/s | TP2 TG tok/s | TP4 TG tok/s | TP2 wall s | TP4 wall s |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 2048 | 96.428 | 87.656 | 22.295 | 28.286 | 65.356 | 64.760 |
+| 4096 | 131.399 | 139.423 | 21.797 | 27.115 | 85.747 | 77.570 |
+| 8192 | 172.310 | 147.684 | 21.877 | 27.107 | 118.405 | 129.763 |
+| **All scored** | **143.427** | **132.481** | **21.988** | **27.492** | **269.508** | **272.093** |
+
+Overall TP4 changes versus the matched control: **TG +25.03%, PP −7.63%,
+wall +0.96%**. The per-length wall changes are −0.91%, −9.54%, +9.59% for
+2K/4K/8K respectively. The 4K gain does not offset the 8K loss on the frozen
+suite. This is one sequential TP4→TP2 development pair, not A/B/A, a held-out
+measurement, a confidence interval or proof about other output lengths. Longer
+generation may favor the faster decode, but that was not measured and does
+not authorize another sweep.
+
+**Verdict: keep the conservative TP2 default and close the search.** The
+pre-agreed ≥5% aggregate wall-gain threshold was not reached, so no additional
+TP4 64K/vision gate, holdout, ring/chunk variants or combinations were run.
+Do not claim TP4 long-context/vision validation from the numerical short screen.
+No failed historical run was reclassified.
+
+The local pair directory contains `plan.json`, `summary.json`,
+`final-verdict.json`, both durable runs and full copied pod run directories,
+the original seed and completed pod metadata. Its path is
+`/tmp/opencode/ds41-final-tp-pair-01`. The new v1.1.27 pod was then deleted;
+read-only inspection confirmed no remaining v1.1.27 test pod and all four
+GPUs idle at approximately 10 MB each. The old pod and model cache are untouched.
+Final documentation checks passed, including all 36 CPU-only unit tests and
+diff whitespace checks. No new build, public artifact or GitHub push was made.
 
 ## Approach 1: historical strict protocol and measurements
 

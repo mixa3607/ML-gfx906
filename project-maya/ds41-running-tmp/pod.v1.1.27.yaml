@@ -1,4 +1,5 @@
-# Final approved TP4 attempt: 199Gi plus peer within the revised 200Gi budget.
+# Completed TP4 experiment, pod deleted; no automatic retry. See RESULTS.md.
+# Historical final cap: 199Gi plus peer within the revised 200Gi budget.
 apiVersion: v1
 kind: Pod
 metadata:
