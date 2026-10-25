@@ -1,4 +1,4 @@
-# Approved 190Gi TP4 retry after the historical 187Gi load OOM. See RESULTS.md.
+# TP4 load OOMKilled at both 187Gi and 190Gi; no further retry approved. See RESULTS.md.
 apiVersion: v1
 kind: Pod
 metadata:

@@ -521,6 +521,84 @@ cap is 190Gi, CPU quota is absent, and inspected hard-limit-plus-peer charge is
 match the failed 187Gi attempt exactly; only memory headroom and pod identity
 change. No successful TP4 run is claimed at this preparation stage.
 
+### TP4 at 190Gi: second load OOM, no benchmark result
+
+The unchanged diagnostic again ended **OOMKilled / exit137 before READY**:
+**0/2** requests, `complete=false`, restart0. The replacement pod UID is
+`185368f2-c9ba-44f4-ac7c-aecdad66e363`. Kernel evidence again identifies
+`CONSTRAINT_MEMCG`, usage equal to the **190Gi** cap, not host-wide OOM or a
+native numerical-checker rejection. Accounting was **179.710Gi anonymous +
+9.854Gi shmem + 0.436Gi kernel**, with no active/inactive file pages left to
+reclaim. The AMD user-page registration error `-14` follows the OOM kill; it
+must not be reported as a TP numerical failure.
+
+There is still **no observed READY topology, four-member checker pass or TP4
+performance measurement**. Matched timing, 64K and vision were not started.
+The four GPUs returned to 0% utilization and approximately 10 MB used each.
+The Failed pod remains present; no further replacement or retry was performed.
+Its emptyDir payload was already removed by kubelet. Durable manifest, command,
+exit, Kubernetes status, kernel OOM trace and failure summary are saved in
+`/tmp/opencode/ds41-tp4-screen-02`. Both historical OOM verdicts remain failures.
+Neither proves that TP4 cannot fit the overall 192Gi budget with other buffers.
+
+### Source-derived staging budget (not an executed retry)
+
+Read the exact upstream **v1.1.27** tag, not its older working checkout.
+`src/ds4/ds4_model.cu` constructs member expert layouts around lines2693–2734,
+uses the member's `hblob` as `unit()` at line 1708, sizes GPU rings at
+lines3435–3438, and allocates each member's host staging at lines3137–3154.
+The latter still holds **whole experts**, even with full anonymous RAM copies:
+GGUF keeps `file_experts=true`; `copy_ahead()` reconstructs whole blobs from
+the NUMA copies and `stream_expert()` uploads the member's part. Flow is off.
+
+The unchanged tensor metadata hash was checked against the surviving old pod.
+All 46080 expert tensors are MXFP4, with 6266880 bytes per matrix. Thus the
+whole expert and page-aligned host staging stride are **18800640 bytes**.
+The three member matrices, individually aligned to 256, total **9400320 bytes
+for TP2**, or **4700160 for TP4**. With `kParts=4`, the formulas are:
+
+```text
+ring_n = max(4, floor(floor(ring_MiB * 1048576 / member_stride) / 4) * 4)
+host_stage_per_device = ring_n * 18800640
+GPU_ring_per_device = ring_n * member_stride
+```
+
+| TP | Ring setting, MiB | Slots / experts per batch | Host stage, all four GPUs, GiB |
+| --- | ---: | ---: | ---: |
+| 2 | 400 | 44 / 11 | 3.082 |
+| 4 | 400 | 88 / 22 | 6.163 |
+| 4 | 200 | 44 / 11 | 3.082 |
+| 4 | 128 | 28 / 7 | 1.961 |
+| 4 | 100 | 20 / 5 | 1.401 |
+
+For TP4/ring400, each host staging allocation is **1654456320 bytes**.
+`halloc()` adds 64 guard bytes; page-rounding gives **1654460416 = 0x629d1000**,
+exactly the size in both OOM traces' registers. This strongly identifies the
+staging allocation, but is not a captured userspace backtrace or proof of the
+failing device index. Source snapshot, unchanged metadata and machine-readable
+arithmetic are retained beside the second failure as
+`ds4_model.v1.1.27.cu`, `tensors.txt` and `buffer-calculation.json`.
+
+Proposed next screen: **TP4/ring200**, retaining CPU56/NUMA2/chunk4096, full
+RAM copies, native numerical and finite-logit checks, vision, context196608,
+seed, frozen PP2048/4096 inputs and **190Gi plus peer accounting**. The direct
+host staging saving is **3.082Gi**; GPU rings also free **0.770Gi** in total,
+which can change expert placement and further reduce RAM copies. Do not count
+that latter effect as guaranteed, or claim that the whole startup fits before
+measuring it. Smaller batches (11 instead of22 experts) may reduce prefill
+throughput; this changes buffering, not weights, context or model computation.
+
+This revised buffer experiment and replacement of the Failed pod still need
+approval. If approved, first add a narrowly allowlisted ring setting with
+CPU-only tests and durable startup-log/memory evidence, then run only the
+short screen. A clean result is prerequisite for a matched whole-block TP2/TP4
+comparison at the **same ring200**, rather than comparing against old ring400
+timings and attributing both changes to topology. No custom image build,
+larger cap, automatic sequence of smaller-ring retries or holdout access is
+included in this proposal.
+The outcome-only documentation update passed diff whitespace checks and all
+34 existing CPU-only unit tests. No further GPU workload was run.
+
 ## Approach 1: historical strict protocol and measurements
 
 ## Initial screening baseline (not a steady-state result)

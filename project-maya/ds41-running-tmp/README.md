@@ -87,8 +87,9 @@ record peer charges and reject a new-pod limit plus peer usage above 192Gi.
 This accounts for the known peer pod, not arbitrary unrelated host cache users.
 **The earlier 185Gi attempt OOMKilled during warmup.** That configuration is
 retained in commit `c6312af`. TP2 subsequently passed at 187Gi, but TP4 OOMKilled
-during load at that cap. The current manifest is the explicitly approved 190Gi
-TP4 retry, not yet a validated memory recommendation. See RESULTS.md for outcomes.
+during load at that cap. The current manifest records the explicitly approved
+190Gi TP4 retry, which also OOMKilled before READY; it is not a validated memory
+recommendation. See RESULTS.md for outcomes and the source-derived buffer budget.
 
 ### Durable capture outside the pod
 
@@ -174,9 +175,10 @@ candidate then gets the same frozen 64K/vision check, with the native checker
 enabled. No combination with flow or YOCO is currently approved. TG may improve
 while PP worsens when replacing two pipeline groups with one; retain both
 metrics and complete-request wall time, and do not pick TP4 on TG alone.
-The first TP4 diagnostic OOMKilled during load at 187Gi, before READY; no TP4
-checker or performance pass exists yet. The approved retry preserves the exact
-configs/inputs and uses 190Gi plus peer accounting. See RESULTS.md for outcomes.
+Both TP4 diagnostics OOMKilled during load (187Gi and 190Gi), before READY;
+no TP4 checker or performance pass exists yet. The second attempt preserved
+the exact configs/inputs and peer accounting. RESULTS.md records the staging
+budget and a proposed ring200 experiment; that revised run is not yet approved.
 
 ## Fixed workload
 
