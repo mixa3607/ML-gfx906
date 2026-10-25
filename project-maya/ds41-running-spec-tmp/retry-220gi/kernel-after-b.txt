@@ -1,0 +1,137 @@
+2026-10-25T21:42:26,335590+00:00 workqueue: svm_range_restore_work [amdgpu] hogged CPU for >10000us 2048 times, consider switching to WQ_UNBOUND
+2026-10-25T21:43:05,764164+00:00 maya-ds4 invoked oom-killer: gfp_mask=0xcc0(GFP_KERNEL), order=0, oom_score_adj=126
+2026-10-25T21:43:05,764174+00:00 CPU: 39 PID: 143905 Comm: maya-ds4 Tainted: G           O       6.8.0-147-generic #147-Ubuntu
+2026-10-25T21:43:05,764177+00:00 Hardware name: Intel Corporation WHITLEY/WHITLEY, BIOS IMB760 V1.00; patch e498523 05/17/2022
+2026-10-25T21:43:05,764179+00:00 Call Trace:
+2026-10-25T21:43:05,764183+00:00  <TASK>
+2026-10-25T21:43:05,764188+00:00  dump_stack_lvl+0x76/0xa0
+2026-10-25T21:43:05,764198+00:00  dump_stack+0x10/0x20
+2026-10-25T21:43:05,764202+00:00  dump_header+0x49/0x210
+2026-10-25T21:43:05,764209+00:00  oom_kill_process+0x118/0x280
+2026-10-25T21:43:05,764212+00:00  out_of_memory+0x103/0x350
+2026-10-25T21:43:05,764217+00:00  mem_cgroup_out_of_memory+0x145/0x170
+2026-10-25T21:43:05,764223+00:00  try_charge_memcg+0x6d6/0x7d0
+2026-10-25T21:43:05,764227+00:00  ? alloc_pages_mpol+0x91/0x210
+2026-10-25T21:43:05,764232+00:00  ? sp_lookup.isra.0+0x5f/0x80
+2026-10-25T21:43:05,764235+00:00  __mem_cgroup_charge+0x45/0xc0
+2026-10-25T21:43:05,764239+00:00  shmem_alloc_and_add_folio+0xd1/0x340
+2026-10-25T21:43:05,764245+00:00  shmem_get_folio_gfp+0x1fc/0x570
+2026-10-25T21:43:05,764248+00:00  shmem_fault+0x80/0x130
+2026-10-25T21:43:05,764251+00:00  __do_fault+0x3a/0x190
+2026-10-25T21:43:05,764257+00:00  do_shared_fault+0x2d/0x150
+2026-10-25T21:43:05,764261+00:00  do_fault+0x48/0x260
+2026-10-25T21:43:05,764265+00:00  handle_pte_fault+0x114/0x1d0
+2026-10-25T21:43:05,764269+00:00  __handle_mm_fault+0x654/0x790
+2026-10-25T21:43:05,764273+00:00  handle_mm_fault+0x18a/0x380
+2026-10-25T21:43:05,764275+00:00  hmm_vma_fault.isra.0+0x67/0xd0
+2026-10-25T21:43:05,764279+00:00  hmm_vma_walk_hole+0x11a/0x150
+2026-10-25T21:43:05,764281+00:00  walk_pud_range.isra.0+0xa6/0x240
+2026-10-25T21:43:05,764287+00:00  walk_p4d_range+0xda/0x150
+2026-10-25T21:43:05,764291+00:00  walk_pgd_range+0x15a/0x1e0
+2026-10-25T21:43:05,764295+00:00  __walk_page_range+0x1b2/0x1d0
+2026-10-25T21:43:05,764299+00:00  walk_page_range+0x117/0x1d0
+2026-10-25T21:43:05,764303+00:00  hmm_range_fault+0x52/0xa0
+2026-10-25T21:43:05,764312+00:00  amdgpu_hmm_range_get_pages+0x171/0x2b0 [amdgpu]
+2026-10-25T21:43:05,764917+00:00  amdgpu_ttm_tt_get_user_pages+0xc4/0x1b0 [amdgpu]
+2026-10-25T21:43:05,765264+00:00  init_user_pages+0xbf/0x2e0 [amdgpu]
+2026-10-25T21:43:05,765717+00:00  amdgpu_amdkfd_gpuvm_alloc_memory_of_gpu+0x570/0x9b0 [amdgpu]
+2026-10-25T21:43:05,766169+00:00  kfd_ioctl_alloc_memory_of_gpu+0x16e/0x3a0 [amdgpu]
+2026-10-25T21:43:05,766604+00:00  kfd_ioctl+0x4cf/0x600 [amdgpu]
+2026-10-25T21:43:05,767031+00:00  ? __pfx_kfd_ioctl_alloc_memory_of_gpu+0x10/0x10 [amdgpu]
+2026-10-25T21:43:05,767461+00:00  __x64_sys_ioctl+0xa0/0xf0
+2026-10-25T21:43:05,767468+00:00  x64_sys_call+0x12a3/0x25a0
+2026-10-25T21:43:05,767472+00:00  do_syscall_64+0x87/0x180
+2026-10-25T21:43:05,767479+00:00  ? __count_memcg_events+0x6b/0x120
+2026-10-25T21:43:05,767484+00:00  ? count_memcg_events.constprop.0+0x2a/0x50
+2026-10-25T21:43:05,767488+00:00  ? handle_mm_fault+0xad/0x380
+2026-10-25T21:43:05,767492+00:00  ? arch_exit_to_user_mode_prepare.isra.0+0x1a/0xe0
+2026-10-25T21:43:05,767499+00:00  ? irqentry_exit_to_user_mode+0x38/0x1e0
+2026-10-25T21:43:05,767504+00:00  ? irqentry_exit+0x43/0x50
+2026-10-25T21:43:05,767507+00:00  ? exc_page_fault+0x94/0x1b0
+2026-10-25T21:43:05,767510+00:00  entry_SYSCALL_64_after_hwframe+0x78/0x80
+2026-10-25T21:43:05,767515+00:00 RIP: 0033:0x7507688ae0bd
+2026-10-25T21:43:05,767555+00:00 Code: 04 25 28 00 00 00 48 89 45 c8 31 c0 48 8d 45 10 c7 45 b0 10 00 00 00 48 89 45 b8 48 8d 45 d0 48 89 45 c0 b8 10 00 00 00 0f 05 <89> c2 3d 00 f0 ff ff 77 1a 48 8b 45 c8 64 48 2b 04 25 28 00 00 00
+2026-10-25T21:43:05,767557+00:00 RSP: 002b:00007ffdbacd2320 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+2026-10-25T21:43:05,767562+00:00 RAX: ffffffffffffffda RBX: 00007ffdbacd23f0 RCX: 00007507688ae0bd
+2026-10-25T21:43:05,767564+00:00 RDX: 00007ffdbacd23f0 RSI: 00000000c0284b16 RDI: 0000000000000024
+2026-10-25T21:43:05,767566+00:00 RBP: 00007ffdbacd2370 R08: 00005e2d145e4dd8 R09: 0000743925c00000
+2026-10-25T21:43:05,767567+00:00 R10: 00005e2d170298b0 R11: 0000000000000246 R12: 00000000629d1000
+2026-10-25T21:43:05,767569+00:00 R13: 00000000629d1000 R14: 00000000c0284b16 R15: 0000000000000000
+2026-10-25T21:43:05,767572+00:00  </TASK>
+2026-10-25T21:43:05,769356+00:00 memory: usage 230685160kB, limit 230686720kB, failcnt 658884
+2026-10-25T21:43:05,769360+00:00 swap: usage 0kB, limit 9007199254740988kB, failcnt 0
+2026-10-25T21:43:05,769362+00:00 Memory cgroup stats for /kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod579980ec_3a22_48ed_be63_a62213718427.slice:
+2026-10-25T21:43:05,769430+00:00 anon 225203777536
+2026-10-25T21:43:05,769434+00:00 file 10077392896
+2026-10-25T21:43:05,769435+00:00 kernel 940412928
+2026-10-25T21:43:05,769437+00:00 kernel_stack 1638400
+2026-10-25T21:43:05,769438+00:00 pagetables 462471168
+2026-10-25T21:43:05,769439+00:00 sec_pagetables 0
+2026-10-25T21:43:05,769440+00:00 percpu 434304
+2026-10-25T21:43:05,769442+00:00 sock 0
+2026-10-25T21:43:05,769443+00:00 vmalloc 0
+2026-10-25T21:43:05,769444+00:00 shmem 10077380608
+2026-10-25T21:43:05,769445+00:00 zswap 0
+2026-10-25T21:43:05,769446+00:00 zswapped 0
+2026-10-25T21:43:05,769448+00:00 file_mapped 10077380608
+2026-10-25T21:43:05,769449+00:00 file_dirty 0
+2026-10-25T21:43:05,769451+00:00 file_writeback 0
+2026-10-25T21:43:05,769452+00:00 swapcached 0
+2026-10-25T21:43:05,769453+00:00 anon_thp 121920028672
+2026-10-25T21:43:05,769455+00:00 file_thp 0
+2026-10-25T21:43:05,769456+00:00 shmem_thp 0
+2026-10-25T21:43:05,769457+00:00 inactive_anon 113390391296
+2026-10-25T21:43:05,769459+00:00 active_anon 121471234048
+2026-10-25T21:43:05,769460+00:00 inactive_file 0
+2026-10-25T21:43:05,769461+00:00 active_file 12288
+2026-10-25T21:43:05,769462+00:00 unevictable 0
+2026-10-25T21:43:05,769464+00:00 slab_reclaimable 472955192
+2026-10-25T21:43:05,769465+00:00 slab_unreclaimable 2844224
+2026-10-25T21:43:05,769466+00:00 slab 475799416
+2026-10-25T21:43:05,769467+00:00 workingset_refault_anon 0
+2026-10-25T21:43:05,769468+00:00 workingset_refault_file 37466022
+2026-10-25T21:43:05,769470+00:00 workingset_activate_anon 0
+2026-10-25T21:43:05,769471+00:00 workingset_activate_file 28724912
+2026-10-25T21:43:05,769473+00:00 workingset_restore_anon 0
+2026-10-25T21:43:05,769474+00:00 workingset_restore_file 92469
+2026-10-25T21:43:05,769476+00:00 workingset_nodereclaim 0
+2026-10-25T21:43:05,769477+00:00 pgscan 117550056
+2026-10-25T21:43:05,769478+00:00 pgsteal 117549316
+2026-10-25T21:43:05,769479+00:00 pgscan_kswapd 27478519
+2026-10-25T21:43:05,769481+00:00 pgscan_direct 90068611
+2026-10-25T21:43:05,769482+00:00 pgscan_khugepaged 2926
+2026-10-25T21:43:05,769483+00:00 pgsteal_kswapd 27478519
+2026-10-25T21:43:05,769484+00:00 pgsteal_direct 90067871
+2026-10-25T21:43:05,769486+00:00 pgsteal_khugepaged 2926
+2026-10-25T21:43:05,769487+00:00 pgfault 67596765
+2026-10-25T21:43:05,769488+00:00 pgmajfault 149
+2026-10-25T21:43:05,769489+00:00 pgrefill 3279391
+2026-10-25T21:43:05,769490+00:00 pgactivate 0
+2026-10-25T21:43:05,769491+00:00 pgdeactivate 0
+2026-10-25T21:43:05,769492+00:00 pglazyfree 0
+2026-10-25T21:43:05,769494+00:00 pglazyfreed 0
+2026-10-25T21:43:05,769495+00:00 zswpin 0
+2026-10-25T21:43:05,769495+00:00 zswpout 0
+2026-10-25T21:43:05,769497+00:00 zswpwb 0
+2026-10-25T21:43:05,769498+00:00 thp_fault_alloc 117339
+2026-10-25T21:43:05,769500+00:00 thp_collapse_alloc 5
+2026-10-25T21:43:05,769501+00:00 thp_swpout 0
+2026-10-25T21:43:05,769502+00:00 thp_swpout_fallback 0
+2026-10-25T21:43:05,769504+00:00 Tasks state (memory values in pages):
+2026-10-25T21:43:05,769506+00:00 [  pid  ]   uid  tgid total_vm      rss rss_anon rss_file rss_shmem pgtables_bytes swapents oom_score_adj name
+2026-10-25T21:43:05,769508+00:00 [4052614] 65535 4052614      255        0        0        0         0    28672        0          -998 pause
+2026-10-25T21:43:05,769515+00:00 [4052736]     0 4052736      782      456        0      456         0    45056        0           126 sleep
+2026-10-25T21:43:05,769519+00:00 [4081054]     0 4081054    43303     4560     2128     2432         0   106496        0           126 python
+2026-10-25T21:43:05,769532+00:00 [ 143905]     0 143905 215024876 57480106 54977709    43168   2459229 462290944        0           126 maya-ds4
+2026-10-25T21:43:05,769536+00:00 oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=cri-containerd-e6ca3fc58fea0d8644b63aae2c015eee5a5a4dcc9d3af7b2cd9041552b9b6044.scope,mems_allowed=0-1,oom_memcg=/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod579980ec_3a22_48ed_be63_a62213718427.slice,task_memcg=/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod579980ec_3a22_48ed_be63_a62213718427.slice/cri-containerd-e6ca3fc58fea0d8644b63aae2c015eee5a5a4dcc9d3af7b2cd9041552b9b6044.scope,task=maya-ds4,pid=143905,uid=0
+2026-10-25T21:43:05,769717+00:00 Memory cgroup out of memory: Killed process 143905 (maya-ds4) total-vm:860099504kB, anon-rss:219910836kB, file-rss:172672kB, shmem-rss:9836916kB, UID:0 pgtables:451456kB oom_score_adj:126
+2026-10-25T21:43:05,769946+00:00 Tasks in /kubepods.slice/kubepods-burstable.slice/kubepods-burstable-pod579980ec_3a22_48ed_be63_a62213718427.slice/cri-containerd-e6ca3fc58fea0d8644b63aae2c015eee5a5a4dcc9d3af7b2cd9041552b9b6044.scope are going to be killed due to memory.oom.group set
+2026-10-25T21:43:05,769958+00:00 Memory cgroup out of memory: Killed process 4052736 (sleep) total-vm:3128kB, anon-rss:0kB, file-rss:1824kB, shmem-rss:0kB, UID:0 pgtables:44kB oom_score_adj:126
+2026-10-25T21:43:05,771187+00:00 Memory cgroup out of memory: OOM victim 4081054 (python) is already exiting. Skip killing the task
+2026-10-25T21:43:05,771191+00:00 Memory cgroup out of memory: Killed process 143905 (maya-ds4) total-vm:860099504kB, anon-rss:219910836kB, file-rss:172672kB, shmem-rss:9836916kB, UID:0 pgtables:451456kB oom_score_adj:126
+2026-10-25T21:43:05,784143+00:00 amdgpu: init_user_pages: Failed to get user pages: -14
+2026-10-25T21:43:11,085634+00:00 oom_reaper: reaped process 143905 (maya-ds4), now anon-rss:0kB, file-rss:0kB, shmem-rss:3456888kB
+2026-10-25T21:43:13,757507+00:00 cni0: port 12(veth4e715007) entered disabled state
+2026-10-25T21:43:13,759113+00:00 veth4e715007 (unregistering): left allmulticast mode
+2026-10-25T21:43:13,759126+00:00 veth4e715007 (unregistering): left promiscuous mode
+2026-10-25T21:43:13,759135+00:00 cni0: port 12(veth4e715007) entered disabled state

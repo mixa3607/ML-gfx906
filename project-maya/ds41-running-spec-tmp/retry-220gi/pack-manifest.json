@@ -1,0 +1,14 @@
+{
+  "ds4.txt": {
+    "size": 1522,
+    "sha256": "e1c6053dc995b76104af2d86ee332c85ba3a1684f28c4de2e39a26c5af9bbae9"
+  },
+  "tensors.txt": {
+    "size": 3647174,
+    "sha256": "77450ef4a9237ee8019668cc6bbe9f74c32dc2d0627b02fe584ba44c0b2b8040"
+  },
+  "engram.bin": {
+    "size": 517980,
+    "sha256": "08d55d6433f389b14aa115f4ea4eb31d6a2d63df1ae40821f03facf4c2d49142"
+  }
+}

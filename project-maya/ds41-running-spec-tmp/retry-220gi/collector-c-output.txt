@@ -1,0 +1,19 @@
+SAVED C-on-spread-starting
+START C-on-spread
+SAVED C-on-spread-ready
+READY C-on-spread 265.4s copies=[10722, 10722]
+SAVED C-on-spread-warmup-1-result
+{'name': 'C-on-spread', 'id': 'warmup-1', 'done': {'tg': 256, 'pp': 2048, 'prompt_ms': 24792.5, 'decode_ms': 8732.5, 'finish': 'length', 'accepted': 132, 'drafted': 164, 'reused': 0, 'hits': 53877, 'lookups': 73560}, 'wall_s': 33.52796432300238, 'pp_tok_s': 82.60562670162348, 'native_tg_tok_s': 29.201259662181506, 'valid': True}
+SAVED C-on-spread-warmup-2-result
+{'name': 'C-on-spread', 'id': 'warmup-2', 'done': {'tg': 256, 'pp': 2048, 'prompt_ms': 25818.4, 'decode_ms': 7705.5, 'finish': 'length', 'accepted': 141, 'drafted': 171, 'reused': 0, 'hits': 58462, 'lookups': 72540}, 'wall_s': 33.526539212005446, 'pp_tok_s': 79.32327332445078, 'native_tg_tok_s': 33.09324508467977, 'valid': True}
+SAVED C-on-spread-warmup-3-result
+{'name': 'C-on-spread', 'id': 'warmup-3', 'done': {'tg': 256, 'pp': 2048, 'prompt_ms': 25790.4, 'decode_ms': 7576.0, 'finish': 'length', 'accepted': 134, 'drafted': 161, 'reused': 0, 'hits': 62407, 'lookups': 72045}, 'wall_s': 33.368866569013335, 'pp_tok_s': 79.40939264222345, 'native_tg_tok_s': 33.658922914466736, 'valid': True}
+SAVED C-on-spread-measurement-1-result
+{'name': 'C-on-spread', 'id': 'measurement-1', 'done': {'tg': 256, 'pp': 2048, 'prompt_ms': 26268.4, 'decode_ms': 7621.9, 'finish': 'length', 'accepted': 135, 'drafted': 170, 'reused': 0, 'hits': 65589, 'lookups': 74055}, 'wall_s': 33.89188262700918, 'pp_tok_s': 77.96439828843782, 'native_tg_tok_s': 33.45622482583083, 'valid': True}
+SAVED C-on-spread-measurement-2-result
+{'name': 'C-on-spread', 'id': 'measurement-2', 'done': {'tg': 256, 'pp': 2048, 'prompt_ms': 24882.8, 'decode_ms': 6793.4, 'finish': 'length', 'accepted': 143, 'drafted': 186, 'reused': 0, 'hits': 67959, 'lookups': 75885}, 'wall_s': 31.679209615002037, 'pp_tok_s': 82.3058498239748, 'native_tg_tok_s': 37.53643241970148, 'valid': True}
+SAVED C-on-spread-measurement-3-result
+{'name': 'C-on-spread', 'id': 'measurement-3', 'done': {'tg': 256, 'pp': 2048, 'prompt_ms': 24783.2, 'decode_ms': 6705.9, 'finish': 'length', 'accepted': 132, 'drafted': 147, 'reused': 0, 'hits': 62745, 'lookups': 69030}, 'wall_s': 31.491133274990716, 'pp_tok_s': 82.6366248103554, 'native_tg_tok_s': 38.02621572048495, 'valid': True}
+SAVED C-on-spread-finished
+SAVED screen-finished
+SCREEN FINISHED

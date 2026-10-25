@@ -1,0 +1,4 @@
+ds4: tensor parallel 4: the experts' n_ff 2304 in 32-value blocks, 576 to 576 a member (the odd blocks going round the members layer by layer) (DS4_TP_GGUF_UNEVEN)
+ds4: the one-GPU decode path (in-place pulls, windows streamed, landings): off (v1.1.27's path: not Linux + NVIDIA + one GPU)
+ds4: the experts VRAM leaves over (~198.5 GB) are read in place from the model's files (copied into RAM after the GPUs' share when the RAM holds them all; --mmap-experts on keeps them in place) (235.1 GB of RAM free to keep them: the most-routed 198.5 GB read ahead; prompts in chunks of 4096)
+ds4: 11935 of the CPU lane's 11935 experts copied into RAM (224.4 GB, 2 NUMA parts) in 150.7 s

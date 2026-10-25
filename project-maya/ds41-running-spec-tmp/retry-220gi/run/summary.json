@@ -1,0 +1,122 @@
+{
+  "scope": "coarse A/B/C, 3 warmups + 3 measurements per start, PP2048/TG256",
+  "limitations": [
+    "single fixed order; no reverse repeat",
+    "three warmups do not establish steady state",
+    "no general quality, image or long-context validation",
+    "native protocol, not HTTP; token delivery can be bursty",
+    "memory.peak is cumulative across all starts in the same cgroup"
+  ],
+  "runs": {
+    "A-none": {
+      "complete": true,
+      "error": null,
+      "evidence_path": "project-maya/ds41-running-spec-tmp/retry-220gi/run/A-none",
+      "stage": "complete",
+      "exported_requests": 6,
+      "exported_measurements": 3,
+      "memory_gib": 220,
+      "cases_sha256": "946bb7aaf184329fb15cc0330fbcecc7cc67ea090bfcda05a1b84002f9fd6b80",
+      "seed_profile_sha256": "bcfd7697fc070b0ebcb0138c0ef029429ea0d4ff81ca60eeb7804e08efd0cd29",
+      "load_s": 325.2380123079929,
+      "full_copies": [
+        10219,
+        10219
+      ],
+      "pp_tok_s": 88.69205207193527,
+      "native_decode_tok_s": 27.930309314484333,
+      "delivery_decode_tok_s": 27.929834041496605,
+      "wall_s": 96.66939959098818,
+      "drafts_offered": 0,
+      "drafts_accepted": 0,
+      "acceptance": null,
+      "accepted_per_generated": 0.0,
+      "max_observed_memory_gib": 219.99730682373047,
+      "cumulative_cgroup_peak_gib": 219.9999885559082,
+      "warmup_native_decode_tok_s": [
+        19.946652482380458,
+        25.166046562120655,
+        25.685707666428275
+      ]
+    },
+    "B-on-default": {
+      "complete": false,
+      "error": null,
+      "evidence_path": "project-maya/ds41-running-spec-tmp/retry-220gi/run/B-on-default",
+      "stage": "starting",
+      "exported_requests": 0,
+      "exported_measurements": 0,
+      "memory_gib": 220,
+      "cases_sha256": "946bb7aaf184329fb15cc0330fbcecc7cc67ea090bfcda05a1b84002f9fd6b80",
+      "seed_profile_sha256": "bcfd7697fc070b0ebcb0138c0ef029429ea0d4ff81ca60eeb7804e08efd0cd29",
+      "load_s": null,
+      "full_copies": null
+    },
+    "C-on-spread": {
+      "complete": true,
+      "error": null,
+      "evidence_path": "project-maya/ds41-running-spec-tmp/retry-220gi/run-c/C-on-spread",
+      "stage": "complete",
+      "exported_requests": 6,
+      "exported_measurements": 3,
+      "memory_gib": 220,
+      "cases_sha256": "946bb7aaf184329fb15cc0330fbcecc7cc67ea090bfcda05a1b84002f9fd6b80",
+      "seed_profile_sha256": "bcfd7697fc070b0ebcb0138c0ef029429ea0d4ff81ca60eeb7804e08efd0cd29",
+      "load_s": 265.42078791699896,
+      "full_copies": [
+        10722,
+        10722
+      ],
+      "pp_tok_s": 80.91194504730399,
+      "native_decode_tok_s": 36.219532981080626,
+      "delivery_decode_tok_s": 36.216698818471684,
+      "wall_s": 97.06222551700193,
+      "drafts_offered": 503,
+      "drafts_accepted": 410,
+      "acceptance": 0.8151093439363817,
+      "accepted_per_generated": 0.5338541666666666,
+      "max_observed_memory_gib": 219.99929809570312,
+      "cumulative_cgroup_peak_gib": 220.0,
+      "warmup_native_decode_tok_s": [
+        29.201259662181506,
+        33.09324508467977,
+        33.658922914466736
+      ],
+      "decode_gain_pct": 29.67823797890272,
+      "wall_reduction_pct": -0.4063601591359989,
+      "token_comparison": [
+        {
+          "id": "warmup-1",
+          "identical": false,
+          "first_different_token_zero_based": 9
+        },
+        {
+          "id": "warmup-2",
+          "identical": false,
+          "first_different_token_zero_based": 59
+        },
+        {
+          "id": "warmup-3",
+          "identical": false,
+          "first_different_token_zero_based": 18
+        },
+        {
+          "id": "measurement-1",
+          "identical": false,
+          "first_different_token_zero_based": 19
+        },
+        {
+          "id": "measurement-2",
+          "identical": false,
+          "first_different_token_zero_based": 48
+        },
+        {
+          "id": "measurement-3",
+          "identical": false,
+          "first_different_token_zero_based": 73
+        }
+      ],
+      "passes_10pct_screen": true
+    }
+  }
+}

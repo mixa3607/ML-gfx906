@@ -1,10 +1,13 @@
 # DSpark coarse screening
 
-**Attempt failed with OOM; no usable speed comparison. See [RESULTS.md](RESULTS.md).
-Do not rerun this historical harness without fixing evidence durability and
-obtaining approval for another GPU run.**
+The first 200Gi attempt failed with OOM; see [RESULTS.md](RESULTS.md).
+The approved 220Gi retry completed A/C: **decode +29.7%, scored wall unchanged**;
+default-placement B was OOM-killed. See [retry results](retry-220gi/RESULTS.md)
+and [retry procedure](retry-220gi/README.md). First-attempt evidence below is
+retained without overwriting it. The revised `screen.py` supports either cap;
+the original historical runner is in commit `3b1c305`.
 
-Approved scope: one temporary pod on worker6; three sequential engine starts
+Initial 200Gi scope: one temporary pod on worker6; three sequential engine starts
 (A: none, B: on/default placement, C: on/DS4_DRAFT_DEV=1,2,3). Each start gets
 the same three unscored PP2048/TG256 warmups, then three scored PP2048/TG256
 requests. Greedy, non-thinking, natural EOS, no cross-request KV reuse. Only

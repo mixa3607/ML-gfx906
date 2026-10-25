@@ -1,0 +1,4 @@
+    PID     ELAPSED %CPU   RSS COMMAND
+      1       09:21  0.0  1956 sleep infinity
+    216       00:00 83.3 13084 python -c import hashlib,json; from pathlib import Path; d=Path("/data/ds4"); print(json.dumps({p.name:{"size":p.stat().st_size,"sha256":hashlib.sha256(p.read_bytes()).hexdigest()} for p in d.iterdir() if p.is_file()},indent=2))
+    228       00:00 66.6  3884 ps -eo pid,etime,pcpu,rss,args

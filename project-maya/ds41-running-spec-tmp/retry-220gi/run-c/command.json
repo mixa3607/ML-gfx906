@@ -1,0 +1,16 @@
+[
+  "kubectl",
+  "-n",
+  "apps-ml",
+  "exec",
+  "-i",
+  "maya-ds41-spec-screen-220gi",
+  "--",
+  "env",
+  "BENCH_STREAM=1",
+  "BENCH_MEMORY_GIB=220",
+  "python",
+  "/data/screen/screen.py",
+  "--mode",
+  "C-on-spread"
+]

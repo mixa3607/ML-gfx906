@@ -1,0 +1,19 @@
+SAVED A-none-starting
+START A-none
+SAVED A-none-ready
+READY A-none 325.2s copies=[10219, 10219]
+SAVED A-none-warmup-1-result
+{'name': 'A-none', 'id': 'warmup-1', 'done': {'tg': 256, 'pp': 2048, 'prompt_ms': 20260.4, 'decode_ms': 12784.1, 'finish': 'length', 'accepted': 0, 'drafted': 0, 'reused': 0, 'hits': 50843, 'lookups': 61200}, 'wall_s': 33.04646102600964, 'pp_tok_s': 101.0838877810902, 'native_tg_tok_s': 19.946652482380458, 'valid': True}
+SAVED A-none-warmup-2-result
+{'name': 'A-none', 'id': 'warmup-2', 'done': {'tg': 256, 'pp': 2048, 'prompt_ms': 21160.0, 'decode_ms': 10132.7, 'finish': 'length', 'accepted': 0, 'drafted': 0, 'reused': 0, 'hits': 53760, 'lookups': 61200}, 'wall_s': 31.29456916700292, 'pp_tok_s': 96.78638941398866, 'native_tg_tok_s': 25.166046562120655, 'valid': True}
+SAVED A-none-warmup-3-result
+{'name': 'A-none', 'id': 'warmup-3', 'done': {'tg': 256, 'pp': 2048, 'prompt_ms': 24460.1, 'decode_ms': 9927.7, 'finish': 'length', 'accepted': 0, 'drafted': 0, 'reused': 0, 'hits': 54319, 'lookups': 61200}, 'wall_s': 34.38984009200067, 'pp_tok_s': 83.72819407933737, 'native_tg_tok_s': 25.685707666428275, 'valid': True}
+SAVED A-none-measurement-1-result
+{'name': 'A-none', 'id': 'measurement-1', 'done': {'tg': 256, 'pp': 2048, 'prompt_ms': 23414.0, 'decode_ms': 9216.8, 'finish': 'length', 'accepted': 0, 'drafted': 0, 'reused': 0, 'hits': 55492, 'lookups': 61200}, 'wall_s': 32.63269610199495, 'pp_tok_s': 87.4690356197147, 'native_tg_tok_s': 27.666869195382347, 'valid': True}
+SAVED A-none-measurement-2-result
+{'name': 'A-none', 'id': 'measurement-2', 'done': {'tg': 256, 'pp': 2048, 'prompt_ms': 22749.1, 'decode_ms': 9102.3, 'finish': 'length', 'accepted': 0, 'drafted': 0, 'reused': 0, 'hits': 55392, 'lookups': 61200}, 'wall_s': 31.853638832995784, 'pp_tok_s': 90.02553947189121, 'native_tg_tok_s': 28.01489733364095, 'valid': True}
+SAVED A-none-measurement-3-result
+{'name': 'A-none', 'id': 'measurement-3', 'done': {'tg': 256, 'pp': 2048, 'prompt_ms': 23110.3, 'decode_ms': 9070.5, 'finish': 'length', 'accepted': 0, 'drafted': 0, 'reused': 0, 'hits': 56111, 'lookups': 61200}, 'wall_s': 32.18306465599744, 'pp_tok_s': 88.61849478371116, 'native_tg_tok_s': 28.11311394079709, 'valid': True}
+SAVED A-none-finished
+SAVED B-on-default-starting
+START B-on-default

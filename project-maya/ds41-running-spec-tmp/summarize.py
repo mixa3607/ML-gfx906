@@ -39,7 +39,7 @@ def compare_tokens(baseline, candidate):
     return out
 
 
-def summarize(root):
+def summarize(root, additional_roots=()):
     result = {'scope': 'coarse A/B/C, 3 warmups + 3 measurements per start, PP2048/TG256',
               'limitations': ['single fixed order; no reverse repeat', 'three warmups do not establish steady state',
                               'no general quality, image or long-context validation',
@@ -47,7 +47,8 @@ def summarize(root):
                               'memory.peak is cumulative across all starts in the same cgroup'], 'runs': {}}
     rows_by_mode = {}
     for name in ('A-none', 'B-on-default', 'C-on-spread'):
-        path = root / name
+        path = next((candidate / name for candidate in (root, *additional_roots)
+                     if (candidate / name / 'manifest.json').exists()), root / name)
         if not (path / 'manifest.json').exists():
             result['runs'][name] = {'complete': False, 'error': 'No completed manifest'}
             continue
@@ -56,6 +57,10 @@ def summarize(root):
             path / 'results.jsonl').exists() else []
         rows_by_mode[name] = rows
         record = {'complete': manifest['complete'], 'error': manifest.get('error'),
+                  'evidence_path': str(path),
+                  'stage': manifest.get('stage'), 'exported_requests': len(rows),
+                  'exported_measurements': sum(row['phase'] == 'measurement' for row in rows),
+                  'memory_gib': manifest.get('memory_gib', 200),
                   'cases_sha256': manifest['cases_sha256'], 'seed_profile_sha256': manifest['seed_profile_sha256'],
                   'load_s': manifest.get('load_s'), 'full_copies': manifest.get('full_copies')}
         if manifest['complete']:
@@ -79,7 +84,8 @@ def summarize(root):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('root', type=Path)
+    parser.add_argument('--additional-root', type=Path, action='append', default=[])
     args = parser.parse_args()
-    result = summarize(args.root)
+    result = summarize(args.root, args.additional_root)
     (args.root / 'summary.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(result, indent=2))

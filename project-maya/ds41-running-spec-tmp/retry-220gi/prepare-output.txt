@@ -1,0 +1,5 @@
+42df65159f980a9189d80597e42b30012c7b10e0dd385a47051f3b2fd659bb7b  /root/.cache/huggingface/hub/models--peasantsmith--DeepSeek-V4.1-Flash-1017-Maya-GGUF/snapshots/d1fc01009f21e26157acb6858c315d0365483b72/dspark/dspark.bin
+639c3144bca8cfe4db59057047dca40411f0cc732796e2a9321feb98fee2295f  /root/.cache/huggingface/hub/models--peasantsmith--DeepSeek-V4.1-Flash-1017-Maya-GGUF/snapshots/d1fc01009f21e26157acb6858c315d0365483b72/dspark/dspark.json
+bcfd7697fc070b0ebcb0138c0ef029429ea0d4ff81ca60eeb7804e08efd0cd29  /data/screen/seed-profile.bin
+UD-Q8_K_XL: 48795 tensors in 11 files (BF16 17.5 GB, F32 0.5 GB, MXFP4 296.0 GB, MXFP8 202.8 GB, Q8_0 0.6 GB), Engram 2 layers x 24 hash columns, the DSpark drafter, the vision tower -> /data/ds4
+1245

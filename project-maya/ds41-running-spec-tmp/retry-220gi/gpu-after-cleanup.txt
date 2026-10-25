@@ -1,0 +1,6 @@
+'CTRL' + 'C' to stop watching output:
+ TIMESTAMP  GPU  XCP   GPU_T   MEM_T   GFX_CLK   GFX%  VRAM_USED   VRAM_FREE  VRAM_TOTAL    VRAM%
+1792965400    0    0   42 °C   43 °C   930 MHz    0 %      10 MB    32742 MB    32752 MB   0.03 %
+1792965400    1    0   45 °C   42 °C   930 MHz    0 %      10 MB    32742 MB    32752 MB   0.03 %
+1792965400    2    0   45 °C   43 °C   930 MHz    0 %      10 MB    32742 MB    32752 MB   0.03 %
+1792965400    3    0   43 °C   40 °C   930 MHz    0 %      10 MB    32742 MB    32752 MB   0.03 %

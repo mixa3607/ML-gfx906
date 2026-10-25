@@ -1,0 +1,6 @@
+{
+  "memory.max": "236223201280",
+  "cpu.max": "max 100000",
+  "cpuset.cpus.effective": "0-75"
+}
+Frozen cases and original profile verified
