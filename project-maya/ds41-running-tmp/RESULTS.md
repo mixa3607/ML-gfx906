@@ -501,6 +501,26 @@ fit or an executed retry. Replacing the Failed pod and changing its cap need
 explicit agreement; alternatively a matched smaller-chunk experiment would
 change the approach and must also be agreed first.
 
+### Approved TP4 retry at 190Gi (preparation)
+
+The user explicitly approved replacing the Failed v1.1.27 pod and repeating
+the same short TP4 diagnostic at **190Gi**. Only that failed pod was deleted;
+the old v1.1.26 pod and its data remain untouched. The replacement keeps the
+same pinned image, no CPU quota, read-only HF cache and local pack preparation.
+No GGUF/model blobs are copied or downloaded.
+
+Restore the exact saved TP4 configs and PP2048/4096 inputs, with no change to
+TP, threads, NUMA, chunk4096, ring size, context196608, vision or quantization.
+The 192Gi known-pod budget guard and durable local capture remain enabled.
+This is a memory-headroom retry, not a relaxed checker or a successful result.
+No matched warm comparison or 64K/vision test starts before a clean screen.
+Preparation passed 34 local unit tests (including the 190Gi+2Gi peer-budget
+boundary), manifest client validation and diff whitespace checks. The enforced
+cap is 190Gi, CPU quota is absent, and inspected hard-limit-plus-peer charge is
+190.756Gi. Source, model metadata, seed, diagnostic config and two-case hashes
+match the failed 187Gi attempt exactly; only memory headroom and pod identity
+change. No successful TP4 run is claimed at this preparation stage.
+
 ## Approach 1: historical strict protocol and measurements
 
 ## Initial screening baseline (not a steady-state result)

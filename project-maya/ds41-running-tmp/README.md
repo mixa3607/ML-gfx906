@@ -78,7 +78,7 @@ context probe runner rejects PP above 65536; keep the server capacity at 196608.
 
 The user-built v1.1.27 image has a separate digest-pinned manifest,
 `pod.v1.1.27.yaml`. Its 8Gi memory request is only a scheduling reservation;
-the approved retry cap is 187Gi, leaving up to 5Gi for the stopped old pod, and there
+the approved TP4 retry cap is 190Gi, leaving up to 2Gi for the stopped old pod, and there
 is no CPU quota. Never run GPU engines
 in both test pods concurrently. Account for shared file-cache charges retained
 by the old pod before treating a cross-pod comparison as a verified 192Gi result.
@@ -86,8 +86,9 @@ Set `BENCH_PEER_CGROUP` to that pod's cgroup path for the v1.1.27 runs. Snapshot
 record peer charges and reject a new-pod limit plus peer usage above 192Gi.
 This accounts for the known peer pod, not arbitrary unrelated host cache users.
 **The earlier 185Gi attempt OOMKilled during warmup.** That configuration is
-retained in commit `c6312af`; the current manifest is the explicitly approved
-187Gi retry, not a validated memory recommendation. See RESULTS.md for outcomes.
+retained in commit `c6312af`. TP2 subsequently passed at 187Gi, but TP4 OOMKilled
+during load at that cap. The current manifest is the explicitly approved 190Gi
+TP4 retry, not yet a validated memory recommendation. See RESULTS.md for outcomes.
 
 ### Durable capture outside the pod
 
@@ -174,7 +175,8 @@ enabled. No combination with flow or YOCO is currently approved. TG may improve
 while PP worsens when replacing two pipeline groups with one; retain both
 metrics and complete-request wall time, and do not pick TP4 on TG alone.
 The first TP4 diagnostic OOMKilled during load at 187Gi, before READY; no TP4
-checker or performance pass exists yet. See RESULTS.md before any retry.
+checker or performance pass exists yet. The approved retry preserves the exact
+configs/inputs and uses 190Gi plus peer accounting. See RESULTS.md for outcomes.
 
 ## Fixed workload
 

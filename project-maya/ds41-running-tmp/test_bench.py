@@ -168,6 +168,9 @@ sys.exit({remote_code})
     def test_peer_pod_cache_counted_in_192gi_budget(self):
         self.assertEqual(peer_budget(185 * 2**30, 7 * 2**30), 192 * 2**30)
         self.assertEqual(peer_budget(187 * 2**30, 5 * 2**30), 192 * 2**30)
+        self.assertEqual(peer_budget(190 * 2**30, 2 * 2**30), 192 * 2**30)
+        with self.assertRaises(RuntimeError):
+            peer_budget(190 * 2**30, 2 * 2**30 + 1)
         with self.assertRaises(RuntimeError):
             peer_budget(185 * 2**30, 7 * 2**30 + 1)
 

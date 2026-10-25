@@ -1,4 +1,4 @@
-# 187Gi passed TP2 tests; the TP4 load OOMKilled at this cap. See RESULTS.md.
+# Approved 190Gi TP4 retry after the historical 187Gi load OOM. See RESULTS.md.
 apiVersion: v1
 kind: Pod
 metadata:
@@ -42,8 +42,8 @@ spec:
           cpu: "4"
           memory: 8Gi
         limits:
-          # Leave 5Gi for the stopped v1.1.26 pod's retained cache/accounting.
-          memory: 187Gi
+          # Leave 2Gi for the stopped v1.1.26 pod's retained cache/accounting.
+          memory: 190Gi
       volumeMounts:
         - {name: hf-cache, mountPath: /root/.cache/huggingface, readOnly: true}
         - {name: data, mountPath: /data}
