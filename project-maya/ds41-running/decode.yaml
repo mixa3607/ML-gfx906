@@ -1,0 +1,214 @@
+# Apply this file OR prefill.yaml: both manage the same four-GPU server.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: maya-ds41-config
+  namespace: apps-ml
+data:
+  maya-ds4-hip.json: |
+    {
+      "exe": "/opt/maya/build-hip/maya-ds4",
+      "cwd": "/opt/maya",
+      "backend": "hip",
+      "gpu": [0, 1, 2, 3],
+      "model_name": "deepseek-v4.1-flash",
+      "tokenizer": "/data/ds4/tokenizer",
+      "log": "/data/decode.log",
+      "lib_dirs": ["/opt/rocm/lib"],
+      "args": [
+        "--pack", "/data/ds4",
+        "--gpus", "0,1,2,3",
+        "--max-context", "196608",
+        "--tp", "4",
+        "--cpu-threads", "56",
+        "--prefill-chunk", "4096",
+        "--reserve-mib", "1280",
+        "--mmap-experts", "off",
+        "--dspark", "none",
+        "--vision", "on",
+        "--expert-profile", "/data/profiles/decode.bin"
+      ],
+      "env": {
+        "LD_LIBRARY_PATH": "/opt/rocm/lib",
+        "HIP_VISIBLE_DEVICES": "0,1,2,3",
+        "DS4_RING_MB": "400",
+        "DS4_ENGRAM_CACHE_MB": "256",
+        "DS4_HIP_ATTN_SWIZZLE": "1",
+        "STRATA_DS4_RAM_TIER": "0",
+        "STRATA_DS4_DISK_SKIP_W": "0",
+        "STRATA_DS4_PROMPT_SKIP": "0",
+        "STRATA_DS4_SLOT_KEEP": "0",
+        "DS4_COPY_NUMA": "2",
+        "DS4_TP_GGUF_UNEVEN": "1",
+        "DS4_LANE_CAL": "/data/profiles/decode-lane-times.txt"
+      }
+    }
+  prepare.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd /opt/maya
+    test "$(cat SOURCE_COMMIT)" = 4615f346d9311dd1ce9f5738ab04446f023a6e42
+    snapshot=/root/.cache/huggingface/hub/models--unsloth--DeepSeek-V4.1-Flash-1017-GGUF/snapshots/60ad3651641b5c97679c807e064ab1d7a3ca1455
+    vision=/root/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-V4.1-Flash-1017/snapshots/1bae0e1088993b9b82de08f59de5be5a34e42170
+    test -d "$snapshot/UD-Q8_K_XL"
+    test -f "$vision/model-00001-of-00048.safetensors"
+    test -f "$vision/config.json"
+    mkdir -p /data/vision /data/config /data/profiles
+    if [ ! -f /data/.ds41-v1.1.27-ready ]; then
+      ln -sfn "$vision/model-00001-of-00048.safetensors" /data/vision/model-00001-of-00048.safetensors
+      ln -sfn "$vision/config.json" /data/vision/config.json
+      if [ ! -f /data/vision/vision.bin ] || [ ! -f /data/vision/vision.json ]; then
+        python tools/ds4/vision_pack.py --dir /data/vision
+      fi
+      python tools/ds4/pack_gguf.py \
+        --model "$snapshot/UD-Q8_K_XL" --out /data/ds4 --vision /data/vision
+    fi
+    sha256sum --check <<'HASHES'
+    e1c6053dc995b76104af2d86ee332c85ba3a1684f28c4de2e39a26c5af9bbae9  /data/ds4/ds4.txt
+    39a113954916e310dd42f2a39db7214c34fbb3a3d73723c4e2dc29e0d43c608b  /data/ds4/tensors.txt
+    44fb8ea94ba449b1eb2218e867453ff432613ac7fa285ba7087bd683296c97e2  /opt/maya/data/expert-profile-ds4.bin
+    HASHES
+    test -s /data/ds4/tokenizer/vocab.json
+    test -s /data/vision/vision.bin
+    touch /data/.ds41-v1.1.27-ready
+    for profile in prefill decode; do
+      if [ ! -e "/data/profiles/$profile.bin" ]; then
+        cp /opt/maya/data/expert-profile-ds4.bin "/data/profiles/$profile.bin"
+      fi
+    done
+    # maya.py touches/normalizes its JSON; never point it at a read-only ConfigMap.
+    cp /etc/maya/maya-ds4-hip.json /data/config/maya-ds4-hip.json
+  start.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+    ulimit -l unlimited
+    exec python - <<'PY'
+    import os
+    # Match the benchmark's isolation from inherited experimental engine knobs.
+    for key in list(os.environ):
+        if key.startswith(('DS4_', 'STRATA_DS4_', 'MAYA_DS4_')):
+            del os.environ[key]
+    os.execv('/opt/maya/entrypoint.sh', ['/opt/maya/entrypoint.sh', 'serve'])
+    PY
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: maya-ds41-data
+  namespace: apps-ml
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 8Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: maya-ds41
+  namespace: apps-ml
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: maya-ds41
+  template:
+    metadata:
+      labels:
+        app: maya-ds41
+        profile: decode
+    spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 180
+      nodeSelector:
+        kubernetes.io/hostname: kube-worker6.arkprojects.lan
+      tolerations:
+        - key: feature.node.kubernetes.io/amd-gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+        - key: feature.node.kubernetes.io/nvidia-gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+      imagePullSecrets:
+        - name: harbor-registry-pull-secret
+      initContainers:
+        - name: prepare
+          image: docker.io/mixa3607/maya-gfx906@sha256:d46312703b79af1cd70174ae9ef2faee23875db9c51f90353424aba6101ac2c1
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash", "/etc/maya/prepare.sh"]
+          securityContext:
+            runAsUser: 0
+          env:
+            - {name: HF_HUB_OFFLINE, value: "1"}
+            - {name: TRANSFORMERS_OFFLINE, value: "1"}
+          resources:
+            requests: {cpu: "2", memory: 2Gi}
+            limits: {memory: 8Gi}
+          volumeMounts:
+            - {name: config, mountPath: /etc/maya, readOnly: true}
+            - {name: data, mountPath: /data}
+            - {name: hf-cache, mountPath: /root/.cache/huggingface, readOnly: true}
+      containers:
+        - name: maya
+          image: docker.io/mixa3607/maya-gfx906@sha256:d46312703b79af1cd70174ae9ef2faee23875db9c51f90353424aba6101ac2c1
+          imagePullPolicy: IfNotPresent
+          command: ["/usr/bin/tini", "--", "/bin/bash", "/etc/maya/start.sh"]
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          env:
+            - {name: MAYA_CONFIG, value: /data/config/maya-ds4-hip.json}
+            - {name: HIP_VISIBLE_DEVICES, value: "0,1,2,3"}
+            - {name: HF_HUB_OFFLINE, value: "1"}
+            - {name: TRANSFORMERS_OFFLINE, value: "1"}
+          resources:
+            requests: {cpu: "4", memory: 199Gi}
+            limits: {memory: 199Gi}
+          ports:
+            - {name: http, containerPort: 8080}
+          startupProbe:
+            httpGet: {path: /health, port: http}
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 180
+          readinessProbe:
+            httpGet: {path: /health, port: http}
+            periodSeconds: 10
+            timeoutSeconds: 5
+          volumeMounts:
+            - {name: config, mountPath: /etc/maya, readOnly: true}
+            - {name: data, mountPath: /data}
+            - {name: hf-cache, mountPath: /root/.cache/huggingface, readOnly: true}
+            - {name: dev-kfd, mountPath: /dev/kfd}
+            - {name: dev-dri, mountPath: /dev/dri}
+            - {name: shm, mountPath: /dev/shm}
+      volumes:
+        - name: config
+          configMap: {name: maya-ds41-config}
+        - name: data
+          persistentVolumeClaim: {claimName: maya-ds41-data}
+        - name: hf-cache
+          persistentVolumeClaim: {claimName: worker6-hf-cache, readOnly: true}
+        - name: dev-kfd
+          hostPath: {path: /dev/kfd}
+        - name: dev-dri
+          hostPath: {path: /dev/dri}
+        - name: shm
+          emptyDir: {medium: Memory, sizeLimit: 8Gi}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: maya-ds41
+  namespace: apps-ml
+spec:
+  type: ClusterIP
+  selector:
+    app: maya-ds41
+  ports:
+    - {name: http, port: 8080, targetPort: http}
