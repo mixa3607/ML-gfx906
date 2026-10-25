@@ -18,6 +18,8 @@ def main():
                       help='Full-compute CPU56/NUMA2/chunk4096 finalist with YOCO1, no retention override')
     mode.add_argument('--flow-only', action='store_true',
                       help='Whole-block TP flow diagnostics, pump off/on, native copy checks enabled')
+    mode.add_argument('--tp4-only', action='store_true',
+                      help='Genuine TP4 diagnostic plus matched whole-block TP2/TP4 timing configs')
     a = p.parse_args()
     baseline = json.loads(Path(__file__).with_name('baseline.json').read_text())
     a.out.mkdir(parents=True, exist_ok=True)
@@ -77,6 +79,19 @@ def main():
                               DS4_FLOW_PUMP_WAIT=pump, DS4_TP_CHECK='1')
             validate_config(cfg)
             variants[f'flow-pump{pump}-diagnostic'] = cfg
+    if a.tp4_only:
+        from full_compute import runtime_configs, validate_config
+
+        cfg = runtime_configs()['copy-c56-numa2-p4096']
+        cfg['args'][cfg['args'].index('--tp') + 1] = '4'
+        cfg['env']['DS4_TP_GGUF_UNEVEN'] = '1'
+        control = copy.deepcopy(cfg)
+        control['args'][control['args'].index('--tp') + 1] = '2'
+        variants = {'tp2-whole-block': control, 'tp4': cfg, 'tp4-diagnostic': copy.deepcopy(cfg)}
+        variants['tp4-diagnostic']['args'].append('--verbose')
+        variants['tp4-diagnostic']['env']['DS4_TP_CHECK'] = '1'
+        for cfg in variants.values():
+            validate_config(cfg)
     for name, cfg in variants.items():
         cfg['name'] = name
         with (a.out / f'{name}.json').open('x') as f:

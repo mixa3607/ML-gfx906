@@ -151,6 +151,29 @@ For that next gate, `context_check.py run ... --vision` additionally requires
 streamed work on all four devices for the **actual PP65536**, not only an earlier
 short request or an environment flag, plus the numerical/byte-copy checks.
 
+### Genuine TP4 (separately approved topology test)
+
+`variants.py --tp4-only --out <configs>` prepares a TP4 diagnostic and matched
+whole-block TP2/TP4 timing configs. CPU56/NUMA2/chunk4096, full RAM copies,
+vision, context196608 and quantization stay fixed; YOCO and flow are off.
+The timing pair differs only in name and `--tp`. The native reader otherwise
+falls back from nominal TP4 to TP2 for this model's FFN alignment.
+
+`tp_check.py --config <tp4-diagnostic.json> --cases <two-cases.jsonl> --out <run>`
+is bounded to the frozen PP2048/4096 screen with finite-logit dumps and a 600s
+load/request timeout. It requires the native parts-versus-whole numerical
+checker to execute with **four members**, not merely report a pass for TP2.
+READY metadata must show four devices, each with `tp_n=4`, context196608 and
+layers0–39. The native timing runner now checks effective topology too, so a
+silent fallback cannot be accepted in the longer timing run. These are
+numerical TP checks, not the flow byte-copy tests (flow is off).
+
+Only a clean screen proceeds to the matched warm comparison. A promising TP4
+candidate then gets the same frozen 64K/vision check, with the native checker
+enabled. No combination with flow or YOCO is currently approved. TG may improve
+while PP worsens when replacing two pipeline groups with one; retain both
+metrics and complete-request wall time, and do not pick TP4 on TG alone.
+
 ## Fixed workload
 
 - One request at a time, TG256, greedy sampling, no speculative decoding.

@@ -16,12 +16,67 @@ from compare import compare
 from summary import summarize
 from context_check import assemble, score, validate_probe_length, yoco_activation_verified
 from vision_check import image_checks
-from full_compute import engine_env, runtime_configs, validate_config, validate_limits
+from full_compute import engine_env, runtime_configs, topology_evidence, validate_config, validate_limits
 from flow_check import check_log
+from tp_check import check_log as check_tp_log
 from native_bench import Engine, cgroup_dir, dump_hashes, emit_event, parse_done, peer_budget, quantile, read_numbers
 
 
 class BenchTests(unittest.TestCase):
+    def test_tp4_candidates_have_matched_tp2_control(self):
+        with tempfile.TemporaryDirectory() as directory:
+            subprocess.run([sys.executable, str(Path(__file__).with_name('variants.py')),
+                            '--tp4-only', '--out', directory], check=True)
+            paths = sorted(Path(directory).glob('*.json'))
+            self.assertEqual(len(paths), 3)
+            configs = {p.stem: json.loads(p.read_text()) for p in paths}
+            for name, cfg in configs.items():
+                self.assertEqual(validate_config(cfg)['requested_tp'], 2 if name.startswith('tp2') else 4)
+                self.assertEqual(cfg['env']['DS4_TP_GGUF_UNEVEN'], '1')
+                self.assertEqual(cfg['env']['STRATA_DS4_PROMPT_SKIP'], '0')
+                self.assertNotIn('DS4_FLOW_TP', cfg['env'])
+                self.assertTrue(cfg['require_full_copies'])
+            a, b = configs['tp2-whole-block'], configs['tp4']
+            self.assertEqual(a['env'], b['env'])
+            args = list(a['args'])
+            args[args.index('--tp') + 1] = '4'
+            self.assertEqual(args, b['args'])
+            self.assertEqual(configs['tp4-diagnostic']['env']['DS4_TP_CHECK'], '1')
+
+    def test_tp4_rejects_fallback_or_unvalidated_combinations(self):
+        cfg = runtime_configs()['copy-c56-numa2-p4096']
+        cfg['args'][cfg['args'].index('--tp') + 1] = '4'
+        with self.assertRaises(ValueError):
+            validate_config(cfg)
+        cfg['env']['DS4_TP_GGUF_UNEVEN'] = '1'
+        validate_config(cfg)
+        for change in ({'STRATA_DS4_PROMPT_SKIP': '1'},
+                       {'DS4_FLOW_TP': '1', 'DS4_FLOW_PUMP_WAIT': '1'}):
+            bad = copy.deepcopy(cfg)
+            bad['env'].update(change)
+            with self.assertRaises(ValueError):
+                validate_config(bad)
+
+    def test_effective_topology_not_nominal_cli(self):
+        four = [f'VRAM dev={i} tp_n=4 ctx=196608 layers=0-39' for i in range(4)]
+        self.assertTrue(topology_evidence(four, 4)['verified'])
+        two = [f'VRAM dev={i} tp_n=2 ctx=196608 layers={"0-19" if i < 2 else "20-39"}' for i in range(4)]
+        self.assertTrue(topology_evidence(two, 2)['verified'])
+        self.assertFalse(topology_evidence(two, 4)['verified'])
+        self.assertFalse(topology_evidence(four[:-1], 4)['verified'])
+        self.assertFalse(topology_evidence([four[0]] * 4, 4)['verified'])
+        self.assertFalse(topology_evidence([four[0].replace('0-39', '0-19'), *four[1:]], 4)['verified'])
+        self.assertFalse(topology_evidence([s.replace('196608', '8192') for s in four], 4)['verified'])
+
+    def test_tp4_gate_requires_four_member_numerical_checks(self):
+        line = "ds4: TP check: MXFP4 (layer 0): 4 members' parts summed against the whole - routed 0.0001, shared 0.0001"
+        log = '\n'.join([line] * 4 + ['ds4: TP check passed (4 expert formats and rotations, all the split layers have)'])
+        self.assertTrue(check_tp_log(log)['passed'])
+        self.assertFalse(check_tp_log(log.replace('4 members', '2 members'))['passed'])
+        self.assertFalse(check_tp_log(line)['passed'])
+        self.assertFalse(check_tp_log(log + '\nTP check FAILED')['passed'])
+        self.assertFalse(check_tp_log('')['passed'])
+
     def test_flow_gate_requires_real_checks_and_all_devices(self):
         log = """ds4: tensor-parallel members on the prompt path's flow: CUDA0, CUDA1, CUDA2, CUDA3 - each streams
 ds4: TP check: guards intact (DS4_FLOW_TP)

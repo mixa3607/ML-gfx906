@@ -431,7 +431,7 @@ Artifacts: `/tmp/opencode/ds41-flow-pump1-time-01` (durable records) and
 engine stopped normally. No completed run was repeated after the pause, and
 no new GPU workload has been launched since the user's resume instruction.
 
-### Unrun topology option: genuine TP4 needs whole-block mode
+### Topology prerequisite: genuine TP4 needs whole-block mode
 
 Source inspection of v1.1.27 found an important limitation for a future TP
 comparison: this model has FFN2304, 64 attention heads and 8 output groups.
@@ -443,8 +443,33 @@ while leaving whole-block mode off therefore need not test a genuine TP4.
 With whole-block mode, all-MXFP4 weights split in 32-value blocks: 72 blocks
 split 18/18/18/18, so FFN576 is allowed. A real TP4 test must verify runtime
 `tp_n=4`, pass the native checker, and discuss the potential TG-versus-PP
-tradeoff (one pipeline group rather than two). **No TP4 GPU test has been run
-or added to the currently approved TP2 flow comparison.**
+tradeoff (one pipeline group rather than two). At this source-investigation
+stage no TP4 GPU test had run. It is a separate approach, not a retroactive
+change to the completed TP2 flow comparison.
+
+## Approach 6: genuine TP4 (approved, preparation)
+
+The user approved this topology test after the completed flow comparison.
+Keep v1.1.27, CPU56/NUMA2/chunk4096, full expert copies, the existing seed and
+frozen inputs, vision on, context196608 and the 187Gi-plus-peer budget. Use
+whole-block mode so TP4 does not silently fall back; keep flow and YOCO off.
+First perform the bounded PP2048/4096 native-checker/finite-logit diagnostic.
+Require actual four-member numerical checks and READY showing all four GPUs
+with `tp_n=4`, each handling layers0–39. A failed or fallback start is not a TP4
+benchmark and is not automatically retried with checks disabled.
+
+Prepared matched whole-block TP2/TP4 timing configs differing only in `--tp`
+and run name. This adds a proper topology control rather than repeating the
+old multi-knob matrix or conflating whole-block mode with group width. Only
+after a clean short diagnostic proceed to the warm timing pair; a promising
+candidate then gets 64K retrieval and real-image checks. Compare PP, TG and
+full request time: a decode gain with a prefill loss is a tradeoff, not an
+unqualified improvement. No TP4 GPU result is available yet.
+Preparation checks passed: 34 local unit tests (including fallback rejection,
+matched-control config generation and four-member checker evidence), Python
+compilation and diff whitespace checks. Both pods are still on worker6; the
+v1.1.27 source remains `4615f346d9311dd1ce9f5738ab04446f023a6e42`, GPUs are
+idle, and inspected new-pod cap plus peer charge is about 187.755Gi.
 
 ## Approach 1: historical strict protocol and measurements
 

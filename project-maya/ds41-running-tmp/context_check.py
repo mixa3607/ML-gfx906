@@ -8,7 +8,7 @@ import random
 import re
 import sys
 
-from full_compute import validate_config, validate_limits
+from full_compute import topology_evidence, validate_config, validate_limits
 from native_bench import Engine, dump_hashes, emit_event, snapshot
 
 
@@ -117,6 +117,8 @@ def run(a):
 
     cfg = json.loads(a.config.read_text())
     eligibility = validate_config(cfg)
+    if eligibility['requested_tp'] == 4 and cfg['env'].get('DS4_TP_CHECK') != '1':
+        raise ValueError('TP4 functional validation requires the native TP checker')
     validate_limits(snapshot())
     cases = [json.loads(s) for s in a.cases.read_text().splitlines() if s.strip()]
     if not cases or any(c['phase'] != 'functional' or len(c['ids']) != c['pp'] for c in cases):
@@ -140,9 +142,12 @@ def run(a):
     engine = Engine(cfg, a.out, dump=True)
     try:
         ready = engine.ready(a.timeout)
-        ready_record = {'lines': ready, 'snapshot': snapshot(engine.proc.pid)}
+        ready_record = {'lines': ready, 'snapshot': snapshot(engine.proc.pid),
+                        'topology': topology_evidence(ready, eligibility['requested_tp'])}
         save(a.out / 'ready.json', ready_record)
         emit_event('ready', ready_record)
+        if not ready_record['topology']['verified']:
+            raise RuntimeError('Functional test did not form the requested effective topology')
         if (not any(line.startswith('READY 196608 ') for line in ready) or
                 not any(line.startswith('INFO ') and 'vision=ds4 ' in line for line in ready)):
             raise RuntimeError('Full context or native vision unavailable')
@@ -178,6 +183,11 @@ def run(a):
         engine.close()
     log = (a.out / 'engine.log').read_text()
     flow_checks = None
+    tp_checks = None
+    if eligibility['requested_tp'] == 4:
+        from tp_check import check_log
+
+        tp_checks = check_log(log)
     if cfg['env'].get('DS4_FLOW_TP') == '1':
         from flow_check import check_log
 
@@ -191,12 +201,14 @@ def run(a):
                'expected_yoco_retention_rows': YOCO_KEEP if active_required else None,
                'vision_checks': vision_checks,
                'flow_checks': flow_checks,
+               'tp_checks': tp_checks,
                'not_a_general_quality_proof': True}
     save(a.out / 'verdict.json', verdict)
     emit_event('verdict', verdict)
     if (not verdict['all_facts_retrieved'] or not verdict['activation_verified'] or
             (vision_checks is not None and not all(vision_checks.values())) or
-            (flow_checks is not None and not flow_checks['passed'])):
+            (flow_checks is not None and not flow_checks['passed']) or
+            (tp_checks is not None and not tp_checks['passed'])):
         raise SystemExit(1)
 
 

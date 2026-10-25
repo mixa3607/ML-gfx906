@@ -5,6 +5,7 @@ import copy
 import hashlib
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 
@@ -21,6 +22,7 @@ ENV_VALUES = {
     'DS4_TP_CHECK': {'1'},
 }
 ARG_VALUES = {
+    '--tp': {'2', '4'},
     '--cpu-threads': {'48', '56'},
     '--prefill-chunk': {'2048', '4096'},
     '--mmap-experts': {'auto', 'off'},
@@ -59,18 +61,54 @@ def validate_config(cfg):
     options = dict(zip(args[::2], args[1::2]))
     if options['--mmap-experts'] == 'off' and cfg.get('require_full_copies') is not True:
         raise ValueError('RAM timing requires verified full expert copies')
-    flow_keys = {'DS4_TP_GGUF_UNEVEN', 'DS4_FLOW_TP', 'DS4_FLOW_PUMP_WAIT', 'DS4_TP_CHECK'}
-    if flow_keys & set(env):
+    whole_blocks = env.get('DS4_TP_GGUF_UNEVEN') == '1'
+    if options['--tp'] == '4' and not whole_blocks:
+        raise ValueError('Genuine TP4 requires whole-block mode; silent TP2 fallback is forbidden')
+    if whole_blocks or 'DS4_TP_CHECK' in env:
+        if not whole_blocks or env['STRATA_DS4_PROMPT_SKIP'] != '0' or options['--mmap-experts'] != 'off':
+            raise ValueError('Whole-block TP needs YOCO off and verified full RAM copies')
+    if {'DS4_FLOW_TP', 'DS4_FLOW_PUMP_WAIT'} & set(env):
         if (env.get('DS4_FLOW_TP') != '1' or env.get('DS4_TP_GGUF_UNEVEN') != '1' or
                 env.get('DS4_FLOW_PUMP_WAIT') not in ('0', '1')):
             raise ValueError('Flow needs explicit whole-block TP and pump settings')
-        if env['STRATA_DS4_PROMPT_SKIP'] != '0' or options['--mmap-experts'] != 'off':
-            raise ValueError('Screen flow separately: YOCO off, verified full RAM copies required')
+        if options['--tp'] != '2':
+            raise ValueError('TP4 is screened separately with flow off')
     return {'policy': POLICY, 'timing_eligible': True,
             'prompt_skip': env['STRATA_DS4_PROMPT_SKIP'],
             'flow_tp': env.get('DS4_FLOW_TP', '0'),
+            'requested_tp': int(options['--tp']),
             'quality_and_long_context_validated': False,
             'bit_exact_required': False}
+
+
+def topology_evidence(lines, expected_tp):
+    """Verify effective topology from READY metadata, not nominal CLI arguments."""
+    rows = []
+    result = {'requested_tp': expected_tp, 'devices': rows, 'verified': False}
+    for line in lines:
+        if not line.startswith('VRAM '):
+            continue
+        try:
+            fields = dict(v.split('=', 1) for v in line.split()[1:] if '=' in v)
+            span = re.fullmatch(r'(\d+)-(\d+)', fields['layers'])
+            if span is None:
+                return result
+            rows.append({'dev': int(fields['dev']), 'tp_n': int(fields['tp_n']),
+                         'context': int(fields['ctx']), 'layers': list(map(int, span.groups()))})
+        except (KeyError, ValueError):
+            return result
+    if len(rows) != 4 or {r['dev'] for r in rows} != {0, 1, 2, 3}:
+        return result
+    rows.sort(key=lambda r: r['dev'])
+    if any(r['tp_n'] != expected_tp or r['context'] != 196608 for r in rows):
+        return result
+    if expected_tp == 4:
+        result['verified'] = all(r['layers'] == [0, 39] for r in rows)
+    elif expected_tp == 2:
+        a, b, c, d = [r['layers'] for r in rows]
+        result['verified'] = (a == b and c == d and a[0] == 0 and c[1] == 39 and
+                              0 <= a[1] < 39 and a[1] + 1 == c[0])
+    return result
 
 
 def engine_env(cfg, inherited):

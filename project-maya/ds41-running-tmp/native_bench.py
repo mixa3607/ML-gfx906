@@ -14,7 +14,7 @@ import struct
 import subprocess
 import time
 
-from full_compute import POLICY, engine_env, validate_config, validate_limits
+from full_compute import POLICY, engine_env, topology_evidence, validate_config, validate_limits
 
 
 def emit_event(kind, value):
@@ -278,8 +278,12 @@ def main():
             full_copies = {'copied': int(match[1]), 'total': int(match[2])}
         ready_record = {'load_s': time.monotonic() - t0, 'lines': ready,
                         'snapshot': snapshot(engine.proc.pid), 'full_copies': full_copies}
+        if policy:
+            ready_record['topology'] = topology_evidence(ready, policy['requested_tp'])
         (a.out / 'ready.json').write_text(json.dumps(ready_record, indent=2) + '\n')
         emit_event('ready', ready_record)
+        if policy and not ready_record['topology']['verified']:
+            raise RuntimeError('Effective GPU topology differs from requested TP; no benchmark accepted')
         print(f'READY {cfg["name"]}: {time.monotonic() - t0:.1f}s', flush=True)
         with (a.out / 'results.jsonl').open('w') as out:
             for case in cases:
