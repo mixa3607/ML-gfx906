@@ -346,7 +346,7 @@ comparison against the earlier fully warmed baseline.
 Artifacts: `/tmp/opencode/ds41-flow-pump0-screen-01` (durable records) and
 `/tmp/opencode/ds41-flow-pump0-screen-01-pod` (complete in-pod artifacts).
 Pump1 was checked separately on the exact same two inputs, as reported below.
-Its subsequent 64K/vision check passed; warm timing is still in progress.
+Its subsequent 64K/vision check and warm timing completed as reported below.
 
 ### Flow, pump1: bounded diagnostic also passed
 
@@ -362,8 +362,8 @@ at this small sample size. Select pump1 as the next candidate, keeping YOCO
 off and all other flow settings unchanged. First replay the frozen PP65536
 retrieval and shapes/blank, require finite logits and actual 64K streamed work
 on all four GPUs, then (only if passed) measure the frozen warm development
-suite without dumps. The completed 64K result is below; no warm flow gain is
-claimed yet.
+suite without dumps. The completed 64K and warm results are below; this short
+screen itself is not evidence of a warm flow gain.
 
 Artifacts: `/tmp/opencode/ds41-flow-pump1-screen-01` and its complete in-pod
 copy `/tmp/opencode/ds41-flow-pump1-screen-01-pod`.
@@ -388,12 +388,48 @@ and must not be summed; "reads" here includes RAM staging, not proof of SSD I/O.
 This identifies an observed stall counter, not a demonstrated sole cause.
 
 Artifacts: `/tmp/opencode/ds41-flow-pump1-functional64k-01` and its in-pod copy
-`/tmp/opencode/ds41-flow-pump1-functional64k-01-pod`. A dedicated warm 2K/4K/8K
-run is now in progress, with the exact original 12-warmup/six-dev history,
+`/tmp/opencode/ds41-flow-pump1-functional64k-01-pod`. The dedicated warm 2K/4K/8K
+run below uses the exact original 12-warmup/six-dev history,
 non-verbose arguments, no logits dumps, and the load-time TP diagnostic flag
 removed. Flow/whole-block TP/pump settings remain unchanged. The timing config
 is saved as `/tmp/opencode/ds41-flow-pump1-timing.json`, SHA-256
 `1b53066be703e87dcd92cf3cad36bcb1877ce7c242b421e3b0f1d0d20890d9cc`.
+
+### Flow/pump1 warm timing: modest short-prompt improvement
+
+The command completed before the user's pause. On resuming, the durable
+collector records were checked: exit0, all 18/18 complete requests, no OOM,
+CPU throttling, KV reuse or speculative tokens, and full copies 9935/9935.
+The original 12 warmups and startup are excluded; six development requests
+are pooled by tokens/time. Dumps and verbose logging were off.
+
+| Pooled metric | v1.1.27 stock TP2 | Flow/whole-block TP2/pump1 |
+| --- | ---: | ---: |
+| PP2048 tok/s | 92.45 | 106.61 |
+| PP4096 tok/s | 130.05 | 133.62 |
+| PP8192 tok/s | 175.07 | 182.65 |
+| All scored PP tok/s | 142.73 | 151.36 |
+| All scored TG tok/s | 21.844 | 21.866 |
+| Six scored requests, wall s | 270.943 | 259.420 |
+
+Observed aggregate PP **+6.0%**, TG **+0.10%**, wall **-4.3%** against the
+earlier measured v1.1.27 stock control. This compares the complete flow/TP-path
+configuration, not pump alone. Starts are sequential, output/cache state may
+differ, and this is not a fresh interleaved A/B/A or a significance estimate.
+The per-pod cap remained 187Gi; recorded hard-limit-plus-peer charge reached
+187.754Gi here versus 191.014Gi in the earlier stock run. Shared cache history
+is therefore another limitation, not grounds to claim a precise global gain.
+
+Flow/pump1 is a **short 2K–8K workload candidate**, not an unqualified default:
+its 64K diagnostic was slower, despite passing bounded retrieval and vision.
+Keep the stock CPU56/NUMA2/chunk4096/full-copy profile as the conservative
+full-range baseline. YOCO1 stays off because it demonstrated no warm gain.
+The final held-out suite has not run; do not claim a held-out winner yet.
+
+Artifacts: `/tmp/opencode/ds41-flow-pump1-time-01` (durable records) and
+`/tmp/opencode/ds41-flow-pump1-time-01-pod` (complete in-pod artifacts). The
+engine stopped normally. No completed run was repeated after the pause, and
+no new GPU workload has been launched since the user's resume instruction.
 
 ### Unrun topology option: genuine TP4 needs whole-block mode
 
