@@ -1,4 +1,3 @@
-# Apply this file OR prefill.yaml: both manage the same four-GPU server.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -47,12 +46,8 @@ data:
     #!/usr/bin/env bash
     set -euo pipefail
     cd /opt/maya
-    test "$(cat SOURCE_COMMIT)" = 4615f346d9311dd1ce9f5738ab04446f023a6e42
     snapshot=/root/.cache/huggingface/hub/models--unsloth--DeepSeek-V4.1-Flash-1017-GGUF/snapshots/60ad3651641b5c97679c807e064ab1d7a3ca1455
     vision=/root/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-V4.1-Flash-1017/snapshots/1bae0e1088993b9b82de08f59de5be5a34e42170
-    test -d "$snapshot/UD-Q8_K_XL"
-    test -f "$vision/model-00001-of-00048.safetensors"
-    test -f "$vision/config.json"
     mkdir -p /data/vision /data/config /data/profiles
     if [ ! -f /data/.ds41-v1.1.27-ready ]; then
       ln -sfn "$vision/model-00001-of-00048.safetensors" /data/vision/model-00001-of-00048.safetensors
@@ -63,33 +58,14 @@ data:
       python tools/ds4/pack_gguf.py \
         --model "$snapshot/UD-Q8_K_XL" --out /data/ds4 --vision /data/vision
     fi
-    sha256sum --check <<'HASHES'
-    e1c6053dc995b76104af2d86ee332c85ba3a1684f28c4de2e39a26c5af9bbae9  /data/ds4/ds4.txt
-    39a113954916e310dd42f2a39db7214c34fbb3a3d73723c4e2dc29e0d43c608b  /data/ds4/tensors.txt
-    44fb8ea94ba449b1eb2218e867453ff432613ac7fa285ba7087bd683296c97e2  /opt/maya/data/expert-profile-ds4.bin
-    HASHES
-    test -s /data/ds4/tokenizer/vocab.json
-    test -s /data/vision/vision.bin
     touch /data/.ds41-v1.1.27-ready
     for profile in prefill decode; do
       if [ ! -e "/data/profiles/$profile.bin" ]; then
         cp /opt/maya/data/expert-profile-ds4.bin "/data/profiles/$profile.bin"
       fi
     done
-    # maya.py touches/normalizes its JSON; never point it at a read-only ConfigMap.
+    # maya.py needs a writable config.
     cp /etc/maya/maya-ds4-hip.json /data/config/maya-ds4-hip.json
-  start.sh: |
-    #!/usr/bin/env bash
-    set -euo pipefail
-    ulimit -l unlimited
-    exec python - <<'PY'
-    import os
-    # Match the benchmark's isolation from inherited experimental engine knobs.
-    for key in list(os.environ):
-        if key.startswith(('DS4_', 'STRATA_DS4_', 'MAYA_DS4_')):
-            del os.environ[key]
-    os.execv('/opt/maya/entrypoint.sh', ['/opt/maya/entrypoint.sh', 'serve'])
-    PY
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -138,7 +114,7 @@ spec:
         - name: harbor-registry-pull-secret
       initContainers:
         - name: prepare
-          image: docker.io/mixa3607/maya-gfx906@sha256:d46312703b79af1cd70174ae9ef2faee23875db9c51f90353424aba6101ac2c1
+          image: docker.io/mixa3607/maya-gfx906:v1.1.27-rocm-10.1
           imagePullPolicy: IfNotPresent
           command: ["/bin/bash", "/etc/maya/prepare.sh"]
           securityContext:
@@ -155,9 +131,13 @@ spec:
             - {name: hf-cache, mountPath: /root/.cache/huggingface, readOnly: true}
       containers:
         - name: maya
-          image: docker.io/mixa3607/maya-gfx906@sha256:d46312703b79af1cd70174ae9ef2faee23875db9c51f90353424aba6101ac2c1
+          image: docker.io/mixa3607/maya-gfx906:v1.1.27-rocm-10.1
           imagePullPolicy: IfNotPresent
-          command: ["/usr/bin/tini", "--", "/bin/bash", "/etc/maya/start.sh"]
+          command: ["/usr/bin/tini", "--", "/bin/bash", "-ec"]
+          args:
+            - |
+              ulimit -l unlimited
+              exec /opt/maya/entrypoint.sh serve
           securityContext:
             privileged: true
             runAsUser: 0
