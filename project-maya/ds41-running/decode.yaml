@@ -52,10 +52,7 @@ data:
       ln -sfn "$vision/model-00001-of-00048.safetensors" /data/vision/model-00001-of-00048.safetensors
       ln -sfn "$vision/config.json" /data/vision/config.json
       python tools/ds4/vision_pack.py --dir /data/vision
-      python tools/ds4/pack_gguf.py \
-        --model "$snapshot/UD-Q8_K_XL" --out /data/ds4 --vision /data/vision
-    fi
-    if [ ! -e /data/expert-profile.bin ]; then
+      python tools/ds4/pack_gguf.py --model "$snapshot/UD-Q8_K_XL" --out /data/ds4 --vision /data/vision
       cp /opt/maya/data/expert-profile-ds4.bin /data/expert-profile.bin
     fi
     # maya.py needs a writable config.
@@ -107,24 +104,28 @@ spec:
         - name: harbor-registry-pull-secret
       initContainers:
         - name: prepare
-          image: docker.io/mixa3607/maya-gfx906:v1.1.27-rocm-10.1
+          image: docker.io/mixa3607/maya-gfx906:v1.1.28-rocm-10.1
           imagePullPolicy: IfNotPresent
           command: ["/bin/bash", "/etc/maya/prepare.sh"]
           securityContext:
             runAsUser: 0
           env:
-            - {name: HF_HUB_OFFLINE, value: "1"}
-            - {name: TRANSFORMERS_OFFLINE, value: "1"}
+            - { name: HF_HUB_OFFLINE, value: "1" }
+            - { name: TRANSFORMERS_OFFLINE, value: "1" }
           resources:
-            requests: {cpu: "2", memory: 2Gi}
-            limits: {memory: 8Gi}
+            requests: { cpu: "2", memory: 2Gi }
+            limits: { memory: 8Gi }
           volumeMounts:
-            - {name: config, mountPath: /etc/maya, readOnly: true}
-            - {name: data, mountPath: /data}
-            - {name: hf-cache, mountPath: /root/.cache/huggingface, readOnly: true}
+            - { name: config, mountPath: /etc/maya, readOnly: true }
+            - { name: data, mountPath: /data }
+            - {
+                name: hf-cache,
+                mountPath: /root/.cache/huggingface,
+                readOnly: true,
+              }
       containers:
         - name: maya
-          image: docker.io/mixa3607/maya-gfx906:v1.1.27-rocm-10.1
+          image: docker.io/mixa3607/maya-gfx906:v1.1.28-rocm-10.1
           imagePullPolicy: IfNotPresent
           command: ["/usr/bin/tini", "--", "/bin/bash", "-ec"]
           args:
@@ -135,41 +136,45 @@ spec:
             privileged: true
             runAsUser: 0
           env:
-            - {name: MAYA_CONFIG, value: /data/config/maya-ds4-hip.json}
-            - {name: HIP_VISIBLE_DEVICES, value: "0,1,2,3"}
-            - {name: HF_HUB_OFFLINE, value: "1"}
-            - {name: TRANSFORMERS_OFFLINE, value: "1"}
+            - { name: MAYA_CONFIG, value: /data/config/maya-ds4-hip.json }
+            - { name: HIP_VISIBLE_DEVICES, value: "0,1,2,3" }
+            - { name: HF_HUB_OFFLINE, value: "1" }
+            - { name: TRANSFORMERS_OFFLINE, value: "1" }
           resources:
-            requests: {cpu: "4", memory: 199Gi}
-            limits: {memory: 199Gi}
+            requests: { cpu: "4", memory: 200Gi }
+            limits: { memory: 200Gi }
           ports:
-            - {name: http, containerPort: 8080}
+            - { name: http, containerPort: 8080 }
           startupProbe:
-            httpGet: {path: /health, port: http}
+            httpGet: { path: /health, port: http }
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 180
           readinessProbe:
-            httpGet: {path: /health, port: http}
+            httpGet: { path: /health, port: http }
             periodSeconds: 10
             timeoutSeconds: 5
           volumeMounts:
-            - {name: config, mountPath: /etc/maya, readOnly: true}
-            - {name: data, mountPath: /data}
-            - {name: hf-cache, mountPath: /root/.cache/huggingface, readOnly: true}
-            - {name: dev-kfd, mountPath: /dev/kfd}
-            - {name: dev-dri, mountPath: /dev/dri}
-            - {name: shm, mountPath: /dev/shm}
+            - { name: config, mountPath: /etc/maya, readOnly: true }
+            - { name: data, mountPath: /data }
+            - {
+                name: hf-cache,
+                mountPath: /root/.cache/huggingface,
+                readOnly: true,
+              }
+            - { name: dev-kfd, mountPath: /dev/kfd }
+            - { name: dev-dri, mountPath: /dev/dri }
+            - { name: shm, mountPath: /dev/shm }
       volumes:
         - name: config
-          configMap: {name: maya-ds41-decode-config}
+          configMap: { name: maya-ds41-decode-config }
         - name: data
-          persistentVolumeClaim: {claimName: maya-ds41-decode-data}
+          persistentVolumeClaim: { claimName: maya-ds41-decode-data }
         - name: hf-cache
-          persistentVolumeClaim: {claimName: worker6-hf-cache, readOnly: true}
+          persistentVolumeClaim: { claimName: worker6-hf-cache, readOnly: true }
         - name: dev-kfd
-          hostPath: {path: /dev/kfd}
+          hostPath: { path: /dev/kfd }
         - name: dev-dri
-          hostPath: {path: /dev/dri}
+          hostPath: { path: /dev/dri }
         - name: shm
-          emptyDir: {medium: Memory, sizeLimit: 8Gi}
+          emptyDir: { medium: Memory, sizeLimit: 8Gi }
