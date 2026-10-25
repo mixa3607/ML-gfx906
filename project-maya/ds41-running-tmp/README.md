@@ -78,18 +78,21 @@ context probe runner rejects PP above 65536; keep the server capacity at 196608.
 
 The user-built v1.1.27 image has a separate digest-pinned manifest,
 `pod.v1.1.27.yaml`. Its 8Gi memory request is only a scheduling reservation;
-the approved TP4 retry cap is 190Gi, leaving up to 2Gi for the stopped old pod, and there
+the final approved TP4 cap is 199Gi, leaving up to 1Gi for the stopped old pod, and there
 is no CPU quota. Never run GPU engines
 in both test pods concurrently. Account for shared file-cache charges retained
-by the old pod before treating a cross-pod comparison as a verified 192Gi result.
+by the old pod before treating a cross-pod comparison as within its memory budget.
 Set `BENCH_PEER_CGROUP` to that pod's cgroup path for the v1.1.27 runs. Snapshots
-record peer charges and reject a new-pod limit plus peer usage above 192Gi.
+record peer charges and reject a new-pod limit plus peer usage above 192Gi by
+default. For the final user-approved attempt, set `BENCH_MEMORY_BUDGET_GIB=200`
+on every runner command. This explicit opt-in raises both cap validation and
+known-peer accounting to 200Gi; snapshots record `memory_budget_bytes`. It does
+not relabel historical measurements as 200Gi runs.
 This accounts for the known peer pod, not arbitrary unrelated host cache users.
 **The earlier 185Gi attempt OOMKilled during warmup.** That configuration is
 retained in commit `c6312af`. TP2 subsequently passed at 187Gi, but TP4 OOMKilled
-during load at that cap. The current manifest records the explicitly approved
-190Gi TP4 retry, which also OOMKilled before READY; it is not a validated memory
-recommendation. See RESULTS.md for outcomes and the source-derived buffer budget.
+during load at both 187Gi and 190Gi. The current manifest is the final approved
+199Gi attempt, not a validated memory recommendation. See RESULTS.md for outcomes.
 
 ### Durable capture outside the pod
 
@@ -178,7 +181,11 @@ metrics and complete-request wall time, and do not pick TP4 on TG alone.
 Both TP4 diagnostics OOMKilled during load (187Gi and 190Gi), before READY;
 no TP4 checker or performance pass exists yet. The second attempt preserved
 the exact configs/inputs and peer accounting. RESULTS.md records the staging
-budget and a proposed ring200 experiment; that revised run is not yet approved.
+budget. The user then allowed a total budget up to200Gi and asked to finish
+with minimal variants: the final screen retains the exact ring400 configs at
+199Gi plus peer accounting, not the proposed ring200 experiment. If clean, run
+one matched warm TP4/TP2 pair; only a clear gain proceeds to64K/vision. Otherwise
+close TP4 without further knob searches.
 
 ## Fixed workload
 
@@ -191,7 +198,8 @@ budget and a proposed ring200 experiment; that revised run is not yet approved.
   32768, 65536. The previously prepared 131072/194560 cases are not to be run.
 - Every runtime allocates for context 196608 and loads the native vision tower.
   Vision-enabled text timing is not proof of successful image inference.
-- Pod memory limit: 192 **GiB**, including charged file cache and shared memory.
+- Original memory budget: 192 **GiB**, including charged file cache and shared
+  memory; the final TP4 attempt has an explicitly approved **200GiB** total.
   No CPU quota. CPU requests are scheduling/weight hints, not a performance
   guarantee; inspect competing work and all ancestor cgroups.
 - Keep quantization, source revision, model computation, and GPU topology fixed

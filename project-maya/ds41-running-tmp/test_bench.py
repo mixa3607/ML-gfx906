@@ -16,7 +16,7 @@ from compare import compare
 from summary import summarize
 from context_check import assemble, score, validate_probe_length, yoco_activation_verified
 from vision_check import image_checks
-from full_compute import engine_env, runtime_configs, topology_evidence, validate_config, validate_limits
+from full_compute import engine_env, memory_budget, runtime_configs, topology_evidence, validate_config, validate_limits
 from flow_check import check_log
 from tp_check import check_log as check_tp_log
 from native_bench import Engine, cgroup_dir, dump_hashes, emit_event, parse_done, peer_budget, quantile, read_numbers
@@ -173,6 +173,31 @@ sys.exit({remote_code})
             peer_budget(190 * 2**30, 2 * 2**30 + 1)
         with self.assertRaises(RuntimeError):
             peer_budget(185 * 2**30, 7 * 2**30 + 1)
+
+    def test_explicit_200gi_budget_preserves_default_192gi_guard(self):
+        self.assertEqual(memory_budget(), 192 * 2**30)
+        self.assertEqual(memory_budget('200'), 200 * 2**30)
+        for value in ('', '0', '199', '201', 'max'):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                memory_budget(value)
+        with self.assertRaises(RuntimeError):
+            peer_budget(199 * 2**30, 0)
+        self.assertEqual(peer_budget(199 * 2**30, 2**30, memory_budget('200')), 200 * 2**30)
+        with self.assertRaises(RuntimeError):
+            peer_budget(199 * 2**30, 2**30 + 1, memory_budget('200'))
+        with self.assertRaises(ValueError):
+            peer_budget(199 * 2**30, 0, 201 * 2**30)
+
+    def test_resource_limits_with_explicit_200gi_budget(self):
+        state = {'cpu.max': 'max 100000', 'memory.max': str(199 * 2**30),
+                 'memory_budget_bytes': memory_budget('200')}
+        validate_limits(state)
+        validate_limits({**state, 'memory.max': str(200 * 2**30)})
+        for changed in ({'memory.max': str(200 * 2**30 + 1)},
+                        {'memory_budget_bytes': 201 * 2**30},
+                        {'cpu.max': '100000 100000'}):
+            with self.subTest(changed=changed), self.assertRaises(ValueError):
+                validate_limits({**state, **changed})
 
     def test_context_probes_capped_at_user_requested_64k(self):
         for length in (2048, 32768, 65536):

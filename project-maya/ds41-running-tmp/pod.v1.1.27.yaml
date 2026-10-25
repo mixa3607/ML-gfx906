@@ -1,4 +1,4 @@
-# TP4 load OOMKilled at both 187Gi and 190Gi; no further retry approved. See RESULTS.md.
+# Final approved TP4 attempt: 199Gi plus peer within the revised 200Gi budget.
 apiVersion: v1
 kind: Pod
 metadata:
@@ -42,8 +42,8 @@ spec:
           cpu: "4"
           memory: 8Gi
         limits:
-          # Leave 2Gi for the stopped v1.1.26 pod's retained cache/accounting.
-          memory: 190Gi
+          # Leave 1Gi for the stopped v1.1.26 pod's retained cache/accounting.
+          memory: 199Gi
       volumeMounts:
         - {name: hf-cache, mountPath: /root/.cache/huggingface, readOnly: true}
         - {name: data, mountPath: /data}

@@ -119,12 +119,21 @@ def engine_env(cfg, inherited):
             if not k.startswith(('DS4_', 'STRATA_DS4_', 'MAYA_DS4_'))} | cfg['env']
 
 
+def memory_budget(value='192'):
+    if value not in ('192', '200'):
+        raise ValueError('Memory budget must be 192Gi or the explicitly approved 200Gi')
+    return int(value) * 2**30
+
+
 def validate_limits(state):
     if state.get('cpu.max', '').split()[:1] != ['max']:
         raise ValueError('Full-compute timing requires no CPU quota')
     limit = state.get('memory.max', 'max')
-    if not limit.isdecimal() or not 0 < int(limit) <= 192 * 2**30:
-        raise ValueError('A finite host memory cap of at most 192Gi is required')
+    budget = state.get('memory_budget_bytes', memory_budget())
+    if budget not in (memory_budget(), memory_budget('200')):
+        raise ValueError('Unapproved memory budget')
+    if not limit.isdecimal() or not 0 < int(limit) <= budget:
+        raise ValueError('A finite host memory cap within the approved budget is required')
 
 
 def runtime_configs():

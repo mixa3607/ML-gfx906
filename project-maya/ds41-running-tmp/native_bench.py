@@ -14,7 +14,7 @@ import struct
 import subprocess
 import time
 
-from full_compute import POLICY, engine_env, topology_evidence, validate_config, validate_limits
+from full_compute import POLICY, engine_env, memory_budget, topology_evidence, validate_config, validate_limits
 
 
 def emit_event(kind, value):
@@ -38,16 +38,19 @@ def cgroup_dir():
     raise RuntimeError('cgroup v2 is required for memory and CPU accounting')
 
 
-def peer_budget(memory_limit, peer_current):
+def peer_budget(memory_limit, peer_current, budget=192 * 2**30):
+    if budget not in (memory_budget(), memory_budget('200')):
+        raise ValueError('Unapproved peer memory budget')
     total = int(memory_limit) + int(peer_current)
-    if total > 192 * 2**30:
-        raise RuntimeError('Test pod limit plus retained peer-pod memory exceeds 192Gi')
+    if total > budget:
+        raise RuntimeError(f'Test pod limit plus retained peer-pod memory exceeds {budget // 2**30}Gi')
     return total
 
 
 def snapshot(pid=None):
     cg = cgroup_dir()
-    out = {'cpu': read_numbers(cg / 'cpu.stat'),
+    out = {'memory_budget_bytes': memory_budget(os.environ.get('BENCH_MEMORY_BUDGET_GIB', '192')),
+           'cpu': read_numbers(cg / 'cpu.stat'),
            'memory_stat': read_numbers(cg / 'memory.stat'),
            'memory_events': read_numbers(cg / 'memory.events')}
     for name in ('cpu.max', 'memory.max', 'memory.current', 'memory.peak', 'cpuset.cpus.effective'):
@@ -64,7 +67,8 @@ def snapshot(pid=None):
         current = int((path / 'memory.current').read_text())
         out['peer_cgroup'] = {'path': str(path), 'memory.current': current,
                               'memory_stat': read_numbers(path / 'memory.stat'),
-                              'limit_plus_peer_bytes': peer_budget(out['memory.max'], current)}
+                              'limit_plus_peer_bytes': peer_budget(out['memory.max'], current,
+                                                                   out['memory_budget_bytes'])}
     return out
 
 

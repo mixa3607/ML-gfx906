@@ -599,6 +599,40 @@ included in this proposal.
 The outcome-only documentation update passed diff whitespace checks and all
 34 existing CPU-only unit tests. No further GPU workload was run.
 
+### Final bounded attempt: user-approved total budget up to 200Gi
+
+The user allowed memory up to **200Gi** and asked to stop broad searches and
+finish with the minimum useful variants. This supersedes the proposed ring200
+experiment: **do not run it**. Keep the exact saved TP4/ring400 diagnostic,
+seed, frozen PP2048/4096 cases, CPU56/NUMA2/chunk4096, full copies, no flow or
+YOCO, vision and context196608. Replace only the Failed v1.1.27 pod with a
+**199Gi** cap; retain the stopped old pod and count its charge within 200Gi.
+Read-only inspection found the peer at approximately 0.751Gi and the node with
+about 242Gi available before the replacement.
+
+The revised budget is explicit: `BENCH_MEMORY_BUDGET_GIB=200` on runner commands.
+Without it, the existing 192Gi guards are unchanged. Snapshots record the budget,
+and both individual cap and cap-plus-peer accounting enforce it. Historical
+192Gi results and the 187Gi/190Gi OOM verdicts are not reclassified.
+
+Run **one final short screen**. If it fails, close TP4 without smaller-ring,
+smaller-chunk or other automatic retries. If it passes, run only one matched
+warm TP4/TP2 pair on the same pod/cap and existing development history, without
+logit dumps. Only a clear wall-time improvement (at least 5% on this development
+suite, considering PP and TG separately) proceeds to the existing 64K/vision
+gate. This threshold bounds further work; a single pair is not a statistical
+confidence claim. No holdout is used for tuning, no custom build is added, and
+no combinations with flow/YOCO are included. Close the test pod after saving
+its artifacts; the old pod and HF cache stay untouched.
+
+Preparation passed **36 CPU-only unit tests**, including default-192Gi and
+explicit-200Gi cap/peer boundaries, Python compilation, manifest client
+validation and diff whitespace checks. No new TP4 GPU result exists yet.
+Replacement preflight confirms cap199Gi, no CPU quota, cap-plus-peer199.746Gi
+within the explicit200Gi budget, and unchanged source/model/seed/config/case
+hashes. The model pack uses only the existing read-only cache. GPUs are idle
+before the final screen.
+
 ## Approach 1: historical strict protocol and measurements
 
 ## Initial screening baseline (not a steady-state result)
