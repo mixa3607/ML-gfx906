@@ -76,7 +76,3 @@ upstream release unless `maya_tag` is specified, and explicitly applies
 See [RUNNING.md](RUNNING.md) for preparation, configuration and Kubernetes
 deployment, or [docker-compose.example.yaml](docker-compose.example.yaml) for
 Docker.
-
-For the measured DeepSeek-V4.1 prefill/decode specialist profiles on four MI50s,
-see [ds41-running/README.md](ds41-running/README.md): each YAML bundles the
-application's configuration, preparation, storage, Deployment and Service.

@@ -1,7 +1,7 @@
 # DeepSeek-V4.1 on four MI50s
 
-Each YAML contains a ConfigMap, data PVC, Deployment with model preparation,
-and Service for `kube-worker6.arkprojects.lan`.
+Each YAML contains its own ConfigMap, data PVC and Deployment with model
+preparation for `kube-worker6.arkprojects.lan`.
 
 ## Results
 
@@ -31,13 +31,10 @@ Model and vision snapshot revisions are set in `prepare.sh` inside each YAML.
 
 Both profiles use CPU56, NUMA2 full RAM copies, chunk4096, Engram256MiB,
 ring400MiB, context196608 and native vision. YOCO, expert skips and DSpark are
-off. There is no CPU quota. Preparation and learned expert profiles persist
-on `maya-ds41-data`; model blobs remain in the read-only HF cache.
-
-Both files manage the same resources with `Recreate`; they are alternative
-profiles, not two deployments. They use the existing `apps-ml` namespace,
-`local-path` storage class, `worker6-hf-cache` PVC and
-`harbor-registry-pull-secret`. The ClusterIP Service has no API key.
+off. There is no CPU quota. Each setup stores its data separately on
+`maya-ds41-prefill-data` or `maya-ds41-decode-data`; model blobs remain in the
+read-only `worker6-hf-cache` PVC. Both use the existing `apps-ml` namespace,
+`local-path` storage class and `harbor-registry-pull-secret`. No Service is created.
 
 For decode, retained peer-pod memory must stay below 1Gi to keep the combined
 budget within 200Gi. First-time vision preparation uses small HTTP Range

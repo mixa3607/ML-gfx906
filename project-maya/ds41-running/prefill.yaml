@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: maya-ds41-config
+  name: maya-ds41-prefill-config
   namespace: apps-ml
 data:
   maya-ds4-hip.json: |
@@ -25,7 +25,7 @@ data:
         "--mmap-experts", "off",
         "--dspark", "none",
         "--vision", "on",
-        "--expert-profile", "/data/profiles/prefill.bin"
+        "--expert-profile", "/data/expert-profile.bin"
       ],
       "env": {
         "LD_LIBRARY_PATH": "/opt/rocm/lib",
@@ -40,8 +40,7 @@ data:
         "DS4_COPY_NUMA": "2",
         "DS4_TP_GGUF_UNEVEN": "1",
         "DS4_FLOW_TP": "1",
-        "DS4_FLOW_PUMP_WAIT": "1",
-        "DS4_LANE_CAL": "/data/profiles/prefill-lane-times.txt"
+        "DS4_FLOW_PUMP_WAIT": "1"
       }
     }
   prepare.sh: |
@@ -50,29 +49,24 @@ data:
     cd /opt/maya
     snapshot=/root/.cache/huggingface/hub/models--unsloth--DeepSeek-V4.1-Flash-1017-GGUF/snapshots/60ad3651641b5c97679c807e064ab1d7a3ca1455
     vision=/root/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-V4.1-Flash-1017/snapshots/1bae0e1088993b9b82de08f59de5be5a34e42170
-    mkdir -p /data/vision /data/config /data/profiles
-    if [ ! -f /data/.ds41-v1.1.27-ready ]; then
+    mkdir -p /data/vision /data/config
+    if [ ! -f /data/vision/config.json ]; then
       ln -sfn "$vision/model-00001-of-00048.safetensors" /data/vision/model-00001-of-00048.safetensors
       ln -sfn "$vision/config.json" /data/vision/config.json
-      if [ ! -f /data/vision/vision.bin ] || [ ! -f /data/vision/vision.json ]; then
-        python tools/ds4/vision_pack.py --dir /data/vision
-      fi
+      python tools/ds4/vision_pack.py --dir /data/vision
       python tools/ds4/pack_gguf.py \
         --model "$snapshot/UD-Q8_K_XL" --out /data/ds4 --vision /data/vision
     fi
-    touch /data/.ds41-v1.1.27-ready
-    for profile in prefill decode; do
-      if [ ! -e "/data/profiles/$profile.bin" ]; then
-        cp /opt/maya/data/expert-profile-ds4.bin "/data/profiles/$profile.bin"
-      fi
-    done
+    if [ ! -e /data/expert-profile.bin ]; then
+      cp /opt/maya/data/expert-profile-ds4.bin /data/expert-profile.bin
+    fi
     # maya.py needs a writable config.
     cp /etc/maya/maya-ds4-hip.json /data/config/maya-ds4-hip.json
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: maya-ds41-data
+  name: maya-ds41-prefill-data
   namespace: apps-ml
 spec:
   accessModes: [ReadWriteOnce]
@@ -84,7 +78,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: maya-ds41
+  name: maya-ds41-prefill
   namespace: apps-ml
 spec:
   replicas: 1
@@ -92,12 +86,11 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      app: maya-ds41
+      app: maya-ds41-prefill
   template:
     metadata:
       labels:
-        app: maya-ds41
-        profile: prefill
+        app: maya-ds41-prefill
     spec:
       automountServiceAccountToken: false
       terminationGracePeriodSeconds: 180
@@ -171,9 +164,9 @@ spec:
             - {name: shm, mountPath: /dev/shm}
       volumes:
         - name: config
-          configMap: {name: maya-ds41-config}
+          configMap: {name: maya-ds41-prefill-config}
         - name: data
-          persistentVolumeClaim: {claimName: maya-ds41-data}
+          persistentVolumeClaim: {claimName: maya-ds41-prefill-data}
         - name: hf-cache
           persistentVolumeClaim: {claimName: worker6-hf-cache, readOnly: true}
         - name: dev-kfd
@@ -182,15 +175,3 @@ spec:
           hostPath: {path: /dev/dri}
         - name: shm
           emptyDir: {medium: Memory, sizeLimit: 8Gi}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: maya-ds41
-  namespace: apps-ml
-spec:
-  type: ClusterIP
-  selector:
-    app: maya-ds41
-  ports:
-    - {name: http, port: 8080, targetPort: http}
