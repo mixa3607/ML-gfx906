@@ -471,6 +471,36 @@ compilation and diff whitespace checks. Both pods are still on worker6; the
 v1.1.27 source remains `4615f346d9311dd1ce9f5738ab04446f023a6e42`, GPUs are
 idle, and inspected new-pod cap plus peer charge is about 187.755Gi.
 
+### TP4 at 187Gi: OOM before READY, no benchmark result
+
+The bounded diagnostic ended with exit137 before READY and before either
+request. The durable collector correctly reports **0/2** results and
+`complete=false`. Kubernetes reports the whole container **OOMKilled**,
+restart0. Kernel evidence identifies `CONSTRAINT_MEMCG` at the 187Gi test-pod
+limit, during AMD GPU user-page registration, not a numerical checker failure
+or host-wide OOM. At the limit, accounting was approximately **177.807Gi
+anonymous + 8.037Gi shared memory + 1.153Gi kernel**, with essentially no
+reclaimable file pages left.
+
+**No effective TP4 topology or checker pass was observed**, so this is neither
+a successful TP4 run nor a performance comparison. It demonstrates insufficient
+headroom for this start at 187Gi, not failure at the original overall 192Gi
+budget. Matched warm timing, 64K and vision were not started. GPU memory returned
+to idle after the process was killed; no automatic retry or pod deletion followed.
+
+The failed pod's emptyDir contents have already been removed by kubelet.
+Durable manifest/command/exit records, Kubernetes status and kernel evidence
+are retained in `/tmp/opencode/ds41-tp4-screen-01`; exact configs remain in
+`/tmp/opencode/ds41-tp4-configs-01`. Earlier successful results remain saved
+locally; the old v1.1.26 pod and its artifacts are untouched.
+
+The inspected old pod now uses about **0.760Gi**. A proposed replacement at
+**190Gi**, retaining peer accounting, would leave the known two-pod bound near
+190.760Gi and preserve chunk4096 for the comparison. It is not a guaranteed
+fit or an executed retry. Replacing the Failed pod and changing its cap need
+explicit agreement; alternatively a matched smaller-chunk experiment would
+change the approach and must also be agreed first.
+
 ## Approach 1: historical strict protocol and measurements
 
 ## Initial screening baseline (not a steady-state result)

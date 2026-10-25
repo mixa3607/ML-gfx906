@@ -173,6 +173,8 @@ candidate then gets the same frozen 64K/vision check, with the native checker
 enabled. No combination with flow or YOCO is currently approved. TG may improve
 while PP worsens when replacing two pipeline groups with one; retain both
 metrics and complete-request wall time, and do not pick TP4 on TG alone.
+The first TP4 diagnostic OOMKilled during load at 187Gi, before READY; no TP4
+checker or performance pass exists yet. See RESULTS.md before any retry.
 
 ## Fixed workload
 

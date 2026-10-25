@@ -1,4 +1,4 @@
-# Approved retry after the historical 185Gi OOM; capacity is not yet validated.
+# 187Gi passed TP2 tests; the TP4 load OOMKilled at this cap. See RESULTS.md.
 apiVersion: v1
 kind: Pod
 metadata:
