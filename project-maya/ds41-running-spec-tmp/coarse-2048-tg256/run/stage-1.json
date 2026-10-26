@@ -1,0 +1,32 @@
+{
+  "seed": 20261027,
+  "schedule": [
+    {
+      "label": "none",
+      "point": {
+        "conf": 0.5,
+        "cum": 0.5,
+        "maximum": 0,
+        "spec": false
+      }
+    },
+    {
+      "label": "loaded-off",
+      "point": {
+        "conf": 0.5,
+        "cum": 0.5,
+        "maximum": 0,
+        "spec": false
+      }
+    },
+    {
+      "label": "default",
+      "point": {
+        "conf": 0.5,
+        "cum": 0.5,
+        "maximum": 0,
+        "spec": true
+      }
+    }
+  ]
+}

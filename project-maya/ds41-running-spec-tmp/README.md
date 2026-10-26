@@ -1,8 +1,11 @@
 # DSpark coarse screening
 
-Next experiment, documented only: [chunk2048 / PP2048 / TG256 coarse tuning
-plan](COARSE-TUNING-PLAN.md), with decode tokens/s as the primary objective.
-No GPU run or serving-configuration change is started by recording that plan.
+Coarse tuning: [chunk2048 / PP2048 / TG256 plan](COARSE-TUNING-PLAN.md),
+with decode tokens/s as the primary objective. Its execution was separately
+approved on 2026-10-26; see [execution/evidence](coarse-2048-tg256/README.md).
+Stages 1-4 were measured, then the restart control drifted -8.30% and stopped
+the sweep; see [coarse results](coarse-2048-tg256/RESULTS.md). No confirmed
+finalists. The test pod is deleted; the serving configuration remains unchanged.
 
 The first 200Gi attempt failed with OOM; see [RESULTS.md](RESULTS.md).
 The approved 220Gi retry completed A/C: **decode +29.7%, scored wall unchanged**;

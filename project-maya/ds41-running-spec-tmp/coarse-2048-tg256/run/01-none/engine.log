@@ -1,0 +1,44 @@
+ds4: tensor parallel 4: the experts' n_ff 2304 in 32-value blocks, 576 to 576 a member (the odd blocks going round the members layer by layer) (DS4_TP_GGUF_UNEVEN)
+ds4: the one-GPU decode path (in-place pulls, windows streamed, landings): off (v1.1.27's path: not Linux + NVIDIA + one GPU)
+ds4: the experts VRAM leaves over (~188.6 GB) are read in place from the model's files (copied into RAM after the GPUs' share when the RAM holds them all; --mmap-experts on keeps them in place) (235.5 GB of RAM free to keep them: the most-routed 188.6 GB read ahead; prompts in chunks of 2048)
+ds4: 10127 of the CPU lane's 10127 experts copied into RAM (190.4 GB, 2 NUMA parts) in 130.3 s
+ds4: CUDA0 layers [0, 39] (tensor parallel 4, part 0) + head: weights 5.35 GB, experts 24.78 GB (5233 of 15360 in VRAM), caches 0.18 GB, 1240 MiB free
+ds4: CUDA1 layers [0, 39] (tensor parallel 4, part 1): weights 5.35 GB, experts 24.78 GB (5233 of 15360 in VRAM), caches 0.18 GB, 1572 MiB free
+ds4: CUDA2 layers [0, 39] (tensor parallel 4, part 2): weights 5.35 GB, experts 24.78 GB (5233 of 15360 in VRAM), caches 0.18 GB, 1572 MiB free
+ds4: CUDA3 layers [0, 39] (tensor parallel 4, part 3): weights 5.35 GB, experts 24.78 GB (5233 of 15360 in VRAM), caches 0.18 GB, 1572 MiB free
+ds4: 10127 routed experts on the CPU lane (190.4 GB): 10127 copied into RAM (2 NUMA parts), the rest in place in the model's files; 56 threads
+maya ds4 serve: GEN <max_new> [keys] <ids>; GENI <max_new> [keys] <pictures> <ids>; STOP, QUIT
+
+rocblaslt error: Cannot read "TensileLibrary_lazy_gfx906.dat" (or .zlib variant): No such file or directory
+
+rocblaslt error: Could not load "TensileLibrary_lazy_gfx906.dat"
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 19270 ms (106.3 tok/s), 256 generated in 19536 ms (13.10 tok/s); CPU lane 1.6% of the experts
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 18125 ms (113.0 tok/s), 256 generated in 9913 ms (25.82 tok/s); CPU lane 1.3% of the experts
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 19966 ms (102.6 tok/s), 256 generated in 9260 ms (27.64 tok/s); CPU lane 1.3% of the experts
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 22041 ms (92.9 tok/s), 256 generated in 9082 ms (28.19 tok/s); CPU lane 1.1% of the experts
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 22099 ms (92.7 tok/s), 256 generated in 9027 ms (28.36 tok/s); CPU lane 1.0% of the experts
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 22335 ms (91.7 tok/s), 256 generated in 8831 ms (28.99 tok/s); CPU lane 0.9% of the experts

@@ -2,6 +2,10 @@
 
 ## Status and scope
 
+Execution was separately approved on 2026-10-26. Stages 1-4 were measured,
+then the restart control exceeded the drift limit; see [execution results](coarse-2048-tg256/RESULTS.md).
+No revised run or fine tuning has been authorized by that execution.
+
 This is the agreed plan on paper, with the user's correction to retain
 **TG256**, not TG512. This documentation request does not start another GPU
 run or authorize Kubernetes writes. Obtain execution approval before running.

@@ -1,0 +1,12 @@
+test_allowlist_and_durable_exit137 (test_tune.TuningTests.test_allowlist_and_durable_exit137) ... ok
+test_complete_dry_sweep_with_restarts_and_frozen_schedules (test_tune.TuningTests.test_complete_dry_sweep_with_restarts_and_frozen_schedules) ... ok
+test_conservative_choice_and_interaction_budget (test_tune.TuningTests.test_conservative_choice_and_interaction_budget) ... ok
+test_drift_stops_without_following_stages (test_tune.TuningTests.test_drift_stops_without_following_stages) ... ok
+test_native_request_thresholds_and_zero_cumulative (test_tune.TuningTests.test_native_request_thresholds_and_zero_cumulative) ... ok
+test_pooling_and_invalid_rejection (test_tune.TuningTests.test_pooling_and_invalid_rejection) ... ok
+test_runtime_fixed_settings_and_no_drafter_on_none (test_tune.TuningTests.test_runtime_fixed_settings_and_no_drafter_on_none) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.070s
+
+OK

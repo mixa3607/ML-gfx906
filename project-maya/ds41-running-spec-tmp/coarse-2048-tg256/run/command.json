@@ -1,0 +1,13 @@
+[
+  "kubectl",
+  "-n",
+  "apps-ml",
+  "exec",
+  "-i",
+  "maya-ds41-dspark-coarse-2048",
+  "--",
+  "env",
+  "BENCH_STREAM=1",
+  "python",
+  "/data/screen/coarse-2048-tg256/tune.py"
+]

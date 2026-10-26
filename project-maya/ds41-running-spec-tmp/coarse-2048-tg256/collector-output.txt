@@ -1,0 +1,197 @@
+SAVED experiment
+SAVED stage-1
+SAVED 01-none-starting
+SAVED 01-none-ready
+READY 01-none: 199.8s, copies=[10127, 10127]
+SAVED point
+SAVED 01-none-warmup-warmup-1-result
+{'point': '01-none-warmup', 'case': 'warmup-1', 'decode_tok_s': 13.052691925758335, 'valid': True}
+SAVED 01-none-warmup-warmup-2-result
+{'point': '01-none-warmup', 'case': 'warmup-2', 'decode_tok_s': 25.723278053504416, 'valid': True}
+SAVED 01-none-warmup-warmup-3-result
+{'point': '01-none-warmup', 'case': 'warmup-3', 'decode_tok_s': 27.536310134441983, 'valid': True}
+SAVED point
+SAVED none-measurement-1-result
+{'point': 'none', 'case': 'measurement-1', 'decode_tok_s': 28.07875264270613, 'valid': True}
+SAVED none-measurement-2-result
+{'point': 'none', 'case': 'measurement-2', 'decode_tok_s': 28.247022985322626, 'valid': True}
+SAVED none-measurement-3-result
+{'point': 'none', 'case': 'measurement-3', 'decode_tok_s': 28.87489808859498, 'valid': True}
+SAVED summary
+SAVED 01-none-finished
+SAVED 02-thresholds-starting
+SAVED 02-thresholds-ready
+READY 02-thresholds: 278.4s, copies=[10631, 10631]
+SAVED point
+SAVED 02-thresholds-warmup-warmup-1-result
+{'point': '02-thresholds-warmup', 'case': 'warmup-1', 'decode_tok_s': 26.72031687152243, 'valid': True}
+SAVED 02-thresholds-warmup-warmup-2-result
+{'point': '02-thresholds-warmup', 'case': 'warmup-2', 'decode_tok_s': 34.03267136450993, 'valid': True}
+SAVED 02-thresholds-warmup-warmup-3-result
+{'point': '02-thresholds-warmup', 'case': 'warmup-3', 'decode_tok_s': 34.93677129430462, 'valid': True}
+SAVED point
+SAVED loaded-off-measurement-1-result
+{'point': 'loaded-off', 'case': 'measurement-1', 'decode_tok_s': 26.580497211653725, 'valid': True}
+SAVED loaded-off-measurement-2-result
+{'point': 'loaded-off', 'case': 'measurement-2', 'decode_tok_s': 27.27885407417709, 'valid': True}
+SAVED loaded-off-measurement-3-result
+{'point': 'loaded-off', 'case': 'measurement-3', 'decode_tok_s': 27.80837304659811, 'valid': True}
+SAVED summary
+SAVED point
+SAVED default-measurement-1-result
+{'point': 'default', 'case': 'measurement-1', 'decode_tok_s': 35.880623056466256, 'valid': True}
+SAVED default-measurement-2-result
+{'point': 'default', 'case': 'measurement-2', 'decode_tok_s': 40.1530539940479, 'valid': True}
+SAVED default-measurement-3-result
+{'point': 'default', 'case': 'measurement-3', 'decode_tok_s': 38.73731542808531, 'valid': True}
+SAVED summary
+SAVED stage-2
+SAVED point
+SAVED confidence-0.7-measurement-1-result
+{'point': 'confidence-0.7', 'case': 'measurement-1', 'decode_tok_s': 34.35129928737893, 'valid': True}
+SAVED confidence-0.7-measurement-2-result
+{'point': 'confidence-0.7', 'case': 'measurement-2', 'decode_tok_s': 37.98769496625799, 'valid': True}
+SAVED confidence-0.7-measurement-3-result
+{'point': 'confidence-0.7', 'case': 'measurement-3', 'decode_tok_s': 35.79851752021563, 'valid': True}
+SAVED summary
+SAVED point
+SAVED confidence-0.3-measurement-1-result
+{'point': 'confidence-0.3', 'case': 'measurement-1', 'decode_tok_s': 37.92329084933299, 'valid': True}
+SAVED confidence-0.3-measurement-2-result
+{'point': 'confidence-0.3', 'case': 'measurement-2', 'decode_tok_s': 37.356069262547244, 'valid': True}
+SAVED confidence-0.3-measurement-3-result
+{'point': 'confidence-0.3', 'case': 'measurement-3', 'decode_tok_s': 38.884991918021285, 'valid': True}
+SAVED summary
+SAVED point
+SAVED confidence-control-measurement-1-result
+{'point': 'confidence-control', 'case': 'measurement-1', 'decode_tok_s': 36.36674795704445, 'valid': True}
+SAVED confidence-control-measurement-2-result
+{'point': 'confidence-control', 'case': 'measurement-2', 'decode_tok_s': 39.749345304900864, 'valid': True}
+SAVED confidence-control-measurement-3-result
+{'point': 'confidence-control', 'case': 'measurement-3', 'decode_tok_s': 39.96677272228578, 'valid': True}
+SAVED summary
+SAVED summary
+SAVED stage-3
+SAVED point
+SAVED cumulative-0-measurement-1-result
+{'point': 'cumulative-0', 'case': 'measurement-1', 'decode_tok_s': 36.85823311748381, 'valid': True}
+SAVED cumulative-0-measurement-2-result
+{'point': 'cumulative-0', 'case': 'measurement-2', 'decode_tok_s': 39.888624702790636, 'valid': True}
+SAVED cumulative-0-measurement-3-result
+{'point': 'cumulative-0', 'case': 'measurement-3', 'decode_tok_s': 38.558079051622464, 'valid': True}
+SAVED summary
+SAVED point
+SAVED cumulative-0.3-measurement-1-result
+{'point': 'cumulative-0.3', 'case': 'measurement-1', 'decode_tok_s': 38.13768451909127, 'valid': True}
+SAVED cumulative-0.3-measurement-2-result
+{'point': 'cumulative-0.3', 'case': 'measurement-2', 'decode_tok_s': 40.09244846941182, 'valid': True}
+SAVED cumulative-0.3-measurement-3-result
+{'point': 'cumulative-0.3', 'case': 'measurement-3', 'decode_tok_s': 39.72333862977849, 'valid': True}
+SAVED summary
+SAVED point
+SAVED cumulative-0.7-measurement-1-result
+{'point': 'cumulative-0.7', 'case': 'measurement-1', 'decode_tok_s': 32.82951824291269, 'valid': True}
+SAVED cumulative-0.7-measurement-2-result
+{'point': 'cumulative-0.7', 'case': 'measurement-2', 'decode_tok_s': 34.698126301179734, 'valid': True}
+SAVED cumulative-0.7-measurement-3-result
+{'point': 'cumulative-0.7', 'case': 'measurement-3', 'decode_tok_s': 36.56752803510483, 'valid': True}
+SAVED summary
+SAVED point
+SAVED cumulative-control-measurement-1-result
+{'point': 'cumulative-control', 'case': 'measurement-1', 'decode_tok_s': 35.5633655495586, 'valid': True}
+SAVED cumulative-control-measurement-2-result
+{'point': 'cumulative-control', 'case': 'measurement-2', 'decode_tok_s': 40.30282435871094, 'valid': True}
+SAVED cumulative-control-measurement-3-result
+{'point': 'cumulative-control', 'case': 'measurement-3', 'decode_tok_s': 40.51413228261387, 'valid': True}
+SAVED summary
+SAVED summary
+SAVED stage-4
+SAVED 02-thresholds-finished
+SAVED 04-max-2-starting
+SAVED 04-max-2-ready
+READY 04-max-2: 186.3s, copies=[10631, 10631]
+SAVED point
+SAVED 04-max-2-warmup-warmup-1-result
+{'point': '04-max-2-warmup', 'case': 'warmup-1', 'decode_tok_s': 26.037412187551052, 'valid': True}
+SAVED 04-max-2-warmup-warmup-2-result
+{'point': '04-max-2-warmup', 'case': 'warmup-2', 'decode_tok_s': 32.93084522502744, 'valid': True}
+SAVED 04-max-2-warmup-warmup-3-result
+{'point': '04-max-2-warmup', 'case': 'warmup-3', 'decode_tok_s': 33.307210031347964, 'valid': True}
+SAVED point
+SAVED maximum-2-measurement-1-result
+{'point': 'maximum-2', 'case': 'measurement-1', 'decode_tok_s': 33.85150473257311, 'valid': True}
+SAVED maximum-2-measurement-2-result
+{'point': 'maximum-2', 'case': 'measurement-2', 'decode_tok_s': 36.28085651276944, 'valid': True}
+SAVED maximum-2-measurement-3-result
+{'point': 'maximum-2', 'case': 'measurement-3', 'decode_tok_s': 36.45252594562141, 'valid': True}
+SAVED summary
+SAVED 04-max-2-finished
+SAVED 03-max-1-starting
+SAVED 03-max-1-ready
+READY 03-max-1: 331.5s, copies=[10631, 10631]
+SAVED point
+SAVED 03-max-1-warmup-warmup-1-result
+{'point': '03-max-1-warmup', 'case': 'warmup-1', 'decode_tok_s': 22.983740130511592, 'valid': True}
+SAVED 03-max-1-warmup-warmup-2-result
+{'point': '03-max-1-warmup', 'case': 'warmup-2', 'decode_tok_s': 29.596100278551532, 'valid': True}
+SAVED 03-max-1-warmup-warmup-3-result
+{'point': '03-max-1-warmup', 'case': 'warmup-3', 'decode_tok_s': 29.550142535981646, 'valid': True}
+SAVED point
+SAVED maximum-1-measurement-1-result
+{'point': 'maximum-1', 'case': 'measurement-1', 'decode_tok_s': 29.84166364349159, 'valid': True}
+SAVED maximum-1-measurement-2-result
+{'point': 'maximum-1', 'case': 'measurement-2', 'decode_tok_s': 32.685183998359335, 'valid': True}
+SAVED maximum-1-measurement-3-result
+{'point': 'maximum-1', 'case': 'measurement-3', 'decode_tok_s': 31.627906976744185, 'valid': True}
+SAVED summary
+SAVED 03-max-1-finished
+SAVED 05-max-3-starting
+SAVED 05-max-3-ready
+READY 05-max-3: 232.4s, copies=[10631, 10631]
+SAVED point
+SAVED 05-max-3-warmup-warmup-1-result
+{'point': '05-max-3-warmup', 'case': 'warmup-1', 'decode_tok_s': 27.36257015011857, 'valid': True}
+SAVED 05-max-3-warmup-warmup-2-result
+{'point': '05-max-3-warmup', 'case': 'warmup-2', 'decode_tok_s': 34.574395964964616, 'valid': True}
+SAVED 05-max-3-warmup-warmup-3-result
+{'point': '05-max-3-warmup', 'case': 'warmup-3', 'decode_tok_s': 33.62031458066898, 'valid': True}
+SAVED point
+SAVED maximum-3-measurement-1-result
+{'point': 'maximum-3', 'case': 'measurement-1', 'decode_tok_s': 32.020292075291636, 'valid': True}
+SAVED maximum-3-measurement-2-result
+{'point': 'maximum-3', 'case': 'measurement-2', 'decode_tok_s': 38.10235338064998, 'valid': True}
+SAVED maximum-3-measurement-3-result
+{'point': 'maximum-3', 'case': 'measurement-3', 'decode_tok_s': 36.15944186837963, 'valid': True}
+SAVED summary
+SAVED stage-5
+SAVED 05-max-3-finished
+SAVED 06-interactions-starting
+SAVED 06-interactions-ready
+READY 06-interactions: 280.9s, copies=[10631, 10631]
+SAVED point
+SAVED 06-interactions-warmup-warmup-1-result
+{'point': '06-interactions-warmup', 'case': 'warmup-1', 'decode_tok_s': 27.099407001211507, 'valid': True}
+SAVED 06-interactions-warmup-warmup-2-result
+{'point': '06-interactions-warmup', 'case': 'warmup-2', 'decode_tok_s': 32.56081210496073, 'valid': True}
+SAVED 06-interactions-warmup-warmup-3-result
+{'point': '06-interactions-warmup', 'case': 'warmup-3', 'decode_tok_s': 33.957892213655064, 'valid': True}
+SAVED point
+SAVED interaction-opening-control-measurement-1-result
+{'point': 'interaction-opening-control', 'case': 'measurement-1', 'decode_tok_s': 31.972917058491632, 'valid': True}
+SAVED interaction-opening-control-measurement-2-result
+{'point': 'interaction-opening-control', 'case': 'measurement-2', 'decode_tok_s': 35.916504690272966, 'valid': True}
+SAVED interaction-opening-control-measurement-3-result
+{'point': 'interaction-opening-control', 'case': 'measurement-3', 'decode_tok_s': 37.620052225484265, 'valid': True}
+SAVED summary
+SAVED summary
+Traceback (most recent call last):
+  File "/data/screen/coarse-2048-tg256/tune.py", line 351, in main
+    sweep.execute()
+  File "/data/screen/coarse-2048-tg256/tune.py", line 290, in execute
+    self.check_control('selected-MAX-restart', selected, before)
+  File "/data/screen/coarse-2048-tg256/tune.py", line 236, in check_control
+    raise ValueError(f'Control drift {label}: {delta:+.2f}% exceeds 5%; stop without expanding run')
+ValueError: Control drift selected-MAX-restart: -8.30% exceeds 5%; stop without expanding run
+
+SAVED 06-interactions-finished
+SAVED summary

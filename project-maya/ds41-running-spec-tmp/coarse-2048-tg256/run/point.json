@@ -1,0 +1,12 @@
+{
+  "label": "interaction-opening-control",
+  "point": {
+    "conf": 0.5,
+    "cum": 0.5,
+    "maximum": 0,
+    "spec": true
+  },
+  "session": "06-interactions",
+  "warmup": false,
+  "role": "control"
+}

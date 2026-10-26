@@ -131,10 +131,11 @@ class Engine:
             if line.startswith('READY '):
                 return lines
 
-    def request(self, case, spec):
+    def request(self, case, spec, tuning=None):
         before = snapshot(self.proc.pid)
         start = time.monotonic()
-        message = f'GEN 256 temperature=0 seed=1 spec={int(spec)} ' + ','.join(map(str, case['ids'])) + '\n'
+        keys = ''.join(f'{key}={value} ' for key, value in (tuning or {}).items())
+        message = f'GEN 256 temperature=0 seed=1 spec={int(spec)} ' + keys + ','.join(map(str, case['ids'])) + '\n'
         self.proc.stdin.write(message.encode())
         self.proc.stdin.flush()
         tokens, times, stats = [], [], []

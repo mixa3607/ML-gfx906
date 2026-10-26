@@ -1,0 +1,51 @@
+ds4: tensor parallel 4: the experts' n_ff 2304 in 32-value blocks, 576 to 576 a member (the odd blocks going round the members layer by layer) (DS4_TP_GGUF_UNEVEN)
+ds4: the one-GPU decode path (in-place pulls, windows streamed, landings): off (v1.1.27's path: not Linux + NVIDIA + one GPU)
+ds4: DS4_DRAFT_DEV 1,2,3: DSpark block 0 on CUDA1 (member 1), 1 on CUDA2 (member 2), 2 on CUDA3 (member 3) - each block's experts out of its own member's room
+ds4: the experts VRAM leaves over (~196.9 GB) are read in place from the model's files (copied into RAM after the GPUs' share when the RAM holds them all; --mmap-experts on keeps them in place) (235.2 GB of RAM free to keep them: the most-routed 196.9 GB read ahead; prompts in chunks of 2048)
+ds4: 10631 of the CPU lane's 10631 experts copied into RAM (199.9 GB, 2 NUMA parts) in 255.2 s
+ds4: CUDA0 layers [0, 39] (tensor parallel 4, part 0) + head: weights 5.50 GB, experts 22.42 GB (4729 of 15360 in VRAM), caches 0.18 GB, 3352 MiB free
+ds4: CUDA1 layers [0, 40] (tensor parallel 4, part 1) + blocks 0: weights 5.63 GB, experts 24.82 GB (4857 of 15488 in VRAM), caches 0.18 GB, 1244 MiB free
+ds4: CUDA2 layers [0, 41] (tensor parallel 4, part 2) + blocks 1: weights 5.63 GB, experts 24.82 GB (4857 of 15488 in VRAM), caches 0.18 GB, 1244 MiB free
+ds4: CUDA3 layers [0, 42] (tensor parallel 4, part 3) + blocks 2: weights 5.63 GB, experts 24.82 GB (4857 of 15488 in VRAM), caches 0.18 GB, 1244 MiB free
+ds4: 10631 routed experts on the CPU lane (199.9 GB): 10631 copied into RAM (2 NUMA parts), the rest in place in the model's files; 56 threads
+maya ds4 serve: GEN <max_new> [keys] <ids>; GENI <max_new> [keys] <pictures> <ids>; STOP, QUIT
+
+rocblaslt error: Cannot read "TensileLibrary_lazy_gfx906.dat" (or .zlib variant): No such file or directory
+
+rocblaslt error: Could not load "TensileLibrary_lazy_gfx906.dat"
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 29600 ms (69.2 tok/s), 256 generated in 11095 ms (23.07 tok/s); CPU lane 2.8% of the experts
+maya ds4 serve: drafts 99 of 117 kept; per position (kept / reached): 1: 99/117 85%
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 24709 ms (82.9 tok/s), 256 generated in 8616 ms (29.71 tok/s); CPU lane 1.7% of the experts
+maya ds4 serve: drafts 100 of 111 kept; per position (kept / reached): 1: 100/111 90%
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 24810 ms (82.5 tok/s), 256 generated in 8629 ms (29.67 tok/s); CPU lane 1.5% of the experts
+maya ds4 serve: drafts 91 of 109 kept; per position (kept / reached): 1: 91/109 83%
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 24181 ms (84.7 tok/s), 256 generated in 8545 ms (29.96 tok/s); CPU lane 1.3% of the experts
+maya ds4 serve: drafts 84 of 98 kept; per position (kept / reached): 1: 84/98 86%
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 23814 ms (86.0 tok/s), 256 generated in 7802 ms (32.81 tok/s); CPU lane 1.3% of the experts
+maya ds4 serve: drafts 108 of 121 kept; per position (kept / reached): 1: 108/121 89%
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 23677 ms (86.5 tok/s), 256 generated in 8063 ms (31.75 tok/s); CPU lane 1.1% of the experts
+maya ds4 serve: drafts 95 of 109 kept; per position (kept / reached): 1: 95/109 87%

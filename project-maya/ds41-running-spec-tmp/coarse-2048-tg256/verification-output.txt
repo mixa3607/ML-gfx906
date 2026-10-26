@@ -1,0 +1,21 @@
+01-none: 6 valid requests, full expert copies, no OOM/throttling/native ERR
+02-thresholds: 30 valid requests, full expert copies, no OOM/throttling/native ERR
+04-max-2: 6 valid requests, full expert copies, no OOM/throttling/native ERR
+03-max-1: 6 valid requests, full expert copies, no OOM/throttling/native ERR
+05-max-3: 6 valid requests, full expert copies, no OOM/throttling/native ERR
+06-interactions: 6 valid requests, full expert copies, no OOM/throttling/native ERR
+none: 28.3961 decode tok/s
+loaded-off: 27.2133 decode tok/s
+default: 38.1729 decode tok/s
+confidence-0.7: 35.9844 decode tok/s
+confidence-0.3: 38.0444 decode tok/s
+confidence-control: 38.6219 decode tok/s
+cumulative-0: 38.3947 decode tok/s
+cumulative-0.3: 39.2993 decode tok/s
+cumulative-0.7: 34.6312 decode tok/s
+cumulative-control: 38.6530 decode tok/s
+maximum-2: 35.4876 decode tok/s
+maximum-1: 31.3405 decode tok/s
+maximum-3: 35.2400 decode tok/s
+interaction-opening-control: 35.0057 decode tok/s
+Verified frozen inputs/source hashes, 60 durable rows, recomputed scores, planned drift stop and cleanup.

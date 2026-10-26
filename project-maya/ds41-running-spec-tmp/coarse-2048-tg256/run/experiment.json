@@ -1,0 +1,12 @@
+{
+  "seed": 20261026,
+  "cases_sha256": "946bb7aaf184329fb15cc0330fbcecc7cc67ea090bfcda05a1b84002f9fd6b80",
+  "seed_profile_sha256": "bcfd7697fc070b0ebcb0138c0ef029429ea0d4ff81ca60eeb7804e08efd0cd29",
+  "sources": {
+    "tune.py": "5cef33938396345c8e6f7abe87c49dfbe77661edce35eb258cbd4b97ea4487ba",
+    "screen.py": "f5f645fff1ad1bcecca89872d9ae674aa4e2b3c234abfe79b3b799d1c0f3a833",
+    "stream.py": "051bc58ada54999bc62829feb31f054fac713edf8681b29569d87d386ca51a64",
+    "summarize.py": "fa6fe3b86cce50e61fb60050d28bbfea3ca3e433e2807c11ce8e4274cc0626f5"
+  },
+  "policy": "stop on invalid request or >5% control drift; no retries"
+}

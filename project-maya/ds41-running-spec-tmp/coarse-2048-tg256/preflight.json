@@ -1,0 +1,107 @@
+{
+  "cgroup": {
+    "memory.current": "4995891200",
+    "memory.peak": "5053657088",
+    "memory.max": "236223201280",
+    "cpu.max": "max 100000",
+    "cpuset.cpus.effective": "0-75",
+    "memory.stat": {
+      "anon": 9805824,
+      "file": 4973281280,
+      "kernel": 12242944,
+      "kernel_stack": 32768,
+      "pagetables": 143360,
+      "sec_pagetables": 0,
+      "percpu": 6240,
+      "sock": 0,
+      "vmalloc": 0,
+      "shmem": 0,
+      "zswap": 0,
+      "zswapped": 0,
+      "file_mapped": 0,
+      "file_dirty": 77824,
+      "file_writeback": 0,
+      "swapcached": 0,
+      "anon_thp": 0,
+      "file_thp": 0,
+      "shmem_thp": 0,
+      "inactive_anon": 0,
+      "active_anon": 9805824,
+      "inactive_file": 4973154304,
+      "active_file": 126976,
+      "unevictable": 0,
+      "slab_reclaimable": 11511640,
+      "slab_unreclaimable": 479440,
+      "slab": 11991080,
+      "workingset_refault_anon": 0,
+      "workingset_refault_file": 1526,
+      "workingset_activate_anon": 0,
+      "workingset_activate_file": 0,
+      "workingset_restore_anon": 0,
+      "workingset_restore_file": 0,
+      "workingset_nodereclaim": 0,
+      "pgscan": 0,
+      "pgsteal": 0,
+      "pgscan_kswapd": 0,
+      "pgscan_direct": 0,
+      "pgscan_khugepaged": 0,
+      "pgsteal_kswapd": 0,
+      "pgsteal_direct": 0,
+      "pgsteal_khugepaged": 0,
+      "pgfault": 36237,
+      "pgmajfault": 5,
+      "pgrefill": 0,
+      "pgactivate": 0,
+      "pgdeactivate": 0,
+      "pglazyfree": 0,
+      "pglazyfreed": 0,
+      "zswpin": 0,
+      "zswpout": 0,
+      "zswpwb": 0,
+      "thp_fault_alloc": 0,
+      "thp_collapse_alloc": 0,
+      "thp_swpout": 0,
+      "thp_swpout_fallback": 0
+    },
+    "memory.events": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "cpu.stat": {
+      "usage_usec": 11062226,
+      "user_usec": 8346296,
+      "system_usec": 2715930,
+      "core_sched.force_idle_usec": 0,
+      "nr_periods": 0,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "unix": 1793019612.189097
+  },
+  "pack": {
+    "ds4.txt": {
+      "size": 1522,
+      "sha256": "e1c6053dc995b76104af2d86ee332c85ba3a1684f28c4de2e39a26c5af9bbae9"
+    },
+    "tensors.txt": {
+      "size": 3647174,
+      "sha256": "77450ef4a9237ee8019668cc6bbe9f74c32dc2d0627b02fe584ba44c0b2b8040"
+    },
+    "engram.bin": {
+      "size": 517980,
+      "sha256": "08d55d6433f389b14aa115f4ea4eb31d6a2d63df1ae40821f03facf4c2d49142"
+    }
+  },
+  "sources": {
+    "screen.py": "f5f645fff1ad1bcecca89872d9ae674aa4e2b3c234abfe79b3b799d1c0f3a833",
+    "stream.py": "051bc58ada54999bc62829feb31f054fac713edf8681b29569d87d386ca51a64",
+    "summarize.py": "fa6fe3b86cce50e61fb60050d28bbfea3ca3e433e2807c11ce8e4274cc0626f5",
+    "coarse-2048-tg256/tune.py": "5cef33938396345c8e6f7abe87c49dfbe77661edce35eb258cbd4b97ea4487ba"
+  }
+}

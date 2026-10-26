@@ -1,0 +1,28 @@
+{
+  "seed": 20261030,
+  "schedule": [
+    {
+      "conf": 0.5,
+      "cum": 0.5,
+      "maximum": 2,
+      "spec": true
+    },
+    {
+      "conf": 0.5,
+      "cum": 0.5,
+      "maximum": 1,
+      "spec": true
+    },
+    {
+      "conf": 0.5,
+      "cum": 0.5,
+      "maximum": 3,
+      "spec": true
+    }
+  ],
+  "reused_maximum_0": "default",
+  "selected_thresholds": [
+    0.5,
+    0.5
+  ]
+}

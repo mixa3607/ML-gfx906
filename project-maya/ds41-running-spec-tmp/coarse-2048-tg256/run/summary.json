@@ -1,0 +1,2564 @@
+{
+  "complete": false,
+  "status": "drift",
+  "seed": 20261026,
+  "cases_sha256": "946bb7aaf184329fb15cc0330fbcecc7cc67ea090bfcda05a1b84002f9fd6b80",
+  "seed_profile_sha256": "bcfd7697fc070b0ebcb0138c0ef029429ea0d4ff81ca60eeb7804e08efd0cd29",
+  "sessions": [
+    {
+      "name": "01-none",
+      "maximum": 0,
+      "loaded": false,
+      "before": {
+        "memory.current": "4996505600",
+        "memory.peak": "5053657088",
+        "memory.max": "236223201280",
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-75",
+        "memory.stat": {
+          "anon": 10174464,
+          "file": 4973359104,
+          "kernel": 12271616,
+          "kernel_stack": 49152,
+          "pagetables": 147456,
+          "sec_pagetables": 0,
+          "percpu": 3744,
+          "sock": 0,
+          "vmalloc": 0,
+          "shmem": 0,
+          "zswap": 0,
+          "zswapped": 0,
+          "file_mapped": 0,
+          "file_dirty": 73728,
+          "file_writeback": 0,
+          "swapcached": 0,
+          "anon_thp": 0,
+          "file_thp": 0,
+          "shmem_thp": 0,
+          "inactive_anon": 0,
+          "active_anon": 10133504,
+          "inactive_file": 4973228032,
+          "active_file": 126976,
+          "unevictable": 0,
+          "slab_reclaimable": 11524472,
+          "slab_unreclaimable": 491744,
+          "slab": 12016216,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 1526,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 0,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 0,
+          "workingset_nodereclaim": 0,
+          "pgscan": 0,
+          "pgsteal": 0,
+          "pgscan_kswapd": 0,
+          "pgscan_direct": 0,
+          "pgscan_khugepaged": 0,
+          "pgsteal_kswapd": 0,
+          "pgsteal_direct": 0,
+          "pgsteal_khugepaged": 0,
+          "pgfault": 41180,
+          "pgmajfault": 5,
+          "pgrefill": 0,
+          "pgactivate": 0,
+          "pgdeactivate": 0,
+          "pglazyfree": 0,
+          "pglazyfreed": 0,
+          "zswpin": 0,
+          "zswpout": 0,
+          "zswpwb": 0,
+          "thp_fault_alloc": 0,
+          "thp_collapse_alloc": 0,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "cpu.stat": {
+          "usage_usec": 11190320,
+          "user_usec": 8436350,
+          "system_usec": 2753969,
+          "core_sched.force_idle_usec": 0,
+          "nr_periods": 0,
+          "nr_throttled": 0,
+          "throttled_usec": 0,
+          "nr_bursts": 0,
+          "burst_usec": 0
+        },
+        "unix": 1793019645.871226
+      },
+      "complete": true,
+      "stage": "complete",
+      "cases_sha256": "946bb7aaf184329fb15cc0330fbcecc7cc67ea090bfcda05a1b84002f9fd6b80",
+      "seed_profile_sha256": "bcfd7697fc070b0ebcb0138c0ef029429ea0d4ff81ca60eeb7804e08efd0cd29",
+      "source_commit": "6afa525bbabc3a8f5fd165f89e9bc72155d9bd39",
+      "build": {
+        "backend": "hip",
+        "src": "6ce310e787da889e",
+        "archs": [
+          "gfx906"
+        ],
+        "rocm": "/opt/rocm",
+        "gpu_ids": [
+          0
+        ],
+        "llama": "/opt/maya/third_party/llama.cpp",
+        "lib_dirs": [
+          "/opt/rocm/lib"
+        ],
+        "targets": [
+          "maya",
+          "maya-ds4"
+        ]
+      },
+      "ready": [
+        "INFO context=196608 kv=fp4 kv_resident=196608 expert_slots=5233 engine_kind=ds4 cpu_experts=10127 ram_experts=10127 engine=ds4-0.1",
+        "VRAM dev=0 pci=0000:33:00.0 total=34342961152 free=1300234240 weights=3877860352 kv=45896448 kv_ram=0 act=50174464 drafter=0 window=0 pool=24783943680 tail=0 borrow=0 vision=0 vision_own=334167552 prompt=1845298432 tp=1608541440 tp_n=4 slots=5273 ctx=196608 layers=0-39",
+        "VRAM dev=1 pci=0000:36:00.0 total=34342961152 free=1648361472 weights=3877860352 kv=45896448 kv_ram=0 act=41900544 drafter=0 window=0 pool=24783943680 tail=0 borrow=0 vision=0 vision_own=0 prompt=1845298432 tp=1608541440 tp_n=4 slots=5273 ctx=196608 layers=0-39",
+        "VRAM dev=2 pci=0000:4d:00.0 total=34342961152 free=1648361472 weights=3877860352 kv=45896448 kv_ram=0 act=41900544 drafter=0 window=0 pool=24783943680 tail=0 borrow=0 vision=0 vision_own=0 prompt=1845298432 tp=1608541440 tp_n=4 slots=5273 ctx=196608 layers=0-39",
+        "VRAM dev=3 pci=0000:50:00.0 total=34342961152 free=1648361472 weights=3877860352 kv=45896448 kv_ram=0 act=41900544 drafter=0 window=0 pool=24783943680 tail=0 borrow=0 vision=0 vision_own=0 prompt=1845298432 tp=1608541440 tp_n=4 slots=5273 ctx=196608 layers=0-39",
+        "INFO engram_layers=2 engram_lookups=48",
+        "INFO vision=ds4 vision_patch=14 vision_merge=3 vision_min_pixels=295936 vision_max_tokens=1024 vision_max_wh_ratio=0 image_token=129264 vision_gpu=0 vision_mib=318",
+        "READY 196608 stop"
+      ],
+      "load_s": 199.83966031399905,
+      "full_copies": [
+        10127,
+        10127
+      ],
+      "ready_snapshot": {
+        "memory.current": "236217368576",
+        "memory.peak": "236223201280",
+        "memory.max": "236223201280",
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-75",
+        "memory.stat": {
+          "anon": 191224778752,
+          "file": 44354936832,
+          "kernel": 634568704,
+          "kernel_stack": 1916928,
+          "pagetables": 396972032,
+          "sec_pagetables": 0,
+          "percpu": 3744,
+          "sock": 0,
+          "vmalloc": 0,
+          "shmem": 10514489344,
+          "zswap": 0,
+          "zswapped": 0,
+          "file_mapped": 10514489344,
+          "file_dirty": 8192,
+          "file_writeback": 0,
+          "swapcached": 0,
+          "anon_thp": 112497524736,
+          "file_thp": 0,
+          "shmem_thp": 0,
+          "inactive_anon": 0,
+          "active_anon": 201319538688,
+          "inactive_file": 30885490688,
+          "active_file": 2954952704,
+          "unevictable": 0,
+          "slab_reclaimable": 232344472,
+          "slab_unreclaimable": 3277952,
+          "slab": 235622424,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 20057980,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 7193752,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 23124,
+          "workingset_nodereclaim": 0,
+          "pgscan": 46483327,
+          "pgsteal": 46483327,
+          "pgscan_kswapd": 9756801,
+          "pgscan_direct": 36726526,
+          "pgscan_khugepaged": 0,
+          "pgsteal_kswapd": 9756801,
+          "pgsteal_direct": 36726526,
+          "pgsteal_khugepaged": 0,
+          "pgfault": 30967496,
+          "pgmajfault": 6,
+          "pgrefill": 721393,
+          "pgactivate": 0,
+          "pgdeactivate": 0,
+          "pglazyfree": 0,
+          "pglazyfreed": 0,
+          "zswpin": 0,
+          "zswpout": 0,
+          "zswpwb": 0,
+          "thp_fault_alloc": 53643,
+          "thp_collapse_alloc": 0,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 182,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "cpu.stat": {
+          "usage_usec": 1141122246,
+          "user_usec": 54920070,
+          "system_usec": 1086202176,
+          "core_sched.force_idle_usec": 0,
+          "nr_periods": 0,
+          "nr_throttled": 0,
+          "throttled_usec": 0,
+          "nr_bursts": 0,
+          "burst_usec": 0
+        },
+        "process_io": {
+          "rchar:": 345068622371,
+          "wchar:": 1330504,
+          "syscr:": 84917,
+          "syscw:": 136,
+          "read_bytes:": 315939254272,
+          "write_bytes:": 1417216,
+          "cancelled_write_bytes:": 1114112
+        },
+        "process_status": "Name:\tmaya-ds4\nUmask:\t0022\nState:\tS (sleeping)\nTgid:\t58\nNgid:\t2382771\nPid:\t58\nPPid:\t51\nTracerPid:\t0\nUid:\t0\t0\t0\t0\nGid:\t0\t0\t0\t0\nFDSize:\t64\nGroups:\t0 \nNStgid:\t58\nNSpid:\t58\nNSpgid:\t58\nNSsid:\t58\nKthread:\t0\nVmPeak:\t850136012 kB\nVmSize:\t850136012 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t197218020 kB\nVmRSS:\t197218020 kB\nRssAnon:\t186732872 kB\nRssFile:\t  217092 kB\nRssShmem:\t10268056 kB\nVmData:\t188368780 kB\nVmStk:\t     220 kB\nVmExe:\t    5400 kB\nVmLib:\t  213072 kB\nVmPTE:\t  387512 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t113\nSigQ:\t1/1029350\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000200000000\nSigCgt:\t0000000100000000\nCapInh:\t0000000000000000\nCapPrm:\t000001ffffffffff\nCapEff:\t000001ffffffffff\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tvulnerable\nSpeculationIndirectBranch:\talways enabled\nCpus_allowed:\tfff,ffffffff,ffffffff\nCpus_allowed_list:\t0-75\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\nMems_allowed_list:\t0-1\nvoluntary_ctxt_switches:\t1953\nnonvoluntary_ctxt_switches:\t1806\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+        "unix": 1793019845.7202706
+      },
+      "after": {
+        "memory.current": "32602460160",
+        "memory.peak": "236223201280",
+        "memory.max": "236223201280",
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-75",
+        "memory.stat": {
+          "anon": 10698752,
+          "file": 32354459648,
+          "kernel": 235806720,
+          "kernel_stack": 49152,
+          "pagetables": 159744,
+          "sec_pagetables": 0,
+          "percpu": 3744,
+          "sock": 0,
+          "vmalloc": 0,
+          "shmem": 0,
+          "zswap": 0,
+          "zswapped": 0,
+          "file_mapped": 0,
+          "file_dirty": 0,
+          "file_writeback": 0,
+          "swapcached": 0,
+          "anon_thp": 0,
+          "file_thp": 0,
+          "shmem_thp": 0,
+          "inactive_anon": 0,
+          "active_anon": 10698752,
+          "inactive_file": 29395951616,
+          "active_file": 2958508032,
+          "unevictable": 0,
+          "slab_reclaimable": 235037920,
+          "slab_unreclaimable": 609176,
+          "slab": 235647096,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 20058313,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 7194082,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 23124,
+          "workingset_nodereclaim": 0,
+          "pgscan": 47402424,
+          "pgsteal": 47402424,
+          "pgscan_kswapd": 9756801,
+          "pgscan_direct": 37645623,
+          "pgscan_khugepaged": 0,
+          "pgsteal_kswapd": 9756801,
+          "pgsteal_direct": 37645623,
+          "pgsteal_khugepaged": 0,
+          "pgfault": 32038332,
+          "pgmajfault": 13,
+          "pgrefill": 722139,
+          "pgactivate": 0,
+          "pgdeactivate": 0,
+          "pglazyfree": 0,
+          "pglazyfreed": 0,
+          "zswpin": 0,
+          "zswpout": 0,
+          "zswpwb": 0,
+          "thp_fault_alloc": 53859,
+          "thp_collapse_alloc": 1,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 212,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "cpu.stat": {
+          "usage_usec": 7270013478,
+          "user_usec": 6162976991,
+          "system_usec": 1107036487,
+          "core_sched.force_idle_usec": 0,
+          "nr_periods": 0,
+          "nr_throttled": 0,
+          "throttled_usec": 0,
+          "nr_bursts": 0,
+          "burst_usec": 0
+        },
+        "unix": 1793020042.6290047
+      }
+    },
+    {
+      "name": "02-thresholds",
+      "maximum": 0,
+      "loaded": true,
+      "before": {
+        "memory.current": "32602468352",
+        "memory.peak": "236223201280",
+        "memory.max": "236223201280",
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-75",
+        "memory.stat": {
+          "anon": 10698752,
+          "file": 32354459648,
+          "kernel": 235806720,
+          "kernel_stack": 49152,
+          "pagetables": 159744,
+          "sec_pagetables": 0,
+          "percpu": 3744,
+          "sock": 0,
+          "vmalloc": 0,
+          "shmem": 0,
+          "zswap": 0,
+          "zswapped": 0,
+          "file_mapped": 0,
+          "file_dirty": 0,
+          "file_writeback": 0,
+          "swapcached": 0,
+          "anon_thp": 0,
+          "file_thp": 0,
+          "shmem_thp": 0,
+          "inactive_anon": 0,
+          "active_anon": 10698752,
+          "inactive_file": 29395951616,
+          "active_file": 2958508032,
+          "unevictable": 0,
+          "slab_reclaimable": 235037920,
+          "slab_unreclaimable": 609176,
+          "slab": 235647096,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 20058313,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 7194082,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 23124,
+          "workingset_nodereclaim": 0,
+          "pgscan": 47402424,
+          "pgsteal": 47402424,
+          "pgscan_kswapd": 9756801,
+          "pgscan_direct": 37645623,
+          "pgscan_khugepaged": 0,
+          "pgsteal_kswapd": 9756801,
+          "pgsteal_direct": 37645623,
+          "pgsteal_khugepaged": 0,
+          "pgfault": 32038332,
+          "pgmajfault": 13,
+          "pgrefill": 722139,
+          "pgactivate": 0,
+          "pgdeactivate": 0,
+          "pglazyfree": 0,
+          "pglazyfreed": 0,
+          "zswpin": 0,
+          "zswpout": 0,
+          "zswpwb": 0,
+          "thp_fault_alloc": 53859,
+          "thp_collapse_alloc": 1,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 212,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "cpu.stat": {
+          "usage_usec": 7270017469,
+          "user_usec": 6162980982,
+          "system_usec": 1107036487,
+          "core_sched.force_idle_usec": 0,
+          "nr_periods": 0,
+          "nr_throttled": 0,
+          "throttled_usec": 0,
+          "nr_bursts": 0,
+          "burst_usec": 0
+        },
+        "unix": 1793020042.642832
+      },
+      "complete": true,
+      "stage": "complete",
+      "cases_sha256": "946bb7aaf184329fb15cc0330fbcecc7cc67ea090bfcda05a1b84002f9fd6b80",
+      "seed_profile_sha256": "bcfd7697fc070b0ebcb0138c0ef029429ea0d4ff81ca60eeb7804e08efd0cd29",
+      "source_commit": "6afa525bbabc3a8f5fd165f89e9bc72155d9bd39",
+      "build": {
+        "backend": "hip",
+        "src": "6ce310e787da889e",
+        "archs": [
+          "gfx906"
+        ],
+        "rocm": "/opt/rocm",
+        "gpu_ids": [
+          0
+        ],
+        "llama": "/opt/maya/third_party/llama.cpp",
+        "lib_dirs": [
+          "/opt/rocm/lib"
+        ],
+        "targets": [
+          "maya",
+          "maya-ds4"
+        ]
+      },
+      "ready": [
+        "INFO context=196608 kv=fp4 kv_resident=196608 expert_slots=4729 engine_kind=ds4 cpu_experts=10631 ram_experts=10631 engine=ds4-0.1",
+        "VRAM dev=0 pci=0000:33:00.0 total=34342961152 free=3514826752 weights=4026832896 kv=45896448 kv_ram=0 act=53368832 drafter=0 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=334167552 prompt=1845298432 tp=1608541440 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "VRAM dev=1 pci=0000:36:00.0 total=34342961152 free=1304428544 weights=3892335360 kv=45913344 kv_ram=0 act=45081856 drafter=2670888960 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=0 prompt=1845298432 tp=1608592128 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "VRAM dev=2 pci=0000:4d:00.0 total=34342961152 free=1304428544 weights=3975893760 kv=45913344 kv_ram=0 act=45081856 drafter=2587330560 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=0 prompt=1845298432 tp=1608592128 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "VRAM dev=3 pci=0000:50:00.0 total=34342961152 free=1304428544 weights=3975893760 kv=45913344 kv_ram=0 act=45081856 drafter=2587330560 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=0 prompt=1845298432 tp=1608592128 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "INFO engram_layers=2 engram_lookups=48",
+        "INFO vision=ds4 vision_patch=14 vision_merge=3 vision_min_pixels=295936 vision_max_tokens=1024 vision_max_wh_ratio=0 image_token=129264 vision_gpu=0 vision_mib=318",
+        "READY 196608 stop"
+      ],
+      "load_s": 278.41856364000705,
+      "full_copies": [
+        10631,
+        10631
+      ],
+      "ready_snapshot": {
+        "memory.current": "236219711488",
+        "memory.peak": "236223201280",
+        "memory.max": "236223201280",
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-75",
+        "memory.stat": {
+          "anon": 200689303552,
+          "file": 34834477056,
+          "kernel": 689627136,
+          "kernel_stack": 1916928,
+          "pagetables": 415559680,
+          "sec_pagetables": 0,
+          "percpu": 3744,
+          "sock": 0,
+          "vmalloc": 0,
+          "shmem": 10588569600,
+          "zswap": 0,
+          "zswapped": 0,
+          "file_mapped": 10588618752,
+          "file_dirty": 12288,
+          "file_writeback": 0,
+          "swapcached": 0,
+          "anon_thp": 111971139584,
+          "file_thp": 0,
+          "shmem_thp": 0,
+          "inactive_anon": 0,
+          "active_anon": 210858000384,
+          "inactive_file": 16462196736,
+          "active_file": 7783706624,
+          "unevictable": 0,
+          "slab_reclaimable": 268778776,
+          "slab_unreclaimable": 3299840,
+          "slab": 272078616,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 49112035,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 35990542,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 214661,
+          "workingset_nodereclaim": 0,
+          "pgscan": 105821897,
+          "pgsteal": 105821425,
+          "pgscan_kswapd": 24793184,
+          "pgscan_direct": 81028713,
+          "pgscan_khugepaged": 0,
+          "pgsteal_kswapd": 24793184,
+          "pgsteal_direct": 81028241,
+          "pgsteal_khugepaged": 0,
+          "pgfault": 65709738,
+          "pgmajfault": 41,
+          "pgrefill": 3574648,
+          "pgactivate": 0,
+          "pgdeactivate": 0,
+          "pglazyfree": 0,
+          "pglazyfreed": 0,
+          "zswpin": 0,
+          "zswpout": 0,
+          "zswpwb": 0,
+          "thp_fault_alloc": 107251,
+          "thp_collapse_alloc": 1,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 489,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "cpu.stat": {
+          "usage_usec": 8495173503,
+          "user_usec": 6209160951,
+          "system_usec": 2286012552,
+          "core_sched.force_idle_usec": 0,
+          "nr_periods": 0,
+          "nr_throttled": 0,
+          "throttled_usec": 0,
+          "nr_bursts": 0,
+          "burst_usec": 0
+        },
+        "process_io": {
+          "rchar:": 353335786356,
+          "wchar:": 1236985,
+          "syscr:": 87684,
+          "syscw:": 124,
+          "read_bytes:": 325137178624,
+          "write_bytes:": 1277952,
+          "cancelled_write_bytes:": 1114112
+        },
+        "process_status": "Name:\tmaya-ds4\nUmask:\t0022\nState:\tS (sleeping)\nTgid:\t232\nNgid:\t2390945\nPid:\t232\nPPid:\t51\nTracerPid:\t0\nUid:\t0\t0\t0\t0\nGid:\t0\t0\t0\t0\nFDSize:\t64\nGroups:\t0 \nNStgid:\t232\nNSpid:\t232\nNSpgid:\t232\nNSsid:\t232\nKthread:\t0\nVmPeak:\t858306588 kB\nVmSize:\t858306588 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t206489236 kB\nVmRSS:\t206489236 kB\nRssAnon:\t195975168 kB\nRssFile:\t  173668 kB\nRssShmem:\t10340400 kB\nVmData:\t197602876 kB\nVmStk:\t     164 kB\nVmExe:\t    5400 kB\nVmLib:\t  213072 kB\nVmPTE:\t  405664 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t113\nSigQ:\t1/1029350\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000200000000\nSigCgt:\t0000000100000000\nCapInh:\t0000000000000000\nCapPrm:\t000001ffffffffff\nCapEff:\t000001ffffffffff\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tvulnerable\nSpeculationIndirectBranch:\talways enabled\nCpus_allowed:\tfff,ffffffff,ffffffff\nCpus_allowed_list:\t0-75\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\nMems_allowed_list:\t0-1\nvoluntary_ctxt_switches:\t2604\nnonvoluntary_ctxt_switches:\t1330\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+        "unix": 1793020321.0744941
+      },
+      "after": {
+        "memory.current": "22998147072",
+        "memory.peak": "236223201280",
+        "memory.max": "236223201280",
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-75",
+        "memory.stat": {
+          "anon": 13758464,
+          "file": 22628986880,
+          "kernel": 353009664,
+          "kernel_stack": 49152,
+          "pagetables": 163840,
+          "sec_pagetables": 0,
+          "percpu": 3744,
+          "sock": 0,
+          "vmalloc": 0,
+          "shmem": 0,
+          "zswap": 0,
+          "zswapped": 0,
+          "file_mapped": 0,
+          "file_dirty": 4096,
+          "file_writeback": 0,
+          "swapcached": 0,
+          "anon_thp": 0,
+          "file_thp": 0,
+          "shmem_thp": 0,
+          "inactive_anon": 0,
+          "active_anon": 13754368,
+          "inactive_file": 14812520448,
+          "active_file": 7816466432,
+          "unevictable": 0,
+          "slab_reclaimable": 352211024,
+          "slab_unreclaimable": 560424,
+          "slab": 352771448,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 49365356,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 36015472,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 214758,
+          "workingset_nodereclaim": 0,
+          "pgscan": 106889941,
+          "pgsteal": 106889469,
+          "pgscan_kswapd": 24793184,
+          "pgscan_direct": 82092469,
+          "pgscan_khugepaged": 4288,
+          "pgsteal_kswapd": 24793184,
+          "pgsteal_direct": 82091997,
+          "pgsteal_khugepaged": 4288,
+          "pgfault": 67479416,
+          "pgmajfault": 48,
+          "pgrefill": 3576948,
+          "pgactivate": 0,
+          "pgdeactivate": 0,
+          "pglazyfree": 0,
+          "pglazyfreed": 0,
+          "zswpin": 0,
+          "zswpout": 0,
+          "zswpwb": 0,
+          "thp_fault_alloc": 107469,
+          "thp_collapse_alloc": 165,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 546,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "cpu.stat": {
+          "usage_usec": 36703685116,
+          "user_usec": 34362030249,
+          "system_usec": 2341654866,
+          "core_sched.force_idle_usec": 0,
+          "nr_periods": 0,
+          "nr_throttled": 0,
+          "throttled_usec": 0,
+          "nr_bursts": 0,
+          "burst_usec": 0
+        },
+        "unix": 1793021212.3711548
+      }
+    },
+    {
+      "name": "04-max-2",
+      "maximum": 2,
+      "loaded": true,
+      "before": {
+        "memory.current": "22998003712",
+        "memory.peak": "236223201280",
+        "memory.max": "236223201280",
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-75",
+        "memory.stat": {
+          "anon": 13758464,
+          "file": 22628986880,
+          "kernel": 352870400,
+          "kernel_stack": 49152,
+          "pagetables": 163840,
+          "sec_pagetables": 0,
+          "percpu": 3744,
+          "sock": 0,
+          "vmalloc": 0,
+          "shmem": 0,
+          "zswap": 0,
+          "zswapped": 0,
+          "file_mapped": 0,
+          "file_dirty": 4096,
+          "file_writeback": 0,
+          "swapcached": 0,
+          "anon_thp": 0,
+          "file_thp": 0,
+          "shmem_thp": 0,
+          "inactive_anon": 0,
+          "active_anon": 13717504,
+          "inactive_file": 14812520448,
+          "active_file": 7816466432,
+          "unevictable": 0,
+          "slab_reclaimable": 352096392,
+          "slab_unreclaimable": 538312,
+          "slab": 352634704,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 49365356,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 36015472,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 214758,
+          "workingset_nodereclaim": 0,
+          "pgscan": 106889941,
+          "pgsteal": 106889469,
+          "pgscan_kswapd": 24793184,
+          "pgscan_direct": 82092469,
+          "pgscan_khugepaged": 4288,
+          "pgsteal_kswapd": 24793184,
+          "pgsteal_direct": 82091997,
+          "pgsteal_khugepaged": 4288,
+          "pgfault": 67479483,
+          "pgmajfault": 48,
+          "pgrefill": 3576948,
+          "pgactivate": 0,
+          "pgdeactivate": 0,
+          "pglazyfree": 0,
+          "pglazyfreed": 0,
+          "zswpin": 0,
+          "zswpout": 0,
+          "zswpwb": 0,
+          "thp_fault_alloc": 107469,
+          "thp_collapse_alloc": 165,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 546,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "cpu.stat": {
+          "usage_usec": 36703690680,
+          "user_usec": 34362033838,
+          "system_usec": 2341656842,
+          "core_sched.force_idle_usec": 0,
+          "nr_periods": 0,
+          "nr_throttled": 0,
+          "throttled_usec": 0,
+          "nr_bursts": 0,
+          "burst_usec": 0
+        },
+        "unix": 1793021212.3870564
+      },
+      "complete": true,
+      "stage": "complete",
+      "cases_sha256": "946bb7aaf184329fb15cc0330fbcecc7cc67ea090bfcda05a1b84002f9fd6b80",
+      "seed_profile_sha256": "bcfd7697fc070b0ebcb0138c0ef029429ea0d4ff81ca60eeb7804e08efd0cd29",
+      "source_commit": "6afa525bbabc3a8f5fd165f89e9bc72155d9bd39",
+      "build": {
+        "backend": "hip",
+        "src": "6ce310e787da889e",
+        "archs": [
+          "gfx906"
+        ],
+        "rocm": "/opt/rocm",
+        "gpu_ids": [
+          0
+        ],
+        "llama": "/opt/maya/third_party/llama.cpp",
+        "lib_dirs": [
+          "/opt/rocm/lib"
+        ],
+        "targets": [
+          "maya",
+          "maya-ds4"
+        ]
+      },
+      "ready": [
+        "INFO context=196608 kv=fp4 kv_resident=196608 expert_slots=4729 engine_kind=ds4 cpu_experts=10631 ram_experts=10631 engine=ds4-0.1",
+        "VRAM dev=0 pci=0000:33:00.0 total=34342961152 free=3514826752 weights=4026832896 kv=45896448 kv_ram=0 act=53368832 drafter=0 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=334167552 prompt=1845298432 tp=1608541440 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "VRAM dev=1 pci=0000:36:00.0 total=34342961152 free=1304428544 weights=3892335360 kv=45913344 kv_ram=0 act=45081856 drafter=2670888960 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=0 prompt=1845298432 tp=1608592128 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "VRAM dev=2 pci=0000:4d:00.0 total=34342961152 free=1304428544 weights=3975893760 kv=45913344 kv_ram=0 act=45081856 drafter=2587330560 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=0 prompt=1845298432 tp=1608592128 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "VRAM dev=3 pci=0000:50:00.0 total=34342961152 free=1304428544 weights=3975893760 kv=45913344 kv_ram=0 act=45081856 drafter=2587330560 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=0 prompt=1845298432 tp=1608592128 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "INFO engram_layers=2 engram_lookups=48",
+        "INFO vision=ds4 vision_patch=14 vision_merge=3 vision_min_pixels=295936 vision_max_tokens=1024 vision_max_wh_ratio=0 image_token=129264 vision_gpu=0 vision_mib=318",
+        "READY 196608 stop"
+      ],
+      "load_s": 186.3355019830051,
+      "full_copies": [
+        10631,
+        10631
+      ],
+      "ready_snapshot": {
+        "memory.current": "236203409408",
+        "memory.peak": "236223201280",
+        "memory.max": "236223201280",
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-75",
+        "memory.stat": {
+          "anon": 200688488448,
+          "file": 34710548480,
+          "kernel": 802381824,
+          "kernel_stack": 1916928,
+          "pagetables": 415559680,
+          "sec_pagetables": 0,
+          "percpu": 3744,
+          "sock": 0,
+          "vmalloc": 0,
+          "shmem": 10588569600,
+          "zswap": 0,
+          "zswapped": 0,
+          "file_mapped": 10588635136,
+          "file_dirty": 8192,
+          "file_writeback": 0,
+          "swapcached": 0,
+          "anon_thp": 114315755520,
+          "file_thp": 0,
+          "shmem_thp": 0,
+          "inactive_anon": 0,
+          "active_anon": 210857218048,
+          "inactive_file": 11203088384,
+          "active_file": 12918890496,
+          "unevictable": 0,
+          "slab_reclaimable": 381537800,
+          "slab_unreclaimable": 3301560,
+          "slab": 384839360,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 74012416,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 47670005,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 370700,
+          "workingset_nodereclaim": 0,
+          "pgscan": 162480976,
+          "pgsteal": 162480504,
+          "pgscan_kswapd": 44001981,
+          "pgscan_direct": 118474707,
+          "pgscan_khugepaged": 4288,
+          "pgsteal_kswapd": 44001981,
+          "pgsteal_direct": 118474235,
+          "pgsteal_khugepaged": 4288,
+          "pgfault": 100497584,
+          "pgmajfault": 64,
+          "pgrefill": 4822841,
+          "pgactivate": 0,
+          "pgdeactivate": 0,
+          "pglazyfree": 0,
+          "pglazyfreed": 0,
+          "zswpin": 0,
+          "zswpout": 0,
+          "zswpwb": 0,
+          "thp_fault_alloc": 161979,
+          "thp_collapse_alloc": 165,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 856,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "cpu.stat": {
+          "usage_usec": 37838549843,
+          "user_usec": 34415774067,
+          "system_usec": 3422775775,
+          "core_sched.force_idle_usec": 0,
+          "nr_periods": 0,
+          "nr_throttled": 0,
+          "throttled_usec": 0,
+          "nr_bursts": 0,
+          "burst_usec": 0
+        },
+        "process_io": {
+          "rchar:": 353335786487,
+          "wchar:": 1236985,
+          "syscr:": 87684,
+          "syscw:": 124,
+          "read_bytes:": 323178041344,
+          "write_bytes:": 1277952,
+          "cancelled_write_bytes:": 1114112
+        },
+        "process_status": "Name:\tmaya-ds4\nUmask:\t0022\nState:\tS (sleeping)\nTgid:\t526\nNgid:\t2414740\nPid:\t526\nPPid:\t51\nTracerPid:\t0\nUid:\t0\t0\t0\t0\nGid:\t0\t0\t0\t0\nFDSize:\t64\nGroups:\t0 \nNStgid:\t526\nNSpid:\t526\nNSpgid:\t526\nNSsid:\t526\nKthread:\t0\nVmPeak:\t858306592 kB\nVmSize:\t858306592 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t206483172 kB\nVmRSS:\t206483172 kB\nRssAnon:\t195971392 kB\nRssFile:\t  171380 kB\nRssShmem:\t10340400 kB\nVmData:\t197602852 kB\nVmStk:\t     160 kB\nVmExe:\t    5400 kB\nVmLib:\t  213072 kB\nVmPTE:\t  405660 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t113\nSigQ:\t1/1029350\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000200000000\nSigCgt:\t0000000100000000\nCapInh:\t0000000000000000\nCapPrm:\t000001ffffffffff\nCapEff:\t000001ffffffffff\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tvulnerable\nSpeculationIndirectBranch:\talways enabled\nCpus_allowed:\tfff,ffffffff,ffffffff\nCpus_allowed_list:\t0-75\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\nMems_allowed_list:\t0-1\nvoluntary_ctxt_switches:\t2151\nnonvoluntary_ctxt_switches:\t1323\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+        "unix": 1793021398.7356527
+      },
+      "after": {
+        "memory.current": "23006945280",
+        "memory.peak": "236223201280",
+        "memory.max": "236223201280",
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-75",
+        "memory.stat": {
+          "anon": 14262272,
+          "file": 22627246080,
+          "kernel": 363057152,
+          "kernel_stack": 49152,
+          "pagetables": 163840,
+          "sec_pagetables": 0,
+          "percpu": 3744,
+          "sock": 0,
+          "vmalloc": 0,
+          "shmem": 0,
+          "zswap": 0,
+          "zswapped": 0,
+          "file_mapped": 0,
+          "file_dirty": 0,
+          "file_writeback": 0,
+          "swapcached": 0,
+          "anon_thp": 0,
+          "file_thp": 0,
+          "shmem_thp": 0,
+          "inactive_anon": 0,
+          "active_anon": 14245888,
+          "inactive_file": 9697140736,
+          "active_file": 12930105344,
+          "unevictable": 0,
+          "slab_reclaimable": 362272824,
+          "slab_unreclaimable": 616264,
+          "slab": 362889088,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 74244188,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 47899600,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 372320,
+          "workingset_nodereclaim": 0,
+          "pgscan": 163400399,
+          "pgsteal": 163399927,
+          "pgscan_kswapd": 44074397,
+          "pgscan_direct": 119321714,
+          "pgscan_khugepaged": 4288,
+          "pgsteal_kswapd": 44074397,
+          "pgsteal_direct": 119321242,
+          "pgsteal_khugepaged": 4288,
+          "pgfault": 101139812,
+          "pgmajfault": 64,
+          "pgrefill": 4825579,
+          "pgactivate": 0,
+          "pgdeactivate": 0,
+          "pglazyfree": 0,
+          "pglazyfreed": 0,
+          "zswpin": 0,
+          "zswpout": 0,
+          "zswpwb": 0,
+          "thp_fault_alloc": 162142,
+          "thp_collapse_alloc": 189,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 888,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "cpu.stat": {
+          "usage_usec": 44121932251,
+          "user_usec": 40678579509,
+          "system_usec": 3443352742,
+          "core_sched.force_idle_usec": 0,
+          "nr_periods": 0,
+          "nr_throttled": 0,
+          "throttled_usec": 0,
+          "nr_bursts": 0,
+          "burst_usec": 0
+        },
+        "unix": 1793021604.1118257
+      }
+    },
+    {
+      "name": "03-max-1",
+      "maximum": 1,
+      "loaded": true,
+      "before": {
+        "memory.current": "23006806016",
+        "memory.peak": "236223201280",
+        "memory.max": "236223201280",
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-75",
+        "memory.stat": {
+          "anon": 14262272,
+          "file": 22627246080,
+          "kernel": 363057152,
+          "kernel_stack": 49152,
+          "pagetables": 163840,
+          "sec_pagetables": 0,
+          "percpu": 3744,
+          "sock": 0,
+          "vmalloc": 0,
+          "shmem": 0,
+          "zswap": 0,
+          "zswapped": 0,
+          "file_mapped": 0,
+          "file_dirty": 0,
+          "file_writeback": 0,
+          "swapcached": 0,
+          "anon_thp": 0,
+          "file_thp": 0,
+          "shmem_thp": 0,
+          "inactive_anon": 0,
+          "active_anon": 14245888,
+          "inactive_file": 9697140736,
+          "active_file": 12930105344,
+          "unevictable": 0,
+          "slab_reclaimable": 362272824,
+          "slab_unreclaimable": 616264,
+          "slab": 362889088,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 74244188,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 47899600,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 372320,
+          "workingset_nodereclaim": 0,
+          "pgscan": 163400399,
+          "pgsteal": 163399927,
+          "pgscan_kswapd": 44074397,
+          "pgscan_direct": 119321714,
+          "pgscan_khugepaged": 4288,
+          "pgsteal_kswapd": 44074397,
+          "pgsteal_direct": 119321242,
+          "pgsteal_khugepaged": 4288,
+          "pgfault": 101139812,
+          "pgmajfault": 64,
+          "pgrefill": 4825579,
+          "pgactivate": 0,
+          "pgdeactivate": 0,
+          "pglazyfree": 0,
+          "pglazyfreed": 0,
+          "zswpin": 0,
+          "zswpout": 0,
+          "zswpwb": 0,
+          "thp_fault_alloc": 162142,
+          "thp_collapse_alloc": 189,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 888,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "cpu.stat": {
+          "usage_usec": 44121937957,
+          "user_usec": 40678584159,
+          "system_usec": 3443353798,
+          "core_sched.force_idle_usec": 0,
+          "nr_periods": 0,
+          "nr_throttled": 0,
+          "throttled_usec": 0,
+          "nr_bursts": 0,
+          "burst_usec": 0
+        },
+        "unix": 1793021604.1262155
+      },
+      "complete": true,
+      "stage": "complete",
+      "cases_sha256": "946bb7aaf184329fb15cc0330fbcecc7cc67ea090bfcda05a1b84002f9fd6b80",
+      "seed_profile_sha256": "bcfd7697fc070b0ebcb0138c0ef029429ea0d4ff81ca60eeb7804e08efd0cd29",
+      "source_commit": "6afa525bbabc3a8f5fd165f89e9bc72155d9bd39",
+      "build": {
+        "backend": "hip",
+        "src": "6ce310e787da889e",
+        "archs": [
+          "gfx906"
+        ],
+        "rocm": "/opt/rocm",
+        "gpu_ids": [
+          0
+        ],
+        "llama": "/opt/maya/third_party/llama.cpp",
+        "lib_dirs": [
+          "/opt/rocm/lib"
+        ],
+        "targets": [
+          "maya",
+          "maya-ds4"
+        ]
+      },
+      "ready": [
+        "INFO context=196608 kv=fp4 kv_resident=196608 expert_slots=4729 engine_kind=ds4 cpu_experts=10631 ram_experts=10631 engine=ds4-0.1",
+        "VRAM dev=0 pci=0000:33:00.0 total=34342961152 free=3514826752 weights=4026832896 kv=45896448 kv_ram=0 act=53368832 drafter=0 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=334167552 prompt=1845298432 tp=1608541440 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "VRAM dev=1 pci=0000:36:00.0 total=34342961152 free=1304428544 weights=3892335360 kv=45913344 kv_ram=0 act=45081856 drafter=2670888960 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=0 prompt=1845298432 tp=1608592128 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "VRAM dev=2 pci=0000:4d:00.0 total=34342961152 free=1304428544 weights=3975893760 kv=45913344 kv_ram=0 act=45081856 drafter=2587330560 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=0 prompt=1845298432 tp=1608592128 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "VRAM dev=3 pci=0000:50:00.0 total=34342961152 free=1304428544 weights=3975893760 kv=45913344 kv_ram=0 act=45081856 drafter=2587330560 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=0 prompt=1845298432 tp=1608592128 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "INFO engram_layers=2 engram_lookups=48",
+        "INFO vision=ds4 vision_patch=14 vision_merge=3 vision_min_pixels=295936 vision_max_tokens=1024 vision_max_wh_ratio=0 image_token=129264 vision_gpu=0 vision_mib=318",
+        "READY 196608 stop"
+      ],
+      "load_s": 331.46559335599886,
+      "full_copies": [
+        10631,
+        10631
+      ],
+      "ready_snapshot": {
+        "memory.current": "234488664064",
+        "memory.peak": "236223201280",
+        "memory.max": "236223201280",
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-75",
+        "memory.stat": {
+          "anon": 200710483968,
+          "file": 32976560128,
+          "kernel": 799019008,
+          "kernel_stack": 1916928,
+          "pagetables": 415612928,
+          "sec_pagetables": 0,
+          "percpu": 3744,
+          "sock": 0,
+          "vmalloc": 0,
+          "shmem": 10588569600,
+          "zswap": 0,
+          "zswapped": 0,
+          "file_mapped": 10588590080,
+          "file_dirty": 8192,
+          "file_writeback": 0,
+          "swapcached": 0,
+          "anon_thp": 118340190208,
+          "file_thp": 0,
+          "shmem_thp": 0,
+          "inactive_anon": 2596864,
+          "active_anon": 210876645376,
+          "inactive_file": 10993471488,
+          "active_file": 11394490368,
+          "unevictable": 0,
+          "slab_reclaimable": 378123688,
+          "slab_unreclaimable": 3300440,
+          "slab": 381424128,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 104027248,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 77682660,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 585812,
+          "workingset_nodereclaim": 0,
+          "pgscan": 218440009,
+          "pgsteal": 218439537,
+          "pgscan_kswapd": 61755495,
+          "pgscan_direct": 156679142,
+          "pgscan_khugepaged": 5372,
+          "pgsteal_kswapd": 61755495,
+          "pgsteal_direct": 156678670,
+          "pgsteal_khugepaged": 5372,
+          "pgfault": 133286828,
+          "pgmajfault": 64,
+          "pgrefill": 5025422,
+          "pgactivate": 0,
+          "pgdeactivate": 0,
+          "pglazyfree": 0,
+          "pglazyfreed": 0,
+          "zswpin": 0,
+          "zswpout": 0,
+          "zswpwb": 0,
+          "thp_fault_alloc": 218571,
+          "thp_collapse_alloc": 189,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 1422,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "cpu.stat": {
+          "usage_usec": 45337016388,
+          "user_usec": 40734950884,
+          "system_usec": 4602065503,
+          "core_sched.force_idle_usec": 0,
+          "nr_periods": 0,
+          "nr_throttled": 0,
+          "throttled_usec": 0,
+          "nr_bursts": 0,
+          "burst_usec": 0
+        },
+        "process_io": {
+          "rchar:": 353335786489,
+          "wchar:": 1236985,
+          "syscr:": 87684,
+          "syscw:": 124,
+          "read_bytes:": 319127281664,
+          "write_bytes:": 1277952,
+          "cancelled_write_bytes:": 1114112
+        },
+        "process_status": "Name:\tmaya-ds4\nUmask:\t0022\nState:\tS (sleeping)\nTgid:\t700\nNgid:\t2422838\nPid:\t700\nPPid:\t51\nTracerPid:\t0\nUid:\t0\t0\t0\t0\nGid:\t0\t0\t0\t0\nFDSize:\t64\nGroups:\t0 \nNStgid:\t700\nNSpid:\t700\nNSpgid:\t700\nNSsid:\t700\nKthread:\t0\nVmPeak:\t858306592 kB\nVmSize:\t858306592 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t206504776 kB\nVmRSS:\t206504776 kB\nRssAnon:\t195992400 kB\nRssFile:\t  171976 kB\nRssShmem:\t10340400 kB\nVmData:\t197622144 kB\nVmStk:\t     160 kB\nVmExe:\t    5400 kB\nVmLib:\t  213072 kB\nVmPTE:\t  405712 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t113\nSigQ:\t1/1029350\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000200000000\nSigCgt:\t0000000100000000\nCapInh:\t0000000000000000\nCapPrm:\t000001ffffffffff\nCapEff:\t000001ffffffffff\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tvulnerable\nSpeculationIndirectBranch:\talways enabled\nCpus_allowed:\tfff,ffffffff,ffffffff\nCpus_allowed_list:\t0-75\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\nMems_allowed_list:\t0-1\nvoluntary_ctxt_switches:\t1514\nnonvoluntary_ctxt_switches:\t1116\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+        "unix": 1793021935.6049788
+      },
+      "after": {
+        "memory.current": "23599083520",
+        "memory.peak": "236223201280",
+        "memory.max": "236223201280",
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-75",
+        "memory.stat": {
+          "anon": 281337856,
+          "file": 22873571328,
+          "kernel": 402079744,
+          "kernel_stack": 49152,
+          "pagetables": 3268608,
+          "sec_pagetables": 0,
+          "percpu": 3744,
+          "sock": 0,
+          "vmalloc": 0,
+          "shmem": 302186496,
+          "zswap": 0,
+          "zswapped": 0,
+          "file_mapped": 176631808,
+          "file_dirty": 4096,
+          "file_writeback": 0,
+          "swapcached": 0,
+          "anon_thp": 0,
+          "file_thp": 0,
+          "shmem_thp": 0,
+          "inactive_anon": 2596864,
+          "active_anon": 616439808,
+          "inactive_file": 11175108608,
+          "active_file": 11396276224,
+          "unevictable": 0,
+          "slab_reclaimable": 398007912,
+          "slab_unreclaimable": 969392,
+          "slab": 398977304,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 104278273,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 77932970,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 587464,
+          "workingset_nodereclaim": 0,
+          "pgscan": 218945233,
+          "pgsteal": 218944761,
+          "pgscan_kswapd": 61827728,
+          "pgscan_direct": 157110749,
+          "pgscan_khugepaged": 6756,
+          "pgsteal_kswapd": 61827728,
+          "pgsteal_direct": 157110277,
+          "pgsteal_khugepaged": 6756,
+          "pgfault": 134658385,
+          "pgmajfault": 64,
+          "pgrefill": 5025886,
+          "pgactivate": 0,
+          "pgdeactivate": 0,
+          "pglazyfree": 0,
+          "pglazyfreed": 0,
+          "zswpin": 0,
+          "zswpout": 0,
+          "zswpwb": 0,
+          "thp_fault_alloc": 218720,
+          "thp_collapse_alloc": 202,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 1430,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "cpu.stat": {
+          "usage_usec": 51937557152,
+          "user_usec": 47314373951,
+          "system_usec": 4623183201,
+          "core_sched.force_idle_usec": 0,
+          "nr_periods": 0,
+          "nr_throttled": 0,
+          "throttled_usec": 0,
+          "nr_bursts": 0,
+          "burst_usec": 0
+        },
+        "unix": 1793022146.8903744
+      }
+    },
+    {
+      "name": "05-max-3",
+      "maximum": 3,
+      "loaded": true,
+      "before": {
+        "memory.current": "23449894912",
+        "memory.peak": "236223201280",
+        "memory.max": "236223201280",
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-75",
+        "memory.stat": {
+          "anon": 144703488,
+          "file": 22873636864,
+          "kernel": 402087936,
+          "kernel_stack": 49152,
+          "pagetables": 3268608,
+          "sec_pagetables": 0,
+          "percpu": 3744,
+          "sock": 0,
+          "vmalloc": 0,
+          "shmem": 302186496,
+          "zswap": 0,
+          "zswapped": 0,
+          "file_mapped": 34025472,
+          "file_dirty": 69632,
+          "file_writeback": 0,
+          "swapcached": 0,
+          "anon_thp": 0,
+          "file_thp": 0,
+          "shmem_thp": 0,
+          "inactive_anon": 2596864,
+          "active_anon": 458915840,
+          "inactive_file": 11175170048,
+          "active_file": 11396276224,
+          "unevictable": 0,
+          "slab_reclaimable": 398014864,
+          "slab_unreclaimable": 960928,
+          "slab": 398975792,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 104278273,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 77932970,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 587464,
+          "workingset_nodereclaim": 0,
+          "pgscan": 218945233,
+          "pgsteal": 218944761,
+          "pgscan_kswapd": 61827728,
+          "pgscan_direct": 157110749,
+          "pgscan_khugepaged": 6756,
+          "pgsteal_kswapd": 61827728,
+          "pgsteal_direct": 157110277,
+          "pgsteal_khugepaged": 6756,
+          "pgfault": 134658385,
+          "pgmajfault": 64,
+          "pgrefill": 5025886,
+          "pgactivate": 0,
+          "pgdeactivate": 0,
+          "pglazyfree": 0,
+          "pglazyfreed": 0,
+          "zswpin": 0,
+          "zswpout": 0,
+          "zswpwb": 0,
+          "thp_fault_alloc": 218720,
+          "thp_collapse_alloc": 202,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 1430,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "cpu.stat": {
+          "usage_usec": 51937561914,
+          "user_usec": 47314378713,
+          "system_usec": 4623183201,
+          "core_sched.force_idle_usec": 0,
+          "nr_periods": 0,
+          "nr_throttled": 0,
+          "throttled_usec": 0,
+          "nr_bursts": 0,
+          "burst_usec": 0
+        },
+        "unix": 1793022146.904474
+      },
+      "complete": true,
+      "stage": "complete",
+      "cases_sha256": "946bb7aaf184329fb15cc0330fbcecc7cc67ea090bfcda05a1b84002f9fd6b80",
+      "seed_profile_sha256": "bcfd7697fc070b0ebcb0138c0ef029429ea0d4ff81ca60eeb7804e08efd0cd29",
+      "source_commit": "6afa525bbabc3a8f5fd165f89e9bc72155d9bd39",
+      "build": {
+        "backend": "hip",
+        "src": "6ce310e787da889e",
+        "archs": [
+          "gfx906"
+        ],
+        "rocm": "/opt/rocm",
+        "gpu_ids": [
+          0
+        ],
+        "llama": "/opt/maya/third_party/llama.cpp",
+        "lib_dirs": [
+          "/opt/rocm/lib"
+        ],
+        "targets": [
+          "maya",
+          "maya-ds4"
+        ]
+      },
+      "ready": [
+        "INFO context=196608 kv=fp4 kv_resident=196608 expert_slots=4729 engine_kind=ds4 cpu_experts=10631 ram_experts=10631 engine=ds4-0.1",
+        "VRAM dev=0 pci=0000:33:00.0 total=34342961152 free=3514826752 weights=4026832896 kv=45896448 kv_ram=0 act=53368832 drafter=0 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=334167552 prompt=1845298432 tp=1608541440 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "VRAM dev=1 pci=0000:36:00.0 total=34342961152 free=1304428544 weights=3892335360 kv=45913344 kv_ram=0 act=45081856 drafter=2670888960 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=0 prompt=1845298432 tp=1608592128 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "VRAM dev=2 pci=0000:4d:00.0 total=34342961152 free=1304428544 weights=3975893760 kv=45913344 kv_ram=0 act=45081856 drafter=2587330560 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=0 prompt=1845298432 tp=1608592128 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "VRAM dev=3 pci=0000:50:00.0 total=34342961152 free=1304428544 weights=3975893760 kv=45913344 kv_ram=0 act=45081856 drafter=2587330560 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=0 prompt=1845298432 tp=1608592128 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "INFO engram_layers=2 engram_lookups=48",
+        "INFO vision=ds4 vision_patch=14 vision_merge=3 vision_min_pixels=295936 vision_max_tokens=1024 vision_max_wh_ratio=0 image_token=129264 vision_gpu=0 vision_mib=318",
+        "READY 196608 stop"
+      ],
+      "load_s": 232.37984338100068,
+      "full_copies": [
+        10631,
+        10631
+      ],
+      "ready_snapshot": {
+        "memory.current": "236222513152",
+        "memory.peak": "236223201280",
+        "memory.max": "236223201280",
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-75",
+        "memory.stat": {
+          "anon": 200707723264,
+          "file": 34672951296,
+          "kernel": 839766016,
+          "kernel_stack": 1916928,
+          "pagetables": 415600640,
+          "sec_pagetables": 0,
+          "percpu": 3744,
+          "sock": 0,
+          "vmalloc": 0,
+          "shmem": 10588569600,
+          "zswap": 0,
+          "zswapped": 0,
+          "file_mapped": 10588602368,
+          "file_dirty": 12288,
+          "file_writeback": 0,
+          "swapcached": 0,
+          "anon_thp": 109660078080,
+          "file_thp": 0,
+          "shmem_thp": 0,
+          "inactive_anon": 2486272,
+          "active_anon": 210874105856,
+          "inactive_file": 10185056256,
+          "active_file": 13899321344,
+          "unevictable": 0,
+          "slab_reclaimable": 418886776,
+          "slab_unreclaimable": 3300928,
+          "slab": 422187704,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 132392112,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 100520393,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 666890,
+          "workingset_nodereclaim": 0,
+          "pgscan": 273349000,
+          "pgsteal": 273348528,
+          "pgscan_kswapd": 79290265,
+          "pgscan_direct": 194051979,
+          "pgscan_khugepaged": 6756,
+          "pgsteal_kswapd": 79290265,
+          "pgsteal_direct": 194051507,
+          "pgsteal_khugepaged": 6756,
+          "pgfault": 169117477,
+          "pgmajfault": 64,
+          "pgrefill": 5637528,
+          "pgactivate": 0,
+          "pgdeactivate": 0,
+          "pglazyfree": 0,
+          "pglazyfreed": 0,
+          "zswpin": 0,
+          "zswpout": 0,
+          "zswpwb": 0,
+          "thp_fault_alloc": 271010,
+          "thp_collapse_alloc": 202,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 1987,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "cpu.stat": {
+          "usage_usec": 53304160037,
+          "user_usec": 47374017427,
+          "system_usec": 5930142609,
+          "core_sched.force_idle_usec": 0,
+          "nr_periods": 0,
+          "nr_throttled": 0,
+          "throttled_usec": 0,
+          "nr_bursts": 0,
+          "burst_usec": 0
+        },
+        "process_io": {
+          "rchar:": 353335786556,
+          "wchar:": 1236985,
+          "syscr:": 87684,
+          "syscw:": 124,
+          "read_bytes:": 318211547136,
+          "write_bytes:": 1277952,
+          "cancelled_write_bytes:": 1114112
+        },
+        "process_status": "Name:\tmaya-ds4\nUmask:\t0022\nState:\tS (sleeping)\nTgid:\t874\nNgid:\t2433851\nPid:\t874\nPPid:\t51\nTracerPid:\t0\nUid:\t0\t0\t0\t0\nGid:\t0\t0\t0\t0\nFDSize:\t64\nGroups:\t0 \nNStgid:\t874\nNSpid:\t874\nNSpgid:\t874\nNSsid:\t874\nKthread:\t0\nVmPeak:\t858306592 kB\nVmSize:\t858306592 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t206501548 kB\nVmRSS:\t206501548 kB\nRssAnon:\t195989204 kB\nRssFile:\t  171944 kB\nRssShmem:\t10340400 kB\nVmData:\t197622132 kB\nVmStk:\t     164 kB\nVmExe:\t    5400 kB\nVmLib:\t  213072 kB\nVmPTE:\t  405700 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t113\nSigQ:\t1/1029350\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000200000000\nSigCgt:\t0000000100000000\nCapInh:\t0000000000000000\nCapPrm:\t000001ffffffffff\nCapEff:\t000001ffffffffff\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tvulnerable\nSpeculationIndirectBranch:\talways enabled\nCpus_allowed:\tfff,ffffffff,ffffffff\nCpus_allowed_list:\t0-75\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\nMems_allowed_list:\t0-1\nvoluntary_ctxt_switches:\t2094\nnonvoluntary_ctxt_switches:\t987\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+        "unix": 1793022379.2970912
+      },
+      "after": {
+        "memory.current": "23690092544",
+        "memory.peak": "236223201280",
+        "memory.max": "236223201280",
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-75",
+        "memory.stat": {
+          "anon": 397070336,
+          "file": 22873698304,
+          "kernel": 403832832,
+          "kernel_stack": 49152,
+          "pagetables": 3256320,
+          "sec_pagetables": 0,
+          "percpu": 3744,
+          "sock": 0,
+          "vmalloc": 0,
+          "shmem": 302186496,
+          "zswap": 0,
+          "zswapped": 0,
+          "file_mapped": 176017408,
+          "file_dirty": 4096,
+          "file_writeback": 0,
+          "swapcached": 0,
+          "anon_thp": 0,
+          "file_thp": 0,
+          "shmem_thp": 0,
+          "inactive_anon": 2473984,
+          "active_anon": 702492672,
+          "inactive_file": 8670576640,
+          "active_file": 13900935168,
+          "unevictable": 0,
+          "slab_reclaimable": 399775512,
+          "slab_unreclaimable": 687504,
+          "slab": 400463016,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 132754869,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 100880444,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 668760,
+          "workingset_nodereclaim": 0,
+          "pgscan": 274272692,
+          "pgsteal": 274272220,
+          "pgscan_kswapd": 79290265,
+          "pgscan_direct": 194975671,
+          "pgscan_khugepaged": 6756,
+          "pgsteal_kswapd": 79290265,
+          "pgsteal_direct": 194975199,
+          "pgsteal_khugepaged": 6756,
+          "pgfault": 170987730,
+          "pgmajfault": 64,
+          "pgrefill": 5637922,
+          "pgactivate": 0,
+          "pgdeactivate": 0,
+          "pglazyfree": 0,
+          "pglazyfreed": 0,
+          "zswpin": 0,
+          "zswpout": 0,
+          "zswpwb": 0,
+          "thp_fault_alloc": 271165,
+          "thp_collapse_alloc": 223,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 2020,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "cpu.stat": {
+          "usage_usec": 59479797359,
+          "user_usec": 53528505936,
+          "system_usec": 5951291422,
+          "core_sched.force_idle_usec": 0,
+          "nr_periods": 0,
+          "nr_throttled": 0,
+          "throttled_usec": 0,
+          "nr_bursts": 0,
+          "burst_usec": 0
+        },
+        "unix": 1793022585.0917425
+      }
+    },
+    {
+      "name": "06-interactions",
+      "maximum": 0,
+      "loaded": true,
+      "before": {
+        "memory.current": "23476051968",
+        "memory.peak": "236223201280",
+        "memory.max": "236223201280",
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-75",
+        "memory.stat": {
+          "anon": 195928064,
+          "file": 22873763840,
+          "kernel": 403841024,
+          "kernel_stack": 49152,
+          "pagetables": 3256320,
+          "sec_pagetables": 0,
+          "percpu": 3744,
+          "sock": 0,
+          "vmalloc": 0,
+          "shmem": 302186496,
+          "zswap": 0,
+          "zswapped": 0,
+          "file_mapped": 153505792,
+          "file_dirty": 69632,
+          "file_writeback": 0,
+          "swapcached": 0,
+          "anon_thp": 0,
+          "file_thp": 0,
+          "shmem_thp": 0,
+          "inactive_anon": 2473984,
+          "active_anon": 495640576,
+          "inactive_file": 8670638080,
+          "active_file": 13900935168,
+          "unevictable": 0,
+          "slab_reclaimable": 399779392,
+          "slab_unreclaimable": 691208,
+          "slab": 400470600,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 132754869,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 100880444,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 668760,
+          "workingset_nodereclaim": 0,
+          "pgscan": 274272692,
+          "pgsteal": 274272220,
+          "pgscan_kswapd": 79290265,
+          "pgscan_direct": 194975671,
+          "pgscan_khugepaged": 6756,
+          "pgsteal_kswapd": 79290265,
+          "pgsteal_direct": 194975199,
+          "pgsteal_khugepaged": 6756,
+          "pgfault": 170987730,
+          "pgmajfault": 64,
+          "pgrefill": 5637922,
+          "pgactivate": 0,
+          "pgdeactivate": 0,
+          "pglazyfree": 0,
+          "pglazyfreed": 0,
+          "zswpin": 0,
+          "zswpout": 0,
+          "zswpwb": 0,
+          "thp_fault_alloc": 271165,
+          "thp_collapse_alloc": 223,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 2020,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "cpu.stat": {
+          "usage_usec": 59479802868,
+          "user_usec": 53528510393,
+          "system_usec": 5951292474,
+          "core_sched.force_idle_usec": 0,
+          "nr_periods": 0,
+          "nr_throttled": 0,
+          "throttled_usec": 0,
+          "nr_bursts": 0,
+          "burst_usec": 0
+        },
+        "unix": 1793022585.1060019
+      },
+      "complete": false,
+      "stage": "error",
+      "cases_sha256": "946bb7aaf184329fb15cc0330fbcecc7cc67ea090bfcda05a1b84002f9fd6b80",
+      "seed_profile_sha256": "bcfd7697fc070b0ebcb0138c0ef029429ea0d4ff81ca60eeb7804e08efd0cd29",
+      "source_commit": "6afa525bbabc3a8f5fd165f89e9bc72155d9bd39",
+      "build": {
+        "backend": "hip",
+        "src": "6ce310e787da889e",
+        "archs": [
+          "gfx906"
+        ],
+        "rocm": "/opt/rocm",
+        "gpu_ids": [
+          0
+        ],
+        "llama": "/opt/maya/third_party/llama.cpp",
+        "lib_dirs": [
+          "/opt/rocm/lib"
+        ],
+        "targets": [
+          "maya",
+          "maya-ds4"
+        ]
+      },
+      "ready": [
+        "INFO context=196608 kv=fp4 kv_resident=196608 expert_slots=4729 engine_kind=ds4 cpu_experts=10631 ram_experts=10631 engine=ds4-0.1",
+        "VRAM dev=0 pci=0000:33:00.0 total=34342961152 free=3514826752 weights=4026832896 kv=45896448 kv_ram=0 act=53368832 drafter=0 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=334167552 prompt=1845298432 tp=1608541440 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "VRAM dev=1 pci=0000:36:00.0 total=34342961152 free=1304428544 weights=3892335360 kv=45913344 kv_ram=0 act=45081856 drafter=2670888960 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=0 prompt=1845298432 tp=1608592128 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "VRAM dev=2 pci=0000:4d:00.0 total=34342961152 free=1304428544 weights=3975893760 kv=45913344 kv_ram=0 act=45081856 drafter=2587330560 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=0 prompt=1845298432 tp=1608592128 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "VRAM dev=3 pci=0000:50:00.0 total=34342961152 free=1304428544 weights=3975893760 kv=45913344 kv_ram=0 act=45081856 drafter=2587330560 window=0 pool=22415063040 tail=0 borrow=0 vision=0 vision_own=0 prompt=1845298432 tp=1608592128 tp_n=4 slots=4769 ctx=196608 layers=0-39",
+        "INFO engram_layers=2 engram_lookups=48",
+        "INFO vision=ds4 vision_patch=14 vision_merge=3 vision_min_pixels=295936 vision_max_tokens=1024 vision_max_wh_ratio=0 image_token=129264 vision_gpu=0 vision_mib=318",
+        "READY 196608 stop"
+      ],
+      "load_s": 280.8553659390018,
+      "full_copies": [
+        10631,
+        10631
+      ],
+      "ready_snapshot": {
+        "memory.current": "236221861888",
+        "memory.peak": "236223201280",
+        "memory.max": "236223201280",
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-75",
+        "memory.stat": {
+          "anon": 200718835712,
+          "file": 34667102208,
+          "kernel": 833650688,
+          "kernel_stack": 1916928,
+          "pagetables": 415637504,
+          "sec_pagetables": 0,
+          "percpu": 3744,
+          "sock": 0,
+          "vmalloc": 0,
+          "shmem": 10588569600,
+          "zswap": 0,
+          "zswapped": 0,
+          "file_mapped": 10588614656,
+          "file_dirty": 12288,
+          "file_writeback": 0,
+          "swapcached": 0,
+          "anon_thp": 105298001920,
+          "file_thp": 0,
+          "shmem_thp": 0,
+          "inactive_anon": 2383872,
+          "active_anon": 210885287936,
+          "inactive_file": 9877192704,
+          "active_file": 14201335808,
+          "unevictable": 0,
+          "slab_reclaimable": 412731912,
+          "slab_unreclaimable": 3300520,
+          "slab": 416032432,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 162747331,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 130872906,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 758411,
+          "workingset_nodereclaim": 0,
+          "pgscan": 328676962,
+          "pgsteal": 328676490,
+          "pgscan_kswapd": 95045219,
+          "pgscan_direct": 233624987,
+          "pgscan_khugepaged": 6756,
+          "pgsteal_kswapd": 95045219,
+          "pgsteal_direct": 233624515,
+          "pgsteal_khugepaged": 6756,
+          "pgfault": 206306474,
+          "pgmajfault": 67,
+          "pgrefill": 5711236,
+          "pgactivate": 0,
+          "pgdeactivate": 0,
+          "pglazyfree": 0,
+          "pglazyfreed": 0,
+          "zswpin": 0,
+          "zswpout": 0,
+          "zswpwb": 0,
+          "thp_fault_alloc": 321375,
+          "thp_collapse_alloc": 223,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 2600,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "cpu.stat": {
+          "usage_usec": 60874294271,
+          "user_usec": 53582884810,
+          "system_usec": 7291409461,
+          "core_sched.force_idle_usec": 0,
+          "nr_periods": 0,
+          "nr_throttled": 0,
+          "throttled_usec": 0,
+          "nr_bursts": 0,
+          "burst_usec": 0
+        },
+        "process_io": {
+          "rchar:": 353335786588,
+          "wchar:": 1237025,
+          "syscr:": 87684,
+          "syscw:": 124,
+          "read_bytes:": 318195220480,
+          "write_bytes:": 1277952,
+          "cancelled_write_bytes:": 1114112
+        },
+        "process_status": "Name:\tmaya-ds4\nUmask:\t0022\nState:\tS (sleeping)\nTgid:\t1048\nNgid:\t2442942\nPid:\t1048\nPPid:\t51\nTracerPid:\t0\nUid:\t0\t0\t0\t0\nGid:\t0\t0\t0\t0\nFDSize:\t64\nGroups:\t0 \nNStgid:\t1048\nNSpid:\t1048\nNSpgid:\t1048\nNSsid:\t1048\nKthread:\t0\nVmPeak:\t858306592 kB\nVmSize:\t858306592 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t206511076 kB\nVmRSS:\t206511076 kB\nRssAnon:\t195999628 kB\nRssFile:\t  171048 kB\nRssShmem:\t10340400 kB\nVmData:\t197631752 kB\nVmStk:\t     160 kB\nVmExe:\t    5400 kB\nVmLib:\t  213072 kB\nVmPTE:\t  405732 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t113\nSigQ:\t1/1029350\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000200000000\nSigCgt:\t0000000100000000\nCapInh:\t0000000000000000\nCapPrm:\t000001ffffffffff\nCapEff:\t000001ffffffffff\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tvulnerable\nSpeculationIndirectBranch:\talways enabled\nCpus_allowed:\tfff,ffffffff,ffffffff\nCpus_allowed_list:\t0-75\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000003\nMems_allowed_list:\t0-1\nvoluntary_ctxt_switches:\t1906\nnonvoluntary_ctxt_switches:\t1381\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+        "unix": 1793022865.9776452
+      },
+      "after": {
+        "memory.current": "22975307776",
+        "memory.peak": "236223201280",
+        "memory.max": "236223201280",
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-75",
+        "memory.stat": {
+          "anon": 15859712,
+          "file": 22565257216,
+          "kernel": 392568832,
+          "kernel_stack": 49152,
+          "pagetables": 172032,
+          "sec_pagetables": 0,
+          "percpu": 3744,
+          "sock": 0,
+          "vmalloc": 0,
+          "shmem": 0,
+          "zswap": 0,
+          "zswapped": 0,
+          "file_mapped": 0,
+          "file_dirty": 24576,
+          "file_writeback": 0,
+          "swapcached": 0,
+          "anon_thp": 0,
+          "file_thp": 0,
+          "shmem_thp": 0,
+          "inactive_anon": 1867776,
+          "active_anon": 13987840,
+          "inactive_file": 8360755200,
+          "active_file": 14204497920,
+          "unevictable": 0,
+          "slab_reclaimable": 391791424,
+          "slab_unreclaimable": 567512,
+          "slab": 392358936,
+          "workingset_refault_anon": 0,
+          "workingset_refault_file": 163115686,
+          "workingset_activate_anon": 0,
+          "workingset_activate_file": 131238484,
+          "workingset_restore_anon": 0,
+          "workingset_restore_file": 760186,
+          "workingset_nodereclaim": 0,
+          "pgscan": 329602358,
+          "pgsteal": 329601886,
+          "pgscan_kswapd": 95114465,
+          "pgscan_direct": 234479739,
+          "pgscan_khugepaged": 8154,
+          "pgsteal_kswapd": 95114465,
+          "pgsteal_direct": 234479267,
+          "pgsteal_khugepaged": 8154,
+          "pgfault": 207631732,
+          "pgmajfault": 67,
+          "pgrefill": 5712008,
+          "pgactivate": 0,
+          "pgdeactivate": 0,
+          "pglazyfree": 0,
+          "pglazyfreed": 0,
+          "zswpin": 0,
+          "zswpout": 0,
+          "zswpwb": 0,
+          "thp_fault_alloc": 321527,
+          "thp_collapse_alloc": 247,
+          "thp_swpout": 0,
+          "thp_swpout_fallback": 0
+        },
+        "memory.events": {
+          "low": 0,
+          "high": 0,
+          "max": 2631,
+          "oom": 0,
+          "oom_kill": 0,
+          "oom_group_kill": 0
+        },
+        "cpu.stat": {
+          "usage_usec": 67451276802,
+          "user_usec": 60138178350,
+          "system_usec": 7313098452,
+          "core_sched.force_idle_usec": 0,
+          "nr_periods": 0,
+          "nr_throttled": 0,
+          "throttled_usec": 0,
+          "nr_bursts": 0,
+          "burst_usec": 0
+        },
+        "unix": 1793023081.9491625
+      },
+      "error": "Traceback (most recent call last):\n  File \"/data/screen/coarse-2048-tg256/tune.py\", line 351, in main\n    sweep.execute()\n  File \"/data/screen/coarse-2048-tg256/tune.py\", line 290, in execute\n    self.check_control('selected-MAX-restart', selected, before)\n  File \"/data/screen/coarse-2048-tg256/tune.py\", line 236, in check_control\n    raise ValueError(f'Control drift {label}: {delta:+.2f}% exceeds 5%; stop without expanding run')\nValueError: Control drift selected-MAX-restart: -8.30% exceeds 5%; stop without expanding run\n"
+    }
+  ],
+  "points": [
+    {
+      "label": "none",
+      "session": "01-none",
+      "point": {
+        "conf": 0.5,
+        "cum": 0.5,
+        "maximum": 0,
+        "spec": false
+      },
+      "role": "baseline",
+      "metrics": {
+        "decode_tok_s": 28.396120310464248,
+        "prefill_tok_s": 92.42586299490483,
+        "wall_s": 93.41982502301107,
+        "ttft_s": [
+          22.04179463602486,
+          22.100475463987095,
+          22.337048448011046
+        ],
+        "case_decode_tok_s": [
+          28.07875264270613,
+          28.247022985322626,
+          28.87489808859498
+        ],
+        "drafted": 0,
+        "accepted": 0,
+        "acceptance": null,
+        "accepted_per_generated": 0.0
+      },
+      "decode_gain_pct": 0.0,
+      "token_comparison": [
+        {
+          "id": "measurement-1",
+          "identical": true,
+          "first_different_token_zero_based": null
+        },
+        {
+          "id": "measurement-2",
+          "identical": true,
+          "first_different_token_zero_based": null
+        },
+        {
+          "id": "measurement-3",
+          "identical": true,
+          "first_different_token_zero_based": null
+        }
+      ]
+    },
+    {
+      "label": "loaded-off",
+      "session": "02-thresholds",
+      "point": {
+        "conf": 0.5,
+        "cum": 0.5,
+        "maximum": 0,
+        "spec": false
+      },
+      "role": "baseline",
+      "metrics": {
+        "decode_tok_s": 27.21325587930832,
+        "prefill_tok_s": 85.90123594877244,
+        "wall_s": 99.64178051898489,
+        "ttft_s": [
+          24.367651231994387,
+          23.219929081009468,
+          23.942007584992098
+        ],
+        "case_decode_tok_s": [
+          26.580497211653725,
+          27.27885407417709,
+          27.80837304659811
+        ],
+        "drafted": 0,
+        "accepted": 0,
+        "acceptance": null,
+        "accepted_per_generated": 0.0
+      },
+      "decode_gain_pct": -4.1655846581267975,
+      "token_comparison": [
+        {
+          "id": "measurement-1",
+          "identical": false,
+          "first_different_token_zero_based": 24
+        },
+        {
+          "id": "measurement-2",
+          "identical": false,
+          "first_different_token_zero_based": 119
+        },
+        {
+          "id": "measurement-3",
+          "identical": false,
+          "first_different_token_zero_based": 15
+        }
+      ]
+    },
+    {
+      "label": "default",
+      "session": "02-thresholds",
+      "point": {
+        "conf": 0.5,
+        "cum": 0.5,
+        "maximum": 0,
+        "spec": true
+      },
+      "role": "candidate",
+      "metrics": {
+        "decode_tok_s": 38.17289076066346,
+        "prefill_tok_s": 92.20241311003062,
+        "wall_s": 86.68145214597462,
+        "ttft_s": [
+          22.288038033002522,
+          22.501069424994057,
+          21.851596849999623
+        ],
+        "case_decode_tok_s": [
+          35.880623056466256,
+          40.1530539940479,
+          38.73731542808531
+        ],
+        "drafted": 491,
+        "accepted": 403,
+        "acceptance": 0.8207739307535642,
+        "accepted_per_generated": 0.5247395833333334
+      },
+      "decode_gain_pct": 34.4299514979741,
+      "token_comparison": [
+        {
+          "id": "measurement-1",
+          "identical": false,
+          "first_different_token_zero_based": 32
+        },
+        {
+          "id": "measurement-2",
+          "identical": false,
+          "first_different_token_zero_based": 81
+        },
+        {
+          "id": "measurement-3",
+          "identical": false,
+          "first_different_token_zero_based": 15
+        }
+      ]
+    },
+    {
+      "label": "confidence-0.7",
+      "session": "02-thresholds",
+      "point": {
+        "conf": 0.7,
+        "cum": 0.5,
+        "maximum": 0,
+        "spec": true
+      },
+      "role": "candidate",
+      "metrics": {
+        "decode_tok_s": 35.98442086249718,
+        "prefill_tok_s": 93.34038247680164,
+        "wall_s": 87.0894663350191,
+        "ttft_s": [
+          21.952987183991354,
+          21.904235330002848,
+          21.971772975986823
+        ],
+        "case_decode_tok_s": [
+          34.35129928737893,
+          37.98769496625799,
+          35.79851752021563
+        ],
+        "drafted": 416,
+        "accepted": 357,
+        "acceptance": 0.8581730769230769,
+        "accepted_per_generated": 0.46484375
+      },
+      "decode_gain_pct": 26.72301874012195,
+      "token_comparison": [
+        {
+          "id": "measurement-1",
+          "identical": false,
+          "first_different_token_zero_based": 19
+        },
+        {
+          "id": "measurement-2",
+          "identical": false,
+          "first_different_token_zero_based": 48
+        },
+        {
+          "id": "measurement-3",
+          "identical": false,
+          "first_different_token_zero_based": 15
+        }
+      ]
+    },
+    {
+      "label": "confidence-0.3",
+      "session": "02-thresholds",
+      "point": {
+        "conf": 0.3,
+        "cum": 0.5,
+        "maximum": 0,
+        "spec": true
+      },
+      "role": "candidate",
+      "metrics": {
+        "decode_tok_s": 38.04437017918152,
+        "prefill_tok_s": 92.64718522349776,
+        "wall_s": 86.43111670896178,
+        "ttft_s": [
+          22.113127646996872,
+          22.602563535008812,
+          21.60564588298439
+        ],
+        "case_decode_tok_s": [
+          37.92329084933299,
+          37.356069262547244,
+          38.884991918021285
+        ],
+        "drafted": 513,
+        "accepted": 415,
+        "acceptance": 0.8089668615984406,
+        "accepted_per_generated": 0.5403645833333334
+      },
+      "decode_gain_pct": 33.97735241022273,
+      "token_comparison": [
+        {
+          "id": "measurement-1",
+          "identical": false,
+          "first_different_token_zero_based": 19
+        },
+        {
+          "id": "measurement-2",
+          "identical": false,
+          "first_different_token_zero_based": 15
+        },
+        {
+          "id": "measurement-3",
+          "identical": false,
+          "first_different_token_zero_based": 15
+        }
+      ]
+    },
+    {
+      "label": "confidence-control",
+      "session": "02-thresholds",
+      "point": {
+        "conf": 0.5,
+        "cum": 0.5,
+        "maximum": 0,
+        "spec": true
+      },
+      "role": "control",
+      "metrics": {
+        "decode_tok_s": 38.621929177983986,
+        "prefill_tok_s": 92.98116314229115,
+        "wall_s": 85.89027060297667,
+        "ttft_s": [
+          22.370130530995084,
+          21.667556533007883,
+          22.044050816999516
+        ],
+        "case_decode_tok_s": [
+          36.36674795704445,
+          39.749345304900864,
+          39.96677272228578
+        ],
+        "drafted": 490,
+        "accepted": 411,
+        "acceptance": 0.8387755102040816,
+        "accepted_per_generated": 0.53515625
+      },
+      "decode_gain_pct": 36.01128871028001,
+      "token_comparison": [
+        {
+          "id": "measurement-1",
+          "identical": false,
+          "first_different_token_zero_based": 32
+        },
+        {
+          "id": "measurement-2",
+          "identical": false,
+          "first_different_token_zero_based": 208
+        },
+        {
+          "id": "measurement-3",
+          "identical": false,
+          "first_different_token_zero_based": 39
+        }
+      ]
+    },
+    {
+      "label": "cumulative-0",
+      "session": "02-thresholds",
+      "point": {
+        "conf": 0.5,
+        "cum": 0,
+        "maximum": 0,
+        "spec": true
+      },
+      "role": "candidate",
+      "metrics": {
+        "decode_tok_s": 38.394748200716705,
+        "prefill_tok_s": 93.3145813146056,
+        "wall_s": 85.77202117498382,
+        "ttft_s": [
+          22.108793344988953,
+          21.901321331999497,
+          21.836051980004413
+        ],
+        "case_decode_tok_s": [
+          36.85823311748381,
+          39.888624702790636,
+          38.558079051622464
+        ],
+        "drafted": 551,
+        "accepted": 416,
+        "acceptance": 0.7549909255898367,
+        "accepted_per_generated": 0.5416666666666666
+      },
+      "decode_gain_pct": 35.21124639892397,
+      "token_comparison": [
+        {
+          "id": "measurement-1",
+          "identical": false,
+          "first_different_token_zero_based": 24
+        },
+        {
+          "id": "measurement-2",
+          "identical": false,
+          "first_different_token_zero_based": 80
+        },
+        {
+          "id": "measurement-3",
+          "identical": false,
+          "first_different_token_zero_based": 39
+        }
+      ]
+    },
+    {
+      "label": "cumulative-0.3",
+      "session": "02-thresholds",
+      "point": {
+        "conf": 0.5,
+        "cum": 0.3,
+        "maximum": 0,
+        "spec": true
+      },
+      "role": "candidate",
+      "metrics": {
+        "decode_tok_s": 39.29929107161204,
+        "prefill_tok_s": 93.5549985838843,
+        "wall_s": 85.14603796598385,
+        "ttft_s": [
+          21.999680198001442,
+          21.90287761797663,
+          21.775321057997644
+        ],
+        "case_decode_tok_s": [
+          38.13768451909127,
+          40.09244846941182,
+          39.72333862977849
+        ],
+        "drafted": 524,
+        "accepted": 420,
+        "acceptance": 0.8015267175572519,
+        "accepted_per_generated": 0.546875
+      },
+      "decode_gain_pct": 38.396691667522866,
+      "token_comparison": [
+        {
+          "id": "measurement-1",
+          "identical": false,
+          "first_different_token_zero_based": 19
+        },
+        {
+          "id": "measurement-2",
+          "identical": false,
+          "first_different_token_zero_based": 112
+        },
+        {
+          "id": "measurement-3",
+          "identical": false,
+          "first_different_token_zero_based": 39
+        }
+      ]
+    },
+    {
+      "label": "cumulative-0.7",
+      "session": "02-thresholds",
+      "point": {
+        "conf": 0.5,
+        "cum": 0.7,
+        "maximum": 0,
+        "spec": true
+      },
+      "role": "candidate",
+      "metrics": {
+        "decode_tok_s": 34.63121154916953,
+        "prefill_tok_s": 94.39223476381201,
+        "wall_s": 87.1868032909988,
+        "ttft_s": [
+          20.252349121001316,
+          21.523676092008827,
+          23.31856467400212
+        ],
+        "case_decode_tok_s": [
+          32.82951824291269,
+          34.698126301179734,
+          36.56752803510483
+        ],
+        "drafted": 363,
+        "accepted": 317,
+        "acceptance": 0.8732782369146006,
+        "accepted_per_generated": 0.4127604166666667
+      },
+      "decode_gain_pct": 21.95754620890089,
+      "token_comparison": [
+        {
+          "id": "measurement-1",
+          "identical": false,
+          "first_different_token_zero_based": 19
+        },
+        {
+          "id": "measurement-2",
+          "identical": false,
+          "first_different_token_zero_based": 81
+        },
+        {
+          "id": "measurement-3",
+          "identical": false,
+          "first_different_token_zero_based": 74
+        }
+      ]
+    },
+    {
+      "label": "cumulative-control",
+      "session": "02-thresholds",
+      "point": {
+        "conf": 0.5,
+        "cum": 0.5,
+        "maximum": 0,
+        "spec": true
+      },
+      "role": "control",
+      "metrics": {
+        "decode_tok_s": 38.65295707753329,
+        "prefill_tok_s": 89.92421426083293,
+        "wall_s": 88.12202318498748,
+        "ttft_s": [
+          23.56152179898345,
+          22.776652313012164,
+          21.99056499399012
+        ],
+        "case_decode_tok_s": [
+          35.5633655495586,
+          40.30282435871094,
+          40.51413228261387
+        ],
+        "drafted": 488,
+        "accepted": 406,
+        "acceptance": 0.8319672131147541,
+        "accepted_per_generated": 0.5286458333333334
+      },
+      "decode_gain_pct": 36.12055680468889,
+      "token_comparison": [
+        {
+          "id": "measurement-1",
+          "identical": false,
+          "first_different_token_zero_based": 19
+        },
+        {
+          "id": "measurement-2",
+          "identical": false,
+          "first_different_token_zero_based": 48
+        },
+        {
+          "id": "measurement-3",
+          "identical": false,
+          "first_different_token_zero_based": 15
+        }
+      ]
+    },
+    {
+      "label": "maximum-2",
+      "session": "04-max-2",
+      "point": {
+        "conf": 0.5,
+        "cum": 0.5,
+        "maximum": 2,
+        "spec": true
+      },
+      "role": "candidate",
+      "metrics": {
+        "decode_tok_s": 35.487641950567806,
+        "prefill_tok_s": 83.10226826992006,
+        "wall_s": 95.49535345999175,
+        "ttft_s": [
+          24.8243499250093,
+          24.531644081987906,
+          24.582492946006823
+        ],
+        "case_decode_tok_s": [
+          33.85150473257311,
+          36.28085651276944,
+          36.45252594562141
+        ],
+        "drafted": 423,
+        "accepted": 372,
+        "acceptance": 0.8794326241134752,
+        "accepted_per_generated": 0.484375
+      },
+      "decode_gain_pct": 24.97355822756626,
+      "token_comparison": [
+        {
+          "id": "measurement-1",
+          "identical": false,
+          "first_different_token_zero_based": 24
+        },
+        {
+          "id": "measurement-2",
+          "identical": false,
+          "first_different_token_zero_based": 109
+        },
+        {
+          "id": "measurement-3",
+          "identical": false,
+          "first_different_token_zero_based": 15
+        }
+      ]
+    },
+    {
+      "label": "maximum-1",
+      "session": "03-max-1",
+      "point": {
+        "conf": 0.5,
+        "cum": 0.5,
+        "maximum": 1,
+        "spec": true
+      },
+      "role": "candidate",
+      "metrics": {
+        "decode_tok_s": 31.340513656680038,
+        "prefill_tok_s": 85.7234942927742,
+        "wall_s": 96.08805487200152,
+        "ttft_s": [
+          24.183135692001088,
+          23.81547915498959,
+          23.679155787016498
+        ],
+        "case_decode_tok_s": [
+          29.84166364349159,
+          32.685183998359335,
+          31.627906976744185
+        ],
+        "drafted": 328,
+        "accepted": 287,
+        "acceptance": 0.875,
+        "accepted_per_generated": 0.3736979166666667
+      },
+      "decode_gain_pct": 10.36899870131467,
+      "token_comparison": [
+        {
+          "id": "measurement-1",
+          "identical": false,
+          "first_different_token_zero_based": 24
+        },
+        {
+          "id": "measurement-2",
+          "identical": false,
+          "first_different_token_zero_based": 48
+        },
+        {
+          "id": "measurement-3",
+          "identical": false,
+          "first_different_token_zero_based": 39
+        }
+      ]
+    },
+    {
+      "label": "maximum-3",
+      "session": "05-max-3",
+      "point": {
+        "conf": 0.5,
+        "cum": 0.5,
+        "maximum": 3,
+        "spec": true
+      },
+      "role": "candidate",
+      "metrics": {
+        "decode_tok_s": 35.23997733585771,
+        "prefill_tok_s": 81.73636563188037,
+        "wall_s": 96.88090539799305,
+        "ttft_s": [
+          25.338797440985218,
+          25.262490451015765,
+          24.57156197898439
+        ],
+        "case_decode_tok_s": [
+          32.020292075291636,
+          38.10235338064998,
+          36.15944186837963
+        ],
+        "drafted": 451,
+        "accepted": 379,
+        "acceptance": 0.8403547671840355,
+        "accepted_per_generated": 0.4934895833333333
+      },
+      "decode_gain_pct": 24.10138057793563,
+      "token_comparison": [
+        {
+          "id": "measurement-1",
+          "identical": false,
+          "first_different_token_zero_based": 32
+        },
+        {
+          "id": "measurement-2",
+          "identical": false,
+          "first_different_token_zero_based": 151
+        },
+        {
+          "id": "measurement-3",
+          "identical": false,
+          "first_different_token_zero_based": 15
+        }
+      ]
+    },
+    {
+      "label": "interaction-opening-control",
+      "session": "06-interactions",
+      "point": {
+        "conf": 0.5,
+        "cum": 0.5,
+        "maximum": 0,
+        "spec": true
+      },
+      "role": "control",
+      "metrics": {
+        "decode_tok_s": 35.0056741223414,
+        "prefill_tok_s": 81.62625431945573,
+        "wall_s": 97.13097342097899,
+        "ttft_s": [
+          24.765993749984773,
+          25.255283913982566,
+          25.253713670012075
+        ],
+        "case_decode_tok_s": [
+          31.972917058491632,
+          35.916504690272966,
+          37.620052225484265
+        ],
+        "drafted": 490,
+        "accepted": 398,
+        "acceptance": 0.8122448979591836,
+        "accepted_per_generated": 0.5182291666666666
+      },
+      "decode_gain_pct": 23.276256543544307,
+      "token_comparison": [
+        {
+          "id": "measurement-1",
+          "identical": false,
+          "first_different_token_zero_based": 32
+        },
+        {
+          "id": "measurement-2",
+          "identical": false,
+          "first_different_token_zero_based": 15
+        },
+        {
+          "id": "measurement-3",
+          "identical": false,
+          "first_different_token_zero_based": 15
+        }
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "label": "confidence",
+      "before": "default",
+      "after": "confidence-control",
+      "decode_delta_pct": 1.176328039015706,
+      "passes": true
+    },
+    {
+      "label": "cumulative",
+      "before": "confidence-control",
+      "after": "cumulative-control",
+      "decode_delta_pct": 0.08033751863174565,
+      "passes": true
+    },
+    {
+      "label": "selected-MAX-restart",
+      "before": "default",
+      "after": "interaction-opening-control",
+      "decode_delta_pct": -8.297031152762035,
+      "passes": false
+    }
+  ],
+  "saved_results": 60,
+  "blocked_stage": "selected-MAX-restart",
+  "error": "Traceback (most recent call last):\n  File \"/data/screen/coarse-2048-tg256/tune.py\", line 351, in main\n    sweep.execute()\n  File \"/data/screen/coarse-2048-tg256/tune.py\", line 290, in execute\n    self.check_control('selected-MAX-restart', selected, before)\n  File \"/data/screen/coarse-2048-tg256/tune.py\", line 236, in check_control\n    raise ValueError(f'Control drift {label}: {delta:+.2f}% exceeds 5%; stop without expanding run')\nValueError: Control drift selected-MAX-restart: -8.30% exceeds 5%; stop without expanding run\n"
+}
