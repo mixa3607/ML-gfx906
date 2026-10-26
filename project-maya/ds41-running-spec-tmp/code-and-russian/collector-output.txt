@@ -1,0 +1,19 @@
+SAVED experiment
+SAVED code-1-starting
+SAVED code-1-ready
+READY code-1: 215.5s
+SAVED code-1-typescript-warmup-01-result
+{'session': 'code-1', 'case': 'typescript-warmup-01', 'pp': 2048, 'tg': 256, 'decode_tok_s': 39.22594142259414, 'valid': True}
+Traceback (most recent call last):
+  File "/data/ds41-running-spec-tmp/code-and-russian/bench.py", line 158, in run_session
+    row = engine.request(case)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/data/ds41-running-spec-tmp/code-and-russian/bench.py", line 74, in request
+    validate(row, len(case['ids']))
+  File "/data/ds41-running-spec-tmp/code-and-russian/bench.py", line 30, in validate
+    raise ValueError('Truncated input or cross-request reuse')
+ValueError: Truncated input or cross-request reuse
+
+SAVED code-1-finished
+SAVED code-1-summary
+SAVED suite-finished

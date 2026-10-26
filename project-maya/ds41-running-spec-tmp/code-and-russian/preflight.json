@@ -1,0 +1,114 @@
+{
+  "cgroup": {
+    "memory.current": "6024847360",
+    "memory.peak": "6178430976",
+    "memory.max": "236223201280",
+    "cpu.max": "max 100000",
+    "cpuset.cpus.effective": "0-75",
+    "memory.stat": {
+      "anon": 12386304,
+      "file": 5998358528,
+      "kernel": 13611008,
+      "kernel_stack": 32768,
+      "pagetables": 155648,
+      "sec_pagetables": 0,
+      "percpu": 4992,
+      "sock": 0,
+      "vmalloc": 0,
+      "shmem": 0,
+      "zswap": 0,
+      "zswapped": 0,
+      "file_mapped": 32768,
+      "file_dirty": 57344,
+      "file_writeback": 0,
+      "swapcached": 0,
+      "anon_thp": 0,
+      "file_thp": 33554432,
+      "shmem_thp": 0,
+      "inactive_anon": 0,
+      "active_anon": 12386304,
+      "inactive_file": 5996216320,
+      "active_file": 2142208,
+      "unevictable": 0,
+      "slab_reclaimable": 12877520,
+      "slab_unreclaimable": 478376,
+      "slab": 13355896,
+      "workingset_refault_anon": 0,
+      "workingset_refault_file": 528,
+      "workingset_activate_anon": 0,
+      "workingset_activate_file": 0,
+      "workingset_restore_anon": 0,
+      "workingset_restore_file": 0,
+      "workingset_nodereclaim": 0,
+      "pgscan": 0,
+      "pgsteal": 0,
+      "pgscan_kswapd": 0,
+      "pgscan_direct": 0,
+      "pgscan_khugepaged": 0,
+      "pgsteal_kswapd": 0,
+      "pgsteal_direct": 0,
+      "pgsteal_khugepaged": 0,
+      "pgfault": 96843,
+      "pgmajfault": 17,
+      "pgrefill": 0,
+      "pgactivate": 0,
+      "pgdeactivate": 0,
+      "pglazyfree": 0,
+      "pglazyfreed": 0,
+      "zswpin": 0,
+      "zswpout": 0,
+      "zswpwb": 0,
+      "thp_fault_alloc": 0,
+      "thp_collapse_alloc": 0,
+      "thp_swpout": 0,
+      "thp_swpout_fallback": 0
+    },
+    "memory.events": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    },
+    "cpu.stat": {
+      "usage_usec": 17338947,
+      "user_usec": 14076441,
+      "system_usec": 3262506,
+      "core_sched.force_idle_usec": 0,
+      "nr_periods": 0,
+      "nr_throttled": 0,
+      "throttled_usec": 0,
+      "nr_bursts": 0,
+      "burst_usec": 0
+    },
+    "unix": 1793029479.424144
+  },
+  "files": {
+    "code-cases.jsonl": "78472a45bb9e616a5da5a6f41a40cb71ad56564de3d59735e20870b5e2681c12",
+    "russian-cases.jsonl": "b880c6551696301e314e14ca8a1065563dfc8d8e8d0bb2195f5a4d63e7dd90a3",
+    "russian-sources.jsonl": "f9d8d2dd91eeccbddff09d50139a3f762f31106ea8f0004187ebd95d595c14e9",
+    "typescript-source.ts": "47959b53b2a6da307de4d502d7ddb2c7b3cf2dd72d0a8f85b8b70347729ab1aa"
+  },
+  "sources": {
+    "bench.py": "2d04b50431f5d0db05a8817286003b26322cd8290134bf299a4f86e633fcbbf7",
+    "screen.py": "f5f645fff1ad1bcecca89872d9ae674aa4e2b3c234abfe79b3b799d1c0f3a833",
+    "stream.py": "051bc58ada54999bc62829feb31f054fac713edf8681b29569d87d386ca51a64",
+    "build_cases.py": "1785437582c74eafdefbb14f79202166df417df67d022c17cf762308089f619a",
+    "original_corpus.py": "994859e575d0362058f0e39c524a63cfe6bdcd38b2fcd066b0b699441aead131"
+  },
+  "pack": {
+    "ds4.txt": {
+      "size": 1522,
+      "sha256": "e1c6053dc995b76104af2d86ee332c85ba3a1684f28c4de2e39a26c5af9bbae9"
+    },
+    "tensors.txt": {
+      "size": 3647174,
+      "sha256": "77450ef4a9237ee8019668cc6bbe9f74c32dc2d0627b02fe584ba44c0b2b8040"
+    },
+    "engram.bin": {
+      "size": 517980,
+      "sha256": "08d55d6433f389b14aa115f4ea4eb31d6a2d63df1ae40821f03facf4c2d49142"
+    }
+  }
+}

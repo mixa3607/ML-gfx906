@@ -1,0 +1,13 @@
+[
+  "kubectl",
+  "-n",
+  "apps-ml",
+  "exec",
+  "-i",
+  "maya-ds41-code-russian",
+  "--",
+  "env",
+  "BENCH_STREAM=1",
+  "python",
+  "/data/ds41-running-spec-tmp/code-and-russian/bench.py"
+]

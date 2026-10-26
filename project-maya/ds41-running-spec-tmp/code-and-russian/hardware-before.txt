@@ -1,0 +1,11 @@
+'CTRL' + 'C' to stop watching output:
+ TIMESTAMP  GPU  XCP   GPU_T   MEM_T   GFX_CLK   GFX%  VRAM_USED   VRAM_FREE  VRAM_TOTAL    VRAM%
+1793029325    0    0   43 °C   43 °C   930 MHz    0 %      10 MB    32742 MB    32752 MB   0.03 %
+1793029325    1    0   43 °C   42 °C   930 MHz    0 %      10 MB    32742 MB    32752 MB   0.03 %
+1793029325    2    0   45 °C   42 °C   930 MHz    0 %      10 MB    32742 MB    32752 MB   0.03 %
+1793029325    3    0   43 °C   39 °C   930 MHz    0 %      10 MB    32742 MB    32752 MB   0.03 %
+
+
+               total        used        free      shared  buff/cache   available
+Mem:             251           9         219           0          24         242
+Swap:              0           0           0

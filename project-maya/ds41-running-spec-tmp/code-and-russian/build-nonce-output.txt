@@ -1,0 +1,1 @@
+Frozen 24 PP2048 code prompts with distinct early nonces; Russian inputs unchanged

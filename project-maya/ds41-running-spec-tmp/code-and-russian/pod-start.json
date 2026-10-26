@@ -1,0 +1,307 @@
+{
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+        "creationTimestamp": "2026-10-26T15:41:55Z",
+        "generation": 1,
+        "name": "maya-ds41-code-russian",
+        "namespace": "apps-ml",
+        "resourceVersion": "290839917",
+        "uid": "404bb59f-cb9c-464f-b5c9-2faa5ddc19b6"
+    },
+    "spec": {
+        "automountServiceAccountToken": false,
+        "containers": [
+            {
+                "command": [
+                    "/bin/bash",
+                    "-ec",
+                    "ulimit -l unlimited; exec sleep infinity"
+                ],
+                "env": [
+                    {
+                        "name": "HIP_VISIBLE_DEVICES",
+                        "value": "0,1,2,3"
+                    },
+                    {
+                        "name": "HF_HUB_OFFLINE",
+                        "value": "1"
+                    },
+                    {
+                        "name": "TRANSFORMERS_OFFLINE",
+                        "value": "1"
+                    }
+                ],
+                "image": "docker.io/mixa3607/maya-gfx906@sha256:3cf3dba357c941a190630b0fcf33efd501fe693d9510fa7332522f4b072e30d3",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "bench",
+                "resources": {
+                    "limits": {
+                        "memory": "220Gi"
+                    },
+                    "requests": {
+                        "cpu": "4",
+                        "memory": "220Gi"
+                    }
+                },
+                "securityContext": {
+                    "privileged": true,
+                    "runAsUser": 0
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                    {
+                        "mountPath": "/root/.cache/huggingface",
+                        "name": "hf-cache",
+                        "readOnly": true
+                    },
+                    {
+                        "mountPath": "/existing",
+                        "name": "existing",
+                        "readOnly": true
+                    },
+                    {
+                        "mountPath": "/data",
+                        "name": "data"
+                    },
+                    {
+                        "mountPath": "/dev/kfd",
+                        "name": "dev-kfd"
+                    },
+                    {
+                        "mountPath": "/dev/dri",
+                        "name": "dev-dri"
+                    },
+                    {
+                        "mountPath": "/dev/shm",
+                        "name": "shm"
+                    }
+                ]
+            }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "enableServiceLinks": true,
+        "imagePullSecrets": [
+            {
+                "name": "harbor-registry-pull-secret"
+            }
+        ],
+        "nodeName": "kube-worker6.arkprojects.lan",
+        "nodeSelector": {
+            "kubernetes.io/hostname": "kube-worker6.arkprojects.lan"
+        },
+        "preemptionPolicy": "PreemptLowerPriority",
+        "priority": 0,
+        "restartPolicy": "Never",
+        "schedulerName": "default-scheduler",
+        "securityContext": {},
+        "serviceAccount": "default",
+        "serviceAccountName": "default",
+        "terminationGracePeriodSeconds": 60,
+        "tolerations": [
+            {
+                "effect": "NoSchedule",
+                "key": "feature.node.kubernetes.io/amd-gpu",
+                "operator": "Equal",
+                "value": "true"
+            },
+            {
+                "effect": "NoSchedule",
+                "key": "feature.node.kubernetes.io/nvidia-gpu",
+                "operator": "Equal",
+                "value": "true"
+            },
+            {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+            },
+            {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+            }
+        ],
+        "volumes": [
+            {
+                "name": "hf-cache",
+                "persistentVolumeClaim": {
+                    "claimName": "worker6-hf-cache",
+                    "readOnly": true
+                }
+            },
+            {
+                "name": "existing",
+                "persistentVolumeClaim": {
+                    "claimName": "maya-ds41-decode-data",
+                    "readOnly": true
+                }
+            },
+            {
+                "emptyDir": {},
+                "name": "data"
+            },
+            {
+                "hostPath": {
+                    "path": "/dev/kfd",
+                    "type": ""
+                },
+                "name": "dev-kfd"
+            },
+            {
+                "hostPath": {
+                    "path": "/dev/dri",
+                    "type": ""
+                },
+                "name": "dev-dri"
+            },
+            {
+                "emptyDir": {
+                    "medium": "Memory",
+                    "sizeLimit": "8Gi"
+                },
+                "name": "shm"
+            }
+        ]
+    },
+    "status": {
+        "allocatedResources": {
+            "cpu": "4",
+            "memory": "220Gi"
+        },
+        "conditions": [
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-26T15:41:56Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-26T15:41:55Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-26T15:41:56Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-26T15:41:56Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-10-26T15:41:55Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+            }
+        ],
+        "containerStatuses": [
+            {
+                "allocatedResources": {
+                    "cpu": "4",
+                    "memory": "220Gi"
+                },
+                "containerID": "containerd://77d41409e4c68e4f2ba6f60104d8488574a8d8e524bc022a52de1f55e6cade53",
+                "image": "docker.io/mixa3607/maya-gfx906:v1.1.28-rocm-10.1",
+                "imageID": "docker.io/mixa3607/maya-gfx906@sha256:3cf3dba357c941a190630b0fcf33efd501fe693d9510fa7332522f4b072e30d3",
+                "lastState": {},
+                "name": "bench",
+                "ready": true,
+                "resources": {
+                    "limits": {
+                        "memory": "220Gi"
+                    },
+                    "requests": {
+                        "cpu": "4",
+                        "memory": "220Gi"
+                    }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                    "running": {
+                        "startedAt": "2026-10-26T15:41:56Z"
+                    }
+                },
+                "user": {
+                    "linux": {
+                        "gid": 0,
+                        "supplementalGroups": [
+                            0
+                        ],
+                        "uid": 0
+                    }
+                },
+                "volumeMounts": [
+                    {
+                        "mountPath": "/root/.cache/huggingface",
+                        "name": "hf-cache",
+                        "readOnly": true,
+                        "recursiveReadOnly": "Disabled"
+                    },
+                    {
+                        "mountPath": "/existing",
+                        "name": "existing",
+                        "readOnly": true,
+                        "recursiveReadOnly": "Disabled"
+                    },
+                    {
+                        "mountPath": "/data",
+                        "name": "data"
+                    },
+                    {
+                        "mountPath": "/dev/kfd",
+                        "name": "dev-kfd"
+                    },
+                    {
+                        "mountPath": "/dev/dri",
+                        "name": "dev-dri"
+                    },
+                    {
+                        "mountPath": "/dev/shm",
+                        "name": "shm"
+                    }
+                ]
+            }
+        ],
+        "hostIP": "192.168.1.18",
+        "hostIPs": [
+            {
+                "ip": "192.168.1.18"
+            }
+        ],
+        "observedGeneration": 1,
+        "phase": "Running",
+        "podIP": "10.42.3.184",
+        "podIPs": [
+            {
+                "ip": "10.42.3.184"
+            }
+        ],
+        "qosClass": "Burstable",
+        "resources": {
+            "limits": {
+                "memory": "220Gi"
+            },
+            "requests": {
+                "cpu": "4",
+                "memory": "220Gi"
+            }
+        },
+        "startTime": "2026-10-26T15:41:55Z"
+    }
+}

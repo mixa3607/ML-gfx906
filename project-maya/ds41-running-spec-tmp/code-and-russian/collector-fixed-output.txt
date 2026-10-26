@@ -1,0 +1,149 @@
+SAVED experiment
+SAVED code-1-starting
+SAVED code-1-ready
+READY code-1: 234.8s
+SAVED code-1-typescript-warmup-01-result
+{'session': 'code-1', 'case': 'typescript-warmup-01', 'pp': 2048, 'tg': 256, 'decode_tok_s': 40.630327751310524, 'valid': True}
+SAVED code-1-typescript-warmup-02-result
+{'session': 'code-1', 'case': 'typescript-warmup-02', 'pp': 2048, 'tg': 256, 'decode_tok_s': 49.35834155972359, 'valid': True}
+SAVED code-1-typescript-warmup-03-result
+{'session': 'code-1', 'case': 'typescript-warmup-03', 'pp': 2048, 'tg': 256, 'decode_tok_s': 52.39044233969552, 'valid': True}
+SAVED code-1-typescript-warmup-04-result
+{'session': 'code-1', 'case': 'typescript-warmup-04', 'pp': 2048, 'tg': 256, 'decode_tok_s': 54.83399277481507, 'valid': True}
+SAVED code-1-typescript-warmup-05-result
+{'session': 'code-1', 'case': 'typescript-warmup-05', 'pp': 2048, 'tg': 256, 'decode_tok_s': 55.81089954038083, 'valid': True}
+SAVED code-1-typescript-warmup-06-result
+{'session': 'code-1', 'case': 'typescript-warmup-06', 'pp': 2048, 'tg': 256, 'decode_tok_s': 59.34234716436666, 'valid': True}
+SAVED code-1-typescript-warmup-07-result
+{'session': 'code-1', 'case': 'typescript-warmup-07', 'pp': 2048, 'tg': 256, 'decode_tok_s': 52.000489416370975, 'valid': True}
+SAVED code-1-typescript-warmup-08-result
+{'session': 'code-1', 'case': 'typescript-warmup-08', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.20119036003512, 'valid': True}
+SAVED code-1-typescript-warmup-09-result
+{'session': 'code-1', 'case': 'typescript-warmup-09', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.28018757327081, 'valid': True}
+SAVED code-1-typescript-warmup-10-result
+{'session': 'code-1', 'case': 'typescript-warmup-10', 'pp': 2048, 'tg': 256, 'decode_tok_s': 61.87668340976923, 'valid': True}
+SAVED code-1-typescript-warmup-11-result
+{'session': 'code-1', 'case': 'typescript-warmup-11', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.6735812421658, 'valid': True}
+SAVED code-1-typescript-warmup-12-result
+{'session': 'code-1', 'case': 'typescript-warmup-12', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.763051022668535, 'valid': True}
+SAVED code-1-typescript-measurement-01-result
+{'session': 'code-1', 'case': 'typescript-measurement-01', 'pp': 2048, 'tg': 256, 'decode_tok_s': 60.69983337300643, 'valid': True}
+SAVED code-1-typescript-measurement-02-result
+{'session': 'code-1', 'case': 'typescript-measurement-02', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.58897452260567, 'valid': True}
+SAVED code-1-typescript-measurement-03-result
+{'session': 'code-1', 'case': 'typescript-measurement-03', 'pp': 2048, 'tg': 256, 'decode_tok_s': 61.64780968958515, 'valid': True}
+SAVED code-1-typescript-measurement-04-result
+{'session': 'code-1', 'case': 'typescript-measurement-04', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.54905808477237, 'valid': True}
+SAVED code-1-typescript-measurement-05-result
+{'session': 'code-1', 'case': 'typescript-measurement-05', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.573616018845705, 'valid': True}
+SAVED code-1-typescript-measurement-06-result
+{'session': 'code-1', 'case': 'typescript-measurement-06', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.110288386593915, 'valid': True}
+SAVED code-1-typescript-measurement-07-result
+{'session': 'code-1', 'case': 'typescript-measurement-07', 'pp': 2048, 'tg': 256, 'decode_tok_s': 61.09979633401222, 'valid': True}
+SAVED code-1-typescript-measurement-08-result
+{'session': 'code-1', 'case': 'typescript-measurement-08', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.26802109787068, 'valid': True}
+SAVED code-1-typescript-measurement-09-result
+{'session': 'code-1', 'case': 'typescript-measurement-09', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.12390674105294, 'valid': True}
+SAVED code-1-typescript-measurement-10-result
+{'session': 'code-1', 'case': 'typescript-measurement-10', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.2756245878819, 'valid': True}
+SAVED code-1-typescript-measurement-11-result
+{'session': 'code-1', 'case': 'typescript-measurement-11', 'pp': 2048, 'tg': 256, 'decode_tok_s': 61.97142023913677, 'valid': True}
+SAVED code-1-typescript-measurement-12-result
+{'session': 'code-1', 'case': 'typescript-measurement-12', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.20574244383187, 'valid': True}
+SAVED code-1-finished
+SAVED code-1-summary
+SAVED code-2-starting
+SAVED code-2-ready
+READY code-2: 235.2s
+SAVED code-2-typescript-warmup-01-result
+{'session': 'code-2', 'case': 'typescript-warmup-01', 'pp': 2048, 'tg': 256, 'decode_tok_s': 43.57261247714574, 'valid': True}
+SAVED code-2-typescript-warmup-02-result
+{'session': 'code-2', 'case': 'typescript-warmup-02', 'pp': 2048, 'tg': 256, 'decode_tok_s': 46.79156650824816, 'valid': True}
+SAVED code-2-typescript-warmup-03-result
+{'session': 'code-2', 'case': 'typescript-warmup-03', 'pp': 2048, 'tg': 256, 'decode_tok_s': 53.0189620758483, 'valid': True}
+SAVED code-2-typescript-warmup-04-result
+{'session': 'code-2', 'case': 'typescript-warmup-04', 'pp': 2048, 'tg': 256, 'decode_tok_s': 54.80570839064649, 'valid': True}
+SAVED code-2-typescript-warmup-05-result
+{'session': 'code-2', 'case': 'typescript-warmup-05', 'pp': 2048, 'tg': 256, 'decode_tok_s': 53.06419727395692, 'valid': True}
+SAVED code-2-typescript-warmup-06-result
+{'session': 'code-2', 'case': 'typescript-warmup-06', 'pp': 2048, 'tg': 256, 'decode_tok_s': 58.708414872798436, 'valid': True}
+SAVED code-2-typescript-warmup-07-result
+{'session': 'code-2', 'case': 'typescript-warmup-07', 'pp': 2048, 'tg': 256, 'decode_tok_s': 60.86499904525491, 'valid': True}
+SAVED code-2-typescript-warmup-08-result
+{'session': 'code-2', 'case': 'typescript-warmup-08', 'pp': 2048, 'tg': 256, 'decode_tok_s': 60.406500213199415, 'valid': True}
+SAVED code-2-typescript-warmup-09-result
+{'session': 'code-2', 'case': 'typescript-warmup-09', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.00004862748912, 'valid': True}
+SAVED code-2-typescript-warmup-10-result
+{'session': 'code-2', 'case': 'typescript-warmup-10', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.573616018845705, 'valid': True}
+SAVED code-2-typescript-warmup-11-result
+{'session': 'code-2', 'case': 'typescript-warmup-11', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.44643075792825, 'valid': True}
+SAVED code-2-typescript-warmup-12-result
+{'session': 'code-2', 'case': 'typescript-warmup-12', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.06040546131569, 'valid': True}
+SAVED code-2-typescript-measurement-01-result
+{'session': 'code-2', 'case': 'typescript-measurement-01', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.78159391387843, 'valid': True}
+SAVED code-2-typescript-measurement-02-result
+{'session': 'code-2', 'case': 'typescript-measurement-02', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.81871258591382, 'valid': True}
+SAVED code-2-typescript-measurement-03-result
+{'session': 'code-2', 'case': 'typescript-measurement-03', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.0136186770428, 'valid': True}
+SAVED code-2-typescript-measurement-04-result
+{'session': 'code-2', 'case': 'typescript-measurement-04', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.365486206221874, 'valid': True}
+SAVED code-2-typescript-measurement-05-result
+{'session': 'code-2', 'case': 'typescript-measurement-05', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.125420260195874, 'valid': True}
+SAVED code-2-typescript-measurement-06-result
+{'session': 'code-2', 'case': 'typescript-measurement-06', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.117853401865965, 'valid': True}
+SAVED code-2-typescript-measurement-07-result
+{'session': 'code-2', 'case': 'typescript-measurement-07', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.57208058302456, 'valid': True}
+SAVED code-2-typescript-measurement-08-result
+{'session': 'code-2', 'case': 'typescript-measurement-08', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.34413965087282, 'valid': True}
+SAVED code-2-typescript-measurement-09-result
+{'session': 'code-2', 'case': 'typescript-measurement-09', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.879124130788576, 'valid': True}
+SAVED code-2-typescript-measurement-10-result
+{'session': 'code-2', 'case': 'typescript-measurement-10', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.49540474965076, 'valid': True}
+SAVED code-2-typescript-measurement-11-result
+{'session': 'code-2', 'case': 'typescript-measurement-11', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.85742457109051, 'valid': True}
+SAVED code-2-typescript-measurement-12-result
+{'session': 'code-2', 'case': 'typescript-measurement-12', 'pp': 2048, 'tg': 256, 'decode_tok_s': 62.14661727432248, 'valid': True}
+SAVED code-2-finished
+SAVED code-2-summary
+SAVED russian-starting
+SAVED russian-ready
+READY russian: 204.1s
+SAVED russian-warmup-20261024-00-pp2048-result
+{'session': 'russian', 'case': 'warmup-20261024-00-pp2048', 'pp': 2048, 'tg': 256, 'decode_tok_s': 25.751072961373392, 'valid': True}
+SAVED russian-warmup-20261024-01-pp2048-result
+{'session': 'russian', 'case': 'warmup-20261024-01-pp2048', 'pp': 2048, 'tg': 256, 'decode_tok_s': 40.41909049121083, 'valid': True}
+SAVED russian-warmup-20261024-02-pp2048-result
+{'session': 'russian', 'case': 'warmup-20261024-02-pp2048', 'pp': 2048, 'tg': 256, 'decode_tok_s': 36.059731885287626, 'valid': True}
+SAVED russian-warmup-20261024-03-pp2048-result
+{'session': 'russian', 'case': 'warmup-20261024-03-pp2048', 'pp': 2048, 'tg': 256, 'decode_tok_s': 38.49928285649581, 'valid': True}
+SAVED russian-warmup-20261024-04-pp2048-result
+{'session': 'russian', 'case': 'warmup-20261024-04-pp2048', 'pp': 2048, 'tg': 256, 'decode_tok_s': 37.18068354135075, 'valid': True}
+SAVED russian-warmup-20261024-05-pp2048-result
+{'session': 'russian', 'case': 'warmup-20261024-05-pp2048', 'pp': 2048, 'tg': 256, 'decode_tok_s': 35.4634587302691, 'valid': True}
+SAVED russian-warmup-20261024-06-pp2048-result
+{'session': 'russian', 'case': 'warmup-20261024-06-pp2048', 'pp': 2048, 'tg': 256, 'decode_tok_s': 33.71187583453418, 'valid': True}
+SAVED russian-warmup-20261024-07-pp2048-result
+{'session': 'russian', 'case': 'warmup-20261024-07-pp2048', 'pp': 2048, 'tg': 256, 'decode_tok_s': 40.10758269239844, 'valid': True}
+SAVED russian-warmup-20261024-08-pp2048-result
+{'session': 'russian', 'case': 'warmup-20261024-08-pp2048', 'pp': 2048, 'tg': 256, 'decode_tok_s': 37.828776572861194, 'valid': True}
+SAVED russian-warmup-20261024-09-pp2048-result
+{'session': 'russian', 'case': 'warmup-20261024-09-pp2048', 'pp': 2048, 'tg': 256, 'decode_tok_s': 36.28085651276944, 'valid': True}
+SAVED russian-warmup-20261024-10-pp2048-result
+{'session': 'russian', 'case': 'warmup-20261024-10-pp2048', 'pp': 2048, 'tg': 256, 'decode_tok_s': 37.270893624484785, 'valid': True}
+SAVED russian-warmup-20261024-11-pp2048-result
+{'session': 'russian', 'case': 'warmup-20261024-11-pp2048', 'pp': 2048, 'tg': 256, 'decode_tok_s': 36.831082544955585, 'valid': True}
+SAVED russian-dev-20261024-00-pp2048-result
+{'session': 'russian', 'case': 'dev-20261024-00-pp2048', 'pp': 2048, 'tg': 256, 'decode_tok_s': 32.80882106969623, 'valid': True}
+SAVED russian-dev-20261024-01-pp4096-result
+{'session': 'russian', 'case': 'dev-20261024-01-pp4096', 'pp': 4096, 'tg': 256, 'decode_tok_s': 40.23732129895541, 'valid': True}
+SAVED russian-dev-20261024-02-pp8192-result
+{'session': 'russian', 'case': 'dev-20261024-02-pp8192', 'pp': 8192, 'tg': 256, 'decode_tok_s': 33.7123215230037, 'valid': True}
+SAVED russian-dev-20261024-03-pp2048-result
+{'session': 'russian', 'case': 'dev-20261024-03-pp2048', 'pp': 2048, 'tg': 256, 'decode_tok_s': 35.63044936284373, 'valid': True}
+SAVED russian-dev-20261024-04-pp4096-result
+{'session': 'russian', 'case': 'dev-20261024-04-pp4096', 'pp': 4096, 'tg': 256, 'decode_tok_s': 38.83288155209697, 'valid': True}
+SAVED russian-dev-20261024-05-pp8192-result
+{'session': 'russian', 'case': 'dev-20261024-05-pp8192', 'pp': 8192, 'tg': 256, 'decode_tok_s': 32.99945647954034, 'valid': True}
+SAVED russian-finished
+SAVED russian-summary
+SAVED suite-finished

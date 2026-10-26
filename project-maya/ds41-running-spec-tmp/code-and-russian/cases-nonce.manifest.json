@@ -1,0 +1,38 @@
+{
+  "code": {
+    "requests": 24,
+    "unique_prompts": 24,
+    "purpose": "intentional hot-expert/high-acceptance workload",
+    "nonce_policy": "unique leading TypeScript comment; same code pattern",
+    "correction": "exact repeats restored 2047 KV tokens in attempt1"
+  },
+  "russian": {
+    "requests": 18,
+    "warmups": 12,
+    "measurement_pp": [
+      2048,
+      4096,
+      8192,
+      2048,
+      4096,
+      8192
+    ],
+    "seed": 20261024,
+    "original_full_corpus_available": false,
+    "policy": "original recipe; retained six source revisions, refetched remaining thirty"
+  },
+  "files": {
+    "code-cases.jsonl": "78472a45bb9e616a5da5a6f41a40cb71ad56564de3d59735e20870b5e2681c12",
+    "russian-cases.jsonl": "b880c6551696301e314e14ca8a1065563dfc8d8e8d0bb2195f5a4d63e7dd90a3",
+    "russian-sources.jsonl": "f9d8d2dd91eeccbddff09d50139a3f762f31106ea8f0004187ebd95d595c14e9",
+    "typescript-source.ts": "47959b53b2a6da307de4d502d7ddb2c7b3cf2dd72d0a8f85b8b70347729ab1aa",
+    "code-cases-nonce.jsonl": "fa484e579c986a75622b04db480b15100c2dc4e22cf04a48b4c1d7fae0bf0a8e"
+  },
+  "tokenizer_files": {
+    "merges.txt": "547bace837acea98652eef5669c9b01cee1c73ad1d2a44d6fdce9e6a81c22147",
+    "vocab.json": "2f0bf5b31f4aa191d5d0d78291927a4f28c9ceb498a5e345b97e926c4cb99c1a",
+    "chat_template.jinja": "e9f7db2fa773233bdfd0c5f21cf5d300283aad08fd6d056593634a5a375306fa",
+    "tokenizer.json": "5a47981b685b75154e29bfb0299584c9b3a4a28679585e86d524c34c065d037f",
+    "token_type.json": "0a61021438e5ce6041133495f18fc360a6587aea748b17d953f552d2119ba51e"
+  }
+}

@@ -1,0 +1,13 @@
+test_all_three_sessions_in_order_even_after_short_eos (test_suite.SuiteTests.test_all_three_sessions_in_order_even_after_short_eos) ... ok
+test_code_nonces_and_distinct_russian_inputs (test_suite.SuiteTests.test_code_nonces_and_distinct_russian_inputs) ... ok
+test_collector_allowlist_and_exit137_durability (test_suite.SuiteTests.test_collector_allowlist_and_exit137_durability) ... ok
+test_native_pp8k_and_short_eos_preserved (test_suite.SuiteTests.test_native_pp8k_and_short_eos_preserved) ... ok
+test_pooling_and_expert_counters (test_suite.SuiteTests.test_pooling_and_expert_counters) ... ok
+test_pp2k_4k_8k_and_validation_errors (test_suite.SuiteTests.test_pp2k_4k_8k_and_validation_errors) ... ok
+test_reuse_failure_returns_finished_row_for_durable_export (test_suite.SuiteTests.test_reuse_failure_returns_finished_row_for_durable_export) ... ok
+test_ts_fixture_and_runtime_match_manifest (test_suite.SuiteTests.test_ts_fixture_and_runtime_match_manifest) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.070s
+
+OK
