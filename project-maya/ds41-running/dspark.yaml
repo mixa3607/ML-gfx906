@@ -1,0 +1,195 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: maya-ds41-dspark-config
+  namespace: apps-ml
+data:
+  maya-ds4-hip.json: |
+    {
+      "exe": "/opt/maya/build-hip/maya-ds4",
+      "cwd": "/opt/maya",
+      "backend": "hip",
+      "gpu": [0, 1, 2, 3],
+      "model_name": "deepseek-v4.1-flash",
+      "tokenizer": "/data/ds4/tokenizer",
+      "log": "/data/dspark.log",
+      "lib_dirs": ["/opt/rocm/lib"],
+      "args": [
+        "--pack", "/data/ds4",
+        "--gpus", "0,1,2,3",
+        "--max-context", "196608",
+        "--tp", "4",
+        "--cpu-threads", "56",
+        "--prefill-chunk", "2048",
+        "--reserve-mib", "1280",
+        "--mmap-experts", "off",
+        "--dspark", "on",
+        "--dspark-conf", "0.5",
+        "--vision", "on",
+        "--expert-profile", "/data/expert-profile.bin"
+      ],
+      "env": {
+        "LD_LIBRARY_PATH": "/opt/rocm/lib",
+        "HIP_VISIBLE_DEVICES": "0,1,2,3",
+        "DS4_RING_MB": "400",
+        "DS4_ENGRAM_CACHE_MB": "256",
+        "DS4_HIP_ATTN_SWIZZLE": "1",
+        "STRATA_DS4_RAM_TIER": "0",
+        "STRATA_DS4_DISK_SKIP_W": "0",
+        "STRATA_DS4_PROMPT_SKIP": "0",
+        "STRATA_DS4_SLOT_KEEP": "0",
+        "DS4_COPY_NUMA": "2",
+        "DS4_TP_GGUF_UNEVEN": "1",
+        "DS4_DRAFT_DEV": "1,2,3",
+        "STRATA_DS4_DSPARK_CUM": "0.5",
+        "DS4_DSPARK_MAX": "0"
+      }
+    }
+  prepare.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd /opt/maya
+    snapshot=/root/.cache/huggingface/hub/models--unsloth--DeepSeek-V4.1-Flash-1017-GGUF/snapshots/60ad3651641b5c97679c807e064ab1d7a3ca1455
+    vision=/root/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-V4.1-Flash-1017/snapshots/1bae0e1088993b9b82de08f59de5be5a34e42170
+    draft=/root/.cache/huggingface/hub/models--peasantsmith--DeepSeek-V4.1-Flash-1017-Maya-GGUF/snapshots/d1fc01009f21e26157acb6858c315d0365483b72/dspark
+    test -f "$draft/dspark.bin"
+    test -f "$draft/dspark.json"
+    mkdir -p /data/vision /data/drafter /data/config
+    if [ ! -f /data/vision/vision.bin ] || [ ! -f /data/vision/vision.json ]; then
+      ln -sfn "$vision/model-00001-of-00048.safetensors" /data/vision/model-00001-of-00048.safetensors
+      ln -sfn "$vision/config.json" /data/vision/config.json
+      python tools/ds4/vision_pack.py --dir /data/vision
+    fi
+    # Keep the index regular: resolving an HF JSON symlink loses its BIN sibling.
+    if [ ! -f /data/drafter/dspark.json ]; then
+      cp "$draft/dspark.json" /data/drafter/dspark.json
+    fi
+    ln -sfn "$draft/dspark.bin" /data/drafter/dspark.bin
+    python tools/ds4/pack_gguf.py --model "$snapshot/UD-Q8_K_XL" --out /data/ds4 \
+      --vision /data/vision --drafter /data/drafter/dspark.json
+    if [ ! -f /data/expert-profile.bin ]; then
+      cp /opt/maya/data/expert-profile-ds4.bin /data/expert-profile.bin
+    fi
+    # maya.py needs a writable config.
+    cp /etc/maya/maya-ds4-hip.json /data/config/maya-ds4-hip.json
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: maya-ds41-dspark-data
+  namespace: apps-ml
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 8Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: maya-ds41-dspark
+  namespace: apps-ml
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: maya-ds41-dspark
+  template:
+    metadata:
+      labels:
+        app: maya-ds41-dspark
+    spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 180
+      nodeSelector:
+        kubernetes.io/hostname: kube-worker6.arkprojects.lan
+      tolerations:
+        - key: feature.node.kubernetes.io/amd-gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+        - key: feature.node.kubernetes.io/nvidia-gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+      imagePullSecrets:
+        - name: harbor-registry-pull-secret
+      initContainers:
+        - name: prepare
+          image: docker.io/mixa3607/maya-gfx906:v1.1.28-rocm-10.1
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash", "/etc/maya/prepare.sh"]
+          securityContext:
+            runAsUser: 0
+          env:
+            - { name: HF_HUB_OFFLINE, value: "1" }
+            - { name: TRANSFORMERS_OFFLINE, value: "1" }
+          resources:
+            requests: { cpu: "2", memory: 2Gi }
+            limits: { memory: 8Gi }
+          volumeMounts:
+            - { name: config, mountPath: /etc/maya, readOnly: true }
+            - { name: data, mountPath: /data }
+            - {
+                name: hf-cache,
+                mountPath: /root/.cache/huggingface,
+                readOnly: true,
+              }
+      containers:
+        - name: maya
+          image: docker.io/mixa3607/maya-gfx906:v1.1.28-rocm-10.1
+          imagePullPolicy: IfNotPresent
+          command: ["/usr/bin/tini", "--", "/bin/bash", "-ec"]
+          args:
+            - |
+              ulimit -l unlimited
+              exec /opt/maya/entrypoint.sh serve
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          env:
+            - { name: MAYA_CONFIG, value: /data/config/maya-ds4-hip.json }
+            - { name: HIP_VISIBLE_DEVICES, value: "0,1,2,3" }
+            - { name: HF_HUB_OFFLINE, value: "1" }
+            - { name: TRANSFORMERS_OFFLINE, value: "1" }
+          resources:
+            requests: { cpu: "4", memory: 220Gi }
+            limits: { memory: 220Gi }
+          ports:
+            - { name: http, containerPort: 8080 }
+          startupProbe:
+            httpGet: { path: /health, port: http }
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 180
+          readinessProbe:
+            httpGet: { path: /health, port: http }
+            periodSeconds: 10
+            timeoutSeconds: 5
+          volumeMounts:
+            - { name: config, mountPath: /etc/maya, readOnly: true }
+            - { name: data, mountPath: /data }
+            - {
+                name: hf-cache,
+                mountPath: /root/.cache/huggingface,
+                readOnly: true,
+              }
+            - { name: dev-kfd, mountPath: /dev/kfd }
+            - { name: dev-dri, mountPath: /dev/dri }
+            - { name: shm, mountPath: /dev/shm }
+      volumes:
+        - name: config
+          configMap: { name: maya-ds41-dspark-config }
+        - name: data
+          persistentVolumeClaim: { claimName: maya-ds41-dspark-data }
+        - name: hf-cache
+          persistentVolumeClaim: { claimName: worker6-hf-cache, readOnly: true }
+        - name: dev-kfd
+          hostPath: { path: /dev/kfd }
+        - name: dev-dri
+          hostPath: { path: /dev/dri }
+        - name: shm
+          emptyDir: { medium: Memory, sizeLimit: 8Gi }
