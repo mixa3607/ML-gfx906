@@ -1,5 +1,9 @@
 # DSpark coarse screening
 
+Next experiment, documented only: [chunk2048 / PP2048 / TG256 coarse tuning
+plan](COARSE-TUNING-PLAN.md), with decode tokens/s as the primary objective.
+No GPU run or serving-configuration change is started by recording that plan.
+
 The first 200Gi attempt failed with OOM; see [RESULTS.md](RESULTS.md).
 The approved 220Gi retry completed A/C: **decode +29.7%, scored wall unchanged**;
 default-placement B was OOM-killed. See [retry results](retry-220gi/RESULTS.md)
