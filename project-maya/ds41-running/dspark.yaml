@@ -52,22 +52,16 @@ data:
     snapshot=/root/.cache/huggingface/hub/models--unsloth--DeepSeek-V4.1-Flash-1017-GGUF/snapshots/60ad3651641b5c97679c807e064ab1d7a3ca1455
     vision=/root/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-V4.1-Flash-1017/snapshots/1bae0e1088993b9b82de08f59de5be5a34e42170
     draft=/root/.cache/huggingface/hub/models--peasantsmith--DeepSeek-V4.1-Flash-1017-Maya-GGUF/snapshots/d1fc01009f21e26157acb6858c315d0365483b72/dspark
-    test -f "$draft/dspark.bin"
-    test -f "$draft/dspark.json"
     mkdir -p /data/vision /data/drafter /data/config
-    if [ ! -f /data/vision/vision.bin ] || [ ! -f /data/vision/vision.json ]; then
+    if [ ! -f /data/vision/config.json ]; then
       ln -sfn "$vision/model-00001-of-00048.safetensors" /data/vision/model-00001-of-00048.safetensors
       ln -sfn "$vision/config.json" /data/vision/config.json
       python tools/ds4/vision_pack.py --dir /data/vision
-    fi
-    # Keep the index regular: resolving an HF JSON symlink loses its BIN sibling.
-    if [ ! -f /data/drafter/dspark.json ]; then
+      # Keep the index regular: resolving an HF JSON symlink loses its BIN sibling.
       cp "$draft/dspark.json" /data/drafter/dspark.json
-    fi
-    ln -sfn "$draft/dspark.bin" /data/drafter/dspark.bin
-    python tools/ds4/pack_gguf.py --model "$snapshot/UD-Q8_K_XL" --out /data/ds4 \
-      --vision /data/vision --drafter /data/drafter/dspark.json
-    if [ ! -f /data/expert-profile.bin ]; then
+      ln -sfn "$draft/dspark.bin" /data/drafter/dspark.bin
+      python tools/ds4/pack_gguf.py --model "$snapshot/UD-Q8_K_XL" --out /data/ds4 \
+        --vision /data/vision --drafter /data/drafter/dspark.json
       cp /opt/maya/data/expert-profile-ds4.bin /data/expert-profile.bin
     fi
     # maya.py needs a writable config.
