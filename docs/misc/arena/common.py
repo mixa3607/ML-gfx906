@@ -119,7 +119,8 @@ def run_name(path):
     return path.stem.removesuffix(".answers")
 
 
-def atomic_json(path, data):
+@contextmanager
+def atomic_output(path):
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = None
     try:
@@ -128,14 +129,24 @@ def atomic_json(path, data):
             prefix=f".{path.name}.", suffix=".tmp", delete=False,
         ) as stream:
             temporary = Path(stream.name)
-            json.dump(data, stream, ensure_ascii=False, indent=2, allow_nan=False)
-            stream.write("\n")
+            yield stream
             stream.flush()
             os.fsync(stream.fileno())
         os.replace(temporary, path)
     finally:
         if temporary is not None:
             temporary.unlink(missing_ok=True)
+
+
+def atomic_json(path, data):
+    with atomic_output(path) as stream:
+        json.dump(data, stream, ensure_ascii=False, indent=2, allow_nan=False)
+        stream.write("\n")
+
+
+def atomic_text(path, text):
+    with atomic_output(path) as stream:
+        stream.write(text)
 
 
 @contextmanager

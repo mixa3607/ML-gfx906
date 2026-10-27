@@ -25,8 +25,11 @@ def main(argv=None):
     examine_parser = commands.add_parser("examine", help="collect or resume model answers")
     examine_parser.add_argument("--bench", type=Path, default=BENCH, help="source HTML")
     validate_parser = commands.add_parser("validate", help="judge answers into a separate resumable file")
-    export_parser = commands.add_parser("export", help="export an importable HTML history entry")
-    export_parser.add_argument("--output", type=Path, help="default: <answers name>.import.json")
+    export_parser = commands.add_parser("export", help="export HTML history JSON or a Markdown report")
+    export_parser.add_argument("--format", choices=("json", "markdown"), default="json",
+                               help="output format (default: json)")
+    export_parser.add_argument("--output", type=Path,
+                               help="default: <answers name>.import.json or <answers name>.md")
     for command in (examine_parser, validate_parser, export_parser):
         command.add_argument("--answers", type=Path, required=True, help="exam answers JSON path")
     for command in (examine_parser, validate_parser):

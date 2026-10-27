@@ -182,6 +182,38 @@ No model config or API access is needed. Both input files remain unchanged.
 missing judgements and null verdicts are skipped. The source hash must match.
 `--output` defaults to `<answer run name>.import.json` next to the answer file.
 
+### Markdown report
+
+Use `--format markdown` for a human-readable report instead of HTML history JSON:
+
+```bash
+./run.py export \
+  --answers configs/maya-ds41f-nothink.json \
+  --validation configs/maya-ds41f-nothink.validation.json \
+  --format markdown \
+  --output configs/maya-ds41f-nothink.md
+```
+
+The report starts with the score/counts and an unsuccessful-answer index in this
+order: incorrect (`0`), partial (`0.5`), and unassessed/skipped (`null`). Each row
+includes the validator's explanation and links to the full question. A separate
+index flags disputed or uncertain references, including those with a correct verdict.
+
+Then **all questions**, including correct answers, are grouped by their original
+subject categories. Each entry includes the question, model answer, reference,
+reference explanation, verdict, validator explanation, reference status and any
+`correctedAnswer`. Raw API responses and model/judge reasoning are not included.
+Question/answer/explanation text is fenced literally to preserve code and prevent
+embedded Markdown or HTML from changing the report structure.
+
+`--validation` is optional. Missing judgements, a judge's explicit null verdict,
+and unanswered questions remain skips; missing explanations are labeled rather
+than invented. The Markdown score and counts match JSON export. Source hash checks,
+atomic writing and lock cleanup apply to both formats. The default Markdown path
+is `<answer run name>.md` next to the answers; JSON remains the default format.
+
+### HTML history JSON
+
 Use the history/table import button in `Bench.html`. The page imports **summaries
 only**, not individual answers or a resumable quiz. Export produces its
 `{app, exported, hist: [...]}` format with run name, timestamp, score, judged/total
