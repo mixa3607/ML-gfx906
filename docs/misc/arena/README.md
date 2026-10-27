@@ -7,6 +7,10 @@ in 20 subjects. The HTML is not modified.
 The workflow has three independent steps: collect answers, judge them with an
 LLM, and export a browser history entry. Judgements never modify the answers.
 
+`run.py` is the single CLI entry point. Implementations live in
+`commands/examine.py`, `commands/validate.py` and `commands/export.py`;
+`common.py` contains shared parsing, API access, progress and file handling.
+
 Requires Python 3.10+ on Linux, PyYAML and jsonschema:
 
 ```bash
@@ -150,9 +154,13 @@ with a nonzero exit code. Redirects are not followed, protecting configured head
 Each completed answer or judgement is atomically saved and flushed to disk.
 After Ctrl+C, SIGTERM or an error, rerun the **same command** to resume. An
 interrupted request may be repeated if the server processed it before local
-saving. Sibling `.json.lock` files prevent conflicting commands; the OS releases
-their locks on exit, so the files can safely remain. Validation holds the answer
-file's lock as well, preventing a simultaneous exam from changing its source.
+saving. Sibling `.json.lock` files prevent conflicting commands and are removed
+on completion, errors, Ctrl+C and SIGTERM. Cleanup happens while the lock is
+still held; inode checks prevent contenders from using an old unlinked lock.
+Validation holds the answer file's lock as well, preventing a simultaneous exam
+from changing its source. SIGKILL, a crash or a power failure may leave a lock
+file behind; the OS releases the lock, and the next command safely reuses the
+file and removes it on exit. Do not manually delete an actively held lock.
 
 Exam resume checks questions and model settings. Validation resume checks source
 identity/hash, judge settings and response schema. Mismatches stop without

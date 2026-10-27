@@ -11,6 +11,8 @@ from unittest.mock import patch
 
 import yaml
 
+from commands import examine as examine_command, export as export_command, validate as validate_command
+import common
 import run
 
 
@@ -106,6 +108,9 @@ class RunnerTest(unittest.TestCase):
         self.write_config()
         self.write_judge()
 
+    def tearDown(self):
+        self.assertEqual(list(self.root.rglob("*.lock")), [], "Command left lock files behind")
+
     def write_bench(self):
         self.bench.write_text("<script>const DATA = " + json.dumps(
             self.subjects, ensure_ascii=False,
@@ -138,8 +143,8 @@ class RunnerTest(unittest.TestCase):
         return json.loads(self.path.read_text(encoding="utf-8"))
 
     def initialize(self):
-        result = run.new_result(self.config, self.path, run.extract_questions(self.bench))
-        run.atomic_json(self.path, result)
+        result = examine_command.new_result(self.config, self.path, common.extract_questions(self.bench))
+        common.atomic_json(self.path, result)
         return result
 
     def finish_answers(self):
@@ -147,11 +152,11 @@ class RunnerTest(unittest.TestCase):
         for index, item in enumerate(result["answers"]):
             item.update(answer=f"Candidate answer {index}", reasoning="Private candidate reasoning",
                         response=completion(f"Candidate answer {index}"))
-        run.atomic_json(self.path, result)
+        common.atomic_json(self.path, result)
         return result
 
     def test_real_bench_has_100_unique_questions(self):
-        questions = run.extract_questions(run.BENCH)
+        questions = common.extract_questions(common.BENCH)
         self.assertEqual(len(questions), 100)
         self.assertEqual(len({q["subject"] for q in questions}), 20)
         self.assertEqual(len({q["id"] for q in questions}), 100)
@@ -159,10 +164,10 @@ class RunnerTest(unittest.TestCase):
         self.assertEqual(questions[0]["reference"], "153")
 
     def test_extract_json_without_executing_js_and_preserve_code(self):
-        questions = run.extract_questions(self.bench)
+        questions = common.extract_questions(self.bench)
         self.assertEqual(questions[0]["question"], "Вопрос?\n\nx < 2\n  return x")
         self.assertEqual(questions[1]["explanation"], "")
-        self.assertEqual(run.plain_text("<b>A</b><br>B &amp; C"), "A\nB & C")
+        self.assertEqual(common.plain_text("<b>A</b><br>B &amp; C"), "A\nB & C")
 
     def test_initial_result_contains_all_null_verdicts(self):
         result = self.initialize()
@@ -220,14 +225,14 @@ class RunnerTest(unittest.TestCase):
             self.assertIsNotNone(partial["answers"][0]["response"])
             self.assertIsNone(partial["answers"][1]["response"])
             partial["answers"][0]["verdict"] = 0.5
-            run.atomic_json(self.path, partial)
+            common.atomic_json(self.path, partial)
             self.assertEqual(self.examine()[0], 0)
             self.assertEqual(len(requests), 3)
             self.assertEqual(requests[1]["body"], requests[2]["body"])
             self.assertEqual(self.read()["answers"][0]["verdict"], 0.5)
 
     def test_ctrl_c_preserves_checkpoint(self):
-        with patch.object(run, "chat_completion", side_effect=[completion(), KeyboardInterrupt]):
+        with patch.object(examine_command, "chat_completion", side_effect=[completion(), KeyboardInterrupt]):
             code, log = self.examine()
         self.assertEqual(code, 130)
         self.assertIn("Interrupted", log)
@@ -238,7 +243,7 @@ class RunnerTest(unittest.TestCase):
     def test_timeout_or_incomplete_http_preserves_checkpoint(self):
         for error in (TimeoutError("timed out"), IncompleteRead(b"partial", 100)):
             with self.subTest(error=type(error).__name__):
-                with patch.object(run, "chat_completion", side_effect=error):
+                with patch.object(examine_command, "chat_completion", side_effect=error):
                     code, log = self.examine()
                 self.assertEqual(code, 1)
                 self.assertIn("Error:", log)
@@ -255,7 +260,7 @@ class RunnerTest(unittest.TestCase):
                 original = self.config[key]
                 self.config[key] = value
                 self.write_config()
-                with patch.object(run, "chat_completion") as call:
+                with patch.object(examine_command, "chat_completion") as call:
                     code, log = self.examine()
                 self.assertEqual(code, 1)
                 self.assertIn(f"{key} differs", log)
@@ -268,7 +273,7 @@ class RunnerTest(unittest.TestCase):
         before = self.path.read_bytes()
         self.subjects[0]["q"][0]["q"] = "Changed"
         self.write_bench()
-        with patch.object(run, "chat_completion") as call:
+        with patch.object(examine_command, "chat_completion") as call:
             code, log = self.examine()
         self.assertEqual(code, 1)
         self.assertIn("questions differ", log)
@@ -310,14 +315,14 @@ class RunnerTest(unittest.TestCase):
     def test_atomic_replace_failure_preserves_previous_file(self):
         self.initialize()
         before = self.path.read_bytes()
-        with patch.object(run.os, "replace", side_effect=OSError("disk error")):
+        with patch.object(common.os, "replace", side_effect=OSError("disk error")):
             with self.assertRaises(OSError):
-                run.atomic_json(self.path, {"new": "data"})
+                common.atomic_json(self.path, {"new": "data"})
         self.assertEqual(self.path.read_bytes(), before)
         self.assertEqual(list(self.root.glob("*.tmp")), [])
 
     def test_concurrent_result_lock_is_rejected(self):
-        with run.result_lock(self.path):
+        with common.result_lock(self.path):
             code, log = self.examine()
         self.assertEqual(code, 1)
         self.assertIn("already in use", log)
@@ -326,7 +331,7 @@ class RunnerTest(unittest.TestCase):
     def test_export_all_null_as_skipped_without_api_calls(self):
         result = self.initialize()
         before = self.path.read_bytes()
-        with patch.object(run, "chat_completion") as call:
+        with patch.object(common, "chat_completion") as call:
             code, log = self.invoke("export", "--answers", self.path)
         self.assertEqual(code, 0, log)
         call.assert_not_called()
@@ -347,13 +352,13 @@ class RunnerTest(unittest.TestCase):
     def test_export_scoring_skip_denominator_and_js_rounding(self):
         result = self.initialize()
         result["answers"][0]["verdict"] = 0.5
-        row = run.history_export(result)["hist"][0]
+        row = export_command.history_export(result)["hist"][0]
         self.assertEqual(row["score"], 38)  # 3/8 = 37.5, rounds up.
         self.assertEqual(row["done"], 1)
         self.assertEqual(row["counts"]["skip"], 1)
         result["answers"][0]["verdict"] = 1
         result["answers"][1]["verdict"] = 0
-        row = run.history_export(result)["hist"][0]
+        row = export_command.history_export(result)["hist"][0]
         self.assertEqual(row["score"], 75)
         self.assertEqual(row["done"], 2)
         self.assertEqual(row["counts"], {"ok": 1, "mid": 0, "bad": 1, "skip": 0})
@@ -362,19 +367,19 @@ class RunnerTest(unittest.TestCase):
         result = self.initialize()
         result["answers"][0].update(level=1, verdict=0.5)
         result["answers"][1]["level"] = 3
-        self.assertEqual(run.history_export(result)["hist"][0]["score"], 13)
+        self.assertEqual(export_command.history_export(result)["hist"][0]["score"], 13)
 
     def test_invalid_verdict_is_rejected(self):
         result = self.initialize()
         result["answers"][0]["verdict"] = "null"
-        run.atomic_json(self.path, result)
+        common.atomic_json(self.path, result)
         code, log = self.invoke("export", "--answers", self.path)
         self.assertEqual(code, 1)
         self.assertIn("Invalid verdict", log)
 
     def test_run_name_strips_answers_suffix_and_supports_legacy_names(self):
-        self.assertEqual(run.run_name(self.path), "model-rea95")
-        self.assertEqual(run.run_name(Path("model-rea95.json")), "model-rea95")
+        self.assertEqual(common.run_name(self.path), "model-rea95")
+        self.assertEqual(common.run_name(Path("model-rea95.json")), "model-rea95")
 
     def test_result_in_model_config_is_rejected(self):
         self.config["result"] = "legacy-output"
@@ -436,7 +441,7 @@ class RunnerTest(unittest.TestCase):
                 self.assertNotIn("Private candidate reasoning", json.dumps(body))
                 self.assertNotIn("ds41f", json.dumps(body))
                 self.assertEqual(body["chat_template_kwargs"], {"reasoning_effort": 50})
-                self.assertEqual(body["response_format"], run.JUDGE_FORMAT)
+                self.assertEqual(body["response_format"], validate_command.JUDGE_FORMAT)
                 self.assertFalse(body["stream"])
                 self.assertEqual(request["headers"]["Authorization"], "Bearer judge-secret-token")
             validation = self.read_validation()
@@ -469,7 +474,7 @@ class RunnerTest(unittest.TestCase):
 
     def test_validate_interrupt_preserves_checkpoint(self):
         self.finish_answers()
-        with patch.object(run, "chat_completion", side_effect=[judge_completion(), KeyboardInterrupt]):
+        with patch.object(validate_command, "chat_completion", side_effect=[judge_completion(), KeyboardInterrupt]):
             code, log = self.validate()
         self.assertEqual(code, 130)
         self.assertIn("Interrupted", log)
@@ -494,7 +499,7 @@ class RunnerTest(unittest.TestCase):
         ]
         for content in contents:
             with self.subTest(content=content):
-                with patch.object(run, "chat_completion", return_value=completion(content)):
+                with patch.object(validate_command, "chat_completion", return_value=completion(content)):
                     code, log = self.validate()
                 self.assertEqual(code, 1, log)
                 self.assertEqual(self.read_validation()["answers"], {})
@@ -503,7 +508,7 @@ class RunnerTest(unittest.TestCase):
         self.finish_answers()
         response = judge_completion()
         response["choices"][0]["finish_reason"] = "length"
-        with patch.object(run, "chat_completion", return_value=response):
+        with patch.object(validate_command, "chat_completion", return_value=response):
             code, log = self.validate()
         self.assertEqual(code, 1)
         self.assertIn("did not finish normally", log)
@@ -512,7 +517,7 @@ class RunnerTest(unittest.TestCase):
     def test_disputed_reference_correction_stays_in_validation_only(self):
         self.finish_answers()
         before = self.path.read_bytes()
-        with patch.object(run, "chat_completion", return_value=judge_completion(1, "disputed", "Corrected reference")):
+        with patch.object(validate_command, "chat_completion", return_value=judge_completion(1, "disputed", "Corrected reference")):
             code, log = self.validate()
         self.assertEqual(code, 0, log)
         self.assertEqual(self.read_validation()["answers"]["test:0"]["correctedAnswer"], "Corrected reference")
@@ -520,7 +525,7 @@ class RunnerTest(unittest.TestCase):
 
     def test_changed_judge_config_refuses_resume(self):
         self.finish_answers()
-        with patch.object(run, "chat_completion", return_value=judge_completion()):
+        with patch.object(validate_command, "chat_completion", return_value=judge_completion()):
             self.assertEqual(self.validate()[0], 0)
         checkpoint = self.validation_path.read_bytes()
         for key, value in (("systemPrompt", "new judge"), ("model", "different judge"),
@@ -530,7 +535,7 @@ class RunnerTest(unittest.TestCase):
                 previous = self.judge[key]
                 self.judge[key] = value
                 self.write_judge()
-                with patch.object(run, "chat_completion") as call:
+                with patch.object(validate_command, "chat_completion") as call:
                     code, log = self.validate()
                 self.assertEqual(code, 1)
                 self.assertIn("Validator config differs", log)
@@ -540,11 +545,11 @@ class RunnerTest(unittest.TestCase):
 
     def test_changed_source_refuses_validation_and_export(self):
         self.finish_answers()
-        with patch.object(run, "chat_completion", return_value=judge_completion()):
+        with patch.object(validate_command, "chat_completion", return_value=judge_completion()):
             self.assertEqual(self.validate()[0], 0)
         checkpoint = self.validation_path.read_bytes()
         self.path.write_bytes(self.path.read_bytes() + b"\n")
-        with patch.object(run, "chat_completion") as call:
+        with patch.object(validate_command, "chat_completion") as call:
             code, log = self.validate()
         self.assertEqual(code, 1)
         self.assertIn("Validation source differs", log)
@@ -561,7 +566,7 @@ class RunnerTest(unittest.TestCase):
             self.path.write_bytes(self.path.read_bytes() + b"\n")
             return judge_completion()
 
-        with patch.object(run, "chat_completion", side_effect=change_source):
+        with patch.object(validate_command, "chat_completion", side_effect=change_source):
             code, log = self.validate()
         self.assertEqual(code, 1)
         self.assertIn("Answers changed during validation", log)
@@ -570,8 +575,8 @@ class RunnerTest(unittest.TestCase):
     def test_partial_validation_only_judges_saved_answers(self):
         result = self.finish_answers()
         result["answers"][1].update(answer=None, response=None)
-        run.atomic_json(self.path, result)
-        with patch.object(run, "chat_completion", return_value=judge_completion()) as call:
+        common.atomic_json(self.path, result)
+        with patch.object(validate_command, "chat_completion", return_value=judge_completion()) as call:
             code, log = self.validate()
         self.assertEqual(code, 0, log)
         self.assertEqual(call.call_count, 1)
@@ -584,7 +589,7 @@ class RunnerTest(unittest.TestCase):
 
     def test_no_completed_answers_means_no_judge_requests(self):
         self.initialize()
-        with patch.object(run, "chat_completion") as call:
+        with patch.object(validate_command, "chat_completion") as call:
             code, log = self.validate()
         self.assertEqual(code, 0, log)
         call.assert_not_called()
@@ -592,12 +597,12 @@ class RunnerTest(unittest.TestCase):
 
     def test_export_uses_selected_validation_and_needs_no_model_config(self):
         self.finish_answers()
-        with patch.object(run, "chat_completion", side_effect=[judge_completion(0.5), judge_completion(None, "uncertain")]):
+        with patch.object(validate_command, "chat_completion", side_effect=[judge_completion(0.5), judge_completion(None, "uncertain")]):
             self.assertEqual(self.validate()[0], 0)
         validation = self.read_validation()
         answers_before = self.path.read_bytes()
         validation_before = self.validation_path.read_bytes()
-        with patch.object(run, "load_config", side_effect=AssertionError("must not read a config")):
+        with patch.object(common, "load_config", side_effect=AssertionError("must not read a config")):
             code, log = self.invoke("export", "--answers", self.path, "--validation", self.validation_path)
         self.assertEqual(code, 0, log)
         row = json.loads((self.root / "model-rea95.import.json").read_text())["hist"][0]
@@ -611,7 +616,7 @@ class RunnerTest(unittest.TestCase):
     def test_missing_validation_entries_do_not_fall_back_to_answers_verdicts(self):
         result = self.finish_answers()
         result["answers"][0]["verdict"] = 1
-        row = run.history_export(result, {"id": "v", "updatedAt": run.timestamp(), "answers": {}})["hist"][0]
+        row = export_command.history_export(result, {"id": "v", "updatedAt": common.timestamp(), "answers": {}})["hist"][0]
         self.assertEqual(row["score"], 0)
         self.assertEqual(row["counts"]["skip"], 2)
 
@@ -628,7 +633,7 @@ class RunnerTest(unittest.TestCase):
 
     def test_export_cannot_overwrite_validation(self):
         self.finish_answers()
-        with patch.object(run, "chat_completion", return_value=judge_completion()):
+        with patch.object(validate_command, "chat_completion", return_value=judge_completion()):
             self.assertEqual(self.validate()[0], 0)
         before = self.validation_path.read_bytes()
         code, log = self.invoke("export", "--answers", self.path, "--validation", self.validation_path,
@@ -639,8 +644,8 @@ class RunnerTest(unittest.TestCase):
 
     def test_concurrent_examine_blocks_validation(self):
         self.finish_answers()
-        with run.result_lock(self.path):
-            with patch.object(run, "chat_completion") as call:
+        with common.result_lock(self.path):
+            with patch.object(validate_command, "chat_completion") as call:
                 code, log = self.validate()
         self.assertEqual(code, 1)
         self.assertIn("already in use", log)
@@ -648,7 +653,7 @@ class RunnerTest(unittest.TestCase):
 
     def test_saved_judgement_requires_verdict_and_known_question_id(self):
         self.finish_answers()
-        with patch.object(run, "chat_completion", return_value=judge_completion()):
+        with patch.object(validate_command, "chat_completion", return_value=judge_completion()):
             self.assertEqual(self.validate()[0], 0)
         original = self.read_validation()
         missing = json.loads(json.dumps(original))
@@ -657,16 +662,16 @@ class RunnerTest(unittest.TestCase):
         unknown["answers"]["unknown:0"] = unknown["answers"].pop("test:0")
         for corrupt in (missing, unknown):
             with self.subTest(corrupt=corrupt):
-                run.atomic_json(self.validation_path, corrupt)
-                with patch.object(run, "chat_completion") as call:
+                common.atomic_json(self.validation_path, corrupt)
+                with patch.object(validate_command, "chat_completion") as call:
                     self.assertEqual(self.validate()[0], 1)
                 call.assert_not_called()
 
     def test_checked_in_configs_are_reusable_and_have_expected_prompts(self):
-        configs = run.BENCH.parent / "configs"
+        configs = common.BENCH.parent / "configs"
         for name in ("maya-ds41f-nothink", "maya-ds41f-rea50", "maya-ds41f-judge"):
             with self.subTest(name=name):
-                config = run.load_config(configs / (name + ".yaml"))
+                config = common.load_config(configs / (name + ".yaml"))
                 self.assertNotIn("result", config)
                 if name.endswith("judge"):
                     self.assertIn("impartial evaluator", config["systemPrompt"])
