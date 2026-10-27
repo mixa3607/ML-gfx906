@@ -1,0 +1,697 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Нейро-Арена 2.1 — экстра-босс</title><style>
+:root { --bg: #05010d; --panel: rgba(18,8,44,.82); --line: rgba(255,255,255,.12); --txt: #eef0ff; --mut: #9aa0c0;
+  --c1: #ff00e5; --c2: #00f0ff; --ok: #3dff8a; --mid: #ffd23d; --bad: #ff2d6f; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { font-family: "Segoe UI", "Segoe UI Emoji", system-ui, sans-serif; color: var(--txt); background: var(--bg); overflow-x: hidden; }
+button, input, textarea { font: inherit; color: inherit; }
+.fx { position: fixed; inset: 0; z-index: -2; transition: background 1s;
+  background: radial-gradient(55% 45% at 100% 0%, color-mix(in srgb, var(--c1) 45%, transparent), transparent 70%),
+              radial-gradient(55% 50% at 0% 100%, color-mix(in srgb, var(--c2) 38%, transparent), transparent 70%),
+              linear-gradient(160deg, #0b0228, #05010d 55%, #0a0420); animation: hue 24s linear infinite; }
+@keyframes hue { to { filter: hue-rotate(360deg); } }
+.grid { position: fixed; inset: 0; z-index: -1; opacity: .28; pointer-events: none;
+  background-image: linear-gradient(color-mix(in srgb, var(--c1) 35%, transparent) 1px, transparent 1px),
+                    linear-gradient(90deg, color-mix(in srgb, var(--c1) 35%, transparent) 1px, transparent 1px);
+  background-size: 44px 44px; -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000, transparent 75%); mask-image: radial-gradient(ellipse at 50% 0%, #000, transparent 75%);
+  animation: gridmove 6s linear infinite; }
+@keyframes gridmove { to { background-position: 0 44px, 44px 0; } }
+.screen { display: none; min-height: 100vh; padding: 28px 16px 40px; }
+.screen.on { display: block; animation: in .5s cubic-bezier(.2,.9,.3,1.2); }
+@keyframes in { from { opacity: 0; transform: translateY(18px) scale(.98); } }
+.wrap { max-width: 920px; margin: 0 auto; }
+.glow-title { font-family: Bahnschrift, "Segoe UI", sans-serif; font-weight: 800; letter-spacing: 3px; line-height: 1;
+  background: linear-gradient(90deg, #ff00e5, #00f0ff, #7cff00, #ffea00, #ff00e5); background-size: 300% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 6s linear infinite;
+  filter: drop-shadow(0 0 18px rgba(255,0,229,.45)); }
+@keyframes shine { to { background-position: 300% 0; } }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; backdrop-filter: blur(14px);
+  box-shadow: 0 20px 70px rgba(0,0,0,.6), 0 0 40px color-mix(in srgb, var(--c1) 18%, transparent); }
+.btn { cursor: pointer; border: 0; border-radius: 999px; padding: 13px 26px; font-weight: 800; letter-spacing: .5px; transition: transform .15s, box-shadow .2s, filter .2s; }
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: scale(.97); }
+.btn:disabled { opacity: .35; cursor: not-allowed; transform: none; }
+.btn.main { color: #050010; background: linear-gradient(90deg, var(--c1), var(--c2)); box-shadow: 0 0 24px color-mix(in srgb, var(--c1) 60%, transparent); }
+.btn.main:hover { box-shadow: 0 0 40px var(--c1), 0 0 70px color-mix(in srgb, var(--c2) 50%, transparent); }
+.btn.ghost { background: rgba(255,255,255,.06); border: 1px solid var(--line); color: var(--txt); }
+.btn.ghost:hover { border-color: var(--c2); box-shadow: 0 0 18px color-mix(in srgb, var(--c2) 50%, transparent); }
+.mut { color: var(--mut); }
+
+/* ---------- старт ---------- */
+#start .hero { text-align: center; padding: 30px 0 26px; }
+#start .hero .glow-title { font-size: clamp(42px, 9vw, 92px); }
+#start .sub { margin-top: 14px; color: var(--mut); font-size: 16px; }
+#start .orbit { font-size: 30px; margin-bottom: 14px; letter-spacing: 10px; animation: bob 3s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(-8px); } }
+.startbox { padding: 26px; }
+.field label { display: block; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--c2); font-weight: 800; margin-bottom: 8px; }
+.field input { width: 100%; padding: 16px 20px; font-size: 20px; font-weight: 700; border-radius: 16px; outline: none;
+  background: rgba(0,0,0,.45); border: 2px solid rgba(255,255,255,.14); transition: .2s; }
+.field input:focus { border-color: var(--c1); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c1) 25%, transparent), 0 0 30px color-mix(in srgb, var(--c1) 40%, transparent); }
+.field input.shake { animation: shake .4s; border-color: var(--bad); }
+@keyframes shake { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.chip { cursor: pointer; user-select: none; padding: 8px 14px; border-radius: 999px; font-weight: 700; font-size: 14px;
+  border: 1px solid color-mix(in srgb, var(--c) 60%, transparent); background: rgba(0,0,0,.35); transition: .2s; opacity: .5; }
+.chip.on { opacity: 1; background: color-mix(in srgb, var(--c) 22%, rgba(0,0,0,.3)); box-shadow: 0 0 14px color-mix(in srgb, var(--c) 45%, transparent); }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.startbox .row.act { margin-top: 22px; justify-content: space-between; }
+.howto { margin-top: 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+.howto div { background: rgba(255,255,255,.04); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; font-size: 13.5px; color: #cfd2ee; }
+.howto b { display: block; font-size: 20px; margin-bottom: 4px; }
+.hist tr.paused td { background: rgba(255,210,61,.05); }
+.hist tr.paused .pm { font-weight: 800; }
+.hist .ptag { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: .5px; color: #050010; background: var(--mid); vertical-align: 1px; }
+.hist .cont { cursor: pointer; white-space: nowrap; border: 1px solid var(--mid); color: var(--mid); background: rgba(255,210,61,.1); border-radius: 999px; padding: 5px 12px; font-weight: 800; font-size: 13px; transition: .15s; }
+.hist .cont:hover { background: var(--mid); color: #050010; box-shadow: 0 0 16px rgba(255,210,61,.6); }
+.hist { margin-top: 20px; padding: 20px 24px; }
+.hist h3 { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--c2); margin-bottom: 10px; }
+.hist table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.hist td { padding: 8px 6px; border-top: 1px solid var(--line); }
+.hist td.sc { font-family: Bahnschrift, sans-serif; font-weight: 800; font-size: 18px; text-align: right; }
+.hist .empty { color: var(--mut); font-size: 14px; }
+.linkbtn { background: none; border: 0; color: var(--mut); cursor: pointer; text-decoration: underline; font-size: 12px; }
+.hist th { padding: 6px; white-space: nowrap; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--mut); font-weight: 800; text-align: left; }
+.hist th.r, .hist td.r { text-align: right; }
+.hist td.rk { width: 34px; font-family: Bahnschrift, sans-serif; font-weight: 800; color: var(--mut); }
+.hist td.tps { font-family: Bahnschrift, sans-serif; font-weight: 700; white-space: nowrap; }
+.hist .mn { background: none; border: 0; padding: 0; cursor: pointer; font-weight: 800; text-align: left; border-bottom: 1px dashed color-mix(in srgb, var(--c2) 70%, transparent); }
+.hist .mn:hover { color: var(--c2); }
+.hist .mn .ic { font-size: 12px; margin-left: 5px; opacity: .8; }
+.hist .del { background: none; border: 0; color: var(--mut); cursor: pointer; font-size: 14px; padding: 2px 6px; border-radius: 6px; }
+.hist .del:hover { color: var(--bad); background: rgba(255,45,111,.12); }
+.hist .tools { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
+.hist .tools .mut { font-size: 12px; flex: 1; min-width: 200px; }
+.tscroll { overflow-x: auto; }
+.bubble { position: fixed; z-index: 115; width: min(340px, calc(100vw - 32px)); padding: 14px 16px; border-radius: 16px; display: none;
+  background: rgba(14,6,36,.97); border: 1px solid color-mix(in srgb, var(--c2) 50%, transparent); box-shadow: 0 10px 40px rgba(0,0,0,.7), 0 0 26px color-mix(in srgb, var(--c2) 30%, transparent); font-size: 14px; }
+.bubble.on { display: block; animation: in .25s; }
+.bubble::before { content: ""; position: absolute; left: var(--ax, 24px); top: -8px; width: 14px; height: 14px; transform: rotate(45deg); background: rgb(14,6,36); border-left: 1px solid color-mix(in srgb, var(--c2) 50%, transparent); border-top: 1px solid color-mix(in srgb, var(--c2) 50%, transparent); }
+.bubble.up::before { top: auto; bottom: -8px; transform: rotate(225deg); }
+.bubble h4 { font-size: 15px; margin-bottom: 6px; padding-right: 20px; word-break: break-word; }
+.bubble .meta { font-size: 12px; color: var(--mut); margin-bottom: 8px; }
+.bubble .txt { white-space: pre-wrap; line-height: 1.45; color: #e3e6ff; word-break: break-word; }
+.bubble .txt.none { color: var(--mut); font-style: italic; }
+.bubble .x { position: absolute; top: 8px; right: 10px; background: none; border: 0; color: var(--mut); cursor: pointer; font-size: 16px; }
+.bubble .ed { margin-top: 10px; }
+.bubble input, .bubble textarea, .note input, .note textarea { width: 100%; padding: 10px 12px; border-radius: 12px; background: rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.14); outline: none; font-size: 14px; }
+.bubble textarea, .note textarea { min-height: 80px; resize: vertical; }
+.bubble textarea { margin-top: 8px; }
+.bubble input:focus, .bubble textarea:focus, .note input:focus, .note textarea:focus { border-color: var(--c2); box-shadow: 0 0 16px color-mix(in srgb, var(--c2) 35%, transparent); }
+.note .grid2 { display: grid; grid-template-columns: 200px 1fr; gap: 12px; }
+.note label { display: block; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--mut); font-weight: 800; margin-bottom: 6px; }
+.note .row { margin-top: 12px; justify-content: space-between; }
+.note .cnt { font-size: 12px; color: var(--mut); }
+@media (max-width: 600px) { .note .grid2 { grid-template-columns: 1fr; } .hist .dt { display: none; } }
+
+/* ---------- вопросы ---------- */
+.topbar { position: sticky; top: 0; z-index: 10; margin: -28px -16px 18px; padding: 12px 16px; background: rgba(5,1,13,.72); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+.topbar .wrap { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.model { font-weight: 800; font-size: 15px; padding: 6px 14px; border-radius: 999px; background: linear-gradient(90deg, color-mix(in srgb, var(--c1) 30%, transparent), color-mix(in srgb, var(--c2) 30%, transparent)); border: 1px solid var(--line); max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prog { flex: 1; min-width: 160px; }
+.prog .bar { height: 10px; border-radius: 99px; background: rgba(255,255,255,.08); overflow: hidden; }
+.prog .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--c1), var(--c2)); box-shadow: 0 0 14px var(--c1); transition: width .5s cubic-bezier(.2,.9,.3,1); }
+.prog small { display: block; margin-top: 4px; font-size: 12px; color: var(--mut); }
+.subjnav { display: flex; gap: 6px; overflow-x: auto; padding: 4px 2px 10px; margin-bottom: 8px; scrollbar-width: thin; }
+.sn { flex: none; cursor: pointer; padding: 7px 10px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); background: rgba(0,0,0,.35); transition: .2s; text-align: center; }
+.sn:hover { box-shadow: 0 0 14px color-mix(in srgb, var(--c) 60%, transparent); }
+.sn.cur { background: color-mix(in srgb, var(--c) 28%, rgba(0,0,0,.3)); box-shadow: 0 0 18px color-mix(in srgb, var(--c) 60%, transparent); border-color: var(--c); }
+.sn .t { font-size: 12px; font-weight: 700; white-space: nowrap; }
+.sn .dots { display: flex; gap: 3px; justify-content: center; margin-top: 5px; }
+.sn .dots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.18); cursor: pointer; }
+.sn .dots i.ok { background: var(--ok); box-shadow: 0 0 6px var(--ok); }
+.sn .dots i.mid { background: var(--mid); box-shadow: 0 0 6px var(--mid); }
+.sn .dots i.bad { background: var(--bad); box-shadow: 0 0 6px var(--bad); }
+.sn .dots i.here { outline: 2px solid #fff; outline-offset: 1px; }
+
+.qcard { position: relative; padding: 26px 28px; overflow: hidden; border: 2px solid transparent;
+  background: linear-gradient(135deg, rgba(22,10,52,.92), rgba(9,4,26,.92)) padding-box,
+              linear-gradient(120deg, var(--lv), var(--c1) 50%, var(--c2)) border-box;
+  box-shadow: 0 0 34px color-mix(in srgb, var(--lv) 35%, transparent), 0 20px 70px rgba(0,0,0,.6); }
+.qcard.anim { animation: flip .45s cubic-bezier(.2,.9,.3,1.2); }
+@keyframes flip { from { opacity: 0; transform: perspective(900px) rotateX(-12deg) translateY(20px); } }
+.qcard.boss { background: linear-gradient(135deg, rgba(52,6,42,.95), rgba(14,3,30,.95)) padding-box,
+  linear-gradient(90deg, #ff2d6f, #ffb300, #3dff8a, #00e1ff, #c03dff, #ff2d6f) border-box; background-size: 100% 100%, 300% 100%;
+  animation: bossb 3s linear infinite, bossg 1.6s ease-in-out infinite; }
+@keyframes bossb { to { background-position: 0 0, 300% 0; } }
+@keyframes bossg { 50% { box-shadow: 0 0 60px rgba(255,45,111,.9), 0 0 120px rgba(192,61,255,.45); } }
+.qcard .wm { position: absolute; right: -20px; bottom: -60px; font-size: 260px; line-height: 1; color: transparent; -webkit-text-stroke: 2px color-mix(in srgb, var(--c1) 30%, transparent); pointer-events: none; user-select: none; font-weight: 900; }
+.qhead { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.subj { font-weight: 800; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: var(--c2); }
+.lvbadge { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px; border-radius: 999px; font-weight: 900; font-size: 13px; color: #050010; background: var(--lv); box-shadow: 0 0 16px var(--lv); }
+.lvbadge .pips i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-left: 2px; background: rgba(0,0,0,.25); }
+.lvbadge .pips i.on { background: #050010; }
+.qnum { margin-left: auto; font-family: Bahnschrift, sans-serif; color: var(--mut); font-size: 14px; }
+.bosstag { display: none; font-weight: 900; font-size: 12px; letter-spacing: 2px; padding: 5px 12px; border-radius: 999px; background: linear-gradient(90deg, #ff2d6f, #c03dff); color: #fff; animation: pulse 1s ease-in-out infinite; }
+.qcard.boss .bosstag { display: inline-block; }
+@keyframes pulse { 50% { transform: scale(1.08); } }
+.qtext { position: relative; font-size: clamp(19px, 2.6vw, 25px); font-weight: 700; line-height: 1.38; }
+.qtext code, .qtext pre { font-family: "Cascadia Mono", Consolas, monospace; color: #9fffd0; background: rgba(0,0,0,.5); border: 1px solid rgba(120,255,200,.25); border-radius: 8px; }
+.qtext code { padding: 1px 6px; font-size: .85em; }
+.qtext pre { display: block; margin-top: 10px; padding: 12px 14px; font-size: 15px; font-weight: 400; line-height: 1.45; overflow-x: auto; white-space: pre; }
+.copyq { margin-top: 16px; }
+.copyq.ok { background: var(--ok) !important; color: #050010 !important; }
+.ansbox { margin-top: 20px; }
+.ansbox label { display: block; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--mut); font-weight: 800; margin-bottom: 6px; }
+.ansbox textarea { width: 100%; min-height: 86px; resize: vertical; padding: 12px 14px; border-radius: 14px; background: rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.14); outline: none; font-size: 15px; transition: .2s; }
+.ansbox textarea:focus { border-color: var(--c2); box-shadow: 0 0 20px color-mix(in srgb, var(--c2) 35%, transparent); }
+.reveal { margin-top: 14px; }
+.key { display: none; margin-top: 16px; padding: 14px 18px; border-radius: 14px; border-left: 5px solid var(--lv);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--lv) 20%, transparent), transparent); font-size: 17px; font-weight: 700; line-height: 1.4; }
+.key.on { display: block; animation: in .35s; }
+.key small { display: block; font-size: 11px; letter-spacing: 2px; color: var(--lv); font-weight: 900; margin-bottom: 4px; }
+.verdict { display: none; margin-top: 16px; gap: 10px; flex-wrap: wrap; }
+.verdict.on { display: flex; }
+.vb { flex: 1; min-width: 140px; cursor: pointer; padding: 14px 10px; border-radius: 16px; font-weight: 900; font-size: 16px; border: 2px solid var(--v); background: color-mix(in srgb, var(--v) 12%, transparent); color: var(--v); transition: .18s; }
+.vb:hover, .vb.sel { background: var(--v); color: #050010; box-shadow: 0 0 26px var(--v); transform: translateY(-2px); }
+.vb kbd { font-size: 11px; opacity: .7; margin-left: 6px; font-family: inherit; border: 1px solid currentColor; border-radius: 4px; padding: 0 4px; }
+.navrow { display: flex; justify-content: space-between; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+.finalbtn { display: none; font-size: 20px; padding: 18px 40px; animation: pulse 1.2s ease-in-out infinite; }
+.finalbtn.on { display: inline-block; }
+.hint { margin-top: 12px; font-size: 12px; color: var(--mut); text-align: center; }
+
+/* ---------- итог ---------- */
+#result .hero { text-align: center; padding: 10px 0 20px; }
+.gauge { position: relative; width: min(300px, 78vw); aspect-ratio: 1; margin: 0 auto; }
+.gauge svg { width: 100%; height: 100%; transform: rotate(-90deg); filter: drop-shadow(0 0 18px var(--gc)); }
+.gauge .num { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.gauge .num b { font-family: Bahnschrift, sans-serif; font-size: clamp(64px, 18vw, 96px); line-height: 1; color: var(--gc); text-shadow: 0 0 26px var(--gc); }
+.gauge .num span { color: var(--mut); font-size: 14px; letter-spacing: 2px; }
+.grade { margin-top: 14px; font-size: clamp(26px, 5vw, 40px); }
+.rmodel { margin-top: 6px; color: var(--mut); }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 22px 0; }
+.stat { padding: 14px; border-radius: 16px; text-align: center; background: rgba(255,255,255,.04); border: 1px solid color-mix(in srgb, var(--v) 50%, transparent); }
+.stat b { display: block; font-family: Bahnschrift, sans-serif; font-size: 34px; color: var(--v); text-shadow: 0 0 14px var(--v); }
+.stat span { font-size: 13px; color: var(--mut); }
+.block { padding: 22px 24px; margin-top: 16px; }
+.block h3 { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--c2); margin-bottom: 14px; }
+.brow { display: grid; grid-template-columns: 150px 1fr 54px; gap: 12px; align-items: center; margin: 9px 0; font-size: 14px; }
+.brow .tr { height: 12px; border-radius: 99px; background: rgba(255,255,255,.08); overflow: hidden; }
+.brow .tr i { display: block; height: 100%; width: 0; border-radius: 99px; background: linear-gradient(90deg, var(--a), var(--b)); box-shadow: 0 0 12px var(--a); transition: width 1.2s cubic-bezier(.2,.9,.3,1); }
+.brow b { text-align: right; font-family: Bahnschrift, sans-serif; }
+.miss { margin: 10px 0; padding: 12px 14px; border-radius: 12px; background: rgba(255,255,255,.04); border-left: 4px solid var(--v); font-size: 14px; }
+.miss .mq { font-weight: 700; margin-bottom: 4px; }
+.miss .mq pre { white-space: pre-wrap; font-family: Consolas, monospace; font-size: 12px; color: #9fffd0; margin-top: 4px; }
+.miss .ma { color: #cfd2ee; }
+.miss .mm { color: var(--mut); margin-top: 4px; font-style: italic; white-space: pre-wrap; }
+.ractions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 22px; }
+.formula { margin-top: 10px; font-size: 12.5px; color: var(--mut); text-align: center; }
+#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
+.toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(90px); z-index: 120; padding: 11px 22px; border-radius: 999px; font-weight: 800; color: #050010; background: linear-gradient(90deg, var(--ok), var(--c2)); box-shadow: 0 0 30px var(--ok); transition: transform .3s; }
+.toast.on { transform: translateX(-50%) translateY(0); }
+.modal { position: fixed; inset: 0; z-index: 110; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,.6); backdrop-filter: blur(6px); padding: 16px; }
+.modal.on { display: flex; }
+.modal .panel { max-width: 440px; padding: 24px; text-align: center; animation: in .3s; }
+.modal p { margin: 8px 0 18px; color: #cfd2ee; }
+.key .note { display: block; margin-top: 8px; font-size: 14px; font-weight: 500; color: #cfd2ee; }
+#start .orbit { font-size: 24px; letter-spacing: 6px; }
+.radarbox { position: relative; }
+.radar svg { display: block; width: 100%; max-width: 720px; margin: 0 auto; overflow: visible; }
+.radar .ring { fill: none; stroke: rgba(255,255,255,.10); stroke-width: 1; }
+.radar .ring.full { stroke: rgba(255,255,255,.22); stroke-dasharray: 4 4; }
+.radar .spoke { stroke: rgba(255,255,255,.08); stroke-width: 1; }
+.radar .rlab { fill: #e6e8ff; font-size: 13px; font-weight: 700; }
+.radar .rpct { fill: #9aa0c0; font-size: 12px; font-family: Bahnschrift, sans-serif; }
+.radar .rtick { fill: #6f7499; font-size: 10px; }
+.radar .shape { transform: scale(0); transform-origin: 360px 330px; transition: transform 1.6s cubic-bezier(.2,.9,.3,1.15); }
+.radar.go .shape { transform: scale(1); }
+.radar .dot { stroke: #0c0522; stroke-width: 2; transition: r .15s; }
+.radar .hit { fill: transparent; cursor: pointer; }
+.radar .pt.on .dot { r: 9; }
+.rtip { position: absolute; pointer-events: none; opacity: 0; transform: translate(-50%, -120%); transition: opacity .15s; z-index: 5;
+  background: rgba(8,3,24,.95); border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; font-size: 13px; white-space: nowrap;
+  box-shadow: 0 0 20px rgba(0,0,0,.6); }
+.rtip.on { opacity: 1; }
+.rtip b { font-family: Bahnschrift, sans-serif; font-size: 18px; }
+.rlegend { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin-top: 8px; font-size: 12.5px; color: var(--mut); }
+.rlegend i { display: inline-block; width: 22px; height: 10px; margin-right: 6px; vertical-align: middle; border-radius: 3px; }
+.rl-poly { background: linear-gradient(90deg, #ff00e5, #00f0ff); }
+.rl-ring { border: 1px dashed rgba(255,255,255,.4); }
+@media (max-width: 600px) { .radar .rlab { font-size: 15px; } .radar .rpct { font-size: 14px; } }
+@media (max-width: 600px) {
+  .qcard { padding: 20px 16px; }
+  .brow { grid-template-columns: 96px 1fr 44px; font-size: 12.5px; }
+  .model { max-width: 140px; }
+}
+</style></head>
+<body>
+<div class="fx"></div><div class="grid"></div><canvas id="confetti"></canvas>
+
+<!-- ============ СТАРТ ============ -->
+<section class="screen on" id="start"><div class="wrap">
+  <div class="hero">
+    <div class="orbit">🧮⚛🧪🧬🌍🪐🏺🦉⚔☯💻🧩🔤💰⚖🩺🎬💡👁🪤</div>
+    <h1 class="glow-title">НЕЙРО-АРЕНА 2.1</h1>
+    <p class="sub"><span id="totq"></span> вопросов · <span id="tots"></span> тем · все вопросы уровня ЭКСТРА-БОСС ★★ — для тех, кому обычный хардкор уже мал</p>
+  </div>
+  <div class="panel startbox">
+    <div class="field"><label for="mname">Название модели</label>
+      <input id="mname" maxlength="60" placeholder="например, GPT-5, Claude, Gemini, YandexGPT…" autocomplete="off"></div>
+    <div class="field" style="margin-top:18px"><label>Темы теста <button class="linkbtn" id="allchips">выбрать все</button></label>
+      <div class="chips" id="chips"></div></div>
+    <div class="howto">
+      <div><b>📋</b>Копируете вопрос и задаёте его нейросети</div>
+      <div><b>🤖</b>Читаете, что ответила нейросеть</div>
+      <div><b>🔍</b>Открываете эталон и ставите оценку: верно / частично / неверно</div>
+      <div><b>🏆</b>В конце нажимаете «Итог»: оценка по 100-балльной шкале</div>
+    </div>
+    <div class="row act"><span class="mut" id="qcount"></span><button class="btn main" id="go" style="font-size:18px;padding:15px 38px">🚀 НАЧАТЬ ТЕСТ</button></div>
+  </div>
+  <div class="panel hist"><h3>🏁 Таблица результатов <button class="linkbtn" id="clrhist" style="float:right">очистить</button></h3>
+    <div class="tscroll" id="hist"></div>
+    <div class="tools"><span class="mut">💾 Таблица хранится в этом браузере и не пропадает после закрытия файла и выключения компьютера. Для надёжности делайте резервную копию.</span>
+      <button class="linkbtn" id="exphist">⬇ резервная копия</button><button class="linkbtn" id="imphist">⬆ загрузить копию</button>
+      <input type="file" id="impfile" accept=".json,application/json" hidden></div></div>
+</div></section>
+
+<!-- ============ ВОПРОСЫ ============ -->
+<section class="screen" id="quiz">
+  <div class="topbar"><div class="wrap">
+    <div class="model" id="qmodel"></div>
+    <div class="prog"><div class="bar"><i id="pbar"></i></div><small id="ptext"></small></div>
+    <button class="btn ghost" id="pause" style="padding:9px 16px" title="Сохранить прогресс и вернуться к таблице">⏸ Прервать</button>
+    <button class="btn ghost" id="earlyres" style="padding:9px 16px">🏁 Итог</button>
+  </div></div>
+  <div class="wrap">
+    <div class="subjnav" id="subjnav"></div>
+    <div class="panel qcard" id="qcard">
+      <div class="wm" id="qwm"></div>
+      <div class="qhead"><span class="subj" id="qsubj"></span><span class="lvbadge" id="qlv"></span><span class="bosstag">★★ EXTRA BOSS ★★</span><span class="qnum" id="qnum"></span></div>
+      <div class="qtext" id="qtext"></div>
+      <button class="btn ghost copyq" id="copyq">📋 Скопировать вопрос</button>
+      <button class="btn main reveal" id="reveal">🔍 Показать эталонный ответ <kbd style="opacity:.6;font-size:11px">Пробел</kbd></button>
+      <div class="key" id="key"><small>ЭТАЛОН</small><span id="keytext"></span><span class="note" id="keynote"></span></div>
+      <div class="verdict" id="verdict">
+        <button class="vb" data-v="1" style="--v:var(--ok)">✅ Верно<kbd>1</kbd></button>
+        <button class="vb" data-v="0.5" style="--v:var(--mid)">🟡 Частично<kbd>2</kbd></button>
+        <button class="vb" data-v="0" style="--v:var(--bad)">❌ Неверно<kbd>3</kbd></button>
+      </div>
+    </div>
+    <div class="navrow">
+      <button class="btn ghost" id="prev">← Назад</button>
+      <button class="btn main finalbtn" id="final">🏆 ИТОГ</button>
+      <button class="btn ghost" id="next">Пропустить →</button>
+    </div>
+    <div class="hint">Клавиши: Пробел — эталон · 1/2/3 — оценка · ← / → — навигация</div>
+  </div>
+</section>
+
+<!-- ============ ИТОГ ============ -->
+<section class="screen" id="result"><div class="wrap">
+  <div class="hero">
+    <div class="gauge" id="gauge"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10"/>
+      <circle id="garc" cx="60" cy="60" r="52" fill="none" stroke="url(#gg)" stroke-width="10" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7" style="transition:stroke-dashoffset 2s cubic-bezier(.2,.9,.3,1)"/>
+      <defs><linearGradient id="gg"><stop offset="0" stop-color="#ff00e5"/><stop offset="1" stop-color="#00f0ff"/></linearGradient></defs></svg>
+      <div class="num"><b id="score">0</b><span>ИЗ 100</span></div></div>
+    <h2 class="glow-title grade" id="grade"></h2>
+    <div class="rmodel" id="rmodel"></div>
+    <div class="formula">Все вопросы одного уровня (6★★) и весят одинаково. Верно — 100 %, частично — 50 %, неверно и пропуск — 0.</div>
+  </div>
+  <div class="panel block note" id="note"><h3>📝 Заметка тестировщика</h3>
+    <div class="grid2">
+      <div><label for="ntps">Скорость, токенов/с</label><input id="ntps" type="text" maxlength="8" inputmode="decimal" placeholder="например, 42.5"></div>
+      <div><label for="ntxt">Комментарий</label><textarea id="ntxt" maxlength="300" placeholder="Железо, квантование, впечатления: где модель удивила, где сломалась…"></textarea></div>
+    </div>
+    <div class="row"><span class="cnt" id="ncnt">Скорость видна в общей таблице, комментарий — по клику на название модели.</span><button class="btn main" id="nsave" style="padding:10px 22px">💾 Сохранить заметку</button></div></div>
+  <div class="panel block radarbox" id="radarbox"><h3>🕸 Профиль модели по темам</h3>
+    <div class="radar" id="radar"></div><div class="rtip" id="rtip"></div>
+    <div class="rlegend"><span><i class="rl-poly"></i>результат модели, % от максимума по теме</span><span><i class="rl-ring"></i>кольца: 25 / 50 / 75 / 100%</span></div></div>
+  <div class="stats" id="stats"></div>
+  <div class="panel block"><h3>📊 По темам</h3><div id="bysubj"></div></div>
+  <div class="panel block" id="bylvlbox"><h3>🎚 По уровням сложности</h3><div id="bylvl"></div></div>
+  <div class="panel block"><h3>🩻 Ошибки и пропуски</h3><div id="misses"></div></div>
+  <div class="ractions">
+    <button class="btn main" id="again">🔁 Новый тест</button>
+    <button class="btn ghost" id="back">✏ Вернуться к вопросам</button>
+    <button class="btn ghost" id="copyrep">📋 Скопировать отчёт</button>
+    <button class="btn ghost" id="dljson">💾 Скачать JSON</button>
+  </div>
+</div></section>
+
+<div class="modal" id="modal"><div class="panel"><h3 id="mtitle"></h3><p id="mtext"></p>
+  <div class="row" style="justify-content:center"><button class="btn ghost" id="mno">Отмена</button><button class="btn main" id="myes">Да</button></div></div></div>
+<div class="toast" id="toast"></div>
+<div class="bubble" id="bubble"></div>
+
+<script>
+const DATA = [{"id": "math", "title": "Математика", "short": "Математика", "emoji": "🧮", "icon": "∑", "c1": "#ff00e5", "c2": "#00f0ff", "q": [{"lvl": 6, "q": "Найдите сумму цифр числа 3^100. Вычислять нужно точно, без приближений.", "a": "153", "n": "3^100 = 515377520732011331036461129765621272702107522001."}, {"lvl": 6, "q": "Сколько упорядоченных пар ЦЕЛЫХ чисел (x, y) — не только натуральных, отрицательные тоже считаются — удовлетворяют уравнению 1/x + 1/y = 1/2026?", "a": "17", "n": "(x − 2026)(y − 2026) = 2026², у 2026² = 2²·1013² всего 9 делителей; с отрицательными 18 пар, минус одна недопустимая x = y = 0."}, {"lvl": 6, "q": "Сколькими способами можно замостить прямоугольник 3×10 клеток доминошками 1×2 (без наложений и пустот)?", "a": "571", "n": "Для 3×2n: 3, 11, 41, 153, 571 — каждое следующее = 4·предыдущее − пред-предыдущее."}, {"lvl": 6, "q": "Сколько существует перестановок чисел 1, 2, …, 7, в которых РОВНО два числа стоят на своих местах?", "a": "924", "n": "C(7,2) · D(5) = 21 · 44, где D(5) = 44 — перестановки 5 элементов без неподвижных точек."}, {"lvl": 6, "q": "Какова последняя НЕНУЛЕВАЯ цифра числа 30! (тридцать факториал)?", "a": "8", "n": "30! = 265252859812191058636308480000000, после отбрасывания нулей в конце стоит 8."}]}, {"id": "phys", "title": "Физика", "short": "Физика", "emoji": "⚡", "icon": "⚛", "c1": "#00b3ff", "c2": "#7cff00", "q": [{"lvl": 6, "q": "Из каркаса куба, спаянного из 12 резисторов по 1 Ом (каждое ребро — резистор), выпаяли ОДНО ребро. Каково теперь сопротивление между двумя вершинами, которые соединяло удалённое ребро?", "a": "7/5 Ом (1.4 Ом)", "n": "У целого куба между соседними вершинами 7/12 Ом = 1 Ом параллельно с остальной схемой R: 12/7 = 1 + 1/R, откуда R = 7/5."}, {"lvl": 6, "q": "В калориметр с 0.5 кг льда при −40 °C налили 0.2 кг воды при +10 °C. Что окажется в калориметре после установления равновесия: сколько льда и сколько воды, какая температура? c(лёд) = 2100, c(вода) = 4200 Дж/(кг·°C), λ = 336 000 Дж/кг, потерь нет.", "a": "0.6 кг льда и 0.1 кг воды при 0 °C", "n": "Лёд для нагрева до 0 °C требует 42 кДж, вода, остывая до 0 °C, отдаёт лишь 8.4 кДж; недостающие 33.6 кДж даёт замерзание 0.1 кг воды. Лёд не тает, а нарастает."}, {"lvl": 6, "q": "Мяч бросили вертикально вверх со скоростью 20 м/с. Через 1 с из той же точки с той же скоростью бросили второй мяч. Через сколько секунд после броска ПЕРВОГО мяча они столкнутся и на какой высоте? g = 10 м/с², сопротивления воздуха нет.", "a": "Через 2.5 с на высоте 18.75 м", "n": "20t − 5t² = 20(t − 1) − 5(t − 1)² даёт t = 2.5 с."}, {"lvl": 6, "q": "Лампы «220 В, 100 Вт» и «220 В, 25 Вт» соединили ПОСЛЕДОВАТЕЛЬНО и включили в сеть 220 В. Какая лампа будет гореть ярче и какая мощность выделится на каждой? Сопротивления ламп считать постоянными.", "a": "Ярче лампа на 25 Вт: на ней 16 Вт, на лампе 100 Вт — 4 Вт", "n": "R = U²/P: 484 Ом и 1936 Ом; ток один и тот же, мощность пропорциональна сопротивлению."}, {"lvl": 6, "q": "Брусок массой 2 кг лежит на наклонной плоскости с углом 30°. Коэффициент трения между бруском и плоскостью 0.8. Чему равна сила трения, действующая на брусок? g = 10 м/с².", "a": "10 Н", "n": "Брусок покоится (tg 30° ≈ 0.58 < 0.8), поэтому трение покоя равно скатывающей силе mg·sin 30° = 10 Н, а не μmg·cos 30° ≈ 13.9 Н."}]}, {"id": "chem", "title": "Химия", "short": "Химия", "emoji": "🧪", "icon": "⚗", "c1": "#39ff14", "c2": "#ffea00", "q": [{"lvl": 6, "q": "Сколько существует структурных изомеров дихлорбутана C4H8Cl2 (без учёта стереоизомерии)?", "a": "9", "n": "6 на основе н-бутана (1,1; 1,2; 1,3; 1,4; 2,2; 2,3) и 3 на основе изобутана."}, {"lvl": 6, "q": "Уравняйте реакцию: As2S3 + HNO3 + H2O → H3AsO4 + H2SO4 + NO. Назовите сумму всех коэффициентов.", "a": "78", "n": "3As2S3 + 28HNO3 + 4H2O = 6H3AsO4 + 9H2SO4 + 28NO."}, {"lvl": 6, "q": "10 г смеси меди и железа обработали избытком соляной кислоты, выделилось 2.24 л водорода (н.у.). Какова массовая доля меди в смеси?", "a": "44%", "n": "С HCl реагирует только железо: 0.1 моль H2 даёт 0.1 моль Fe = 5.6 г, меди 4.4 г."}, {"lvl": 6, "q": "К 50 мл 0.2 М раствора аммиака прилили 50 мл 0.1 М соляной кислоты. Каков pH полученного раствора? pKb(NH3) = 4.75.", "a": "9.25", "n": "Половина аммиака нейтрализована, получился буфер NH3/NH4⁺ 1:1: pOH = pKb = 4.75."}, {"lvl": 6, "q": "Через расплав NaCl пропускают ток 5 А. Сколько минут нужно для выделения на аноде 1.12 л хлора (н.у.)? F = 96 500 Кл/моль. Округлите до целого.", "a": "≈ 32 минуты (1930 с)", "n": "0.05 моль Cl2 требует 0.1 моль электронов = 9650 Кл."}]}, {"id": "bio", "title": "Биология", "short": "Биология", "emoji": "🦠", "icon": "🧬", "c1": "#00ff9d", "c2": "#ff3df2", "q": [{"lvl": 6, "q": "Сколько различных последовательностей мРНК может кодировать тетрапептид Gly-Ile-Tyr-Leu, если считать вместе со стоп-кодоном в конце?", "a": "432", "n": "Gly 4 · Ile 3 · Tyr 2 · Leu 6 · стоп 3."}, {"lvl": 6, "q": "Аутосомно-рецессивная болезнь. Здоровая женщина, у которой болен брат (родители здоровы), выходит замуж за здорового мужчину, у которого больна сестра (его родители тоже здоровы). Какова вероятность, что их первый ребёнок будет болен? Ответ дробью.", "a": "1/9", "n": "Каждый из супругов — носитель с вероятностью 2/3 (здоровый сибс больного): 2/3 · 2/3 · 1/4."}, {"lvl": 6, "q": "У собаки 2n = 78. Сколько хромосом и сколько молекул ДНК в одной клетке в анафазе митоза?", "a": "156 хромосом и 156 молекул ДНК", "n": "В анафазе сестринские хроматиды уже разошлись и каждая считается отдельной хромосомой."}, {"lvl": 6, "q": "В популяции, находящейся в равновесии Харди — Вайнберга, 16% особей имеют рецессивный фенотип. Какая доля ГЕТЕРОЗИГОТ среди особей с ДОМИНАНТНЫМ фенотипом? Ответ дробью.", "a": "4/7 (≈ 57%)", "n": "q = 0.4, p = 0.6; 2pq = 0.48, доминантный фенотип 0.84; 0.48 / 0.84 = 4/7."}, {"lvl": 6, "q": "Гены A, B, C лежат в одной хромосоме именно в этом порядке. Расстояние A–B 10 сМ, B–C 20 сМ, интерференции нет. Тригетерозигота ABC/abc скрещивается с abc/abc. Какая доля потомков получит от гетерозиготного родителя гамету AbC?", "a": "1%", "n": "AbC — результат двойного кроссинговера: 0.1 · 0.2 = 0.02, поровну между AbC и aBc."}]}, {"id": "geo", "title": "География", "short": "География", "emoji": "🗺", "icon": "🌍", "c1": "#00e1ff", "c2": "#ffb300", "q": [{"lvl": 6, "q": "Какое государство мира имеет больше всего часовых поясов (с учётом всех заморских территорий, без антарктических претензий)?", "a": "Франция (12 поясов)", "n": "У России — 11."}, {"lvl": 6, "q": "Между какими двумя государствами проходит вторая по длине сухопутная граница в мире (после США — Канада)?", "a": "Россия и Казахстан", "n": "Около 7.6 тыс. км."}, {"lvl": 6, "q": "Через территорию скольких государств проходит нулевой (Гринвичский) меридиан?", "a": "8", "n": "Великобритания, Франция, Испания, Алжир, Мали, Буркина-Фасо, Того, Гана."}, {"lvl": 6, "q": "Как называется самый высокий вулкан на Земле и на границе каких двух стран он находится?", "a": "Охос-дель-Саладо, Аргентина и Чили", "n": "Около 6890 м."}, {"lvl": 6, "q": "Со сколькими государствами граничит Бразилия по суше?", "a": "10", "n": "Все страны Южной Америки, кроме Чили и Эквадора, плюс Франция (Французская Гвиана)."}]}, {"id": "astro", "title": "Астрономия", "short": "Астрономия", "emoji": "🔭", "icon": "🪐", "c1": "#8a5cff", "c2": "#ff2fd0", "q": [{"lvl": 6, "q": "Планета обращается вокруг звезды за 100 земных суток, а её звёздные сутки длятся 25 земных суток, вращение в ту же сторону, что и обращение. Сколько земных суток длятся солнечные сутки на этой планете? Округлите до десятых.", "a": "≈ 33.3 суток", "n": "1/S = 1/25 − 1/100 = 3/100."}, {"lvl": 6, "q": "Перигелий кометы находится в 0.5 а.е. от Солнца, период обращения 8 лет. На каком расстоянии от Солнца её афелий?", "a": "7.5 а.е.", "n": "Большая полуось 4 а.е. (8 = 4^1.5), афелий = 2 · 4 − 0.5."}, {"lvl": 6, "q": "Двойная звезда состоит из двух компонентов одинакового блеска, каждый 2-й звёздной величины. Какова суммарная звёздная величина пары? Округлите до сотых.", "a": "≈ 1.25", "n": "Блеск удваивается: m = 2 − 2.5 · lg 2."}, {"lvl": 6, "q": "На какой высоте над горизонтом и в какой стороне неба находится Солнце в истинный полдень в день равноденствия в Сиднее (широта 33.9° ю.ш.)?", "a": "56.1°, на севере", "n": "90° − 33.9°; в южном полушарии полуденное Солнце стоит на севере."}, {"lvl": 6, "q": "Сидерический период Юпитера 11.86 года. Через сколько земных суток в среднем повторяются его противостояния? Округлите до целого.", "a": "≈ 399 суток", "n": "1/S = 1 − 1/11.86, S ≈ 1.092 года."}]}, {"id": "antlit", "title": "Античная литература", "short": "Античность", "emoji": "🏺", "icon": "Ω", "c1": "#ff9f43", "c2": "#4dd2ff", "q": [{"lvl": 6, "q": "Как звали пса Одиссея, который узнал хозяина после двадцатилетнего отсутствия?", "a": "Аргос", "n": "Пёс умирает сразу после того, как узнаёт Одиссея."}, {"lvl": 6, "q": "Каким событием заканчивается «Илиада» Гомера?", "a": "Погребением Гектора", "n": "Ни гибели Ахилла, ни деревянного коня, ни взятия Трои в «Илиаде» нет."}, {"lvl": 6, "q": "Как называется единственная полностью сохранившаяся трагическая трилогия Древней Греции, кто её автор и как называются три её части?", "a": "«Орестея» Эсхила: «Агамемнон», «Хоэфоры», «Эвмениды»", "n": ""}, {"lvl": 6, "q": "Кто автор «Метаморфоз» и сколько в них книг?", "a": "Овидий, 15 книг", "n": ""}, {"lvl": 6, "q": "Сколько лет длились странствия Одиссея после падения Трои и сколько лет всего он отсутствовал дома?", "a": "10 лет странствий, 20 лет всего", "n": "10 лет Троянской войны + 10 лет возвращения."}]}, {"id": "philo", "title": "Философия", "short": "Философия", "emoji": "🦉", "icon": "Φ", "c1": "#8c7bff", "c2": "#ff6bd6", "q": [{"lvl": 6, "q": "Сколько антиномий чистого разума выделил Кант в «Критике чистого разума»?", "a": "4", "n": ""}, {"lvl": 6, "q": "Назовите все четыре причины по Аристотелю.", "a": "Материальная, формальная, движущая (действующая) и целевая", "n": ""}, {"lvl": 6, "q": "Кто автор формулы «Cogito, ergo sum» и в каком произведении она впервые появилась именно на латыни?", "a": "Декарт; на латыни — в «Первоначалах философии» (1644)", "n": "Раньше, в «Рассуждении о методе» (1637), она была по-французски: «Je pense, donc je suis». В «Размышлениях» этой формулы нет."}, {"lvl": 6, "q": "Сколько видов «идолов» (призраков) познания выделял Фрэнсис Бэкон? Назовите все.", "a": "4: идолы рода, пещеры, площади (рынка) и театра", "n": ""}, {"lvl": 6, "q": "Сколько стадий (ступеней) существования выделял Кьеркегор? Назовите их.", "a": "3: эстетическая, этическая, религиозная", "n": ""}]}, {"id": "hist", "title": "История", "short": "История", "emoji": "🏛", "icon": "⚔", "c1": "#ffb000", "c2": "#ff3b3b", "q": [{"lvl": 6, "q": "Как звали шведскую принцессу, ставшую женой Ярослава Мудрого?", "a": "Ингигерда (в крещении Ирина)", "n": ""}, {"lvl": 6, "q": "Сколько полных лет было Ивану IV Грозному, когда он стал великим князем московским?", "a": "3 года", "n": "Родился в августе 1530, великим князем стал в декабре 1533."}, {"lvl": 6, "q": "Сколько пап одновременно претендовали на римский престол после Пизанского собора 1409 года?", "a": "Три", "n": "Григорий XII (римская линия), Бенедикт XIII (авиньонская) и Александр V (пизанская)."}, {"lvl": 6, "q": "Ледовое побоище произошло 5 апреля 1242 года по юлианскому календарю. Какое это число по (пролептическому) григорианскому календарю?", "a": "12 апреля 1242 года", "n": "В XIII веке разница календарей 7 дней. 18 апреля — ошибочный пересчёт с разницей XX века в 13 дней."}, {"lvl": 6, "q": "В каком году XV века на английском престоле сменились три короля?", "a": "1483", "n": "Эдуард IV, Эдуард V и Ричард III."}]}, {"id": "rel", "title": "Религия", "short": "Религия", "emoji": "🕊", "icon": "☯", "c1": "#ffd700", "c2": "#a066ff", "q": [{"lvl": 6, "q": "Сколько всего книг Ветхого Завета в русской Синодальной Библии, если считать канонические и неканонические вместе?", "a": "50", "n": "39 канонических + 11 неканонических."}, {"lvl": 6, "q": "Какой псалом самый длинный и сколько в нём стихов? Укажите номер по Синодальной нумерации.", "a": "Псалом 118, 176 стихов", "n": "В еврейской и протестантской нумерации — 119-й."}, {"lvl": 6, "q": "Какая сура Корана — единственная, которая НЕ начинается с басмалы? Назовите номер.", "a": "9-я (сура «Ат-Тауба»)", "n": ""}, {"lvl": 6, "q": "Сколько глав в самом коротком из четырёх канонических Евангелий?", "a": "16", "n": "Самое короткое — Евангелие от Марка."}, {"lvl": 6, "q": "Сколько тиртханкаров признаёт джайнизм и как звали последнего из них?", "a": "24, последний — Махавира", "n": ""}]}, {"id": "code", "title": "Программирование", "short": "Код", "emoji": "💻", "icon": "</>", "c1": "#00ff66", "c2": "#00d0ff", "q": [{"lvl": 6, "q": "Что выведет Python-код?<pre>def f(x, acc=[]):\n    acc.append(x)\n    return len(acc)\n\nprint(f(1), f(2), f(3, []), f(4))</pre>", "a": "1 2 1 3", "n": "Список по умолчанию создаётся один раз и общий для всех вызовов без второго аргумента."}, {"lvl": 6, "q": "Что выведет JavaScript (Node.js)?<pre>console.log([10, 1, 3].sort(), ['b', 'a'].sort().join(''), [1, 2, 3].map(parseInt));</pre>", "a": "[1, 10, 3] ab [1, NaN, NaN]", "n": "sort по умолчанию сравнивает строки; map передаёт в parseInt индекс как систему счисления."}, {"lvl": 6, "q": "Что выведет Python-код?<pre>x = 10\ng = (x * i for i in range(3))\nx = 100\nprint(list(g))</pre>", "a": "[0, 100, 200]", "n": "Генератор вычисляет x лениво, в момент list(g), когда x уже 100."}, {"lvl": 6, "q": "В каком порядке JavaScript напечатает числа?<pre>console.log(1);\nsetTimeout(() => console.log(2), 0);\nPromise.resolve().then(() => console.log(3));\nqueueMicrotask(() => console.log(4));\n(async () => { console.log(5); await null; console.log(6); })();\nconsole.log(7);</pre>", "a": "1 5 7 3 4 6 2", "n": "Сначала синхронный код, затем микрозадачи в порядке постановки, setTimeout последним."}, {"lvl": 6, "q": "Что выведет Python-код?<pre>print(-7 // 2, -7 % 2, int(-7 / 2), round(2.5), round(3.5))</pre>", "a": "-4 1 -3 2 4", "n": "// округляет вниз, int() — к нулю, round — банковское округление к чётному."}]}, {"id": "logic", "title": "Логика и головоломки", "short": "Логика", "emoji": "🧩", "icon": "?", "c1": "#ff6a00", "c2": "#ffe600", "q": [{"lvl": 6, "q": "В семье двое детей. Известно, что хотя бы один из них — мальчик, родившийся во вторник. Какова вероятность, что оба ребёнка мальчики? (Пол и день недели равновероятны и независимы.) Ответ дробью.", "a": "13/27", "n": ""}, {"lvl": 6, "q": "Среди монет одна фальшивая, она легче или тяжелее остальных — неизвестно. Есть чашечные весы без гирь и 4 взвешивания. Какое наибольшее число монет позволяет гарантированно найти фальшивую И определить, легче она или тяжелее?", "a": "39", "n": "Формула (3^k − 3)/2; при k = 3 это знаменитые 12 монет."}, {"lvl": 6, "q": "Ночью нужно перейти мост четверым. Фонарь один, по мосту идут максимум двое и с фонарём, пара идёт со скоростью медленного. Время в одну сторону: 1, 4, 5 и 10 минут. За какое минимальное время все окажутся на другой стороне?", "a": "21 минута", "n": "Классическая схема (1+4 туда, 1 назад, 5+10 туда, 4 назад, 1+4 туда) даёт 23. Здесь выгоднее, чтобы самый быстрый сопровождал каждого: 10+1+5+1+4."}, {"lvl": 6, "q": "На острове рыцари всегда говорят правду, лжецы всегда лгут. A: «Среди нас четверых ровно два лжеца». B: «A и D — разного типа». C: «B — лжец». D: «C — лжец». Кто из них рыцарь?", "a": "Рыцарь только C; A, B и D — лжецы", "n": "Это единственное непротиворечивое распределение."}, {"lvl": 6, "q": "Среди 100 одинаковых на вид монет одна фальшивая и известно, что она ЛЕГЧЕ. Какое минимальное число взвешиваний на чашечных весах без гирь гарантирует её нахождение?", "a": "5", "n": "За k взвешиваний можно обработать до 3^k монет: 3^4 = 81 < 100 ≤ 243."}]}, {"id": "eng", "title": "Английский язык", "short": "Английский", "emoji": "🔤", "icon": "Aa", "c1": "#2f7bff", "c2": "#ff2f4f", "q": [{"lvl": 6, "q": "Найдите и исправьте ВСЕ ошибки: Between you and I, the results was surprising.", "a": "Between you and me, the results were surprising.", "n": "Две ошибки: после предлога нужен объектный падеж me, подлежащее results во множественном числе."}, {"lvl": 6, "q": "Назовите формы Past Simple и Past Participle глаголов lie (лежать) и lay (класть).", "a": "lie — lay — lain; lay — laid — laid", "n": ""}, {"lvl": 6, "q": "Какое множественное число у слова octopus в стандартном английском и почему форма octopi этимологически ошибочна?", "a": "octopuses; слово греческое, а -i — латинское окончание (по-гречески было бы octopodes)", "n": ""}, {"lvl": 6, "q": "Объясните грамматику предложения «The old man the boat.» и переведите его.", "a": "«Старики управляют лодкой»: the old — подлежащее (старики), man — глагол (укомплектовывать экипажем)", "n": "Классическое предложение-ловушка (garden-path sentence)."}, {"lvl": 6, "q": "Вставьте правильную форму глагола be: It is essential that he ___ on time.", "a": "be", "n": "Сослагательное наклонение (subjunctive) после essential that."}]}, {"id": "econ", "title": "Экономика", "short": "Экономика", "emoji": "💰", "icon": "$", "c1": "#00ff9c", "c2": "#ffd000", "q": [{"lvl": 6, "q": "Проект: вложение 100 сейчас, через год приход 230, через два года расход 132. Найдите внутреннюю норму доходности (IRR).", "a": "Две IRR: 10% и 20%", "n": "При смене знака денежных потоков дважды IRR не единственна: 100x² − 230x + 132 = 0, x = 1.1 или 1.2."}, {"lvl": 6, "q": "Дуополия Курно: спрос P = 110 − Q, предельные издержки фирмы 1 равны 20, фирмы 2 — 50. Найдите выпуск каждой фирмы и цену.", "a": "q1 = 40, q2 = 10, P = 60", "n": ""}, {"lvl": 6, "q": "Спрос Qd = 120 − 2P, предложение Qs = P − 30. Ввели потоварный налог 15 на продавцов. Какую часть налога несут покупатели и каковы чистые потери общества?", "a": "Покупатели — 1/3 (5 из 15), потери 75", "n": "Было P = 50, Q = 20; стало: покупатели платят 55, продавцы получают 40, Q = 10. Потери = 1/2 · 15 · 10."}, {"lvl": 6, "q": "Кредит 1 200 000 рублей на 12 месяцев под 12% годовых гасится равными ежемесячными (аннуитетными) платежами. Какова общая переплата? Округлите до рубля.", "a": "≈ 79 423 рубля", "n": "Ежемесячный платёж ≈ 106 618.55 руб.; 12 платежей минус 1 200 000."}, {"lvl": 6, "q": "Норма обязательного резервирования 20%, население держит наличными 25% от суммы своих депозитов. Каков денежный мультипликатор? Округлите до сотых.", "a": "≈ 2.78", "n": "(1 + 0.25) / (0.25 + 0.2)."}]}, {"id": "law", "title": "Право", "short": "Право", "emoji": "⚖", "icon": "§", "c1": "#9fa8ff", "c2": "#ffcc66", "q": [{"lvl": 6, "q": "По УК РФ: каков максимальный срок лишения свободы при назначении наказания по совокупности ПРЕСТУПЛЕНИЙ и по совокупности ПРИГОВОРОВ?", "a": "25 лет и 30 лет", "n": "Статья 56 УК РФ."}, {"lvl": 6, "q": "Автор умер 15 марта 1955 года. С какой даты его произведения перешли в общественное достояние в России по общему правилу?", "a": "С 1 января 2026 года", "n": "70 лет считаются с 1 января года, следующего за годом смерти: охрана действует до 31 декабря 2025."}, {"lvl": 6, "q": "По ГК РФ: каков срок действия патента на изобретение и на полезную модель?", "a": "20 лет и 10 лет", "n": ""}, {"lvl": 6, "q": "Сколько статей (клауз) в оригинальной Великой хартии вольностей 1215 года?", "a": "63", "n": ""}, {"lvl": 6, "q": "На какой срок избираются судьи Европейского суда по правам человека и могут ли они быть переизбраны?", "a": "На 9 лет без права переизбрания", "n": "Правило действует с Протокола № 14 (2010)."}]}, {"id": "med", "title": "Медицина", "short": "Медицина", "emoji": "🩺", "icon": "✚", "c1": "#ff3366", "c2": "#66ffee", "q": [{"lvl": 6, "q": "Ребёнку массой 18 кг назначен ибупрофен 10 мг/кг на приём. Суспензия содержит 100 мг в 5 мл. Сколько миллилитров дать на один приём?", "a": "9 мл", "n": "180 мг : 20 мг/мл."}, {"lvl": 6, "q": "Мужчина 70 лет, масса 72 кг, креатинин сыворотки 1.2 мг/дл. Каков клиренс креатинина по формуле Кокрофта — Голта? Округлите до целого.", "a": "≈ 58 мл/мин", "n": "(140 − 70) · 72 / (72 · 1.2)."}, {"lvl": 6, "q": "Какие три кости образуют вертлужную впадину?", "a": "Подвздошная, седалищная и лобковая", "n": ""}, {"lvl": 6, "q": "Какие черепные нервы иннервируют латеральную прямую и верхнюю косую мышцы глаза? Назовите нервы и их номера.", "a": "Латеральную прямую — отводящий (VI), верхнюю косую — блоковый (IV)", "n": ""}, {"lvl": 6, "q": "Сколько миллилитров 40% раствора глюкозы нужно взять, чтобы приготовить 500 мл 10% раствора?", "a": "125 мл (и 375 мл растворителя)", "n": "500 · 0.10 / 0.40."}]}, {"id": "cine", "title": "Кино и музыка", "short": "Кино", "emoji": "🎬", "icon": "♪", "c1": "#ff00aa", "c2": "#ffcc00", "q": [{"lvl": 6, "q": "Как называется и какой номер имеет симфония Гайдна, в финале которой музыканты по одному гасят свечи и уходят со сцены?", "a": "«Прощальная», симфония № 45", "n": ""}, {"lvl": 6, "q": "Какой фильм стал ПЕРВЫМ советским лауреатом «Оскара» за лучший фильм на иностранном языке?", "a": "«Война и мир» Сергея Бондарчука", "n": "Премия 1969 года."}, {"lvl": 6, "q": "Назовите все три фильма, получившие рекордные 11 премий «Оскар».", "a": "«Бен-Гур», «Титаник», «Властелин колец: Возвращение короля»", "n": ""}, {"lvl": 6, "q": "Кто автор музыки к фильму «Ирония судьбы, или С лёгким паром!»?", "a": "Микаэл Таривердиев", "n": ""}, {"lvl": 6, "q": "Сколько диезов при ключе в тональности си мажор?", "a": "5", "n": "Фа, до, соль, ре, ля."}]}, {"id": "sense", "title": "Здравый смысл", "short": "Смысл", "emoji": "💡", "icon": "!", "c1": "#ffe14d", "c2": "#3dd9ff", "q": [{"lvl": 6, "q": "Мне нужно помыть машину. Автомойка в 50 метрах от дома. Мне дойти туда пешком или доехать?", "a": "Доехать: машина должна оказаться на мойке", "n": ""}, {"lvl": 6, "q": "Пять рубашек на солнце сохнут 4 часа. Сколько будут сохнуть 20 рубашек, если места на верёвке хватает всем?", "a": "4 часа", "n": "Рубашки сохнут одновременно."}, {"lvl": 6, "q": "Фермеру нужно перевезти через реку волка, козу и капусту. Его лодка вмещает фермера и ВСЕ три груза сразу. Сколько минимум переправ ему нужно?", "a": "Одна", "n": "Ограничение классической задачи здесь снято."}, {"lvl": 6, "q": "Вы плывёте на лодке по реке, и у вас слетела шляпа. Вы заметили это через 10 минут, развернулись и гребёте с прежним усилием. Через сколько минут вы догоните шляпу?", "a": "Через 10 минут", "n": "В системе отсчёта воды шляпа стоит, а течение не влияет."}, {"lvl": 6, "q": "На полке стоят 4 тома по порядку, слева направо, корешками к нам. В каждом томе страницы толщиной 2 см и две обложки по 2 мм. Книжный червь прогрыз от первой страницы 1-го тома до последней страницы 4-го. Какой путь он прогрыз?", "a": "5.2 см", "n": "Первая страница 1-го тома находится у его правого края, рядом со 2-м томом: обложка + 2 тома целиком + обложка = 2 + 24 + 24 + 2 мм."}]}, {"id": "attn", "title": "Загадки на внимательность", "short": "Внимание", "emoji": "👁", "icon": "◎", "c1": "#b6ff00", "c2": "#ff5cf0", "q": [{"lvl": 6, "q": "Сколько раз цифра 1 встречается, если выписать все целые числа от 1 до 1000?", "a": "301", "n": "По 100 раз в каждом из трёх разрядов и ещё одна в числе 1000."}, {"lvl": 6, "q": "Выпишите подряд числа от 1 до 1000 одной строкой: 123456789101112… Какая цифра стоит на 2026-й позиции?", "a": "7", "n": "Однозначные и двузначные занимают 189 позиций; позиция 2026 — первая цифра числа 712."}, {"lvl": 6, "q": "Сколько букв «е» в скороговорке: «Ехал Грека через реку, видит Грека — в реке рак»?", "a": "8", "n": "Ехал 1, Грека 1, через 2, реку 1, Грека 1, реке 2."}, {"lvl": 6, "q": "Сколько раз за сутки электронные часы в 24-часовом формате ЧЧ:ММ показывают палиндром (например, 12:21)?", "a": "16", "n": "00:00, 01:10 … 05:50, 10:01 … 15:51, 20:02 … 23:32."}, {"lvl": 6, "q": "Какой день недели будет 29 февраля 2032 года?", "a": "Воскресенье", "n": ""}]}, {"id": "trap", "title": "Вопросы-ловушки", "short": "Ловушки", "emoji": "🪤", "icon": "⚠", "c1": "#ff1a1a", "c2": "#ffae00", "q": [{"lvl": 6, "q": "У Маши 2 брата и 3 сестры. Сколько братьев и сколько сестёр у её брата?", "a": "1 брат и 4 сестры", "n": "Сама Маша тоже сестра."}, {"lvl": 6, "q": "Разделите 30 на половину и прибавьте 10. Сколько получится?", "a": "70", "n": "Делить на половину значит делить на 0.5."}, {"lvl": 6, "q": "Сколько месяцев в году имеют 30 дней?", "a": "11", "n": "Все, кроме февраля: в остальных месяцах 30-е число есть."}, {"lvl": 6, "q": "Самолёт вылетел из Москвы во Владивосток в 10:00 по московскому времени, полёт длится 9 часов. Владивосток опережает Москву на 7 часов. Во сколько по местному времени самолёт приземлится?", "a": "В 02:00 следующего дня", "n": "10 + 9 + 7 = 26 часов."}, {"lvl": 6, "q": "Я задумал число, умножил его на 0 и прибавил 5. Получилось 5. Какое число я задумал?", "a": "Любое", "n": "Информация о числе уничтожена умножением на ноль."}]}];
+const LEVELS = {"1": {"color": "#3dff8a", "name": "Разминка"}, "2": {"color": "#c6ff3d", "name": "Легко"}, "3": {"color": "#ffd23d", "name": "Средне"}, "4": {"color": "#ff7a3d", "name": "Сложно"}, "5": {"color": "#ff2d6f", "name": "БОСС ★"}, "6": {"color": "#c03dff", "name": "ЭКСТРА-БОСС"}};
+const KEY = 'neuro-arena-v2.1-extra';
+const lvTag = l => l == 6 ? '6★★' : l == 5 ? '5★' : String(l);
+const $ = s => document.querySelector(s);
+
+/* --- хранилище (может быть недоступно — тогда всё работает без него) --- */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} },
+};
+/* просим браузер не вычищать данные при нехватке места (где поддерживается) */
+try { navigator.storage && navigator.storage.persist && navigator.storage.persist().catch(() => {}); } catch (e) {}
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+function histGet() { const h = store.get(KEY + ':hist', []); let fix = false;
+  h.forEach(r => { if (!r.id) { r.id = uid(); fix = true; } }); if (fix) histSet(h); return h; }
+function histSet(h) { store.set(KEY + ':hist', h); }
+const fmtTps = v => v === null || v === undefined || v === '' || isNaN(+v) ? '—' : (+v).toLocaleString('ru-RU', {maximumFractionDigits: 1});
+const fmtDate = d => new Date(d).toLocaleString('ru-RU', {dateStyle: 'short', timeStyle: 'short'});
+const parseTps = s => { const v = parseFloat(String(s).replace(',', '.')); return isFinite(v) && v >= 0 ? Math.round(v * 10) / 10 : null; };
+
+let run = null;   // { model, subjects:[ids], items:[{s,i}], answers:{key:{v,text}}, pos, started }
+let selected = new Set(DATA.map(s => s.id));
+
+const keyOf = it => it.s + ':' + it.i;
+const subj = id => DATA.find(s => s.id === id);
+const qOf = it => subj(it.s).q[it.i];
+const plain = h => { const d = document.createElement('div'); d.innerHTML = h.replace(/<pre>/g, '\n\n<pre>'); return d.textContent.trim(); };
+
+function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), 1500); }
+async function copyText(t) { try { await navigator.clipboard.writeText(t); } catch (e) { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); document.execCommand('copy'); a.remove(); } }
+function show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id)); scrollTo(0, 0); }
+function theme(c1, c2) { document.documentElement.style.setProperty('--c1', c1); document.documentElement.style.setProperty('--c2', c2); }
+function ask(title, text, yes) { $('#mtitle').textContent = title; $('#mtext').textContent = text; $('#modal').classList.add('on');
+  $('#myes').onclick = () => { $('#modal').classList.remove('on'); yes(); }; $('#mno').onclick = () => $('#modal').classList.remove('on'); }
+/* прогоны: сколько угодно параллельных тестов, каждый под своим id */
+function runsGet() { return store.get(KEY + ':runs', {}); }
+function runsSet(r) { store.set(KEY + ':runs', r); }
+function save() { if (!run) return; if (!run.id) run.id = uid(); const all = runsGet(); all[run.id] = run; runsSet(all); }
+function dropRun(id) { const all = runsGet(); delete all[id]; runsSet(all); }
+/* перенос одиночного сохранения прежнего формата */
+(() => { const old = store.get(KEY + ':run', null);
+  if (old && old.items && !old.histId) { old.id = old.id || uid(); const all = runsGet(); all[old.id] = old; runsSet(all); }
+  store.del(KEY + ':run'); })();
+
+/* ================= СТАРТ ================= */
+function renderStart() {
+  $('#chips').innerHTML = DATA.map(s => `<span class="chip ${selected.has(s.id) ? 'on' : ''}" data-id="${s.id}" style="--c:${s.c1}">${s.emoji} ${s.title}</span>`).join('');
+  document.querySelectorAll('.chip').forEach(c => c.onclick = () => { selected.has(c.dataset.id) ? selected.delete(c.dataset.id) : selected.add(c.dataset.id); renderStart(); });
+  const n = DATA.filter(s => selected.has(s.id)).reduce((a, s) => a + s.q.length, 0);
+  $('#qcount').textContent = `Вопросов в тесте: ${n}`; $('#go').disabled = n === 0;
+  /* завершённые прогоны уже лежат в таблице — их рабочие копии больше не нужны */
+  const all = runsGet(); let ch = false;
+  Object.keys(all).forEach(id => { if (all[id].histId) { delete all[id]; ch = true; } }); if (ch) runsSet(all);
+  renderHist();
+}
+
+/* ---------- таблица результатов ---------- */
+function renderHist() {
+  const h = histGet().slice().sort((a, b) => b.score - a.score || a.date - b.date);
+  const p = Object.values(runsGet()).filter(r => !r.histId).sort((a, b) => (b.pausedAt || b.started) - (a.pausedAt || a.started));
+  const prow = r => `<tr class="paused"><td class="rk">⏸</td>
+      <td><span class="pm">🤖 ${esc(r.model)}</span><span class="ptag">ПАУЗА</span></td>
+      <td class="tps r mut">—</td>
+      <td class="r"><button class="cont" data-run="${r.id}" title="Продолжить тест">▶ Продолжить</button></td>
+      <td class="mut r dt">${Object.keys(r.answers).length}/${r.items.length}</td>
+      <td class="mut dt">${fmtDate(r.pausedAt || r.started)}</td>
+      <td class="r"><button class="del" data-run="${r.id}" title="Удалить незавершённый тест">✕</button></td></tr>`;
+  $('#hist').innerHTML = h.length || p.length ? '<table><tr><th>#</th><th>Модель</th><th class="r">ток/с</th><th class="r">Баллы</th><th class="r dt">Отв.</th><th class="dt">Дата</th><th></th></tr>' + p.map(prow).join('') + h.map((r, i) =>
+    `<tr><td class="rk">${i + 1}</td>
+      <td><button class="mn" data-id="${r.id}" title="Комментарий тестировщика">🤖 ${esc(r.model)}${r.note ? '<span class="ic">💬</span>' : ''}</button></td>
+      <td class="tps r">${fmtTps(r.tps)}</td>
+      <td class="sc" style="color:${gradeOf(r.score).c}">${r.score}</td>
+      <td class="mut r dt">${r.done}/${r.total}</td>
+      <td class="mut dt">${fmtDate(r.date)}</td>
+      <td class="r"><button class="del" data-id="${r.id}" title="Удалить запись">✕</button></td></tr>`).join('') + '</table>'
+    : '<div class="empty">Пока пусто — запустите первый тест 🚀</div>';
+  document.querySelectorAll('#hist .mn').forEach(b => b.onclick = e => { e.stopPropagation(); openBubble(b.dataset.id, b); });
+  document.querySelectorAll('#hist .cont').forEach(b => b.onclick = () => { const r = runsGet()[b.dataset.run]; if (!r) return renderHist();
+    closeBubble(); run = r; openQuiz(); });
+  document.querySelectorAll('#hist .del[data-run]').forEach(b => b.onclick = () => { const r = runsGet()[b.dataset.run]; if (!r) return renderHist();
+    ask('Удалить незавершённый тест?', `Прогресс модели «${r.model}» (оценено ${Object.keys(r.answers).length} из ${r.items.length}) будет удалён.`, () => { dropRun(r.id); renderHist(); }); });
+  document.querySelectorAll('#hist .del[data-id]').forEach(b => b.onclick = () => { const r = histGet().find(x => x.id === b.dataset.id); if (!r) return;
+    ask('Удалить запись?', `Результат модели «${r.model}» (${r.score} из 100) будет удалён из таблицы.`, () => { histSet(histGet().filter(x => x.id !== r.id)); closeBubble(); renderHist(); }); });
+}
+function updateHist(id, patch) { const h = histGet(), e = h.find(x => x.id === id); if (!e) return false; Object.assign(e, patch); histSet(h); return true; }
+
+/* облачко с комментарием тестировщика */
+function openBubble(id, anchor, edit) {
+  const r = histGet().find(x => x.id === id), b = $('#bubble'); if (!r) return;
+  b.dataset.id = id;
+  b.innerHTML = `<button class="x" title="Закрыть">✕</button><h4>🤖 ${esc(r.model)}</h4>
+    <div class="meta">${r.score}/100 · ⚡ ${fmtTps(r.tps)} ток/с · ${fmtDate(r.date)}</div>` + (edit
+    ? `<input id="btps" type="text" maxlength="8" inputmode="decimal" placeholder="токенов в секунду" value="${r.tps ?? ''}"><textarea id="btxt" maxlength="300" placeholder="Комментарий тестировщика">${esc(r.note || '')}</textarea>
+       <div class="row" style="margin-top:10px;justify-content:flex-end"><button class="btn ghost" id="bcancel" style="padding:8px 16px">Отмена</button><button class="btn main" id="bsave" style="padding:8px 16px">Сохранить</button></div>`
+    : `<div class="txt ${r.note ? '' : 'none'}">${r.note ? esc(r.note) : 'Тестировщик не оставил комментарий.'}</div>
+       <div class="ed"><button class="linkbtn" id="bedit">✏ изменить заметку</button></div>`);
+  b.classList.add('on'); placeBubble(b, anchor); b._anchor = anchor;
+  b.querySelector('.x').onclick = closeBubble;
+  if (edit) {
+    const t = $('#btxt'); t.focus(); t.setSelectionRange(t.value.length, t.value.length);
+    $('#bcancel').onclick = () => openBubble(id, anchor);
+    $('#bsave').onclick = () => { updateHist(id, {tps: parseTps($('#btps').value), note: $('#btxt').value.trim()});
+      if (run && run.histId === id) fillNote(); renderHist(); toast('Заметка сохранена 💾');
+      const a = document.querySelector(`#hist .mn[data-id="${id}"]`); if (a) openBubble(id, a); else closeBubble(); };
+  } else $('#bedit').onclick = () => openBubble(id, anchor, true);
+}
+function placeBubble(b, anchor) {
+  const a = anchor.getBoundingClientRect(), bw = b.offsetWidth, bh = b.offsetHeight;
+  const left = Math.max(16, Math.min(a.left, innerWidth - bw - 16));
+  let top = a.bottom + 12, up = false;
+  if (top + bh > innerHeight - 10 && a.top - bh - 12 > 10) { top = a.top - bh - 12; up = true; }
+  b.classList.toggle('up', up); b.style.left = left + 'px'; b.style.top = top + 'px';
+  b.style.setProperty('--ax', Math.max(12, Math.min(bw - 26, a.left + Math.min(a.width / 2, 40) - left - 7)) + 'px');
+}
+function closeBubble() { $('#bubble').classList.remove('on'); }
+document.addEventListener('click', e => { const b = $('#bubble'); if (b.classList.contains('on') && !e.composedPath().includes(b) && !e.target.closest('.mn')) closeBubble(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeBubble(); });
+addEventListener('scroll', () => { const b = $('#bubble'); if (b.classList.contains('on') && b._anchor) placeBubble(b, b._anchor); }, {passive: true});
+addEventListener('resize', () => { const b = $('#bubble'); if (b.classList.contains('on') && b._anchor) placeBubble(b, b._anchor); });
+
+/* резервная копия таблицы */
+$('#exphist').onclick = () => { const h = histGet(); if (!h.length) return toast('Таблица пока пуста');
+  const blob = new Blob([JSON.stringify({app: 'neuro-arena-2.1', exported: new Date().toISOString(), hist: h}, null, 2)], {type: 'application/json'});
+  const u = URL.createObjectURL(blob), l = document.createElement('a'); l.href = u; l.download = `neuro-arena-2.1_таблица_${new Date().toISOString().slice(0, 10)}.json`; l.click(); setTimeout(() => URL.revokeObjectURL(u), 1000); };
+$('#imphist').onclick = () => $('#impfile').click();
+$('#impfile').onchange = async e => { const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try { const j = JSON.parse(await f.text()), rows = Array.isArray(j) ? j : j.hist;
+    if (!Array.isArray(rows)) throw 0;
+    const h = histGet(), have = new Set(h.map(r => r.id)); let n = 0;
+    rows.forEach(r => { if (!r || typeof r.model !== 'string' || typeof r.score !== 'number') return;
+      if (!r.id) r.id = uid(); if (have.has(r.id)) return; have.add(r.id); h.push(r); n++; });
+    histSet(h); renderHist(); toast(n ? `Добавлено записей: ${n}` : 'Новых записей нет');
+  } catch (err) { toast('Не удалось прочитать файл ⚠'); } };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+
+$('#allchips').onclick = () => { selected = new Set(DATA.map(s => s.id)); renderStart(); };
+$('#clrhist').onclick = () => ask('Очистить таблицу?', 'Все завершённые результаты будут удалены. Тесты на паузе останутся.', () => { store.del(KEY + ':hist'); renderStart(); });
+$('#mname').addEventListener('keydown', e => { if (e.key === 'Enter') $('#go').click(); });
+$('#go').onclick = () => {
+  const m = $('#mname').value.trim();
+  if (!m) { const i = $('#mname'); i.classList.remove('shake'); void i.offsetWidth; i.classList.add('shake'); i.focus(); toast('Сначала введите название модели ✍'); return; }
+  const items = [];
+  DATA.filter(s => selected.has(s.id)).forEach(s => s.q.forEach((_, i) => items.push({s: s.id, i})));
+  run = {id: uid(), model: m, items, answers: {}, pos: 0, started: Date.now()};
+  save(); openQuiz();
+};
+
+/* ================= ВОПРОСЫ ================= */
+function openQuiz() { closeBubble(); $('#qmodel').textContent = '🤖 ' + run.model; $('#pause').style.display = run.histId ? 'none' : ''; show('quiz'); renderQ(true); }
+/* пауза: прогресс остаётся в таблице, можно начинать другой тест */
+$('#pause').onclick = () => { if (!run) return;
+  run.pausedAt = Date.now(); save(); const m = run.model; run = null;
+  $('#mname').value = ''; theme('#ff00e5', '#00f0ff'); renderStart(); show('start');
+  toast(`⏸ «${m}» на паузе — продолжить можно из таблицы`); };
+
+function renderNav() {
+  const cur = run.items[run.pos];
+  const groups = [...new Set(run.items.map(it => it.s))];
+  $('#subjnav').innerHTML = groups.map(id => { const s = subj(id);
+    const dots = run.items.map((it, k) => [it, k]).filter(([it]) => it.s === id).map(([it, k]) => {
+      const a = run.answers[keyOf(it)]; const cls = a ? (a.v === 1 ? 'ok' : a.v === 0.5 ? 'mid' : 'bad') : '';
+      return `<i class="${cls} ${k === run.pos ? 'here' : ''}" data-k="${k}" title="Уровень ${lvTag(s.q[it.i].lvl)}"></i>`; }).join('');
+    return `<div class="sn ${cur.s === id ? 'cur' : ''}" style="--c:${s.c1}" data-s="${id}"><div class="t">${s.emoji} ${s.short}</div><div class="dots">${dots}</div></div>`; }).join('');
+  document.querySelectorAll('.sn').forEach(el => el.onclick = e => {
+    const k = e.target.dataset.k; if (k !== undefined) return go(+k);
+    go(run.items.findIndex(it => it.s === el.dataset.s)); });
+  const cn = document.querySelector('.sn.cur'); if (cn) cn.scrollIntoView({block: 'nearest', inline: 'center', behavior: 'smooth'});
+}
+
+function renderQ(anim) {
+  const it = run.items[run.pos], s = subj(it.s), q = qOf(it), L = LEVELS[q.lvl], a = run.answers[keyOf(it)];
+  theme(s.c1, s.c2);
+  const c = $('#qcard'); c.style.setProperty('--lv', L.color); c.classList.toggle('boss', q.lvl >= 5);
+  if (anim) { c.classList.remove('anim'); void c.offsetWidth; c.classList.add('anim'); }
+  $('#qwm').textContent = s.icon; $('#qsubj').textContent = s.emoji + ' ' + s.title;
+  $('#qlv').innerHTML = `Уровень ${lvTag(q.lvl)} · ${L.name}<span class="pips">${[0,1,2,3,4,5].map(k => `<i class="${k < q.lvl ? 'on' : ''}"></i>`).join('')}</span>`;
+  const inSubj = run.items.filter(x => x.s === it.s);
+  $('#qnum').textContent = `#${inSubj.indexOf(it) + 1}/${inSubj.length} · ${run.pos + 1}/${run.items.length}`;
+  $('#qtext').innerHTML = q.q; $('#keytext').innerHTML = q.a; $('#keynote').textContent = q.n ? 'Пояснение: ' + q.n : '';
+  $('#key').classList.toggle('on', !!a); $('#verdict').classList.toggle('on', !!a); $('#reveal').style.display = a ? 'none' : '';
+  document.querySelectorAll('.vb').forEach(b => b.classList.toggle('sel', !!a && +b.dataset.v === a.v));
+  const done = Object.keys(run.answers).length, last = run.pos === run.items.length - 1;
+  $('#pbar').style.width = (done / run.items.length * 100) + '%';
+  $('#ptext').textContent = `Оценено ${done} из ${run.items.length}`;
+  $('#prev').disabled = run.pos === 0;
+  $('#next').style.visibility = last ? 'hidden' : 'visible';
+  $('#next').textContent = a ? 'Дальше →' : 'Пропустить →';
+  $('#final').classList.toggle('on', last || done === run.items.length);
+  renderNav();
+}
+function go(k) { if (k < 0 || k >= run.items.length) return; stash(); run.pos = k; save(); renderQ(true); }
+function stash() {}
+
+$('#reveal').onclick = () => { $('#key').classList.add('on'); $('#verdict').classList.add('on'); $('#reveal').style.display = 'none'; };
+$('#copyq').onclick = async () => { await copyText(plain(qOf(run.items[run.pos]).q)); const b = $('#copyq'); b.classList.add('ok'); b.textContent = '✓ Скопировано';
+  setTimeout(() => { b.classList.remove('ok'); b.textContent = '📋 Скопировать вопрос'; }, 1200); toast('Вопрос скопирован — вставьте его нейросети ✨'); };
+document.querySelectorAll('.vb').forEach(b => b.onclick = () => verdict(+b.dataset.v));
+function verdict(v) {
+  const it = run.items[run.pos], k = keyOf(it);
+  run.answers[k] = {v}; save();
+  document.querySelectorAll('.vb').forEach(x => x.classList.toggle('sel', +x.dataset.v === v));
+  if (v === 1) burst(30);
+  setTimeout(() => {
+    const next = run.items.findIndex((x, i) => i > run.pos && !run.answers[keyOf(x)]);
+    if (next >= 0) go(next); else if (run.pos < run.items.length - 1) go(run.pos + 1); else renderQ(false);
+  }, 380);
+}
+$('#prev').onclick = () => go(run.pos - 1);
+$('#next').onclick = () => go(run.pos + 1);
+const tryFinal = () => { stash(); save(); const left = run.items.length - Object.keys(run.answers).length;
+  if (left) ask('Подвести итог?', `Без оценки осталось вопросов: ${left}. Они будут засчитаны как 0.`, finish); else finish(); };
+$('#final').onclick = tryFinal; $('#earlyres').onclick = tryFinal;
+
+document.addEventListener('keydown', e => {
+  if (!$('#quiz').classList.contains('on') || $('#modal').classList.contains('on')) return;
+  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+  if (e.key === ' ') { e.preventDefault(); $('#reveal').click(); }
+  else if ($('#verdict').classList.contains('on') && ['1', '2', '3'].includes(e.key)) verdict([1, 0.5, 0][+e.key - 1]);
+  else if (e.key === 'ArrowLeft') go(run.pos - 1);
+  else if (e.key === 'ArrowRight') go(run.pos + 1);
+});
+
+/* ================= ИТОГ ================= */
+function gradeOf(sc) {
+  if (sc >= 90) return {t: '🧠 ГЕНИЙ', c: '#3dff8a'};
+  if (sc >= 75) return {t: '🚀 ОТЛИЧНО', c: '#00f0ff'};
+  if (sc >= 60) return {t: '👍 ХОРОШО', c: '#c6ff3d'};
+  if (sc >= 40) return {t: '😐 СРЕДНЕ', c: '#ffd23d'};
+  if (sc >= 20) return {t: '🥴 СЛАБО', c: '#ff7a3d'};
+  return {t: '💀 ПРОВАЛ', c: '#ff2d6f'};
+}
+function calc() {
+  let got = 0, max = 0; const bs = {}, bl = {}; const cnt = {ok: 0, mid: 0, bad: 0, skip: 0};
+  run.items.forEach(it => { const q = qOf(it), a = run.answers[keyOf(it)], v = a ? a.v : 0, w = q.lvl;
+    got += v * w; max += w;
+    (bs[it.s] = bs[it.s] || {g: 0, m: 0}).g += v * w; bs[it.s].m += w;
+    (bl[q.lvl] = bl[q.lvl] || {g: 0, m: 0}).g += v * w; bl[q.lvl].m += w;
+    if (!a) cnt.skip++; else if (v === 1) cnt.ok++; else if (v === 0.5) cnt.mid++; else cnt.bad++; });
+  return {score: Math.round(got / max * 100), bs, bl, cnt};
+}
+function finish() {
+  const r = calc(), g = gradeOf(r.score); theme('#ff00e5', '#00f0ff'); show('result');
+  $('#gauge').style.setProperty('--gc', g.c); $('#grade').textContent = g.t;
+  $('#rmodel').innerHTML = `Модель: <b>${esc(run.model)}</b> · вопросов: ${run.items.length}`;
+  requestAnimationFrame(() => $('#garc').style.strokeDashoffset = 326.7 * (1 - r.score / 100));
+  const t0 = performance.now(); (function tick(t) { const p = Math.min(1, (t - t0) / 1800); $('#score').textContent = Math.round(r.score * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(tick); })(t0);
+  $('#stats').innerHTML = [['✅ Верно', r.cnt.ok, 'var(--ok)'], ['🟡 Частично', r.cnt.mid, 'var(--mid)'], ['❌ Неверно', r.cnt.bad, 'var(--bad)'], ['⏭ Пропущено', r.cnt.skip, '#9aa0c0']]
+    .map(([n, v, c]) => `<div class="stat" style="--v:${c}"><b>${v}</b><span>${n}</span></div>`).join('');
+  const bar = (label, o, a, b) => { const p = Math.round(o.g / o.m * 100); return `<div class="brow" style="--a:${a};--b:${b}"><span>${label}</span><div class="tr"><i data-w="${p}"></i></div><b>${p}%</b></div>`; };
+  $('#bysubj').innerHTML = Object.keys(r.bs).map(id => { const s = subj(id); return bar(s.emoji + ' ' + s.short, r.bs[id], s.c1, s.c2); }).join('');
+  $('#bylvl').innerHTML = Object.keys(r.bl).map(l => bar(`Уровень ${lvTag(l)}`, r.bl[l], LEVELS[l].color, LEVELS[l].color)).join('');
+  $('#bylvlbox').style.display = Object.keys(r.bl).length > 1 ? '' : 'none';
+  drawRadar(r);
+  setTimeout(() => document.querySelectorAll('.tr i').forEach(i => i.style.width = i.dataset.w + '%'), 150);
+  const miss = run.items.filter(it => { const a = run.answers[keyOf(it)]; return !a || a.v < 1; });
+  $('#misses').innerHTML = miss.length ? miss.map(it => { const a = run.answers[keyOf(it)], q = qOf(it), s = subj(it.s);
+    const c = !a ? '#9aa0c0' : a.v === 0.5 ? 'var(--mid)' : 'var(--bad)', tag = !a ? '⏭ пропуск' : a.v === 0.5 ? '🟡 частично' : '❌ неверно';
+    return `<div class="miss" style="--v:${c}"><div class="mut" style="font-size:12px">${s.emoji} ${s.short} · уровень ${lvTag(q.lvl)} · ${tag}</div><div class="mq">${q.q}</div><div class="ma">Эталон: <b>${q.a}</b></div></div>`; }).join('')
+    : '<div style="font-size:18px">🏆 Ни одной ошибки! Безупречно.</div>';
+  /* запись в таблицу результатов: одна запись на прогон, при повторном «Итоге» обновляется */
+  const h = histGet(), rec = {score: r.score, done: Object.keys(run.answers).length, total: run.items.length};
+  let e = run.histId && h.find(x => x.id === run.histId);
+  if (e) Object.assign(e, rec);
+  else { e = {id: uid(), model: run.model, date: Date.now(), tps: null, note: '', ...rec}; h.push(e); run.histId = e.id; }
+  histSet(h); save(); fillNote();
+  if (r.score >= 60) setTimeout(() => burst(r.score >= 90 ? 260 : 140), 900);
+}
+
+/* заметка тестировщика на экране итога */
+function fillNote() { const e = histGet().find(x => x.id === run.histId) || {};
+  $('#ntps').value = e.tps ?? ''; $('#ntxt').value = e.note || ''; noteCnt(); }
+function noteCnt() { $('#ncnt').textContent = `${$('#ntxt').value.length}/300 · скорость видна в общей таблице, комментарий — по клику на название модели`; }
+function saveNote(quiet) { if (!run || !run.histId) return;
+  const patch = {tps: parseTps($('#ntps').value), note: $('#ntxt').value.trim()};
+  if (!updateHist(run.histId, patch)) { /* запись успели удалить из таблицы — восстановим её */
+    const r = calc(), h = histGet();
+    h.push({id: run.histId, model: run.model, date: Date.now(), score: r.score, done: Object.keys(run.answers).length, total: run.items.length, ...patch}); histSet(h); }
+  if (!quiet) toast('Заметка сохранена 💾'); }
+$('#nsave').onclick = () => saveNote(false);
+let noteT = 0;
+['#ntps', '#ntxt'].forEach(s => $(s).addEventListener('input', () => { noteCnt(); clearTimeout(noteT); noteT = setTimeout(() => saveNote(true), 500); }));
+/* Радар: одна фигура = одна модель, точки окрашены в цвет темы, подписи — обычным текстом */
+function drawRadar(r) {
+  const ids = Object.keys(r.bs), N = ids.length, box = $('#radarbox');
+  box.style.display = N < 3 ? 'none' : ''; if (N < 3) return;
+  const W = 720, H = 660, cx = 360, cy = 330, R = 220, ang = k => -Math.PI / 2 + k * 2 * Math.PI / N;
+  const P = (k, v) => [cx + Math.cos(ang(k)) * R * v, cy + Math.sin(ang(k)) * R * v];
+  const poly = v => ids.map((_, k) => P(k, typeof v === 'function' ? v(k) : v).join(',')).join(' ');
+  const pct = ids.map(id => Math.round(r.bs[id].g / r.bs[id].m * 100));
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Результат по темам">
+  <defs>
+    <radialGradient id="rfill"><stop offset="0" stop-color="#00f0ff" stop-opacity=".15"/><stop offset="1" stop-color="#ff00e5" stop-opacity=".45"/></radialGradient>
+    <linearGradient id="rstroke" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff00e5"/><stop offset="1" stop-color="#00f0ff"/></linearGradient>
+    <filter id="rglow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>`;
+  [.25, .5, .75, 1].forEach(v => s += `<polygon class="ring ${v === 1 ? 'full' : ''}" points="${poly(v)}"/>`);
+  ids.forEach((_, k) => { const [x, y] = P(k, 1); s += `<line class="spoke" data-k="${k}" x1="${cx}" y1="${cy}" x2="${x}" y2="${y}"/>`; });
+  [25, 50, 75, 100].forEach(v => s += `<text class="rtick" x="${cx + 4}" y="${cy - R * v / 100 - 3}">${v}</text>`);
+  s += `<g class="shape"><polygon points="${poly(k => Math.max(pct[k], 2) / 100)}" fill="url(#rfill)" stroke="url(#rstroke)" stroke-width="2.5" stroke-linejoin="round" filter="url(#rglow)"/>`;
+  ids.forEach((id, k) => { const [x, y] = P(k, Math.max(pct[k], 2) / 100), c = subj(id).c1;
+    s += `<g class="pt" data-k="${k}"><circle class="dot" cx="${x}" cy="${y}" r="5.5" fill="${c}" style="filter:drop-shadow(0 0 5px ${c})"/><circle class="hit" cx="${x}" cy="${y}" r="16"/></g>`; });
+  s += `</g>`;
+  ids.forEach((id, k) => { const a = ang(k), [x, y] = P(k, 1.13), cs = Math.cos(a), sub = subj(id);
+    const anchor = Math.abs(cs) < .2 ? 'middle' : cs > 0 ? 'start' : 'end', dy = Math.sin(a) > .6 ? 10 : Math.sin(a) < -.6 ? -8 : 0;
+    s += `<g class="axis" data-k="${k}"><text class="rlab" x="${x}" y="${y + dy}" text-anchor="${anchor}">${sub.emoji} ${sub.short}</text>
+      <text class="rpct" x="${x}" y="${y + dy + 15}" text-anchor="${anchor}">${pct[k]}%</text></g>`; });
+  s += `</svg>`;
+  const el = $('#radar'); el.classList.remove('go'); el.innerHTML = s;
+  void el.offsetWidth; setTimeout(() => el.classList.add('go'), 60);
+  const tip = $('#rtip');
+  el.querySelectorAll('.pt, .axis').forEach(g => {
+    const k = +g.dataset.k, id = ids[k], sub = subj(id), b = r.bs[id];
+    g.addEventListener('mouseenter', () => {
+      el.querySelector(`.pt[data-k="${k}"]`).classList.add('on');
+      const d = el.querySelector(`.pt[data-k="${k}"] .dot`).getBoundingClientRect(), bb = box.getBoundingClientRect();
+      tip.innerHTML = `${sub.emoji} ${sub.title}<br><b style="color:${sub.c1}">${pct[k]}%</b> <span class="mut">· ${+b.g.toFixed(1)} из ${b.m} баллов веса</span>`;
+      tip.style.left = (d.left + d.width / 2 - bb.left) + 'px'; tip.style.top = (d.top - bb.top) + 'px'; tip.classList.add('on');
+    });
+    g.addEventListener('mouseleave', () => { el.querySelector(`.pt[data-k="${k}"]`).classList.remove('on'); tip.classList.remove('on'); });
+  });
+}
+
+function report() { const r = calc(), g = gradeOf(r.score);
+  const lines = [`НЕЙРО-АРЕНА 2.1 (экстра-босс) — результат`, `Модель: ${run.model}`, `Оценка: ${r.score}/100 (${g.t.replace(/^\S+\s/, '')})`,
+    `Верно: ${r.cnt.ok} · Частично: ${r.cnt.mid} · Неверно: ${r.cnt.bad} · Пропущено: ${r.cnt.skip}`, '', 'По темам:'];
+  Object.keys(r.bs).forEach(id => lines.push(`  ${subj(id).title}: ${Math.round(r.bs[id].g / r.bs[id].m * 100)}%`));
+  const e = histGet().find(x => x.id === run.histId);
+  if (e && (e.tps !== null && e.tps !== undefined || e.note)) { lines.push('', 'Заметка тестировщика:');
+    if (e.tps !== null && e.tps !== undefined) lines.push(`  Скорость: ${fmtTps(e.tps)} ток/с`); if (e.note) lines.push(`  ${e.note}`); }
+  return lines.join('\n'); }
+$('#copyrep').onclick = async () => { await copyText(report()); toast('Отчёт скопирован 📋'); };
+$('#dljson').onclick = () => { const r = calc();
+  const e = histGet().find(x => x.id === run.histId) || {};
+  const out = {model: run.model, date: new Date().toISOString(), score: r.score, counts: r.cnt, tokensPerSec: e.tps ?? null, testerNote: e.note || '',
+    answers: run.items.map(it => { const q = qOf(it), a = run.answers[keyOf(it)]; return {subject: subj(it.s).title, level: q.lvl, question: plain(q.q), reference: plain(q.a), verdict: a ? a.v : null}; })};
+  const b = new Blob([JSON.stringify(out, null, 2)], {type: 'application/json'}), u = URL.createObjectURL(b), l = document.createElement('a');
+  l.href = u; l.download = `neuro-arena-2.1_${run.model.replace(/[^\wа-яё.-]+/gi, '_')}.json`; l.click(); setTimeout(() => URL.revokeObjectURL(u), 1000); };
+$('#back').onclick = () => openQuiz();
+$('#again').onclick = () => { if (run && run.id) dropRun(run.id); run = null; $('#mname').value = ''; theme('#ff00e5', '#00f0ff'); renderStart(); show('start'); $('#mname').focus(); };
+
+/* ================= КОНФЕТТИ ================= */
+const cv = $('#confetti'), cx = cv.getContext('2d'); let parts = [], raf = 0;
+function fit() { cv.width = innerWidth; cv.height = innerHeight; } addEventListener('resize', fit); fit();
+function burst(n) { const cols = ['#ff00e5', '#00f0ff', '#7cff00', '#ffea00', '#ff2d6f', '#8a5cff'];
+  for (let i = 0; i < n; i++) parts.push({x: innerWidth / 2 + (Math.random() - .5) * 200, y: innerHeight * .45, vx: (Math.random() - .5) * 16, vy: -Math.random() * 15 - 4,
+    s: Math.random() * 7 + 4, r: Math.random() * 6, vr: (Math.random() - .5) * .4, c: cols[i % cols.length], life: 120 + Math.random() * 60});
+  if (!raf) raf = requestAnimationFrame(step); }
+function step() { cx.clearRect(0, 0, cv.width, cv.height);
+  parts = parts.filter(p => (p.life--, p.life > 0 && p.y < cv.height + 40));
+  parts.forEach(p => { p.vy += .35; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+    cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r); cx.fillStyle = p.c; cx.shadowColor = p.c; cx.shadowBlur = 10; cx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); cx.restore(); });
+  raf = parts.length ? requestAnimationFrame(step) : 0; }
+
+$('#totq').textContent = DATA.reduce((a, s) => a + s.q.length, 0); $('#tots').textContent = DATA.length;
+renderStart(); $('#mname').focus();
+</script>
+</body></html>
