@@ -1,0 +1,7 @@
+baseUrl: https://maya.arkprojects.space/v1
+headers: {}
+systemPrompt: You are a helpful assistant.
+chatTemplateKwargs:
+  enable_thinking: false
+model: deepseek-v4.1-flash
+result: maya-ds41f-nothink
