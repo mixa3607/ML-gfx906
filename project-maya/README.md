@@ -8,11 +8,14 @@ Model weights and PyTorch conversion are not included.
 ## Compatibility
 
 - Use **gfx906**, without `HSA_OVERRIDE_GFX_VERSION`. The
-  [v1.1.25 patch set](build-context/patch/v1.1.25/) enables wave64, signed dot4 and
+  [v1.1.30 patch set](build-context/patch/v1.1.30/) enables wave64, signed dot4 and
   signed-zero preservation in INT8 latent-cache reads.
   It combines [upstream PR #397](https://github.com/mw00/project-maya/pull/397)
   (`10-pr397.patch`) with local installer and INT8-cache fixes
-  (`20-fix-gfx906.patch`); pinned sources are recorded in the patch headers.
+  (`20-fix-gfx906.patch`) and the transfer-only part of
+  [PR #520](https://github.com/mw00/project-maya/pull/520)
+  (`30-pr520-transfer.patch`). PR #297 transfer pruning is not included because
+  it slowed the measured workload. Pinned sources are recorded in the patch headers.
 - Provide `/dev/kfd`, `/dev/dri`, shared memory and an adequate memlock limit.
 - Set `MAYA_GLM_RAM_GB` explicitly for GLM: the engine's free-RAM detection can
   see host memory instead of the container limit. Leave room for weights and
@@ -30,8 +33,8 @@ Requires Docker Buildx and the [ROCm base image](../rocm/README.md).
 Log in to the destination registry and run from this directory:
 
 ```bash
-export MAYA_BRANCH=v1.1.25
-export MAYA_PATCH=v1.1.25
+export MAYA_BRANCH=v1.1.30
+export MAYA_PATCH=v1.1.30
 export MAYA_CMAKE_HIP_FLAGS="-mllvm -amdgpu-sched-strategy=max-ilp"
 export MAYA_IMAGE=registry.example.com/apps/maya-gfx906
 ./build-and-push.image.sh
@@ -73,9 +76,15 @@ Export a variable to override it.
 | `ROCM_IMAGE`           | `docker.io/mixa3607/rocm-gfx906`           | ROCm base image name                                                  |
 | `REPO_GIT_REF`         | _(git tag, else short SHA)_                | Build revision appended to the tag                                    |
 
-The [Actions workflow](../.github/workflows/maya-build.yaml) builds the latest
-upstream release unless `maya_tag` is specified, and explicitly applies
-the `v1.1.25/` patch set. Other versions need a patch compatibility check.
+The [Actions workflow](../.github/workflows/maya-build.yaml) defaults to upstream
+`v1.1.30` unless `maya_tag` is specified, and explicitly applies the `v1.1.30/`
+patch set. Other versions need a patch compatibility check. The matching local
+preset is [`preset.v1.1.30-rocm-10.1.sh`](preset.v1.1.30-rocm-10.1.sh).
+
+The workflow's repository checkout remains pinned to its existing `release_tag`
+(or the `BUILD_REF` override). That old ref does not contain this patch set:
+select a ref containing these changes before running a build with it. Changing
+the patch selection does not create a repository tag or publish a release.
 
 ## Run
 
@@ -83,6 +92,8 @@ See [RUNNING.md](RUNNING.md) for preparation, configuration and Kubernetes
 deployment, or [docker-compose.example.yaml](docker-compose.example.yaml) for
 Docker.
 
-Experimental v1.1.30 TP4 prefill transfer patch sets and their bounded test
-procedure are documented in [prefill-transfer/README.md](prefill-transfer/README.md).
-They are opt-in test builds, not the default release patch set.
+The v1.1.30 transfer patch's measurements and bounded test procedure are
+documented in [prefill-transfer/README.md](prefill-transfer/README.md). Historical
+experimental patch directories are retained for reproducing those runs; the
+workflow now selects `v1.1.30/` without pruning. This selection alone does not
+publish new images or change runtime chunk settings.
