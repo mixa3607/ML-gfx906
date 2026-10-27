@@ -4,4 +4,3 @@ systemPrompt: You are a helpful assistant.
 chatTemplateKwargs:
   reasoning_effort: 50
 model: deepseek-v4.1-flash
-result: maya-ds41f-rea50
