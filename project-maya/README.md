@@ -9,12 +9,7 @@ Model weights and PyTorch conversion are not included.
 
 - Use **gfx906**, without `HSA_OVERRIDE_GFX_VERSION`. The
   [v1.1.32 patch](build-context/patch/v1.1.32.patch) only preserves signed zero
-  in INT8 latent-cache reads on Vega20. Upstream now includes gfx906 wave64
-  registration, installer support and signed dot4 through
-  [PR #505](https://github.com/mw00/project-maya/pull/505), and the transfer
-  optimizations through [PR #520](https://github.com/mw00/project-maya/pull/520).
-  No additional test-only patches are carried for v1.1.32. Older patch sets
-  remain available for their matching versions.
+  in INT8 latent-cache reads on Vega20.
 - Provide `/dev/kfd`, `/dev/dri`, shared memory and an adequate memlock limit.
 - Set `MAYA_GLM_RAM_GB` explicitly for GLM: the engine's free-RAM detection can
   see host memory instead of the container limit. Leave room for weights and
@@ -41,11 +36,6 @@ export MAYA_IMAGE=registry.example.com/apps/maya-gfx906
 
 For local test builds, `../.build/.env-local.sh` sets `MAYA_IMAGE` to the
 private test registry.
-
-The [v1.1.32 / ROCm 10.1 preset](preset.v1.1.32-rocm-10.1.sh) sets the source,
-patch and HIP flags above. In CI, `BUILD_REF` or the workflow's `release_tag`
-must select a repository revision containing the chosen patch; updating the
-upstream version alone does not update the pinned build scripts.
 
 The example enables the tested max-ILP scheduling flag. The defaults use `main`
 and `empty.patch` (no changes to upstream); gfx906 needs a matching patch selected
