@@ -1,0 +1,8 @@
+baseUrl: https://aaa/v1
+headers:
+  key: value
+systemPrompt: ""
+chatTemplateKwargs:
+  reasoning_effort: 95
+model: ds41f
+result: ds41f-rea95
