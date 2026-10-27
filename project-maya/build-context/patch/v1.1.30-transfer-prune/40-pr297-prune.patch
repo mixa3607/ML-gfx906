@@ -1,0 +1,84 @@
+PR 297, 6f72b39cd0a793f5e4cd6037d37fe348dc7cdc4d, author LostVector.
+https://github.com/mw00/project-maya/pull/297
+Ported onto the PR 520 compact reader; no second read_mx_member.
+Only picked members stage/copy; counters are emitted by report_prefill.
+
+diff --git a/src/ds4/ds4_model.cu b/src/ds4/ds4_model.cu
+--- a/src/ds4/ds4_model.cu
++++ b/src/ds4/ds4_model.cu
+@@ -3956,7 +3956,13 @@
+         const bool collect_prefill = std::getenv("DS4_PREFILL_STATS") != nullptr &&
+                                      std::atoi(std::getenv("DS4_PREFILL_STATS")) != 0;
+         PrefillCounts prefill;
++        int routed_layer = -1, routed_chunk = -1;
++        std::vector<int> routed_bounds;
++        size_t skipped = 0, copied = 0;
+         void report_prefill(int gpu, int tokens, int chunk, double streamed_bytes) const {
++            if (copied + skipped > 0 && std::getenv("DS4_FLOW_STATS") != nullptr)
++                std::fprintf(stderr, "ds4 prompt batches, CUDA%d: %zu experts copied, %zu unpicked experts skipped\n",
++                             gpu, copied, skipped);
+             if (!collect_prefill) return;
+             std::fprintf(stderr, "DS4_PREFILL gpu=%d tokens=%d chunk=%d expert_row_picks=%llu vram_row_picks=%llu "
+                          "unique_expert_uses=%llu vram_unique_expert_uses=%llu streamed_weight_bytes=%llu\n",
+@@ -4059,10 +4065,22 @@
+     }
+     bool copy_ahead(Dev& d, Chunk& c, Streamer& S, int di, std::string& err) {
+         const int P = Chunk::kParts;
++#if defined(STRATA_USE_HIP)
++        static const bool skip_unpicked = std::getenv("DS4_SKIP_UNPICKED") != nullptr &&
++                                          std::atoi(std::getenv("DS4_SKIP_UNPICKED")) != 0;
++#else
++        constexpr bool skip_unpicked = false;
++#endif
+         while (S.cp < S.b.size() && S.cp < S.kp + P) {
+             const Batch& bt = S.b[S.cp];
++            if (skip_unpicked && (bt.il != S.routed_layer || bt.k != S.routed_chunk)) break;
+             const int half = (int) (S.cp % P);
+             const Layer& l0 = L[(size_t) bt.il];
++            const auto picked = [&](int i) {
++                if (!skip_unpicked) return true;
++                const size_t v = (size_t) l0.n_slots + bt.j0 + i;
++                return S.routed_bounds[v + 1] > S.routed_bounds[v];
++            };
+             int mi = 0;
+             for (int m = 0; m < l0.nm; ++m)
+                 if (member(l0, m).dev == di) mi = m;
+@@ -4070,12 +4088,13 @@
+             uint8_t* sb = nullptr;   // in place: the batch's regions in the part's staging slots
+             bool staged = false;     // (a batch of copies in place, alone: nothing to stage)
+             for (int i = 0; i < bt.n && !staged; ++i)
+-                staged = stage_needed(l0, l0.host_list[(size_t) (bt.j0 + i)]);
++                staged = picked(i) && stage_needed(l0, l0.host_list[(size_t) (bt.j0 + i)]);
+             if (c.stage != nullptr && staged) {
+                 if (S.cp >= (size_t) P) CK(cudaEventSynchronize(c.filled[half]));   // (its last batch's copies out)
+                 sb = c.stage + (size_t) half * (c.ring_n / P) * c.stage_stride;
+                 std::atomic<bool> bad{false};
+                 c.readers->run(bt.n, [&](int i) {
++                    if (!picked(i)) return;
+                     if (!stage_streamed(l0, mi, l0.host_list[(size_t) (bt.j0 + i)], sb + (size_t) i * c.stage_stride))
+                         bad.store(true);
+                 });
+@@ -4085,6 +4104,8 @@
+                 }
+             }
+             for (int i = 0; i < bt.n; ++i) {
++                if (!picked(i)) { ++S.skipped; continue; }
++                if (skip_unpicked) ++S.copied;
+                 uint8_t* dst = c.ring + ((size_t) half * (c.ring_n / P) + i) * c.ring_stride;
+                 if (!copy_streamed(l0, mi, l0.host_list[(size_t) (bt.j0 + i)], sb != nullptr ? sb + (size_t) i * c.stage_stride
+                                                                                              : nullptr,
+@@ -11423,6 +11444,14 @@
+         // the streamed experts as their batches arrive (each batch's slots freed for the copies at once), the VRAM ones
+         // in shares between them (the device works while the copies run)
+         const int di = l.dev, P = Chunk::kParts;
++#if defined(STRATA_USE_HIP)
++        if (std::getenv("DS4_SKIP_UNPICKED") != nullptr && std::atoi(std::getenv("DS4_SKIP_UNPICKED")) != 0) {
++            S.routed_layer = L0.il;
++            S.routed_chunk = wp.k;
++            S.routed_bounds = b;
++            if (!copy_ahead(d, c, S, di, err)) return false;
++        }
++#endif
+         int nb = 0;
+         for (size_t q = S.kp; q < S.b.size() && S.b[q].il == L0.il && S.b[q].k == wp.k; ++q) ++nb;
+         int v_done = 0;

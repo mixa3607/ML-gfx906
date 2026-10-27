@@ -82,3 +82,7 @@ the `v1.1.25/` patch set. Other versions need a patch compatibility check.
 See [RUNNING.md](RUNNING.md) for preparation, configuration and Kubernetes
 deployment, or [docker-compose.example.yaml](docker-compose.example.yaml) for
 Docker.
+
+Experimental v1.1.30 TP4 prefill transfer patch sets and their bounded test
+procedure are documented in [prefill-transfer/README.md](prefill-transfer/README.md).
+They are opt-in test builds, not the default release patch set.

@@ -1,0 +1,7 @@
+{
+  "pod": "maya-ds41-6944678555-wnf5b",
+  "ready": true,
+  "image": "docker.io/mixa3607/maya-gfx906@sha256:44e2d6427f57a2cd36aba79719e2d708a0c15880197b2da5f9c181365b56701c",
+  "restart_count": 0,
+  "test_pod_absent": true
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "case": "dev-20261024-00-pp2048",
+    "first_row_identical": true,
+    "output_identical": true
+  },
+  {
+    "case": "dev-20261024-01-pp4096",
+    "first_row_identical": true,
+    "output_identical": true
+  }
+]

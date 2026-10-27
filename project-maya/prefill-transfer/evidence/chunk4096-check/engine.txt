@@ -1,0 +1,64 @@
+ds4: tensor parallel 4: the experts' n_ff 2304 in 32-value blocks, 576 to 576 a member (the odd blocks going round the members layer by layer) (DS4_TP_GGUF_UNEVEN)
+ds4: the one-GPU decode path (in-place pulls, windows streamed, landings): off (v1.1.27's path: not Linux + NVIDIA + one GPU)
+ds4: DS4_DRAFT_DEV 1,2,3: DSpark block 0 on CUDA1 (member 1), 1 on CUDA2 (member 2), 2 on CUDA3 (member 3) - each block's experts out of its own member's room
+ds4: the experts VRAM leaves over (~195.4 GB) are read in place from the model's files (copied into RAM after the GPUs' share when the RAM holds them all; --mmap-experts on keeps them in place) (235.5 GB of RAM free to keep them: the most-routed 195.4 GB read ahead; prompts in chunks of 4096)
+ds4: the copied experts pinned (197.6 GB in 70.4 s): the prompt path DMAs them in place
+ds4: 10511 of the CPU lane's 10511 experts copied into RAM (197.6 GB, 2 NUMA parts) in 191.5 s
+ds4: TP check: MXFP4/MXFP4/MXFP4 (layer 0, member 0 takes 576 of 2304): 4 members' parts summed against the whole - routed (3 experts) 1.02e-07 of the largest, shared 9.31e-08
+ds4: TP check: MXFP4/MXFP4/MXFP4 (layer 1, member 0 takes 576 of 2304): 4 members' parts summed against the whole - routed (3 experts) 1.73e-07 of the largest, shared 3.01e-07
+ds4: TP check: MXFP4/MXFP4/MXFP4 (layer 2, member 0 takes 576 of 2304): 4 members' parts summed against the whole - routed (3 experts) 2.24e-07 of the largest, shared 3.12e-07
+ds4: TP check: MXFP4/MXFP4/MXFP4 (layer 3, member 0 takes 576 of 2304): 4 members' parts summed against the whole - routed (3 experts) 1.69e-07 of the largest, shared 1.8e-07
+ds4: TP check: the prompt path's copies passed (32 experts' parts, from RAM in place and from the file, on the devices byte for byte)
+ds4: TP check passed (4 expert formats and rotations, all the split layers have) (DS4_TP_CHECK)
+ds4: CUDA0 layers [0, 39] (tensor parallel 4, part 0) + head: weights 5.50 GB, experts 22.79 GB (4849 of 15360 in VRAM), caches 0.18 GB, 2572 MiB free
+ds4: CUDA1 layers [0, 40] (tensor parallel 4, part 1) + blocks 0: weights 5.63 GB, experts 25.20 GB (4977 of 15488 in VRAM), caches 0.18 GB, 464 MiB free
+ds4: CUDA2 layers [0, 41] (tensor parallel 4, part 2) + blocks 1: weights 5.63 GB, experts 25.20 GB (4977 of 15488 in VRAM), caches 0.18 GB, 464 MiB free
+ds4: CUDA3 layers [0, 42] (tensor parallel 4, part 3) + blocks 2: weights 5.63 GB, experts 25.20 GB (4977 of 15488 in VRAM), caches 0.18 GB, 464 MiB free
+ds4: 10511 routed experts on the CPU lane (197.6 GB): 10511 copied into RAM (2 NUMA parts), the rest in place in the model's files; 56 threads
+maya ds4 serve: GEN <max_new> [keys] <ids>; GENI <max_new> [keys] <pictures> <ids>; STOP, QUIT
+
+rocblaslt error: Cannot read "TensileLibrary_lazy_gfx906.dat" (or .zlib variant): No such file or directory
+
+rocblaslt error: Could not load "TensileLibrary_lazy_gfx906.dat"
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+DS4_PREFILL gpu=3 tokens=2048 chunk=4096 expert_row_picks=491520 vram_row_picks=312924 unique_expert_uses=10960 vram_unique_expert_uses=4069 streamed_weight_bytes=49403381760
+DS4_PREFILL gpu=2 tokens=2048 chunk=4096 expert_row_picks=491520 vram_row_picks=312924 unique_expert_uses=10960 vram_unique_expert_uses=4069 streamed_weight_bytes=49403381760
+DS4_PREFILL gpu=1 tokens=2048 chunk=4096 expert_row_picks=491520 vram_row_picks=312924 unique_expert_uses=10960 vram_unique_expert_uses=4069 streamed_weight_bytes=49403381760
+DS4_PREFILL gpu=0 tokens=2048 chunk=4096 expert_row_picks=491520 vram_row_picks=312924 unique_expert_uses=10960 vram_unique_expert_uses=4069 streamed_weight_bytes=49403381760
+ds4 prompt GPU time, 2048 tokens: attention 11833 ms, routing + shared expert 1699 ms, experts 27348 ms (with the waits for streamed ones), between layers 3 ms
+ds4 prompt attention GPU time: Engram + mixing + projections 5618 ms, compression + indexer 603 ms, q 706 ms, sparse attention 2194 ms, output projections 2711 ms
+ds4 prompt host time between the same marks: attention 923 ms, routing + shared expert 20 ms, experts 9211 ms, between layers 22 ms
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 11660 ms (175.6 tok/s), 16 generated in 696 ms (22.99 tok/s); CPU lane 0.2% of the experts
+GPU per token (DS4_PROF): 175.42 ms - between layers 1.21, attention 93.32, routing + shared expert 19.68, experts gate/up 9.40, waiting for the CPU lane 8.98, down + post 42.83; 15 tokens
+DS4_PREFILL gpu=3 tokens=4096 chunk=4096 expert_row_picks=983040 vram_row_picks=609928 unique_expert_uses=12457 vram_unique_expert_uses=4360 streamed_weight_bytes=49403381760
+DS4_PREFILL gpu=2 tokens=4096 chunk=4096 expert_row_picks=983040 vram_row_picks=609928 unique_expert_uses=12457 vram_unique_expert_uses=4360 streamed_weight_bytes=49403381760
+DS4_PREFILL gpu=0 tokens=4096 chunk=4096 expert_row_picks=983040 vram_row_picks=609928 unique_expert_uses=12457 vram_unique_expert_uses=4360 streamed_weight_bytes=49403381760
+DS4_PREFILL gpu=1 tokens=4096 chunk=4096 expert_row_picks=983040 vram_row_picks=609928 unique_expert_uses=12457 vram_unique_expert_uses=4360 streamed_weight_bytes=49403381760
+ds4 prompt GPU time, 4096 tokens: attention 17839 ms, routing + shared expert 3270 ms, experts 45219 ms (with the waits for streamed ones), between layers 2 ms
+ds4 prompt attention GPU time: Engram + mixing + projections 4747 ms, compression + indexer 1564 ms, q 1466 ms, sparse attention 4869 ms, output projections 5194 ms
+ds4 prompt host time between the same marks: attention 68 ms, routing + shared expert 18 ms, experts 16418 ms, between layers 3 ms
+maya ds4 serve: prompt 4096 tokens = 0 reused + 4096 read in 19174 ms (213.6 tok/s), 16 generated in 695 ms (23.01 tok/s); CPU lane 0.1% of the experts
+GPU per token (DS4_PROF): 175.68 ms - between layers 1.21, attention 92.04, routing + shared expert 19.62, experts gate/up 9.10, waiting for the CPU lane 10.01, down + post 43.70; 15 tokens

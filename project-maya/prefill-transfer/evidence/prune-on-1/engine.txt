@@ -1,0 +1,76 @@
+ds4: tensor parallel 4: the experts' n_ff 2304 in 32-value blocks, 576 to 576 a member (the odd blocks going round the members layer by layer) (DS4_TP_GGUF_UNEVEN)
+ds4: the one-GPU decode path (in-place pulls, windows streamed, landings): off (v1.1.27's path: not Linux + NVIDIA + one GPU)
+ds4: DS4_DRAFT_DEV 1,2,3: DSpark block 0 on CUDA1 (member 1), 1 on CUDA2 (member 2), 2 on CUDA3 (member 3) - each block's experts out of its own member's room
+ds4: the experts VRAM leaves over (~193.7 GB) are read in place from the model's files (copied into RAM after the GPUs' share when the RAM holds them all; --mmap-experts on keeps them in place) (235.5 GB of RAM free to keep them: the most-routed 193.7 GB read ahead; prompts in chunks of 2048)
+ds4: the copied experts pinned (197.4 GB in 67.6 s): the prompt path DMAs them in place
+ds4: 10459 of the CPU lane's 10459 experts copied into RAM (196.6 GB, 2 NUMA parts) in 183.9 s
+ds4: CUDA0 layers [0, 39] (tensor parallel 4, part 0) + head: weights 5.50 GB, experts 23.22 GB (4901 of 15360 in VRAM), caches 0.18 GB, 2582 MiB free
+ds4: CUDA1 layers [0, 40] (tensor parallel 4, part 1) + blocks 0: weights 5.63 GB, experts 25.63 GB (5029 of 15488 in VRAM), caches 0.18 GB, 474 MiB free
+ds4: CUDA2 layers [0, 41] (tensor parallel 4, part 2) + blocks 1: weights 5.63 GB, experts 25.63 GB (5029 of 15488 in VRAM), caches 0.18 GB, 474 MiB free
+ds4: CUDA3 layers [0, 42] (tensor parallel 4, part 3) + blocks 2: weights 5.63 GB, experts 25.63 GB (5029 of 15488 in VRAM), caches 0.18 GB, 474 MiB free
+ds4: 10459 routed experts on the CPU lane (196.6 GB): 10459 copied into RAM (2 NUMA parts), the rest in place in the model's files; 56 threads
+maya ds4 serve: GEN <max_new> [keys] <ids>; GENI <max_new> [keys] <pictures> <ids>; STOP, QUIT
+
+rocblaslt error: Cannot read "TensileLibrary_lazy_gfx906.dat" (or .zlib variant): No such file or directory
+
+rocblaslt error: Could not load "TensileLibrary_lazy_gfx906.dat"
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 16710 ms (122.6 tok/s), 256 generated in 14530 ms (17.62 tok/s); CPU lane 1.6% of the experts
+maya ds4 serve: drafts 117 of 160 kept; per position (kept / reached): 1: 67/82 82% 2: 36/44 82% 3: 11/14 79% 4: 3/5 60% 5: 0/1 0%
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 11395 ms (179.7 tok/s), 256 generated in 5946 ms (43.05 tok/s); CPU lane 2.1% of the experts
+maya ds4 serve: drafts 163 of 188 kept; per position (kept / reached): 1: 69/72 96% 2: 46/54 85% 3: 28/33 85% 4: 15/17 88% 5: 5/6 83%
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 11294 ms (181.3 tok/s), 256 generated in 7238 ms (35.37 tok/s); CPU lane 1.3% of the experts
+maya ds4 serve: drafts 117 of 131 kept; per position (kept / reached): 1: 63/69 91% 2: 32/36 89% 3: 14/15 93% 4: 5/5 100% 5: 3/3 100%
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 10901 ms (187.9 tok/s), 256 generated in 6276 ms (40.79 tok/s); CPU lane 1.1% of the experts
+maya ds4 serve: drafts 150 of 170 kept; per position (kept / reached): 1: 71/75 95% 2: 48/54 89% 3: 20/27 74% 4: 8/8 100% 5: 3/4 75%
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 11142 ms (183.8 tok/s), 256 generated in 6889 ms (37.16 tok/s); CPU lane 1.2% of the experts
+maya ds4 serve: drafts 131 of 158 kept; per position (kept / reached): 1: 71/79 90% 2: 36/45 80% 3: 15/19 79% 4: 9/10 90% 5: 0/2 0%
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 11707 ms (174.9 tok/s), 256 generated in 7485 ms (34.20 tok/s); CPU lane 1.3% of the experts
+maya ds4 serve: drafts 129 of 159 kept; per position (kept / reached): 1: 68/82 83% 2: 39/40 98% 3: 16/18 89% 4: 4/5 80% 5: 2/2 100%
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 11981 ms (170.9 tok/s), 256 generated in 7088 ms (36.12 tok/s); CPU lane 1.1% of the experts
+maya ds4 serve: drafts 127 of 143 kept; per position (kept / reached): 1: 70/79 89% 2: 38/41 93% 3: 15/17 88% 4: 3/3 100% 5: 1/1 100%
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 10757 ms (190.4 tok/s), 256 generated in 6384 ms (40.10 tok/s); CPU lane 1.1% of the experts
+maya ds4 serve: drafts 145 of 176 kept; per position (kept / reached): 1: 71/81 88% 2: 43/51 84% 3: 18/22 82% 4: 12/15 80% 5: 1/1 100%
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 11203 ms (182.8 tok/s), 256 generated in 7351 ms (34.83 tok/s); CPU lane 1.3% of the experts
+maya ds4 serve: drafts 126 of 166 kept; per position (kept / reached): 1: 67/83 81% 2: 36/40 90% 3: 16/20 80% 4: 6/7 86% 5: 1/2 50%
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 11756 ms (174.2 tok/s), 256 generated in 6536 ms (39.17 tok/s); CPU lane 1.4% of the experts
+maya ds4 serve: drafts 146 of 179 kept; per position (kept / reached): 1: 71/82 87% 2: 44/50 88% 3: 20/23 87% 4: 9/11 82% 5: 2/2 100%
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 11419 ms (179.3 tok/s), 256 generated in 6585 ms (38.88 tok/s); CPU lane 1.1% of the experts
+maya ds4 serve: drafts 143 of 168 kept; per position (kept / reached): 1: 73/86 85% 2: 50/51 98% 3: 14/19 74% 4: 5/6 83% 5: 1/1 100%
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 12104 ms (169.2 tok/s), 256 generated in 7313 ms (35.01 tok/s); CPU lane 1.3% of the experts
+maya ds4 serve: drafts 130 of 151 kept; per position (kept / reached): 1: 67/77 87% 2: 34/41 83% 3: 21/21 100% 4: 7/8 88% 5: 1/1 100%
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 11297 ms (181.3 tok/s), 256 generated in 7969 ms (32.12 tok/s); CPU lane 1.0% of the experts
+maya ds4 serve: drafts 104 of 131 kept; per position (kept / reached): 1: 69/80 86% 2: 26/33 79% 3: 7/9 78% 4: 2/2 100%
+maya ds4 serve: prompt 4096 tokens = 0 reused + 4096 read in 20942 ms (195.6 tok/s), 256 generated in 6246 ms (40.99 tok/s); CPU lane 0.6% of the experts
+maya ds4 serve: drafts 148 of 174 kept; per position (kept / reached): 1: 69/81 85% 2: 41/44 93% 3: 22/24 92% 4: 10/10 100% 5: 6/7 86%
+maya ds4 serve: prompt 8192 tokens = 0 reused + 8192 read in 42123 ms (194.5 tok/s), 256 generated in 7686 ms (33.31 tok/s); CPU lane 0.4% of the experts
+maya ds4 serve: drafts 112 of 154 kept; per position (kept / reached): 1: 68/87 78% 2: 30/37 81% 3: 11/14 79% 4: 3/3 100%
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 10944 ms (187.1 tok/s), 256 generated in 6700 ms (38.21 tok/s); CPU lane 1.4% of the experts
+maya ds4 serve: drafts 139 of 182 kept; per position (kept / reached): 1: 69/81 85% 2: 41/52 79% 3: 18/22 82% 4: 9/9 100% 5: 2/3 67%
+maya ds4 serve: prompt 4096 tokens = 0 reused + 4096 read in 21081 ms (194.3 tok/s), 256 generated in 5877 ms (43.56 tok/s); CPU lane 0.8% of the experts
+maya ds4 serve: drafts 161 of 189 kept; per position (kept / reached): 1: 72/80 90% 2: 55/62 89% 3: 25/29 86% 4: 9/10 90%
+maya ds4 serve: prompt 8192 tokens = 0 reused + 8192 read in 40698 ms (201.3 tok/s), 256 generated in 7233 ms (35.39 tok/s); CPU lane 0.4% of the experts
+maya ds4 serve: drafts 119 of 149 kept; per position (kept / reached): 1: 66/78 85% 2: 32/39 82% 3: 14/18 78% 4: 5/6 83% 5: 2/2 100%

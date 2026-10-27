@@ -1,0 +1,302 @@
+{
+  "complete": true,
+  "cleanup": true,
+  "seed_sha256": "83dff518ffa650d8350fc625c7bcf2a033f8792280007b4073c2b0949c6ef1b5",
+  "cases_sha256": "b880c6551696301e314e14ca8a1065563dfc8d8e8d0bb2195f5a4d63e7dd90a3",
+  "results": [
+    {
+      "name": "stock-1",
+      "requests": 6,
+      "prefill_tok_s": 91.05676597947475,
+      "decode_tok_s": 37.21188153488067,
+      "wall_s": 356.01399027806474,
+      "accepted": 799,
+      "drafted": 1012,
+      "by_pp": {
+        "2048": {
+          "requests": 2,
+          "prefill_tok_s": 88.20495592982365,
+          "decode_tok_s": 36.73584049442119,
+          "wall_s": 60.323493864008924,
+          "accepted": 256,
+          "drafted": 319
+        },
+        "4096": {
+          "requests": 2,
+          "prefill_tok_s": 92.18000306066416,
+          "decode_tok_s": 39.38953937409249,
+          "wall_s": 101.8229195070162,
+          "accepted": 295,
+          "drafted": 379
+        },
+        "8192": {
+          "requests": 2,
+          "prefill_tok_s": 91.23835574939746,
+          "decode_tok_s": 35.70078541727918,
+          "wall_s": 193.86757690703962,
+          "accepted": 248,
+          "drafted": 314
+        }
+      },
+      "load_s": 237.73963958001696,
+      "post_request_memory_gib_max": 210.5407943725586,
+      "known_blas_diagnostics": true,
+      "full_copies": [
+        10459,
+        10459
+      ]
+    },
+    {
+      "name": "transfer-1",
+      "requests": 6,
+      "prefill_tok_s": 200.40651656680822,
+      "decode_tok_s": 35.452200932879485,
+      "wall_s": 186.25004111701855,
+      "accepted": 781,
+      "drafted": 958,
+      "by_pp": {
+        "2048": {
+          "requests": 2,
+          "prefill_tok_s": 182.83020804970698,
+          "decode_tok_s": 34.62627387345794,
+          "wall_s": 37.13583015900804,
+          "accepted": 249,
+          "drafted": 311
+        },
+        "4096": {
+          "requests": 2,
+          "prefill_tok_s": 199.70697292303038,
+          "decode_tok_s": 37.40620943076551,
+          "wall_s": 54.661310377996415,
+          "accepted": 284,
+          "drafted": 344
+        },
+        "8192": {
+          "requests": 2,
+          "prefill_tok_s": 205.7107844983665,
+          "decode_tok_s": 34.47366820108288,
+          "wall_s": 94.4529005800141,
+          "accepted": 248,
+          "drafted": 303
+        }
+      },
+      "load_s": 279.13563370800694,
+      "post_request_memory_gib_max": 207.1018943786621,
+      "known_blas_diagnostics": true,
+      "full_copies": [
+        10459,
+        10459
+      ]
+    },
+    {
+      "name": "stock-2",
+      "requests": 6,
+      "prefill_tok_s": 92.63815514629313,
+      "decode_tok_s": 36.26958972693503,
+      "wall_s": 351.71065016806824,
+      "accepted": 776,
+      "drafted": 971,
+      "by_pp": {
+        "2048": {
+          "requests": 2,
+          "prefill_tok_s": 89.91704186981787,
+          "decode_tok_s": 34.24841517137638,
+          "wall_s": 60.44768880904303,
+          "accepted": 234,
+          "drafted": 286
+        },
+        "4096": {
+          "requests": 2,
+          "prefill_tok_s": 92.17367626921643,
+          "decode_tok_s": 40.50866170501751,
+          "wall_s": 101.4718663180247,
+          "accepted": 301,
+          "drafted": 374
+        },
+        "8192": {
+          "requests": 2,
+          "prefill_tok_s": 93.58194846252924,
+          "decode_tok_s": 34.68679861252806,
+          "wall_s": 189.79109504100052,
+          "accepted": 241,
+          "drafted": 311
+        }
+      },
+      "load_s": 268.1067777580174,
+      "post_request_memory_gib_max": 208.5397605895996,
+      "known_blas_diagnostics": true,
+      "full_copies": [
+        10459,
+        10459
+      ]
+    },
+    {
+      "name": "prune-off-1",
+      "requests": 6,
+      "prefill_tok_s": 204.91138397371716,
+      "decode_tok_s": 37.76919810808409,
+      "wall_s": 180.45511045501917,
+      "accepted": 799,
+      "drafted": 981,
+      "by_pp": {
+        "2048": {
+          "requests": 2,
+          "prefill_tok_s": 197.18662443072955,
+          "decode_tok_s": 36.78618570532102,
+          "wall_s": 34.64050139399478,
+          "accepted": 252,
+          "drafted": 302
+        },
+        "4096": {
+          "requests": 2,
+          "prefill_tok_s": 206.44224808350427,
+          "decode_tok_s": 41.389384840123356,
+          "wall_s": 52.0104758850066,
+          "accepted": 307,
+          "drafted": 376
+        },
+        "8192": {
+          "requests": 2,
+          "prefill_tok_s": 206.16610817428992,
+          "decode_tok_s": 35.606319772678084,
+          "wall_s": 93.80413317601779,
+          "accepted": 240,
+          "drafted": 303
+        }
+      },
+      "load_s": 329.3251643810072,
+      "post_request_memory_gib_max": 205.7176399230957,
+      "known_blas_diagnostics": true,
+      "full_copies": [
+        10459,
+        10459
+      ]
+    },
+    {
+      "name": "prune-on-1",
+      "requests": 6,
+      "prefill_tok_s": 194.93516665216256,
+      "decode_tok_s": 36.680355871374225,
+      "wall_s": 188.81825274901348,
+      "accepted": 783,
+      "drafted": 979,
+      "by_pp": {
+        "2048": {
+          "requests": 2,
+          "prefill_tok_s": 184.16769331762634,
+          "decode_tok_s": 34.76672211163526,
+          "wall_s": 36.914156349987024,
+          "accepted": 243,
+          "drafted": 313
+        },
+        "4096": {
+          "requests": 2,
+          "prefill_tok_s": 194.9408657163934,
+          "decode_tok_s": 42.06775382940289,
+          "wall_s": 54.153829193033744,
+          "accepted": 309,
+          "drafted": 363
+        },
+        "8192": {
+          "requests": 2,
+          "prefill_tok_s": 197.82374561102714,
+          "decode_tok_s": 34.184138559708295,
+          "wall_s": 97.75026720599271,
+          "accepted": 231,
+          "drafted": 303
+        }
+      },
+      "load_s": 253.41177154899924,
+      "post_request_memory_gib_max": 205.75473403930664,
+      "known_blas_diagnostics": true,
+      "full_copies": [
+        10459,
+        10459
+      ]
+    },
+    {
+      "name": "prune-off-2",
+      "requests": 6,
+      "prefill_tok_s": 204.49734393098214,
+      "decode_tok_s": 36.94866791599853,
+      "wall_s": 181.63200949504972,
+      "accepted": 777,
+      "drafted": 956,
+      "by_pp": {
+        "2048": {
+          "requests": 2,
+          "prefill_tok_s": 196.8738584584623,
+          "decode_tok_s": 36.137407176463924,
+          "wall_s": 34.92136918203323,
+          "accepted": 240,
+          "drafted": 289
+        },
+        "4096": {
+          "requests": 2,
+          "prefill_tok_s": 205.26441072927497,
+          "decode_tok_s": 39.41054193358937,
+          "wall_s": 52.85539138401509,
+          "accepted": 296,
+          "drafted": 360
+        },
+        "8192": {
+          "requests": 2,
+          "prefill_tok_s": 206.10749441771236,
+          "decode_tok_s": 35.526948235146605,
+          "wall_s": 93.85524892900139,
+          "accepted": 241,
+          "drafted": 307
+        }
+      },
+      "load_s": 386.7135483890015,
+      "post_request_memory_gib_max": 205.91686630249023,
+      "known_blas_diagnostics": true,
+      "full_copies": [
+        10459,
+        10459
+      ]
+    },
+    {
+      "name": "chunk4096",
+      "requests": 6,
+      "prefill_tok_s": 225.2055534784644,
+      "decode_tok_s": 35.965642233536904,
+      "wall_s": 169.87166427800548,
+      "accepted": 784,
+      "drafted": 971,
+      "by_pp": {
+        "2048": {
+          "requests": 2,
+          "prefill_tok_s": 188.25173153905902,
+          "decode_tok_s": 34.56525717229086,
+          "wall_s": 36.51656870098668,
+          "accepted": 251,
+          "drafted": 316
+        },
+        "4096": {
+          "requests": 2,
+          "prefill_tok_s": 217.62230628639438,
+          "decode_tok_s": 38.92238418682744,
+          "wall_s": 50.75319987500552,
+          "accepted": 291,
+          "drafted": 353
+        },
+        "8192": {
+          "requests": 2,
+          "prefill_tok_s": 241.24805819167028,
+          "decode_tok_s": 34.73428273706148,
+          "wall_s": 82.60189570201328,
+          "accepted": 242,
+          "drafted": 302
+        }
+      },
+      "load_s": 297.41586374898907,
+      "post_request_memory_gib_max": 206.4177131652832,
+      "known_blas_diagnostics": true,
+      "full_copies": [
+        10551,
+        10551
+      ]
+    }
+  ]
+}

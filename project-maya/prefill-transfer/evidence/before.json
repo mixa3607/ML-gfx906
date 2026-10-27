@@ -1,0 +1,7 @@
+{
+  "deployment": "maya-ds41",
+  "replicas": 1,
+  "image": "docker.io/mixa3607/maya-gfx906@sha256:44e2d6427f57a2cd36aba79719e2d708a0c15880197b2da5f9c181365b56701c",
+  "config_sha256": "fda18ca860ad162029ff6550203c3ca1c54d6b171091f3989009e6e9c04a7cd8",
+  "seed_sha256": "83dff518ffa650d8350fc625c7bcf2a033f8792280007b4073c2b0949c6ef1b5"
+}
