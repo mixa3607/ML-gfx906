@@ -42,8 +42,20 @@ RUN <<'EOF' bash
   git rev-parse HEAD > SOURCE_COMMIT
 EOF
 
-COPY patch/${MAYA_PATCH} /tmp/maya.patch
-RUN git apply --allow-empty /tmp/maya.patch && rm -rf .git
+COPY patch/${MAYA_PATCH} /tmp/${MAYA_PATCH}
+RUN <<'EOF' bash
+  set -euo pipefail
+  patch_path="/tmp/${MAYA_PATCH}"
+  if [ -d "$patch_path" ]; then
+      for patch in "$patch_path"/*.patch; do
+          [ -f "$patch" ] || continue
+          git apply --allow-empty "$patch"
+      done
+  else
+      git apply --allow-empty "$patch_path"
+  fi
+  rm -rf .git
+EOF
 RUN python3 -c 'import setup; setup.get_llama_cpp()'
 RUN python3 tools/vision/glm5next_patch.py third_party/llama.cpp
 

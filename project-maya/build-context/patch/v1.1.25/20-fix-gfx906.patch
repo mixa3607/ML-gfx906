@@ -1,0 +1,33 @@
+Local gfx906 fixes for Project Maya v1.1.25 (94878e2).
+
+Source: ML-gfx906 project-maya/build-context/patch/v1.1.24.patch
+Retain gfx906 in maya.py's installer device list and preserve signed zero
+in src/kernels/cuda/glm_lat8.cuh on Vega20.
+
+diff --git a/maya.py b/maya.py
+index b80d395..3c76606 100755
+--- a/maya.py
++++ b/maya.py
+@@ -96,7 +96,7 @@ HIP_ARCHS = ("gfx1100", "gfx1201", "gfx1151")        # Maya also supports Strix
+ HIP_ARCHS_UNVALIDATED = ("gfx1030",)               # RDNA 2 (RX 6800 / 6900, Radeon PRO V620 / W6800), experimental: not
+                                                    # validated on a card; no matrix cores, the portable kernels; compiled
+                                                    # only when such a GPU is chosen
+-HIP_ARCHS_WAVE64 = ("gfx908",)                      # CDNA 1 (AMD Instinct MI100): wave64, runs through the hip_compat
++HIP_ARCHS_WAVE64 = ("gfx906", "gfx908")             # Vega20 / CDNA1: wave64, runs through the hip_compat
+                                                    # layer's logical-32-lane half-wavefront warp mapping; experimental
+ PY_PACKAGES = list(S.PY_PACKAGES)                  # (pillow: pictures in formats other than JPEG/PNG/BMP/GIF)
+ CONTEXTS = [8192, 32768, 65536, 131072]
+diff --git a/src/kernels/cuda/glm_lat8.cuh b/src/kernels/cuda/glm_lat8.cuh
+index ee786bb..f5ebe86 100644
+--- a/src/kernels/cuda/glm_lat8.cuh
++++ b/src/kernels/cuda/glm_lat8.cuh
+@@ -27,7 +27,8 @@ __device__ __forceinline__ uint2 lat8_q4(uint32_t w, __half2 d) {
+     const __half2 bias = __halves2half2(__ushort_as_half(0x6480), __ushort_as_half(0x6480));   // 1152
+     const __half2 a = __hmul2(__hsub2(*(const __half2*) &lo, bias), d);
+     const __half2 b = __hmul2(__hsub2(*(const __half2*) &hi, bias), d);
+-#if defined(STRATA_USE_HIP)
++    // Vega20's F32 reference preserves -0, as does its native FP16 product.
++#if defined(STRATA_USE_HIP) && !defined(__gfx906__)
+     // a code 0 times a negative scale is -0 in FP16 and +0 through AMD's F32 product: a zero half loses its sign
+     // (only a code 0 makes a zero here - a normal scale times any other code is a normal number)
+     const auto unsigned_zeros = [](unsigned x) {
