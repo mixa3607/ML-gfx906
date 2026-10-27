@@ -14,8 +14,7 @@ Model weights and PyTorch conversion are not included.
   (`10-pr397.patch`) with local installer and INT8-cache fixes
   (`20-fix-gfx906.patch`) and the transfer-only part of
   [PR #520](https://github.com/mw00/project-maya/pull/520)
-  (`30-pr520-transfer.patch`). PR #297 transfer pruning is not included because
-  it slowed the measured workload. Pinned sources are recorded in the patch headers.
+  (`30-pr520-transfer.patch`).
 - Provide `/dev/kfd`, `/dev/dri`, shared memory and an adequate memlock limit.
 - Set `MAYA_GLM_RAM_GB` explicitly for GLM: the engine's free-RAM detection can
   see host memory instead of the container limit. Leave room for weights and
@@ -47,53 +46,32 @@ The example enables the tested max-ILP scheduling flag. The defaults use `main`
 and `empty.patch` (no changes to upstream); gfx906 needs a matching patch selected
 explicitly, as above.
 
-`MAYA_PATCH` accepts a file or directory under `build-context/patch/`. For a
-directory, only its immediate `*.patch` files are applied, in lexicographic
-filename order (`LC_ALL=C`); an empty directory applies no patches. A failed
-patch stops the build.
-
 The script builds and pushes, skipping existing tags; `MAYA_FORCE_BUILD=1`
 forces a rebuild. The build log is saved to `./logs/build_<timestamp>.log`.
 
 Defaults are defined in [`build-and-push.image.sh`](build-and-push.image.sh).
 Export a variable to override it.
 
-| Variable               | Default                                    | Description                                                           |
-| ---------------------- | ------------------------------------------ | --------------------------------------------------------------------- |
-| `MAYA_IMAGE`           | `docker.io/mixa3607/maya-gfx906`           | Destination image name                                                |
-| `MAYA_ROCM_VERSION`    | `10.1`                                     | ROCm version of the base image                                        |
-| `MAYA_REPO`            | `https://github.com/mw00/project-maya.git` | Project Maya git repository                                           |
-| `MAYA_BRANCH`          | `main`                                     | Project Maya tag/branch to build                                      |
-| `MAYA_COMMIT`          | _(empty)_                                  | Pin a specific commit (on top of the branch)                          |
-| `MAYA_PATCH`           | `empty.patch`                              | Patch file or directory under `build-context/patch/`; default leaves upstream unchanged |
-| `MAYA_CMAKE_HIP_FLAGS` | _(empty)_                                  | Extra HIP flags appended to the engine build                          |
-| `MAYA_BUILD_JOBS`      | `nproc`                                    | Parallel compile jobs                                                 |
-| `MAYA_CCACHE_MAXSIZE`  | `2G`                                       | ccache size limit; ccache is mounted across builds                    |
-| `MAYA_IS_RELEASE`      | `0`                                        | `1` publishes release tags; otherwise only a `-pre` tag               |
-| `MAYA_PUSH`            | `1`                                        | Push the image to the registry                                        |
-| `MAYA_FORCE_BUILD`     | _(unset)_                                  | Set to `1` to rebuild even if the tag exists                          |
-| `ROCM_ARCH`            | `gfx906`                                   | Target GPU architecture                                               |
-| `ROCM_IMAGE`           | `docker.io/mixa3607/rocm-gfx906`           | ROCm base image name                                                  |
-| `REPO_GIT_REF`         | _(git tag, else short SHA)_                | Build revision appended to the tag                                    |
-
-The [Actions workflow](../.github/workflows/maya-build.yaml) defaults to upstream
-`v1.1.30` unless `maya_tag` is specified, and explicitly applies the `v1.1.30/`
-patch set. Other versions need a patch compatibility check. The matching local
-preset is [`preset.v1.1.30-rocm-10.1.sh`](preset.v1.1.30-rocm-10.1.sh).
-
-The workflow's repository checkout remains pinned to its existing `release_tag`
-(or the `BUILD_REF` override). That old ref does not contain this patch set:
-select a ref containing these changes before running a build with it. Changing
-the patch selection does not create a repository tag or publish a release.
+| Variable               | Default                                    | Description                                             |
+| ---------------------- | ------------------------------------------ | ------------------------------------------------------- |
+| `MAYA_IMAGE`           | `docker.io/mixa3607/maya-gfx906`           | Destination image name                                  |
+| `MAYA_ROCM_VERSION`    | `10.1`                                     | ROCm version of the base image                          |
+| `MAYA_REPO`            | `https://github.com/mw00/project-maya.git` | Project Maya git repository                             |
+| `MAYA_BRANCH`          | `main`                                     | Project Maya tag/branch to build                        |
+| `MAYA_COMMIT`          | _(empty)_                                  | Pin a specific commit (on top of the branch)            |
+| `MAYA_PATCH`           | `empty.patch`                              | Patch file or directory under `build-context/patch/`    |
+| `MAYA_CMAKE_HIP_FLAGS` | _(empty)_                                  | Extra HIP flags appended to the engine build            |
+| `MAYA_BUILD_JOBS`      | `nproc`                                    | Parallel compile jobs                                   |
+| `MAYA_CCACHE_MAXSIZE`  | `2G`                                       | ccache size limit; ccache is mounted across builds      |
+| `MAYA_IS_RELEASE`      | `0`                                        | `1` publishes release tags; otherwise only a `-pre` tag |
+| `MAYA_PUSH`            | `1`                                        | Push the image to the registry                          |
+| `MAYA_FORCE_BUILD`     | _(unset)_                                  | Set to `1` to rebuild even if the tag exists            |
+| `ROCM_ARCH`            | `gfx906`                                   | Target GPU architecture                                 |
+| `ROCM_IMAGE`           | `docker.io/mixa3607/rocm-gfx906`           | ROCm base image name                                    |
+| `REPO_GIT_REF`         | _(git tag, else short SHA)_                | Build revision appended to the tag                      |
 
 ## Run
 
 See [RUNNING.md](RUNNING.md) for preparation, configuration and Kubernetes
 deployment, or [docker-compose.example.yaml](docker-compose.example.yaml) for
 Docker.
-
-The v1.1.30 transfer patch's measurements and bounded test procedure are
-documented in [prefill-transfer/README.md](prefill-transfer/README.md). Historical
-experimental patch directories are retained for reproducing those runs; the
-workflow now selects `v1.1.30/` without pruning. This selection alone does not
-publish new images or change runtime chunk settings.

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       maya_tag:
-        description: "Project Maya tag for all sources (empty = v1.1.30)"
+        description: "Project Maya tag for all sources (empty = latest per source)"
         required: false
         default: ""
       force_build:
@@ -37,7 +37,7 @@ jobs:
       MAYA_LATEST_TYPE: "${{ matrix.build.latest_type }}"
       MAYA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
       MAYA_PROFILE_SUFFIX: "${{ matrix.build.profile_suffix }}"
-      MAYA_BRANCH: "${{ inputs.maya_tag || 'v1.1.30' }}"
+      MAYA_BRANCH: "${{ inputs.maya_tag }}"
       MAYA_PATCH: "v1.1.30"
       MAYA_CMAKE_HIP_FLAGS: "-mllvm -amdgpu-sched-strategy=max-ilp"
       MAYA_FORCE_BUILD: "${{ inputs.force_build && '1' || '0' }}"
