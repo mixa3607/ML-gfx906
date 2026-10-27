@@ -1,0 +1,22 @@
+{
+  "app": "neuro-arena-2.1",
+  "exported": "2026-10-27T17:04:37.098+00:00",
+  "hist": [
+    {
+      "id": "de131567-bea1-4455-8610-f95783ea3c5b",
+      "model": "maya-ds41f-rea50",
+      "date": 1793120602329,
+      "score": 99,
+      "done": 100,
+      "total": 100,
+      "tps": null,
+      "note": "Correct: 98; partial: 2; incorrect: 0; Пропущено: 0.",
+      "counts": {
+        "ok": 98,
+        "mid": 2,
+        "bad": 0,
+        "skip": 0
+      }
+    }
+  ]
+}
