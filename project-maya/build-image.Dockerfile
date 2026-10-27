@@ -42,8 +42,20 @@ RUN <<'EOF' bash
   git rev-parse HEAD > SOURCE_COMMIT
 EOF
 
-COPY patch/${MAYA_PATCH} /tmp/maya.patch
-RUN git apply --allow-empty /tmp/maya.patch && rm -rf .git
+COPY patch/${MAYA_PATCH} /tmp/${MAYA_PATCH}
+RUN <<'EOF' bash
+  set -euo pipefail
+  patch_path="/tmp/${MAYA_PATCH}"
+  if [ -d "$patch_path" ]; then
+      for patch in "$patch_path"/*.patch; do
+          [ -f "$patch" ] || continue
+          git apply --allow-empty "$patch"
+      done
+  else
+      git apply --allow-empty "$patch_path"
+  fi
+  rm -rf .git
+EOF
 RUN python3 -c 'import setup; setup.get_llama_cpp()'
 RUN python3 tools/vision/glm5next_patch.py third_party/llama.cpp
 
@@ -69,6 +81,8 @@ CMAKE_COMMON_ARGS=(
   -DCMAKE_CXX_COMPILER="$ROCM_PATH/llvm/bin/clang++"
   -DCMAKE_C_COMPILER_LAUNCHER=ccache
   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+  -DCMAKE_C_FLAGS="-w"
+  -DCMAKE_CXX_FLAGS="-w"
   -DSTRATA_PORTABLE=ON
 )
 
@@ -79,7 +93,7 @@ CMAKE_ARGS=(
   -DCMAKE_PREFIX_PATH="$ROCM_PATH"
   -DCMAKE_HIP_COMPILER_ROCM_ROOT="$ROCM_PATH"
   -DCMAKE_HIP_ARCHITECTURES="$ROCM_ARCH"
-  -DCMAKE_HIP_FLAGS="$CMAKE_HIP_FLAGS"
+  -DCMAKE_HIP_FLAGS="$CMAKE_HIP_FLAGS -w"
   -DSTRATA_ENABLE_HIP=ON
   -DSTRATA_ENABLE_CUDA=OFF
   -DSTRATA_PREFILL_MMQ=ON

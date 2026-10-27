@@ -1,0 +1,120 @@
+Project Maya gfx906 support from PR #397 for v1.1.25 (94878e2).
+
+Sources:
+- Upstream PR: https://github.com/mw00/project-maya/pull/397
+  Patch URL: https://github.com/mw00/project-maya/pull/397.patch
+  Author: nicholas631
+  Pinned head: f7ac3edac51973573af331efed427266ddf7c88e
+  Includes wave64 registration, native signed dot4 and the logical-warp
+  regression test. Documentation and validation reports are omitted.
+
+diff --git a/cmake/hip_backend.cmake b/cmake/hip_backend.cmake
+index c73da8f..08a4201 100644
+--- a/cmake/hip_backend.cmake
++++ b/cmake/hip_backend.cmake
+@@ -14,9 +14,9 @@ endif()
+ set(_strata_hip_validated gfx1100 gfx1201 gfx1151)   # gfx1151: Strix Halo (v1.1.10)
+ set(_strata_hip_community gfx1101 gfx1200)
+ set(_strata_hip_unvalidated gfx1010 gfx1011 gfx1012 gfx1102 gfx1103 gfx1030 gfx1031 gfx1034 gfx1150)   # gfx1103: Radeon 780M iGPU, opt-in, portable kernels (no WMMA)
+-# gfx908 (AMD Instinct MI100, CDNA1) is wave64, not wave32: it runs through the hip_compat layer's logical-32-lane
+-# half-wavefront warp mapping (see hip_compat/intrinsics.hpp). Experimental; validated on a 4x MI100 box.
+-set(_strata_hip_wave64 gfx908)
++# gfx906 (Vega20, MI50) and gfx908 (CDNA1, MI100) are wave64, not wave32. They use
++# the logical-32-lane half-wavefront mapping in hip_compat/intrinsics.hpp; experimental.
++set(_strata_hip_wave64 gfx906 gfx908)
+ # CMake hands HIP a ';' list, but a -DCMAKE_HIP_ARCHITECTURES typed by hand (or ROCm's own Windows tooling) may use
+ # spaces, which foreach(IN LISTS) would otherwise treat as one element.
+ string(REPLACE " " ";" _strata_hip_norm "${CMAKE_HIP_ARCHITECTURES}")
+@@ -34,7 +34,7 @@ foreach(_arch IN LISTS _strata_hip_norm)
+   elseif(_base IN_LIST _strata_hip_unvalidated)
+     message(WARNING "Maya HIP: ${_base} builds, but it is not validated on a real card yet; please report results")
+   elseif(_base IN_LIST _strata_hip_wave64)
+-    message(STATUS "Maya HIP: ${_base} is a wave64 CDNA card running through the half-wavefront compat layer (experimental)")
++    message(STATUS "Maya HIP: ${_base} is a wave64 card running through the half-wavefront compat layer (experimental)")
+   else()
+     message(FATAL_ERROR
+       "Maya's HIP build supports wave32 gfx1100, gfx1101, gfx1151, gfx1200 and gfx1201 (unvalidated: ${_strata_hip_unvalidated}; "
+@@ -44,7 +44,7 @@ foreach(_arch IN LISTS _strata_hip_norm)
+   list(APPEND STRATA_HIP_ARCH_LIST "${_base}")
+ endforeach()
+ list(REMOVE_DUPLICATES STRATA_HIP_ARCH_LIST)
+-# wave64 CDNA cards (gfx908) run the CUDA-shaped kernels through the hip_compat layer's logical-32-lane
++# wave64 cards (gfx906 / gfx908) run the CUDA-shaped kernels through the hip_compat layer's logical-32-lane
+ # half-wavefront mapping; the headers switch to their wave64 form only when this define reaches the build.
+ set(STRATA_HIP_WAVE64 OFF)
+ foreach(_a IN LISTS STRATA_HIP_ARCH_LIST)
+diff --git a/include/strata/hip_compat/intrinsics.hpp b/include/strata/hip_compat/intrinsics.hpp
+index a653f1f..4e9f9ad 100644
+--- a/include/strata/hip_compat/intrinsics.hpp
++++ b/include/strata/hip_compat/intrinsics.hpp
+@@ -27,8 +27,8 @@ __device__ __forceinline__ int dp4a(int a, int b, int c) {
+     // RDNA2 has no sudot4 (that is gfx11+), but it has the plain signed v_dot4_i32_i8 (dot1-insts): the same
+     // signed x signed byte products accumulated modulo 2^32, no clamp. CDNA1 gfx908 (MI100) has the same builtin.
+     return __builtin_amdgcn_sdot4(a, b, c, false);
+-#elif defined(__gfx908__) && __has_builtin(__builtin_amdgcn_sdot4)
+-    // CDNA1 (MI100): v_dot4_i32_i8, the same signed dot4 the wave64 compat layer relies on.
++#elif (defined(__gfx906__) || defined(__gfx908__)) && __has_builtin(__builtin_amdgcn_sdot4)
++    // Vega20 (MI50) / CDNA1 (MI100): v_dot4_i32_i8, the same signed dot4 the wave64 compat layer relies on.
+     return __builtin_amdgcn_sdot4(a, b, c, false);
+ #elif defined(__gfx1012__) && !defined(STRATA_GFX1012_PORTABLE_DOT)
+     // RDNA1 has no native signed dot4. SDWA selects and sign-extends byte
+diff --git a/tests/hip/intrinsics.cpp b/tests/hip/intrinsics.cpp
+index a69ac99..d6df4fc 100644
+--- a/tests/hip/intrinsics.cpp
++++ b/tests/hip/intrinsics.cpp
+@@ -38,6 +38,25 @@ __global__ void packed_probe(uint32_t* results) {
+     results[i * 4 + 3] = __byte_perm(a, b, selector(i));
+ }
+ 
++// Distinct predicates in both logical warps catch accidental truncation of a
++// wave64 ballot. Also exercise width-32 shuffles and shared-memory visibility.
++__global__ void logical_warp_probe(uint32_t* results) {
++    __shared__ unsigned values[64];
++    const unsigned lane = threadIdx.x;
++    const unsigned base = lane & ~31u;
++    const unsigned local = lane & 31u;
++    values[lane] = lane * 7u;
++#if HIP_VERSION_MAJOR >= 7 && !defined(STRATA_HIP_WAVE64)
++    __syncwarp(static_cast<uint64_t>(0xffffffffu));  // HIP 7's native wave32 form requires a 64-bit mask.
++#else
++    __syncwarp(0xffffffffu);
++#endif
++    results[lane * 4 + 0] = __ballot_sync(0xffffffffu, (lane & 1u) == (base ? 1u : 0u));
++    results[lane * 4 + 1] = __shfl_sync(0xffffffffu, lane, 0, 32);
++    results[lane * 4 + 2] = __shfl_down_sync(0xffffffffu, lane, 1, 32);
++    results[lane * 4 + 3] = values[base + (local ^ 1u)];
++}
++
+ __global__ void intrinsic_probe(int* integer_results, float* float_shuffle, double* double_shuffle,
+                                 unsigned* ballot, const uint32_t* dot_inputs) {
+     const int lane = static_cast<int>(threadIdx.x);
+@@ -113,7 +132,7 @@ int main() {
+     CHECK(hipGetDeviceProperties(&properties, device));
+     std::printf("HIP intrinsic device: %s (%s)\n", properties.name, properties.gcnArchName);
+     if (properties.warpSize != kLanes && properties.warpSize != 2 * kLanes) {
+-        // wave64 (gfx908) is accepted: this probe launches kLanes threads, which occupy one half of a 64-lane
++        // wave64 (gfx906 / gfx908) is accepted: this probe launches kLanes threads, which occupy one half of a 64-lane
+         // wavefront; the compat layer's half-wavefront mapping must return the same wave32 results.
+         std::fprintf(stderr, "expected wave32 or wave64, got wave%d\n", properties.warpSize);
+         return 1;
+@@ -203,6 +222,20 @@ int main() {
+         }
+     }
+     delete[] host;
++    uint32_t* logical = nullptr;
++    uint32_t logical_host[64 * 4]{};
++    CHECK(hipMalloc(reinterpret_cast<void**>(&logical), sizeof(logical_host)));
++    hipLaunchKernelGGL(logical_warp_probe, dim3(1), dim3(64), 0, 0, logical);
++    CHECK(hipDeviceSynchronize());
++    CHECK(hipMemcpy(logical_host, logical, sizeof(logical_host), hipMemcpyDeviceToHost));
++    for (unsigned lane = 0; lane < 64; ++lane) {
++        const unsigned base = lane & ~31u, local = lane & 31u;
++        ok = ok && logical_host[lane * 4 + 0] == (base ? 0xaaaaaaaau : 0x55555555u);
++        ok = ok && logical_host[lane * 4 + 1] == base;
++        ok = ok && logical_host[lane * 4 + 2] == (local == 31 ? lane : lane + 1);
++        ok = ok && logical_host[lane * 4 + 3] == (base + (local ^ 1u)) * 7u;
++    }
++    CHECK(hipFree(logical));
+     if (!ok) {
+         std::fprintf(stderr, "HIP intrinsic parity failed (ballot 0x%08x)\n", ballot);
+         return 1;
