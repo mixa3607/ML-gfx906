@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: maya-model-smoke-v1135
+  namespace: apps-ml
+spec:
+  restartPolicy: Never
+  nodeSelector:
+    kubernetes.io/hostname: kube-worker6.arkprojects.lan
+  tolerations:
+    - key: feature.node.kubernetes.io/amd-gpu
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
+    - key: feature.node.kubernetes.io/nvidia-gpu
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
+  imagePullSecrets:
+    - name: harbor-registry-pull-secret
+  containers:
+    - name: maya
+      image: registry.arkprojects.space/apps/maya-gfx906@sha256:30ac6974fbe91c4fdc58e9b3b8093a9eddf22285bc2e31a24142ec20e1b687e5
+      imagePullPolicy: Always
+      command: ["/bin/bash", "-lc", "sleep infinity"]
+      securityContext:
+        privileged: true
+        runAsUser: 0
+      env:
+        - name: HIP_VISIBLE_DEVICES
+          value: "0,1,2,3"
+        - name: HF_HOME
+          value: /root/.cache/huggingface
+        - name: HF_HUB_OFFLINE
+          value: "1"
+        - name: TRANSFORMERS_OFFLINE
+          value: "1"
+        - name: MAYA_UPDATE_CHECK
+          value: "0"
+        - name: OMP_NUM_THREADS
+          value: "56"
+        - name: OPENBLAS_NUM_THREADS
+          value: "1"
+      resources:
+        requests:
+          cpu: "4"
+          memory: 220Gi
+        limits:
+          memory: 220Gi
+      volumeMounts:
+        - name: hf-cache
+          mountPath: /root/.cache/huggingface
+          readOnly: true
+        - name: data
+          mountPath: /data
+        - name: dev-kfd
+          mountPath: /dev/kfd
+        - name: dev-dri
+          mountPath: /dev/dri
+        - name: shm
+          mountPath: /dev/shm
+  volumes:
+    - name: hf-cache
+      persistentVolumeClaim:
+        claimName: worker6-hf-cache
+        readOnly: true
+    - name: data
+      emptyDir:
+        sizeLimit: 24Gi
+    - name: dev-kfd
+      hostPath:
+        path: /dev/kfd
+    - name: dev-dri
+      hostPath:
+        path: /dev/dri
+    - name: shm
+      emptyDir:
+        medium: Memory
+        sizeLimit: 8Gi

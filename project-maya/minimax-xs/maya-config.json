@@ -1,0 +1,32 @@
+{
+  "exe": "/opt/maya/build-hip/maya-mm3",
+  "cwd": "/opt/maya",
+  "backend": "hip",
+  "gpu": [0, 1, 2, 3],
+  "model_name": "minimax-m3.1-flash",
+  "tokenizer": "/data/minimax-xs/pack/tokenizer",
+  "log": "/data/minimax-xs/engine.log",
+  "lib_dirs": ["/opt/rocm/lib"],
+  "sampling": {"temperature": 1.0, "top_p": 0.95},
+  "reasoning_effort": "auto",
+  "installer": {
+    "family": "minimax",
+    "mm3_quant": "gguf-xs",
+    "prefill_calibration": {"skipped": "manual functional config; no speed tuning"},
+    "speed_calibration": {"skipped": "chosen", "kept": "dspark"}
+  },
+  "args": [
+    "--pack", "/data/minimax-xs/pack",
+    "--gpus", "0,1,2,3",
+    "--max-context", "32768",
+    "--chunk", "1024",
+    "--cpu-threads", "56",
+    "--reserve-gb", "1.5",
+    "--profile", "/opt/maya/data/expert-profile-mm3.bin",
+    "--kv-cache", "int8",
+    "--kv-streaming", "on",
+    "--dspark", "on",
+    "--vision", "on",
+    "--no-prefill-tune"
+  ]
+}

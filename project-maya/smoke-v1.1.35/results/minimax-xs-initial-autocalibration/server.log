@@ -1,0 +1,111 @@
+Project Maya v1.1.35 - GLM-5.3-Flash, DeepSeek-V4.1-Flash-1017 or MiniMax-M3.1-Flash on your own GPU(s).
+
+  Prefill calibration: how this PC reads prompts fastest (once, for a setup from before it)
+  The engine reads a ~4K-token text with a few settings - the chunk of tokens a step takes, and the matrix
+  products' library - and keeps the fastest for this PC. One start of the model (two where most experts stay
+  in RAM: a larger chunk's decode is checked against the default's); a few minutes.
+    chunk 4096, BLAS GEMMs: 61.7 tok/s
+    chunk 4096, hipBLASLt GEMMs: 61.7 tok/s
+    chunk 1024, BLAS GEMMs: 43.1 tok/s
+    chunk 2048, BLAS GEMMs: 51.4 tok/s
+    chunk 4096, BLAS GEMMs: 61.7 tok/s (the defaults 43.1) - kept for this PC in /data/minimax-xs/pack/prefill-tune.txt
+  [ok] prefill calibration: chunks of 4096 tokens, the BLAS's matrix products - 62 tokens/s reading a 4096-token prompt (+43% over the defaults' 43); kept for this PC
+
+  Speed calibration: the DSpark drafter or none? (once, for a setup that drafts with MiniMax's DSpark drafter)
+  Drafting makes some PCs faster and others slower: it depends on how much of the model fits in the GPUs'
+  memory, and on the CPU, the RAM and the SSD. So Maya measures both here, the way you will use it. It loads
+  the model twice; each time it warms up, then writes about 1024 tokens of answers, and the sustained
+  speeds are compared. About 10-30 minutes; the PC is busy.
+  [1/2] without drafting: loading the model (it reads the experts into the GPUs' memory and RAM first) ...
+[maya] starting the engine: reading the model's weights ...
+[maya] weights: GGUF MiniMax-M3.1-Flash-Maya-XS (dense BF16,F8_E4M3,Q4_K,Q5_K,Q6_K,Q8_0,U8, experts IQ1_Sx151,IQ2_XXSx20)
+[maya] vision tower: on demand - its 1654 MB in host memory (the pack's mapping), a picture at a time on CUDA0 (up to 355 MB, given back after it), up to 451584 pixels a picture
+[maya] NOTE: pictures: the vision tower is not kept in VRAM - each picture copies it in, the first one slower (its weights read from the SSD)
+[maya] expert profile /opt/maya/data/expert-profile-mm3.bin
+[maya] decode: 57 of 57 MoE layers host-free (every expert in VRAM: the routing stays on the GPU)
+[maya] CUDA0: layers 0-16, 1792 experts resident, 48 staging slots, 9322 MB free
+[maya] CUDA1: layers 17-30, 1792 experts resident, 48 staging slots, 7710 MB free
+[maya] CUDA2: layers 31-45, 1920 experts resident, 48 staging slots, 8656 MB free
+[maya] CUDA3: layers 46-59, 1792 experts resident, 48 staging slots, 8450 MB free
+[maya] CPU lane: 56 threads
+[maya] KV cache: K int8, V int8 (rows rotated), 61 KB a position
+  [1/2] without drafting: loaded in 13 s; warming up - it reads a document of 512 tokens and answers once (not counted) ...
+  [1/2] without drafting: answer 1: 384 tokens at 19.5 tokens/s - 384 of 1024 tokens measured
+  [1/2] without drafting: answer 2: 384 tokens at 20.2 tokens/s - 768 of 1024 tokens measured
+  [1/2] without drafting: answer 3: 384 tokens at 20.1 tokens/s - 1024 of 1024 tokens measured
+  [1/2] without drafting: 19.9 tokens/s sustained (1152 tokens in 58 s of writing)
+  [2/2] DSpark: loading the model (it reads the experts into the GPUs' memory and RAM first) ...
+[maya] starting the engine: reading the model's weights ...
+[maya] weights: GGUF MiniMax-M3.1-Flash-Maya-XS (dense BF16,F8_E4M3,Q4_K,Q5_K,Q6_K,Q8_0,U8, experts IQ1_Sx151,IQ2_XXSx20)
+[maya] DSpark draft: 2335 MB on CUDA3, block 7, taps 5
+[maya] vision tower: on demand - its 1654 MB in host memory (the pack's mapping), a picture at a time on CUDA0 (up to 355 MB, given back after it), up to 451584 pixels a picture
+[maya] NOTE: pictures: the vision tower is not kept in VRAM - each picture copies it in, the first one slower (its weights read from the SSD)
+[maya] expert profile /opt/maya/data/expert-profile-mm3.bin
+[maya] decode: 57 of 57 MoE layers host-free (every expert in VRAM: the routing stays on the GPU)
+[maya] CUDA0: layers 0-17, 1920 experts resident, 48 staging slots, 7804 MB free
+[maya] CUDA1: layers 18-31, 1792 experts resident, 48 staging slots, 7710 MB free
+[maya] CUDA2: layers 32-46, 1920 experts resident, 48 staging slots, 8656 MB free
+[maya] CUDA3: layers 47-59, 1664 experts resident, 48 staging slots, 7454 MB free
+[maya] CPU lane: 56 threads
+[maya] KV cache: K int8, V int8 (rows rotated), 61 KB a position
+  [2/2] DSpark: loaded in 13 s; warming up - it reads a document of 512 tokens and answers once (not counted) ...
+  [2/2] DSpark: answer 1: 384 tokens at 22.4 tokens/s - 384 of 1024 tokens measured
+  [2/2] DSpark: answer 2: 384 tokens at 20.2 tokens/s - 768 of 1024 tokens measured
+  [2/2] DSpark: answer 3: 384 tokens at 19.9 tokens/s - 1024 of 1024 tokens measured
+  [2/2] DSpark: 20.8 tokens/s sustained (1152 tokens in 55 s of writing), 74% of the drafts accepted
+
+  [ok] speed calibration: the DSpark drafter is not faster on this PC - 20.8 against 19.9 tokens/s: Maya decodes without drafting (and its memory holds more of the model)
+
+  ----------------------------------------------------------------------------------------------------
+  Starting MiniMax M3.1 · EXL3 3.5 bpw (minimax-xs.json).
+  Dashboard:        http://127.0.0.1:8080/
+  API (OpenAI):     http://127.0.0.1:8080/v1        (any model name; the API key: any)
+  API (Anthropic):  http://127.0.0.1:8080/v1/messages
+  Loading takes a few minutes: the engine places the experts in VRAM by how often they are used and keeps
+  the rest in pinned RAM for its CPU lane - the first answers are the slowest.
+  Ctrl+C (or closing this terminal) stops it. Engine log: /data/minimax-xs/engine.log
+  ----------------------------------------------------------------------------------------------------
+[maya] this server's lines go to /data/minimax-xs/engine.log too
+[maya] sampling defaults from the config: temperature=1.0, top_p=0.95
+loading the model (the first start takes a minute or two) ...
+[maya] layer split across GPUs [0, 1, 2, 3] (auto)
+[maya] starting the engine: reading the model's weights ...
+[maya] weights: GGUF MiniMax-M3.1-Flash-Maya-XS (dense BF16,F8_E4M3,Q4_K,Q5_K,Q6_K,Q8_0,U8, experts IQ1_Sx151,IQ2_XXSx20)
+[maya] vision tower: on demand - its 1654 MB in host memory (the pack's mapping), a picture at a time on CUDA0 (up to 355 MB, given back after it), up to 451584 pixels a picture
+[maya] NOTE: pictures: the vision tower is not kept in VRAM - each picture copies it in, the first one slower (its weights read from the SSD)
+[maya] expert profile /opt/maya/data/expert-profile-mm3.bin
+[maya] decode: 57 of 57 MoE layers host-free (every expert in VRAM: the routing stays on the GPU)
+[maya] CUDA0: layers 0-16, 1792 experts resident, 48 staging slots, 9322 MB free
+[maya] CUDA1: layers 17-30, 1792 experts resident, 48 staging slots, 7710 MB free
+[maya] CUDA2: layers 31-45, 1920 experts resident, 48 staging slots, 8656 MB free
+[maya] CUDA3: layers 46-59, 1792 experts resident, 48 staging slots, 8450 MB free
+[maya] CPU lane: 56 threads
+[maya] KV cache: K int8, V int8 (rows rotated), 61 KB a position
+[maya] images: the model's vision tower runs in the engine, up to 451584 pixels (578 tokens) a picture
+[maya] thinking level when a request names none: auto
+[maya] thinking budget: 32768 tokens (then the answer)
+ready: http://127.0.0.1:8080/v1  (OpenAI: /v1/chat/completions, /v1/responses, Anthropic: /v1/messages, context 32768 tokens, images on)
+       open http://127.0.0.1:8080/ in a browser to chat; close this window to stop the model
+[maya] reading the prompt: 194 of 194 tokens, 5 s so far
+[maya] done: 2 tokens in 5 s (30.0 tok/s) (stop, cancel=False), expert cache 100.0% hit
+[maya] answering: 4 of max 384 tokens, 28.6 tok/s, 1 s
+[maya] answering: 25 of max 384 tokens, 21.8 tok/s, 2 s
+[maya] answering: 46 of max 384 tokens, 21.3 tok/s, 3 s
+[maya] answering: 66 of max 384 tokens, 20.6 tok/s, 4 s
+[maya] done: 81 tokens in 5 s (21.2 tok/s) (stop, cancel=False), expert cache 100.0% hit
+[maya] answering: 2 of max 384 tokens, 42.2 tok/s, 1 s
+[maya] answering: 24 of max 384 tokens, 22.1 tok/s, 2 s
+[maya] done: 30 tokens in 2 s (21.9 tok/s) (stop, cancel=False), expert cache 100.0% hit
+[maya] answering: 2 of max 384 tokens, 43.3 tok/s, 1 s
+[maya] answering: 24 of max 384 tokens, 22.1 tok/s, 2 s
+[maya] done: 30 tokens in 2 s (21.9 tok/s) (stop, cancel=False), expert cache 100.0% hit
+[maya] answering: 4 of max 384 tokens, 14.4 tok/s, 1 s
+[maya] done: 18 tokens in 2 s (19.1 tok/s) (stop, cancel=False), expert cache 100.0% hit
+[maya] reading the prompt: 323 of 323 tokens, 3 s so far
+[maya] answering: 21 of max 384 tokens, 20.4 tok/s, 4 s
+[maya] done: 29 tokens in 5 s (22.2 tok/s) (stop, cancel=False), expert cache 100.0% hit
+[maya] reading the prompt: 323 of 323 tokens, 3 s so far
+[maya] answering: 21 of max 384 tokens, 20.4 tok/s, 4 s
+[maya] answering: 42 of max 384 tokens, 20.4 tok/s, 5 s
+[maya] done: 54 tokens in 6 s (20.6 tok/s) (stop, cancel=False), expert cache 100.0% hit
+[maya] stopping (SIGTERM): the engine ends

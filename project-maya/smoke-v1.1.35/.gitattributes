@@ -1,0 +1,2 @@
+# Preserve the original amd-smi table padding.
+gpu-after-cleanup.txt -whitespace

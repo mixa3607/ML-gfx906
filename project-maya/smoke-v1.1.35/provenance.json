@@ -1,0 +1,176 @@
+{
+  "source_commit": "e16dec85abf8801a4cfc086ee4814071a3ff54a2",
+  "engine_stamp": {
+    "backend": "hip",
+    "src": "76a3fc40f50927c6",
+    "archs": [
+      "gfx906"
+    ],
+    "rocm": "/opt/rocm",
+    "gpu_ids": [
+      0
+    ],
+    "llama": "/opt/maya/third_party/llama.cpp",
+    "lib_dirs": [
+      "/opt/rocm/lib"
+    ],
+    "targets": [
+      "maya",
+      "maya-ds4",
+      "maya-mm3"
+    ]
+  },
+  "python": "3.12.3",
+  "kernel": "6.8.0-147-generic",
+  "cpu_count": 76,
+  "hf_home": "/root/.cache/huggingface",
+  "models": {
+    "glm-s24": {
+      "exe": "/opt/maya/build-hip/maya",
+      "cwd": "/opt/maya",
+      "backend": "hip",
+      "gpu": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "model_name": "glm-5.3-flash",
+      "tokenizer": "/data/glm-s24/pack/tokenizer",
+      "log": "/data/glm-s24/engine.log",
+      "lib_dirs": [
+        "/opt/rocm/lib"
+      ],
+      "sampling": {
+        "temperature": 1.0,
+        "top_p": 0.95
+      },
+      "reasoning_effort": "max",
+      "args": [
+        "--glm-pack",
+        "/data/glm-s24/pack",
+        "--max-context",
+        "32768",
+        "--expert-cache",
+        "auto",
+        "--prefill",
+        "1024",
+        "--kv-streaming",
+        "on",
+        "--vram-reserve-mib",
+        "1536",
+        "--expert-profile",
+        "/opt/maya/data/expert-profile-glm.bin"
+      ],
+      "env": {
+        "MAYA_GLM_RAM_GB": "48",
+        "MAYA_GLM_RAM_HEADROOM_GB": "16",
+        "MAYA_GLM_PREFILL_SUB": "256",
+        "MAYA_GLM_PREFILL_MB": "2048"
+      },
+      "vision": {
+        "exe": "/opt/maya/build-vision-cpu/bin/maya-vision",
+        "mmproj": "/data/glm-s24/vision/mmproj-GLM-5.3-Flash-F16.gguf",
+        "model": "/data/glm-s24/vision/GLM-5.3-Flash-vocab.gguf",
+        "gpu": false
+      }
+    },
+    "minimax-xs": {
+      "exe": "/opt/maya/build-hip/maya-mm3",
+      "cwd": "/opt/maya",
+      "backend": "hip",
+      "gpu": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "model_name": "minimax-m3.1-flash",
+      "tokenizer": "/data/minimax-xs/pack/tokenizer",
+      "log": "/data/minimax-xs/engine.log",
+      "lib_dirs": [
+        "/opt/rocm/lib"
+      ],
+      "sampling": {
+        "temperature": 1.0,
+        "top_p": 0.95
+      },
+      "reasoning_effort": "auto",
+      "args": [
+        "--pack",
+        "/data/minimax-xs/pack",
+        "--gpus",
+        "0,1,2,3",
+        "--max-context",
+        "32768",
+        "--chunk",
+        "1024",
+        "--cpu-threads",
+        "56",
+        "--reserve-gb",
+        "1.5",
+        "--profile",
+        "/opt/maya/data/expert-profile-mm3.bin",
+        "--kv-cache",
+        "int8",
+        "--kv-streaming",
+        "on",
+        "--dspark",
+        "on",
+        "--vision",
+        "on",
+        "--no-prefill-tune"
+      ]
+    },
+    "cyber-frost": {
+      "exe": "/opt/maya/build-hip/maya",
+      "cwd": "/opt/maya",
+      "backend": "hip",
+      "gpu": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "model_name": "cyber-frost-3.8-ps",
+      "tokenizer": "/data/cyber-frost/pack/tokenizer",
+      "log": "/data/cyber-frost/engine.log",
+      "lib_dirs": [
+        "/opt/rocm/lib"
+      ],
+      "sampling": {
+        "temperature": 1.0,
+        "top_p": 0.95,
+        "top_k": 20
+      },
+      "reasoning_effort": "xhigh",
+      "args": [
+        "--pack",
+        "/data/cyber-frost/pack",
+        "--native",
+        "/data/cyber-frost/CYBER-FROST-3.8-PS-GUFF-Q5_K_M.gguf",
+        "--ple-gguf",
+        "/data/cyber-frost/CYBER-FROST-3.8-PS-GUFF-Q5_K_M.gguf",
+        "--mtp",
+        "/data/cyber-frost/pack/mtp",
+        "--spec",
+        "4",
+        "--prefill",
+        "1024",
+        "--expert-cache",
+        "auto",
+        "--max-context",
+        "32768",
+        "--kv",
+        "int8",
+        "--vram-reserve-mib",
+        "1536",
+        "--pool-workers",
+        "56",
+        "--expert-profile",
+        "/data/cyber-frost/pack/expert-profile.bin"
+      ]
+    }
+  },
+  "cgroup": {}
+}

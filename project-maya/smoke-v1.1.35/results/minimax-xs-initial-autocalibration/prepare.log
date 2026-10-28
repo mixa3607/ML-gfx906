@@ -1,0 +1,4 @@
+minimax-xs: 23525 tensors in 5 files (BF16 2.3 GB, F32 0.2 GB, F8_E4M3 1.7 GB, IQ1_S 71.3 GB, IQ2_XXS 12.5 GB, Q4_K 0.7 GB, Q5_K 6.8 GB, Q6_K 1.3 GB, Q8_0 0.3 GB, U8 0.1 GB), the dense layers' indexers from MiniMax-M3.1-Flash-Maya-XS-maya-indexers.bin -> /data/minimax-xs/pack
+  experts (layer x role): IQ1_S 151, IQ2_XXS 20
+  special ids: {'bos': 200019, 'eos': 200020}
+  vision tower: from /root/.cache/huggingface/hub/models--Mia-AiLab--MiniMax-M3.1-Flash-EXL3-EAQ-v1-3.5-bpw/snapshots/fe796c40546d8b28340c5ed85b892e181ee21dec; DSpark draft: 97 tensors from /root/.cache/huggingface/hub/models--Mia-AiLab--MiniMax-M3.1-Flash-EXL3-EAQ-v1-3.5-bpw/snapshots/fe796c40546d8b28340c5ed85b892e181ee21dec

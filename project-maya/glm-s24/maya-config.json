@@ -1,0 +1,33 @@
+{
+  "exe": "/opt/maya/build-hip/maya",
+  "cwd": "/opt/maya",
+  "backend": "hip",
+  "gpu": [0, 1, 2, 3],
+  "model_name": "glm-5.3-flash",
+  "tokenizer": "/data/glm-s24/pack/tokenizer",
+  "log": "/data/glm-s24/engine.log",
+  "lib_dirs": ["/opt/rocm/lib"],
+  "sampling": {"temperature": 1.0, "top_p": 0.95},
+  "reasoning_effort": "max",
+  "args": [
+    "--glm-pack", "/data/glm-s24/pack",
+    "--max-context", "32768",
+    "--expert-cache", "auto",
+    "--prefill", "1024",
+    "--kv-streaming", "on",
+    "--vram-reserve-mib", "1536",
+    "--expert-profile", "/opt/maya/data/expert-profile-glm.bin"
+  ],
+  "env": {
+    "MAYA_GLM_RAM_GB": "48",
+    "MAYA_GLM_RAM_HEADROOM_GB": "16",
+    "MAYA_GLM_PREFILL_SUB": "256",
+    "MAYA_GLM_PREFILL_MB": "2048"
+  },
+  "vision": {
+    "exe": "/opt/maya/build-vision-cpu/bin/maya-vision",
+    "mmproj": "/data/glm-s24/vision/mmproj-GLM-5.3-Flash-F16.gguf",
+    "model": "/data/glm-s24/vision/GLM-5.3-Flash-vocab.gguf",
+    "gpu": false
+  }
+}

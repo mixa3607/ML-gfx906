@@ -1,0 +1,26 @@
+{
+  "exe": "/opt/maya/build-hip/maya",
+  "cwd": "/opt/maya",
+  "backend": "hip",
+  "gpu": [0, 1, 2, 3],
+  "model_name": "cyber-frost-3.8-ps",
+  "tokenizer": "/data/cyber-frost/pack/tokenizer",
+  "log": "/data/cyber-frost/engine.log",
+  "lib_dirs": ["/opt/rocm/lib"],
+  "sampling": {"temperature": 1.0, "top_p": 0.95, "top_k": 20},
+  "reasoning_effort": "xhigh",
+  "args": [
+    "--pack", "/data/cyber-frost/pack",
+    "--native", "/data/cyber-frost/CYBER-FROST-3.8-PS-GUFF-Q5_K_M.gguf",
+    "--ple-gguf", "/data/cyber-frost/CYBER-FROST-3.8-PS-GUFF-Q5_K_M.gguf",
+    "--mtp", "/data/cyber-frost/pack/mtp",
+    "--spec", "4",
+    "--prefill", "1024",
+    "--expert-cache", "auto",
+    "--max-context", "32768",
+    "--kv", "int8",
+    "--vram-reserve-mib", "1536",
+    "--pool-workers", "56",
+    "--expert-profile", "/data/cyber-frost/pack/expert-profile.bin"
+  ]
+}

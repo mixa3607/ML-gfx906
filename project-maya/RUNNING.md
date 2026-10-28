@@ -1,12 +1,17 @@
 # Running Maya
 
-The image contains prebuilt HIP text engines (`maya`, `maya-ds4`), the CPU
+The v1.1.35 image contains prebuilt HIP text engines (`maya`, `maya-ds4`,
+`maya-mm3`), the CPU
 `maya-vision` helper, upstream tools and their Python dependencies. Model
 weights are not part of the image.
 
 Use the same cache and data mount paths during preparation and serving. The
 language model is read from a Hugging Face cache mounted where the HF library
 expects it, `/root/.cache/huggingface`; `/data` is writable persistent storage.
+For GLM-S24, MiniMax-XS and CYBER-FROST, see the per-model `prepare.sh` and
+`maya-config.json` files linked from
+[the v1.1.35 functional-check guide](smoke-v1.1.35/README.md).
+
 Run preparation commands inside the image, for example:
 
 ```bash

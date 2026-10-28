@@ -1,0 +1,8 @@
+glm5-next: packing for the Glm5Model runner (quantized dense served natively; the driver gate remains closed until the pack wiring lands - docs/GLM5-FLASH.md §9)
+glm5-next: block_count 46, nextn 1 -> trunk layers 0..44
+model shards: GLM-5.3-Flash-Maya-S24-IQ2_XXS_S-00001-of-00003.gguf, GLM-5.3-Flash-Maya-S24-IQ2_XXS_S-00002-of-00003.gguf, GLM-5.3-Flash-Maya-S24-IQ2_XXS_S-00003-of-00003.gguf
+NextN/MTP: 26 tensors of blk.45+ left out of the pack - the engine reads the MTP draft block from the model's files itself
+index.txt: 1257 tensors, 317 served natively, 0 in extra.bin, arena 0.88 GiB
+compat-bf16: 849 tensors, 0.88 GiB; expert and PLE table bytes unchanged
+tokenizer/: vocab 154880, merges 321649, pre glm4, specials {'tokenizer.ggml.eos_token_id': 154820, 'tokenizer.ggml.padding_token_id': 154820, 'tokenizer.ggml.bos_token_id': 154822, 'tokenizer.ggml.eot_token_id': 154827, 'tokenizer.ggml.unknown_token_id': 154820, 'tokenizer.ggml.eom_token_id': 154829}
+glm5-next: 3 NextN expert tensors present (blk.45.*); the trunk keeps layers 0..44

@@ -1,0 +1,170 @@
+{
+  "cgroup_path": "/sys/fs/cgroup/kubepods.slice/kubepods-burstable.slice/kubepods-burstable-podc25ac4b7_2c17_4f1b_875d_f6a403a1b695.slice/cri-containerd-46d3d995d1b4f0e0cf7c94549d0cf6080b185d681d684d94c37c90f4b1a54c25.scope",
+  "cgroup": {
+    "memory.max": "236223201280",
+    "memory.peak": "236222955520",
+    "memory.current": "153043111936",
+    "memory.events": "low 0\nhigh 0\nmax 2\noom 0\noom_kill 0\noom_group_kill 0",
+    "cpu.max": "max 100000",
+    "cpu.stat": "usage_usec 10222243582\nuser_usec 9975326438\nsystem_usec 246917143\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+  },
+  "effective_configs": {
+    "glm-s24": {
+      "exe": "/opt/maya/build-hip/maya",
+      "cwd": "/opt/maya",
+      "backend": "hip",
+      "gpu": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "model_name": "glm-5.3-flash",
+      "tokenizer": "/data/glm-s24/pack/tokenizer",
+      "log": "/data/glm-s24/engine.log",
+      "lib_dirs": [
+        "/opt/rocm/lib"
+      ],
+      "sampling": {
+        "temperature": 1.0,
+        "top_p": 0.95
+      },
+      "reasoning_effort": "max",
+      "args": [
+        "--glm-pack",
+        "/data/glm-s24/pack",
+        "--max-context",
+        "32768",
+        "--expert-cache",
+        "auto",
+        "--prefill",
+        "1024",
+        "--kv-streaming",
+        "on",
+        "--vram-reserve-mib",
+        "1536",
+        "--expert-profile",
+        "/opt/maya/data/expert-profile-glm.bin"
+      ],
+      "env": {
+        "MAYA_GLM_RAM_GB": "48",
+        "MAYA_GLM_RAM_HEADROOM_GB": "16",
+        "MAYA_GLM_PREFILL_SUB": "256",
+        "MAYA_GLM_PREFILL_MB": "2048"
+      },
+      "vision": {
+        "exe": "/opt/maya/build-vision-cpu/bin/maya-vision",
+        "mmproj": "/data/glm-s24/vision/mmproj-GLM-5.3-Flash-F16.gguf",
+        "model": "/data/glm-s24/vision/GLM-5.3-Flash-vocab.gguf",
+        "gpu": false
+      }
+    },
+    "minimax-xs": {
+      "exe": "/opt/maya/build-hip/maya-mm3",
+      "cwd": "/opt/maya",
+      "backend": "hip",
+      "gpu": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "model_name": "minimax-m3.1-flash",
+      "tokenizer": "/data/minimax-xs/pack/tokenizer",
+      "log": "/data/minimax-xs/engine.log",
+      "lib_dirs": [
+        "/opt/rocm/lib"
+      ],
+      "sampling": {
+        "temperature": 1.0,
+        "top_p": 0.95
+      },
+      "reasoning_effort": "auto",
+      "installer": {
+        "family": "minimax",
+        "mm3_quant": "gguf-xs",
+        "prefill_calibration": {
+          "skipped": "manual functional config; no speed tuning"
+        },
+        "speed_calibration": {
+          "skipped": "chosen",
+          "kept": "dspark"
+        }
+      },
+      "args": [
+        "--pack",
+        "/data/minimax-xs/pack",
+        "--gpus",
+        "0,1,2,3",
+        "--max-context",
+        "32768",
+        "--chunk",
+        "1024",
+        "--cpu-threads",
+        "56",
+        "--reserve-gb",
+        "1.5",
+        "--profile",
+        "/opt/maya/data/expert-profile-mm3.bin",
+        "--kv-cache",
+        "int8",
+        "--kv-streaming",
+        "on",
+        "--dspark",
+        "on",
+        "--vision",
+        "on",
+        "--no-prefill-tune"
+      ]
+    },
+    "cyber-frost": {
+      "exe": "/opt/maya/build-hip/maya",
+      "cwd": "/opt/maya",
+      "backend": "hip",
+      "gpu": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "model_name": "cyber-frost-3.8-ps",
+      "tokenizer": "/data/cyber-frost/pack/tokenizer",
+      "log": "/data/cyber-frost/engine.log",
+      "lib_dirs": [
+        "/opt/rocm/lib"
+      ],
+      "sampling": {
+        "temperature": 1.0,
+        "top_p": 0.95,
+        "top_k": 20
+      },
+      "reasoning_effort": "xhigh",
+      "args": [
+        "--pack",
+        "/data/cyber-frost/pack",
+        "--native",
+        "/data/cyber-frost/CYBER-FROST-3.8-PS-GUFF-Q5_K_M.gguf",
+        "--ple-gguf",
+        "/data/cyber-frost/CYBER-FROST-3.8-PS-GUFF-Q5_K_M.gguf",
+        "--mtp",
+        "/data/cyber-frost/pack/mtp",
+        "--spec",
+        "4",
+        "--prefill",
+        "1024",
+        "--expert-cache",
+        "auto",
+        "--max-context",
+        "32768",
+        "--kv",
+        "int8",
+        "--vram-reserve-mib",
+        "1536",
+        "--pool-workers",
+        "56",
+        "--expert-profile",
+        "/data/cyber-frost/pack/expert-profile.bin"
+      ]
+    }
+  }
+}

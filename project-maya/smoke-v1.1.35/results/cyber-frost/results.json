@@ -1,0 +1,303 @@
+{
+  "model": "cyber-frost",
+  "requests": [
+    {
+      "case": "arithmetic",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Вычисли 17 * 23. Ответь только числом."
+        }
+      ],
+      "response": {
+        "id": "chatcmpl-bdaf009f1fcf430ba96fd88c",
+        "object": "chat.completion",
+        "created": 1793212928,
+        "model": "cyber-frost-3.8-ps",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "391"
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 139,
+          "completion_tokens": 4,
+          "total_tokens": 143,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 139,
+          "prompt_ms": 2152.6,
+          "prompt_per_token_ms": 15.486,
+          "prompt_per_second": 64.6,
+          "predicted_n": 4,
+          "predicted_ms": 135.6,
+          "predicted_per_token_ms": 33.9,
+          "predicted_per_second": 29.5,
+          "draft_n": 3,
+          "draft_n_accepted": 3
+        }
+      },
+      "nonempty": true,
+      "expected": [
+        "391"
+      ],
+      "contains_expected": true
+    },
+    {
+      "case": "russian",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Двумя короткими предложениями по-русски объясни, почему зимой замерзает вода."
+        }
+      ],
+      "response": {
+        "id": "chatcmpl-7ff5149f2b544fa6a59879b1",
+        "object": "chat.completion",
+        "created": 1793212931,
+        "model": "cyber-frost-3.8-ps",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Зимой температура воздуха опускается ниже нуля, и вода теряет тепло. При охлаждении до 0 °C она переходит в твёрдое состояние — лёд."
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 145,
+          "completion_tokens": 36,
+          "total_tokens": 181,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 145,
+          "prompt_ms": 1489.6,
+          "prompt_per_token_ms": 10.273,
+          "prompt_per_second": 97.3,
+          "predicted_n": 36,
+          "predicted_ms": 1105.3,
+          "predicted_per_token_ms": 30.703,
+          "predicted_per_second": 32.6,
+          "draft_n": 48,
+          "draft_n_accepted": 22
+        }
+      },
+      "nonempty": true
+    },
+    {
+      "case": "python",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Напиши функцию Python square_even(xs), которая возвращает квадраты только чётных чисел из xs, сохраняя порядок. Только код."
+        }
+      ],
+      "response": {
+        "id": "chatcmpl-86621caacec14265a67874a4",
+        "object": "chat.completion",
+        "created": 1793212933,
+        "model": "cyber-frost-3.8-ps",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "```python\ndef square_even(xs):\n    return [x * x for x in xs if x % 2 == 0]\n```"
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 153,
+          "completion_tokens": 31,
+          "total_tokens": 184,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 153,
+          "prompt_ms": 1458.5,
+          "prompt_per_token_ms": 9.533,
+          "prompt_per_second": 104.9,
+          "predicted_n": 31,
+          "predicted_ms": 572.7,
+          "predicted_per_token_ms": 18.474,
+          "predicted_per_second": 54.1,
+          "draft_n": 24,
+          "draft_n_accepted": 24
+        }
+      },
+      "nonempty": true,
+      "expected": [
+        "def square_even"
+      ],
+      "contains_expected": true
+    },
+    {
+      "case": "conversation-start",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Запомни: условное имя моего проекта — Листопад, его код — 48271. Ответь коротко, что запомнил."
+        }
+      ],
+      "response": {
+        "id": "chatcmpl-982ec60243e3483193bec492",
+        "object": "chat.completion",
+        "created": 1793212935,
+        "model": "cyber-frost-3.8-ps",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Запомнил: условное имя проекта — Листопад, код — 48271."
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 156,
+          "completion_tokens": 23,
+          "total_tokens": 179,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 156,
+          "prompt_ms": 1484.1,
+          "prompt_per_token_ms": 9.513,
+          "prompt_per_second": 105.1,
+          "predicted_n": 23,
+          "predicted_ms": 435.1,
+          "predicted_per_token_ms": 18.917,
+          "predicted_per_second": 52.9,
+          "draft_n": 18,
+          "draft_n_accepted": 16
+        }
+      },
+      "nonempty": true
+    },
+    {
+      "case": "conversation-followup",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Запомни: условное имя моего проекта — Листопад, его код — 48271. Ответь коротко, что запомнил."
+        },
+        {
+          "role": "assistant",
+          "content": "Запомнил: условное имя проекта — Листопад, код — 48271."
+        },
+        {
+          "role": "user",
+          "content": "Какое имя и код у моего проекта?"
+        }
+      ],
+      "response": {
+        "id": "chatcmpl-833f4640151246259e897c65",
+        "object": "chat.completion",
+        "created": 1793212937,
+        "model": "cyber-frost-3.8-ps",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Имя проекта — Листопад, код — 48271."
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 201,
+          "completion_tokens": 18,
+          "total_tokens": 219,
+          "prompt_tokens_details": {
+            "cached_tokens": 178
+          }
+        },
+        "timings": {
+          "cache_n": 178,
+          "prompt_n": 23,
+          "prompt_ms": 598.3,
+          "prompt_per_token_ms": 26.013,
+          "prompt_per_second": 38.4,
+          "predicted_n": 18,
+          "predicted_ms": 479.2,
+          "predicted_per_token_ms": 26.622,
+          "predicted_per_second": 37.6,
+          "draft_n": 21,
+          "draft_n_accepted": 16
+        }
+      },
+      "nonempty": true,
+      "expected": [
+        "Листопад",
+        "48271"
+      ],
+      "contains_expected": true
+    }
+  ],
+  "ready": true,
+  "health": {
+    "status": "ok",
+    "max_context": 32768,
+    "model": "cyber-frost-3.8-ps",
+    "model_label": null,
+    "images": false,
+    "api_key": false,
+    "defaults": {
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "top_k": 20,
+      "reasoning_effort": "xhigh"
+    },
+    "version": "1.1.35",
+    "mcp_tools": false,
+    "unloaded": false
+  },
+  "models": {
+    "object": "list",
+    "data": [
+      {
+        "id": "cyber-frost-3.8-ps",
+        "object": "model",
+        "status": {
+          "value": "loaded"
+        },
+        "meta": {
+          "n_ctx": 32768
+        },
+        "architecture": {
+          "input_modalities": [
+            "text"
+          ],
+          "output_modalities": [
+            "text"
+          ]
+        }
+      }
+    ]
+  },
+  "server_exit": 0
+}

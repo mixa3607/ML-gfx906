@@ -1,0 +1,388 @@
+{
+  "model": "glm-s24",
+  "requests": [
+    {
+      "case": "arithmetic",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Вычисли 17 * 23. Ответь только числом."
+        }
+      ],
+      "response": {
+        "id": "chatcmpl-e77cf915db2648c5b6b686a9",
+        "object": "chat.completion",
+        "created": 1793211679,
+        "model": "glm-5.3-flash",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "391"
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 28,
+          "completion_tokens": 3,
+          "total_tokens": 31,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 28,
+          "prompt_ms": 1245.2,
+          "prompt_per_token_ms": 44.471,
+          "prompt_per_second": 22.5,
+          "predicted_n": 3,
+          "predicted_ms": 61.9,
+          "predicted_per_token_ms": 20.633,
+          "predicted_per_second": 48.5,
+          "draft_n": 1,
+          "draft_n_accepted": 1
+        }
+      },
+      "nonempty": true,
+      "expected": [
+        "391"
+      ],
+      "contains_expected": true
+    },
+    {
+      "case": "russian",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Двумя короткими предложениями по-русски объясни, почему зимой замерзает вода."
+        }
+      ],
+      "response": {
+        "id": "chatcmpl-8d023fa64ec04482ba0b1c49",
+        "object": "chat.completion",
+        "created": 1793211680,
+        "model": "glm-5.3-flash",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Зимой температура воздуха опускается ниже нуля, и вода отдаёт тепло окружающей среде. При охлаждении до 0 °C её молекулы замедляются и образуют кристаллическую решётку — вода превращается в лёд."
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 36,
+          "completion_tokens": 58,
+          "total_tokens": 94,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 36,
+          "prompt_ms": 2327.6,
+          "prompt_per_token_ms": 64.656,
+          "prompt_per_second": 15.5,
+          "predicted_n": 58,
+          "predicted_ms": 1234.9,
+          "predicted_per_token_ms": 21.291,
+          "predicted_per_second": 47.0,
+          "draft_n": 56,
+          "draft_n_accepted": 48
+        }
+      },
+      "nonempty": true
+    },
+    {
+      "case": "python",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Напиши функцию Python square_even(xs), которая возвращает квадраты только чётных чисел из xs, сохраняя порядок. Только код."
+        }
+      ],
+      "response": {
+        "id": "chatcmpl-0ef72546880d41d1b1abc7f3",
+        "object": "chat.completion",
+        "created": 1793211684,
+        "model": "glm-5.3-flash",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "```python\ndef square_even(xs):\n    return [x * x for x in xs if x % 2 == 0]\n```"
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 44,
+          "completion_tokens": 29,
+          "total_tokens": 73,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 44,
+          "prompt_ms": 1187.3,
+          "prompt_per_token_ms": 26.984,
+          "prompt_per_second": 37.1,
+          "predicted_n": 29,
+          "predicted_ms": 542.9,
+          "predicted_per_token_ms": 18.721,
+          "predicted_per_second": 53.4,
+          "draft_n": 27,
+          "draft_n_accepted": 27
+        }
+      },
+      "nonempty": true,
+      "expected": [
+        "def square_even"
+      ],
+      "contains_expected": true
+    },
+    {
+      "case": "conversation-start",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Запомни: условное имя моего проекта — Листопад, его код — 48271. Ответь коротко, что запомнил."
+        }
+      ],
+      "response": {
+        "id": "chatcmpl-c48b03128f344bd0ad2a291b",
+        "object": "chat.completion",
+        "created": 1793211685,
+        "model": "glm-5.3-flash",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Запомнил: проект «Листопад», код 48271."
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 46,
+          "completion_tokens": 18,
+          "total_tokens": 64,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 46,
+          "prompt_ms": 1199.5,
+          "prompt_per_token_ms": 26.076,
+          "prompt_per_second": 38.3,
+          "predicted_n": 18,
+          "predicted_ms": 336.9,
+          "predicted_per_token_ms": 18.717,
+          "predicted_per_second": 53.4,
+          "draft_n": 16,
+          "draft_n_accepted": 16
+        }
+      },
+      "nonempty": true
+    },
+    {
+      "case": "conversation-followup",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Запомни: условное имя моего проекта — Листопад, его код — 48271. Ответь коротко, что запомнил."
+        },
+        {
+          "role": "assistant",
+          "content": "Запомнил: проект «Листопад», код 48271."
+        },
+        {
+          "role": "user",
+          "content": "Какое имя и код у моего проекта?"
+        }
+      ],
+      "response": {
+        "id": "chatcmpl-e7a4e4d74d584bc389e45024",
+        "object": "chat.completion",
+        "created": 1793211687,
+        "model": "glm-5.3-flash",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Ваш проект — «Листопад», код 48271."
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 76,
+          "completion_tokens": 17,
+          "total_tokens": 93,
+          "prompt_tokens_details": {
+            "cached_tokens": 45
+          }
+        },
+        "timings": {
+          "cache_n": 45,
+          "prompt_n": 31,
+          "prompt_ms": 1066.3,
+          "prompt_per_token_ms": 34.397,
+          "prompt_per_second": 29.1,
+          "predicted_n": 17,
+          "predicted_ms": 320.6,
+          "predicted_per_token_ms": 18.859,
+          "predicted_per_second": 53.0,
+          "draft_n": 15,
+          "draft_n_accepted": 15
+        }
+      },
+      "nonempty": true,
+      "expected": [
+        "Листопад",
+        "48271"
+      ],
+      "contains_expected": true
+    },
+    {
+      "case": "image-shapes",
+      "messages": "red rectangle left, blue circle right",
+      "response": {
+        "id": "chatcmpl-d43cd12be4814884b1cd9e2d",
+        "object": "chat.completion",
+        "created": 1793211691,
+        "model": "glm-5.3-flash",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The image shows two simple geometric shapes on a white background:\n\n1. **Red rectangle** — a solid red rectangle positioned on the left side of the image.\n2. **Blue circle** — a solid blue circle positioned on the right side of the image.\n\nThere are no other elements, text, or details visible in the image."
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 158,
+          "completion_tokens": 68,
+          "total_tokens": 226,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 158,
+          "prompt_ms": 2417.2,
+          "prompt_per_token_ms": 15.299,
+          "prompt_per_second": 65.4,
+          "predicted_n": 68,
+          "predicted_ms": 1380.6,
+          "predicted_per_token_ms": 20.303,
+          "predicted_per_second": 49.3,
+          "draft_n": 66,
+          "draft_n_accepted": 61
+        }
+      },
+      "nonempty": true
+    },
+    {
+      "case": "image-blank",
+      "messages": "white image",
+      "response": {
+        "id": "chatcmpl-de5548eb0af446bba37dd0a4",
+        "object": "chat.completion",
+        "created": 1793211698,
+        "model": "glm-5.3-flash",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The image is a plain white rectangle with no visible colors, shapes, or objects — it appears to be blank or empty."
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 158,
+          "completion_tokens": 26,
+          "total_tokens": 184,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 158,
+          "prompt_ms": 1862.0,
+          "prompt_per_token_ms": 11.785,
+          "prompt_per_second": 84.9,
+          "predicted_n": 26,
+          "predicted_ms": 576.1,
+          "predicted_per_token_ms": 22.158,
+          "predicted_per_second": 45.1,
+          "draft_n": 24,
+          "draft_n_accepted": 19
+        }
+      },
+      "nonempty": true
+    }
+  ],
+  "ready": true,
+  "health": {
+    "status": "ok",
+    "max_context": 32768,
+    "model": "glm-5.3-flash",
+    "model_label": null,
+    "images": true,
+    "api_key": false,
+    "defaults": {
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "reasoning_effort": "max"
+    },
+    "version": "1.1.35",
+    "mcp_tools": false,
+    "unloaded": false
+  },
+  "models": {
+    "object": "list",
+    "data": [
+      {
+        "id": "glm-5.3-flash",
+        "object": "model",
+        "status": {
+          "value": "loaded"
+        },
+        "meta": {
+          "n_ctx": 32768
+        },
+        "architecture": {
+          "input_modalities": [
+            "text",
+            "image",
+            "video"
+          ],
+          "output_modalities": [
+            "text"
+          ]
+        }
+      }
+    ]
+  },
+  "server_exit": 0
+}

@@ -1,7 +1,8 @@
 # Project Maya gfx906 (experimental)
 
 [Project Maya](https://github.com/mw00/project-maya) for Vega20 / MI50 / MI60.
-The image contains the HIP `maya` (GLM) and `maya-ds4` (DeepSeek) engines, the
+The image contains the HIP `maya` (GLM / CYBER-FROST), `maya-ds4` (DeepSeek), and
+`maya-mm3` (MiniMax, v1.1.35 preset) engines, the
 CPU GLM vision helper, upstream tools, Python dependencies and the `hf` CLI.
 Model weights and PyTorch conversion are not included.
 
@@ -27,9 +28,7 @@ Requires Docker Buildx and the [ROCm base image](../rocm/README.md).
 Log in to the destination registry and run from this directory:
 
 ```bash
-export MAYA_BRANCH=v1.1.32
-export MAYA_PATCH=v1.1.32.patch
-export MAYA_CMAKE_HIP_FLAGS="-mllvm -amdgpu-sched-strategy=max-ilp"
+source ./preset.v1.1.35-rocm-10.1.sh
 export MAYA_IMAGE=registry.example.com/apps/maya-gfx906
 ./build-and-push.image.sh
 ```
@@ -70,3 +69,8 @@ Export a variable to override it.
 See [RUNNING.md](RUNNING.md) for preparation, configuration and Kubernetes
 deployment, or [docker-compose.example.yaml](docker-compose.example.yaml) for
 Docker.
+
+The v1.1.35 preset pins upstream `e16dec85abf8801a4cfc086ee4814071a3ff54a2`
+and reuses the v1.1.32 signed-zero patch. Per-model offline preparation scripts
+and configs for GLM-S24, MiniMax-XS and CYBER-FROST are described in
+[smoke-v1.1.35/README.md](smoke-v1.1.35/README.md).

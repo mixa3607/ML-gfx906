@@ -1,0 +1,65 @@
+maya mm3 serve: GEN <max_new> [keys] <ids>; GENI <max_new> [keys] <file> <ids>; STOP, QUIT
+maya mm3 serve: prompt 719 tokens = 0 reused + 719 read in 15097 ms (47.6 tok/s), 128 generated in 6442 ms (19.87 tok/s); CPU lane 0.0% of the experts
+maya mm3 serve: prompt 715 tokens = 699 reused + 16 read in 333 ms (48.1 tok/s), 384 generated in 19677 ms (19.52 tok/s); CPU lane 0.0% of the experts
+maya mm3 serve: prompt 726 tokens = 699 reused + 27 read in 764 ms (35.3 tok/s), 384 generated in 19056 ms (20.15 tok/s); CPU lane 0.0% of the experts
+maya mm3 serve: prompt 724 tokens = 699 reused + 25 read in 702 ms (35.6 tok/s), 384 generated in 19107 ms (20.10 tok/s); CPU lane 0.0% of the experts
+maya mm3 serve: GEN <max_new> [keys] <ids>; GENI <max_new> [keys] <file> <ids>; STOP, QUIT
+maya mm3 serve: DSpark kept 89 of 105 drafts
+maya mm3 serve: prompt 719 tokens = 0 reused + 719 read in 15392 ms (46.7 tok/s), 128 generated in 5414 ms (23.64 tok/s); CPU lane 0.0% of the experts
+maya mm3 serve: DSpark kept 259 of 325 drafts
+maya mm3 serve: prompt 715 tokens = 699 reused + 16 read in 333 ms (48.0 tok/s), 384 generated in 17115 ms (22.44 tok/s); CPU lane 0.0% of the experts
+maya mm3 serve: DSpark kept 215 of 290 drafts
+maya mm3 serve: prompt 726 tokens = 699 reused + 27 read in 763 ms (35.4 tok/s), 384 generated in 19014 ms (20.20 tok/s); CPU lane 0.0% of the experts
+maya mm3 serve: DSpark kept 224 of 323 drafts
+maya mm3 serve: prompt 724 tokens = 699 reused + 25 read in 707 ms (35.4 tok/s), 384 generated in 19336 ms (19.86 tok/s); CPU lane 0.0% of the experts
+[maya] sampling defaults from the config: temperature=1.0, top_p=0.95
+loading the model (the first start takes a minute or two) ...
+[maya] layer split across GPUs [0, 1, 2, 3] (auto)
+[maya] starting the engine: reading the model's weights ...
+maya mm3 serve: GEN <max_new> [keys] <ids>; GENI <max_new> [keys] <file> <ids>; STOP, QUIT
+[maya] weights: GGUF MiniMax-M3.1-Flash-Maya-XS (dense BF16,F8_E4M3,Q4_K,Q5_K,Q6_K,Q8_0,U8, experts IQ1_Sx151,IQ2_XXSx20)
+[maya] vision tower: on demand - its 1654 MB in host memory (the pack's mapping), a picture at a time on CUDA0 (up to 355 MB, given back after it), up to 451584 pixels a picture
+[maya] NOTE: pictures: the vision tower is not kept in VRAM - each picture copies it in, the first one slower (its weights read from the SSD)
+[maya] expert profile /opt/maya/data/expert-profile-mm3.bin
+[maya] decode: 57 of 57 MoE layers host-free (every expert in VRAM: the routing stays on the GPU)
+[maya] CUDA0: layers 0-16, 1792 experts resident, 48 staging slots, 9322 MB free
+[maya] CUDA1: layers 17-30, 1792 experts resident, 48 staging slots, 7710 MB free
+[maya] CUDA2: layers 31-45, 1920 experts resident, 48 staging slots, 8656 MB free
+[maya] CUDA3: layers 46-59, 1792 experts resident, 48 staging slots, 8450 MB free
+[maya] CPU lane: 56 threads
+[maya] KV cache: K int8, V int8 (rows rotated), 61 KB a position
+[maya] images: the model's vision tower runs in the engine, up to 451584 pixels (578 tokens) a picture
+[maya] thinking level when a request names none: auto
+[maya] thinking budget: 32768 tokens (then the answer)
+ready: http://127.0.0.1:8080/v1  (OpenAI: /v1/chat/completions, /v1/responses, Anthropic: /v1/messages, context 32768 tokens, images on)
+       open http://127.0.0.1:8080/ in a browser to chat; close this window to stop the model
+[maya] reading the prompt: 194 of 194 tokens, 5 s so far
+maya mm3 serve: prompt 194 tokens = 0 reused + 194 read in 5208 ms (37.3 tok/s), 2 generated in 67 ms (30.01 tok/s); CPU lane 0.0% of the experts
+[maya] done: 2 tokens in 5 s (30.0 tok/s) (stop, cancel=False), expert cache 100.0% hit
+[maya] answering: 4 of max 384 tokens, 28.6 tok/s, 1 s
+[maya] answering: 25 of max 384 tokens, 21.8 tok/s, 2 s
+[maya] answering: 46 of max 384 tokens, 21.3 tok/s, 3 s
+[maya] answering: 66 of max 384 tokens, 20.6 tok/s, 4 s
+maya mm3 serve: prompt 205 tokens = 172 reused + 33 read in 877 ms (37.6 tok/s), 81 generated in 3829 ms (21.16 tok/s); CPU lane 0.0% of the experts
+[maya] done: 81 tokens in 5 s (21.2 tok/s) (stop, cancel=False), expert cache 100.0% hit
+[maya] answering: 2 of max 384 tokens, 42.2 tok/s, 1 s
+[maya] answering: 24 of max 384 tokens, 22.1 tok/s, 2 s
+maya mm3 serve: prompt 213 tokens = 172 reused + 41 read in 962 ms (42.6 tok/s), 30 generated in 1367 ms (21.95 tok/s); CPU lane 0.0% of the experts
+[maya] done: 30 tokens in 2 s (21.9 tok/s) (stop, cancel=False), expert cache 100.0% hit
+[maya] answering: 2 of max 384 tokens, 43.3 tok/s, 1 s
+[maya] answering: 24 of max 384 tokens, 22.1 tok/s, 2 s
+maya mm3 serve: prompt 217 tokens = 172 reused + 45 read in 994 ms (45.3 tok/s), 30 generated in 1367 ms (21.95 tok/s); CPU lane 0.0% of the experts
+[maya] done: 30 tokens in 2 s (21.9 tok/s) (stop, cancel=False), expert cache 100.0% hit
+[maya] answering: 4 of max 384 tokens, 14.4 tok/s, 1 s
+maya mm3 serve: prompt 269 tokens = 246 reused + 23 read in 753 ms (30.6 tok/s), 18 generated in 943 ms (19.09 tok/s); CPU lane 0.0% of the experts
+[maya] done: 18 tokens in 2 s (19.1 tok/s) (stop, cancel=False), expert cache 100.0% hit
+[maya] reading the prompt: 323 of 323 tokens, 3 s so far
+[maya] answering: 21 of max 384 tokens, 20.4 tok/s, 4 s
+maya mm3 serve: prompt 323 tokens = 172 reused + 151 read in 3370 ms (44.8 tok/s), 29 generated in 1307 ms (22.19 tok/s); CPU lane 0.0% of the experts
+[maya] done: 29 tokens in 5 s (22.2 tok/s) (stop, cancel=False), expert cache 100.0% hit
+[maya] reading the prompt: 323 of 323 tokens, 3 s so far
+[maya] answering: 21 of max 384 tokens, 20.4 tok/s, 4 s
+[maya] answering: 42 of max 384 tokens, 20.4 tok/s, 5 s
+maya mm3 serve: prompt 323 tokens = 173 reused + 150 read in 3039 ms (49.4 tok/s), 54 generated in 2618 ms (20.63 tok/s); CPU lane 0.0% of the experts
+[maya] done: 54 tokens in 6 s (20.6 tok/s) (stop, cancel=False), expert cache 100.0% hit
+[maya] stopping (SIGTERM): the engine ends

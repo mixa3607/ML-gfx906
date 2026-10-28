@@ -1,0 +1,11 @@
+qwen4exp: block_count 49, nextn 1 -> trunk layers 0..47
+NextN/MTP: 29 tensors of blk.48+ left out of the pack - the MTP drafter is built from them by tools/mtp_from_gguf.py
+index.txt: 1079 tensors, 302 served natively, 0 in extra.bin, arena 1.43 GiB
+compat-bf16: 484 tensors, 1.42 GiB; expert and PLE table bytes unchanged
+tokenizer/: vocab 248320, merges 247587, pre qwen35, specials {'tokenizer.ggml.eos_token_id': 248046, 'tokenizer.ggml.padding_token_id': 248044, 'tokenizer.ggml.bos_token_id': 248044}
+qwen4exp: 3 NextN expert tensors present (blk.48.*); the trunk keeps layers 0..47
+  experts 128/512 (62 s)
+  experts 256/512 (112 s)
+  experts 384/512 (161 s)
+  experts 512/512 (210 s)
+MTP draft layer from blk.48 of CYBER-FROST-3.8-PS-GUFF-Q5_K_M.gguf: experts.bin 707788800 B, dense.bin 114357248 B, 26 tensors -> /data/cyber-frost/pack/mtp (212 s)

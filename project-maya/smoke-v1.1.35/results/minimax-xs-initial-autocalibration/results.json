@@ -1,0 +1,387 @@
+{
+  "model": "minimax-xs",
+  "requests": [
+    {
+      "case": "arithmetic",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Вычисли 17 * 23. Ответь только числом."
+        }
+      ],
+      "response": {
+        "id": "chatcmpl-af228d30ed694dcca5e5adb5",
+        "object": "chat.completion",
+        "created": 1793212568,
+        "model": "minimax-m3.1-flash",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "391"
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 194,
+          "completion_tokens": 2,
+          "total_tokens": 196,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 194,
+          "prompt_ms": 5208.0,
+          "prompt_per_token_ms": 26.845,
+          "prompt_per_second": 37.3,
+          "predicted_n": 2,
+          "predicted_ms": 66.6,
+          "predicted_per_token_ms": 33.3,
+          "predicted_per_second": 30.0,
+          "draft_n": 0,
+          "draft_n_accepted": 0
+        }
+      },
+      "nonempty": true,
+      "expected": [
+        "391"
+      ],
+      "contains_expected": true
+    },
+    {
+      "case": "russian",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Двумя короткими предложениями по-русски объясни, почему зимой замерзает вода."
+        }
+      ],
+      "response": {
+        "id": "chatcmpl-de005a6047754bb7b45a58b0",
+        "object": "chat.completion",
+        "created": 1793212573,
+        "model": "minimax-m3.1-flash",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Зимой температура воздуха ниже, чем у точки замерзания воды (0 °C), поэтому вода охлаждается до состояния, при котором она превращается в лёд. Этот процесс называется замерзанием: при температуре ниже 0 °C вода кристаллизуется, образуя лёд."
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 205,
+          "completion_tokens": 81,
+          "total_tokens": 286,
+          "prompt_tokens_details": {
+            "cached_tokens": 172
+          }
+        },
+        "timings": {
+          "cache_n": 172,
+          "prompt_n": 33,
+          "prompt_ms": 877.3,
+          "prompt_per_token_ms": 26.585,
+          "prompt_per_second": 37.6,
+          "predicted_n": 81,
+          "predicted_ms": 3828.6,
+          "predicted_per_token_ms": 47.267,
+          "predicted_per_second": 21.2,
+          "draft_n": 0,
+          "draft_n_accepted": 0
+        }
+      },
+      "nonempty": true
+    },
+    {
+      "case": "python",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Напиши функцию Python square_even(xs), которая возвращает квадраты только чётных чисел из xs, сохраняя порядок. Только код."
+        }
+      ],
+      "response": {
+        "id": "chatcmpl-ad94f2e3cecb4598a93c9fb2",
+        "object": "chat.completion",
+        "created": 1793212578,
+        "model": "minimax-m3.1-flash",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "```python\ndef square_even(xs):\n    return [x * x for x in xs if x % 2 == 0]\n```"
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 213,
+          "completion_tokens": 30,
+          "total_tokens": 243,
+          "prompt_tokens_details": {
+            "cached_tokens": 172
+          }
+        },
+        "timings": {
+          "cache_n": 172,
+          "prompt_n": 41,
+          "prompt_ms": 961.8,
+          "prompt_per_token_ms": 23.459,
+          "prompt_per_second": 42.6,
+          "predicted_n": 30,
+          "predicted_ms": 1366.9,
+          "predicted_per_token_ms": 45.563,
+          "predicted_per_second": 21.9,
+          "draft_n": 0,
+          "draft_n_accepted": 0
+        }
+      },
+      "nonempty": true,
+      "expected": [
+        "def square_even"
+      ],
+      "contains_expected": true
+    },
+    {
+      "case": "conversation-start",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Запомни: условное имя моего проекта — Листопад, его код — 48271. Ответь коротко, что запомнил."
+        }
+      ],
+      "response": {
+        "id": "chatcmpl-beca595bb2344edcbf744e8e",
+        "object": "chat.completion",
+        "created": 1793212580,
+        "model": "minimax-m3.1-flash",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Запомнил:\n\n- Условное имя проекта: **Листопад**\n- Код: **48271**"
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 217,
+          "completion_tokens": 30,
+          "total_tokens": 247,
+          "prompt_tokens_details": {
+            "cached_tokens": 172
+          }
+        },
+        "timings": {
+          "cache_n": 172,
+          "prompt_n": 45,
+          "prompt_ms": 994.3,
+          "prompt_per_token_ms": 22.096,
+          "prompt_per_second": 45.3,
+          "predicted_n": 30,
+          "predicted_ms": 1367.1,
+          "predicted_per_token_ms": 45.57,
+          "predicted_per_second": 21.9,
+          "draft_n": 0,
+          "draft_n_accepted": 0
+        }
+      },
+      "nonempty": true
+    },
+    {
+      "case": "conversation-followup",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Запомни: условное имя моего проекта — Листопад, его код — 48271. Ответь коротко, что запомнил."
+        },
+        {
+          "role": "assistant",
+          "content": "Запомнил:\n\n- Условное имя проекта: **Листопад**\n- Код: **48271**"
+        },
+        {
+          "role": "user",
+          "content": "Какое имя и код у моего проекта?"
+        }
+      ],
+      "response": {
+        "id": "chatcmpl-cfc3c99103324953bfeb119f",
+        "object": "chat.completion",
+        "created": 1793212582,
+        "model": "minimax-m3.1-flash",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Имя проекта: **Листопад**, код: **48271**."
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 269,
+          "completion_tokens": 18,
+          "total_tokens": 287,
+          "prompt_tokens_details": {
+            "cached_tokens": 246
+          }
+        },
+        "timings": {
+          "cache_n": 246,
+          "prompt_n": 23,
+          "prompt_ms": 752.6,
+          "prompt_per_token_ms": 32.722,
+          "prompt_per_second": 30.6,
+          "predicted_n": 18,
+          "predicted_ms": 942.7,
+          "predicted_per_token_ms": 52.372,
+          "predicted_per_second": 19.1,
+          "draft_n": 0,
+          "draft_n_accepted": 0
+        }
+      },
+      "nonempty": true,
+      "expected": [
+        "Листопад",
+        "48271"
+      ],
+      "contains_expected": true
+    },
+    {
+      "case": "image-shapes",
+      "messages": "red rectangle left, blue circle right",
+      "response": {
+        "id": "chatcmpl-e806a11c63bc4010b85d62d6",
+        "object": "chat.completion",
+        "created": 1793212584,
+        "model": "minimax-m3.1-flash",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The image shows two simple geometric shapes on a white background: a solid red rectangle on the left and a solid blue circle on the right."
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 323,
+          "completion_tokens": 29,
+          "total_tokens": 352,
+          "prompt_tokens_details": {
+            "cached_tokens": 172
+          }
+        },
+        "timings": {
+          "cache_n": 172,
+          "prompt_n": 151,
+          "prompt_ms": 3370.1,
+          "prompt_per_token_ms": 22.319,
+          "prompt_per_second": 44.8,
+          "predicted_n": 29,
+          "predicted_ms": 1306.8,
+          "predicted_per_token_ms": 45.062,
+          "predicted_per_second": 22.2,
+          "draft_n": 0,
+          "draft_n_accepted": 0
+        }
+      },
+      "nonempty": true
+    },
+    {
+      "case": "image-blank",
+      "messages": "white image",
+      "response": {
+        "id": "chatcmpl-e632c4206e654d5fadbbdd15",
+        "object": "chat.completion",
+        "created": 1793212589,
+        "model": "minimax-m3.1-flash",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The image appears to be blank/empty — it shows a uniform light gray (off-white) background with no visible shapes, objects, or distinct colors. There are no discernible features, text, or figures; just a flat pale gray field covering the entire frame."
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 323,
+          "completion_tokens": 54,
+          "total_tokens": 377,
+          "prompt_tokens_details": {
+            "cached_tokens": 173
+          }
+        },
+        "timings": {
+          "cache_n": 173,
+          "prompt_n": 150,
+          "prompt_ms": 3039.4,
+          "prompt_per_token_ms": 20.263,
+          "prompt_per_second": 49.4,
+          "predicted_n": 54,
+          "predicted_ms": 2618.0,
+          "predicted_per_token_ms": 48.481,
+          "predicted_per_second": 20.6,
+          "draft_n": 0,
+          "draft_n_accepted": 0
+        }
+      },
+      "nonempty": true
+    }
+  ],
+  "ready": true,
+  "health": {
+    "status": "ok",
+    "max_context": 32768,
+    "model": "minimax-m3.1-flash",
+    "model_label": "MiniMax M3.1 · EXL3 3.5 bpw",
+    "images": true,
+    "api_key": false,
+    "defaults": {
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "reasoning_effort": "auto"
+    },
+    "version": "1.1.35",
+    "mcp_tools": false,
+    "unloaded": false
+  },
+  "models": {
+    "object": "list",
+    "data": [
+      {
+        "id": "minimax-m3.1-flash",
+        "object": "model",
+        "status": {
+          "value": "loaded"
+        },
+        "meta": {
+          "n_ctx": 32768
+        },
+        "architecture": {
+          "input_modalities": [
+            "text",
+            "image"
+          ],
+          "output_modalities": [
+            "text"
+          ]
+        }
+      }
+    ]
+  },
+  "server_exit": 0
+}

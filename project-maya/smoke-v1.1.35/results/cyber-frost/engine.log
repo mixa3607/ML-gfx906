@@ -1,0 +1,98 @@
+[maya] sampling defaults from the config: temperature=1.0, top_p=0.95, top_k=20
+loading the model (the first start takes a minute or two) ...
+[maya] layer split across GPUs [0, 1, 2, 3] (auto)
+[maya] starting the engine: reading the model's weights ...
+maya generate: layer split across 4 GPUs: CUDA0, then CUDA1,2,3 (split auto)
+maya generate: PCIe probe: 13.1 GB/s host->device -> pcie_frac 0.28 (default 0.55)
+maya generate: native pack: /data/cyber-frost/pack experts (largest blob 3.17 MB), token embedding type 23 in mapped host memory (322 MiB)
+maya generate: 1466 MiB of weights loaded from /data/cyber-frost/pack (302 canonical tensors skipped: served natively)
+maya generate: 300 native projection matrices, 2257.03 MiB of weights
+maya generate: PLE on, table 320001536 rows of /data/cyber-frost/CYBER-FROST-3.8-PS-GUFF-Q5_K_M.gguf
+[maya] loading the experts into RAM (about 113 GB) and locking part of them for the GPU.
+         YOUR PC CAN BE SLOW OR STOP RESPONDING FOR 1-3 MINUTES NOW - this is normal.
+         Please wait and don't close this window; the browser opens when it is ready.
+maya generate: layer split: CUDA1 PCIe probe 13.1 GB/s -> pcie_frac 0.28
+maya generate: layer split: CUDA1 holds its weights, session; 27.33 GiB free
+maya generate: layer split: CUDA2 PCIe probe 13.1 GB/s -> pcie_frac 0.28
+maya generate: layer split: CUDA2 holds its weights, session; 27.33 GiB free
+maya generate: layer split: CUDA3 PCIe probe 13.1 GB/s -> pcie_frac 0.28
+maya generate: layer split: CUDA3 holds its weights, session and head; 26.84 GiB free
+maya mtp: draft layer loaded, 837 MiB of VRAM (experts 675, dense 109), files read in 0.46 s (1702 MiB/s)
+[maya] still starting (24 s) - please wait ...
+[maya] still starting (44 s) - please wait ...
+maya generate: expert arena: mlock; cudaHostRegister limited to 8 GiB for CUDA1; 5 slices pinned (7 GiB); MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages
+maya generate: loaded 72.66 GiB at 4.03 GiB/s
+maya generate: profile /data/cyber-frost/pack/expert-profile.bin: 24576 ranked pairs, built for 24576 slots
+maya generate: layer split auto: CUDA0 60 SMs at 1.73 GHz -> 0.70 ms per layer, 25.01 GiB for experts
+maya generate: layer split auto: CUDA1 60 SMs at 1.73 GHz -> 0.70 ms per layer, 24.01 GiB for experts
+maya generate: layer split auto: CUDA2 60 SMs at 1.73 GHz -> 0.70 ms per layer, 24.01 GiB for experts
+maya generate: layer split auto: CUDA3 60 SMs at 1.73 GHz -> 0.70 ms per layer, 22.70 GiB for experts
+maya generate: layer split auto: K=12,24,36 - predicted 33.6 ms per decode window; the caches hold 24576 of 24576 profiled pairs (~100.0% of the routed mass)
+maya generate: expert cache auto: 27.33 GiB free, 1536 MiB reserved -> 6144 slots
+[maya] experts loaded: 72.66 GiB at 4.03 GiB/s (56 s so far)
+maya generate: expert cache 6144 slots, 18.16 GiB of VRAM; policy is
+maya generate: the GPU computes the experts in the cache; it rounds differently from the CPU,
+                 so a reply can differ slightly from a run without the cache (the same quality).
+                 PROFILE, ranked by routing frequency, no eviction.
+[maya] filling the GPU's expert cache (6144 experts, 18.16 GiB of VRAM) ...
+maya generate: pre-filled 6144 of 6144 slots from the profile; slot 0 verified
+maya generate: layer split: CUDA1 runs layers 12-23, expert cache 6144 slots (18.16 GiB), 6144 of its 6144 profiled pairs; slot 0 verified
+[maya] still starting (77 s) - please wait ...
+maya generate: layer split: CUDA2 runs layers 24-35, expert cache 6144 slots (18.16 GiB), 6144 of its 6144 profiled pairs; slot 0 verified
+maya generate: layer split: CUDA3 runs layers 36-47, expert cache 6144 slots (18.16 GiB), 6144 of its 6144 profiled pairs; slot 0 verified
+maya generate: layer split: CUDA0 runs layers 0-11
+maya generate: R4 hit path ON - resident experts are computed on the GPU
+maya generate: 56 expert-pool workers + the host thread
+maya generate: session is up (engine 0.1.27)
+maya generate: token graph hit path: 24576 resident experts, decided on the device
+maya serve: the prompt path allocates its own buffers (too few cache slots to borrow)
+[maya] almost ready ...
+maya verify: window up to 6 tokens, 81.9 MiB of device buffers
+maya verify: window up to 6 tokens, 81.9 MiB of device buffers
+maya verify: window up to 6 tokens, 81.9 MiB of device buffers
+maya serve: layer split: layers 0-11 (CUDA0), 12-23 (CUDA1), 24-35 (CUDA2), 36-47 (CUDA3), one hand-off per window
+maya verify: window up to 6 tokens, 81.9 MiB of device buffers
+maya serve: 8686 MiB of VRAM free with everything loaded
+[maya] thinking level when a request names none: xhigh
+[maya] thinking budget: 32768 tokens (then the answer)
+ready: http://127.0.0.1:8080/v1  (OpenAI: /v1/chat/completions, /v1/responses, Anthropic: /v1/messages, context 32768 tokens)
+       open http://127.0.0.1:8080/ in a browser to chat; close this window to stop the model
+[maya] reading the prompt: 132 of 139 tokens, 2 s so far
+maya verify: captured the 6-token window (upload no error, sync no error)
+maya verify: captured the 6-token window (upload no error, sync no error)
+maya verify: captured the 6-token window (upload no error, sync no error)
+maya verify: captured the 6-token window (upload no error, sync no error)
+maya verify: captured the 1-token window (upload no error, sync no error)
+maya verify: captured the 1-token window (upload no error, sync no error)
+maya verify: captured the 1-token window (upload no error, sync no error)
+maya verify: captured the 1-token window (upload no error, sync no error)
+maya verify: captured the 4-token window (upload no error, sync no error)
+maya verify: captured the 4-token window (upload no error, sync no error)
+maya verify: captured the 4-token window (upload no error, sync no error)
+maya verify: captured the 4-token window (upload no error, sync no error)
+maya serve: prompt 139 tokens = 0 reused + 139 read in 2153 ms (64.6 tok/s), 4 generated in 136 ms (29.5 tok/s), drafts accepted 3 of 3, 1 checkpoints
+maya serve: decode expert cache hit rate: 100.0% (2400 hits / 2400 lookups)
+[maya] done: 4 tokens in 2 s (29.5 tok/s) (stop, cancel=False), expert cache 100.0% hit
+[maya] reading the prompt: 138 of 145 tokens, 1 s so far
+[maya] answering: 18 of max 384 tokens, 26.9 tok/s, 2 s
+maya serve: prompt 145 tokens = 0 reused + 145 read in 1490 ms (97.3 tok/s), 36 generated in 1105 ms (32.6 tok/s), drafts accepted 22 of 48, 1 checkpoints
+maya serve: decode expert cache hit rate: 100.0% (31200 hits / 31200 lookups)
+[maya] done: 36 tokens in 3 s (32.6 tok/s) (stop, cancel=False), expert cache 100.0% hit
+[maya] reading the prompt: 146 of 153 tokens, 1 s so far
+maya serve: prompt 153 tokens = 0 reused + 153 read in 1459 ms (104.9 tok/s), 31 generated in 573 ms (54.1 tok/s), drafts accepted 24 of 24, 1 checkpoints
+maya serve: decode expert cache hit rate: 100.0% (15840 hits / 15840 lookups)
+[maya] done: 31 tokens in 2 s (54.1 tok/s) (stop, cancel=False), expert cache 100.0% hit
+[maya] reading the prompt: 149 of 156 tokens, 1 s so far
+maya serve: prompt 156 tokens = 0 reused + 156 read in 1484 ms (105.1 tok/s), 23 generated in 435 ms (52.9 tok/s), drafts accepted 16 of 18, 1 checkpoints
+maya serve: decode expert cache hit rate: 100.0% (12000 hits / 12000 lookups)
+maya serve: suffix drafts: 1 windows, 1 of 3 drafts accepted
+[maya] done: 23 tokens in 2 s (52.9 tok/s) (stop, cancel=False), expert cache 100.0% hit
+maya verify: captured the 5-token window (upload no error, sync no error)
+maya verify: captured the 5-token window (upload no error, sync no error)
+maya verify: captured the 5-token window (upload no error, sync no error)
+maya verify: captured the 5-token window (upload no error, sync no error)
+maya serve: prompt 201 tokens = 178 reused + 23 read in 598 ms (38.4 tok/s), 18 generated in 479 ms (37.6 tok/s), drafts accepted 16 of 21, 2 checkpoints
+maya serve: decode expert cache hit rate: 100.0% (13440 hits / 13440 lookups)
+maya serve: suffix drafts: 3 windows, 12 of 12 drafts accepted
+[maya] done: 18 tokens in 1 s (37.6 tok/s) (stop, cancel=False), expert cache 100.0% hit
+[maya] stopping (SIGTERM): the engine ends
