@@ -1,0 +1,929 @@
+MAYA_IMAGE=registry.arkprojects.space/apps/maya-gfx906
+MAYA_BRANCH=v1.1.34
+MAYA_COMMIT=9a0876f5861de25f4cb56b7e19e1c8b63704dcda
+MAYA_PRESET_NAME=v1.1.34-pr592-9a0876f-rocm-10.1
+MAYA_BASE_IMAGE=docker.io/mixa3607/rocm-gfx906@sha256:2c124ecab56dd5f509a4310507435bc75588b3fed2e1d4fa28671a2977406395
+MAYA_PATCH=v1.1.32.patch
+MAYA_CMAKE_HIP_FLAGS=-mllvm -amdgpu-sched-strategy=max-ilp
+MAYA_BUILD_JOBS=8
+MAYA_IS_RELEASE=0
+MAYA_PUSH=1
+RVS_PUSH=0
+TB_PUSH=0
+REPO_GIT_REF=e61d86c
+[0m[0m[INFO] Start building project-maya image...[0m
+[0m[0m[INFO] MAYA_REPO:        https://github.com/mw00/project-maya.git[0m
+[0m[0m[INFO] MAYA_BRANCH:      v1.1.34[0m
+[0m[0m[INFO] MAYA_COMMIT:      9a0876f5861de25f4cb56b7e19e1c8b63704dcda[0m
+[0m[0m[INFO] MAYA_BUILD_JOBS:  8[0m
+[0m[0m[INFO] MAYA_PATCH:       v1.1.32.patch[0m
+[0m[0m[INFO] ROCM_ARCH:        gfx906[0m
+[0m[0m[INFO] ROCM_VERSION:     10.1[0m
+[0m[0m[INFO] CMAKE_HIP_FLAGS:  -mllvm -amdgpu-sched-strategy=max-ilp[0m
+[0m[0m[INFO] CCACHE_MAXSIZE:   2G[0m
+[0m[0m[INFO] IS_RELEASE:       0[0m
+[0m[0m[INFO] TAG:          registry.arkprojects.space/apps/maya-gfx906:v1.1.34-pr592-9a0876f-rocm-10.1-e61d86c-pre[0m
+[0m[0m[INFO] ANNOTATION:   org.opencontainers.image.version: e61d86c[0m
+[0m[0m[INFO] ANNOTATION:   org.opencontainers.image.authors: mixa3607[0m
+[0m[0m[INFO] ANNOTATION:   org.opencontainers.image.source: https://github.com/mixa3607/ML-gfx906/tree/e61d86c/project-maya[0m
+[0m[0m[INFO] ANNOTATION:   org.opencontainers.image.base.name: docker.io/mixa3607/rocm-gfx906@sha256:2c124ecab56dd5f509a4310507435bc75588b3fed2e1d4fa28671a2977406395[0m
+[0m[0m[INFO] ANNOTATION:   org.opencontainers.image.title: Project Maya gfx906[0m
+[0m[0m[INFO] ANNOTATION:   org.opencontainers.image.created: 2026-10-28 13:14:05+05:00[0m
+[0m[0m[INFO] Build project-maya[0m
+#0 building with "remote" instance using remote driver
+
+#1 [internal] load build definition from build-image.Dockerfile
+#1 transferring dockerfile: 4.66kB done
+#1 DONE 0.1s
+
+#2 [auth] docker/dockerfile:pull dockerio-proxy/docker/dockerfile:pull token for registry.arkprojects.space
+#2 DONE 0.0s
+
+#3 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#3 DONE 1.4s
+
+#4 docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+#4 resolve docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e 0.0s done
+#4 CACHED
+
+#5 [internal] load metadata for docker.io/mixa3607/rocm-gfx906@sha256:2c124ecab56dd5f509a4310507435bc75588b3fed2e1d4fa28671a2977406395
+#5 ...
+
+#6 [auth] dockerio-proxy/mixa3607/rocm-gfx906:pull mixa3607/rocm-gfx906:pull token for registry.arkprojects.space
+#6 DONE 0.0s
+
+#5 [internal] load metadata for docker.io/mixa3607/rocm-gfx906@sha256:2c124ecab56dd5f509a4310507435bc75588b3fed2e1d4fa28671a2977406395
+#5 DONE 1.1s
+
+#7 [internal] load .dockerignore
+#7 transferring context: 64B done
+#7 DONE 0.0s
+
+#8 [rocm_base 1/3] FROM docker.io/mixa3607/rocm-gfx906@sha256:2c124ecab56dd5f509a4310507435bc75588b3fed2e1d4fa28671a2977406395
+#8 resolve docker.io/mixa3607/rocm-gfx906@sha256:2c124ecab56dd5f509a4310507435bc75588b3fed2e1d4fa28671a2977406395 0.0s done
+#8 CACHED
+
+#9 [internal] load build context
+#9 transferring context: 1.44kB done
+#9 DONE 0.0s
+
+#10 [rocm_base 2/3] RUN apt-get update &&     apt-get install -y --no-install-recommends       bash ca-certificates curl python3 python3-venv tini libatomic1 libgomp1 git g++ make &&     rm -rf /var/lib/apt/lists/*
+#10 0.454 Get:1 https://s3.arkprojects.space/apt-gfx906/ubuntu noble InRelease [4312 B]
+#10 0.504 Hit:2 http://archive.ubuntu.com/ubuntu noble InRelease
+#10 0.520 Get:3 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+#10 0.568 Get:4 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+#10 0.649 Get:5 https://s3.arkprojects.space/apt-gfx906/ubuntu noble/main amd64 Packages [194 kB]
+#10 0.842 Get:6 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+#10 0.992 Get:7 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [1412 kB]
+#10 1.120 Get:8 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [2172 kB]
+#10 1.442 Get:9 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1739 kB]
+#10 1.475 Get:10 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [2235 kB]
+#10 1.479 Get:11 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1550 kB]
+#10 1.920 Fetched 9685 kB in 2s (5973 kB/s)
+#10 1.920 Reading package lists...
+#10 3.465 Reading package lists...
+#10 4.793 Building dependency tree...
+#10 5.060 Reading state information...
+#10 5.331 bash is already the newest version (5.2.21-2ubuntu4).
+#10 5.331 curl is already the newest version (8.5.0-2ubuntu10.16).
+#10 5.331 python3 is already the newest version (3.12.3-0ubuntu2.1).
+#10 5.331 python3 set to manually installed.
+#10 5.331 libatomic1 is already the newest version (14.2.0-4ubuntu2~24.04.1).
+#10 5.331 libatomic1 set to manually installed.
+#10 5.331 libgomp1 is already the newest version (14.2.0-4ubuntu2~24.04.1).
+#10 5.331 libgomp1 set to manually installed.
+#10 5.331 The following additional packages will be installed:
+#10 5.331   binutils binutils-common binutils-x86-64-linux-gnu cpp cpp-13
+#10 5.331   cpp-13-x86-64-linux-gnu cpp-x86-64-linux-gnu g++-13 g++-13-x86-64-linux-gnu
+#10 5.331   g++-x86-64-linux-gnu gcc gcc-13 gcc-13-base gcc-13-x86-64-linux-gnu
+#10 5.331   gcc-x86-64-linux-gnu git-man libasan8 libbinutils libcc1-0 libctf-nobfd0
+#10 5.332   libctf0 libgcc-13-dev libgprofng0 libhwasan0 libisl23 libjansson4 libmpc3
+#10 5.333   libmpfr6 libsframe1 libstdc++-13-dev libtsan2 python3-pip-whl
+#10 5.333   python3-setuptools-whl python3.12-venv
+#10 5.334 Suggested packages:
+#10 5.334   binutils-doc gprofng-gui cpp-doc gcc-13-locales cpp-13-doc g++-multilib
+#10 5.334   g++-13-multilib gcc-13-doc gcc-multilib manpages-dev autoconf automake
+#10 5.334   libtool flex bison gdb gcc-doc gcc-13-multilib gdb-x86-64-linux-gnu
+#10 5.334   gettext-base git-daemon-run | git-daemon-sysvinit git-doc git-email git-gui
+#10 5.334   gitk gitweb git-cvs git-mediawiki git-svn libstdc++-13-doc make-doc
+#10 5.334 Recommended packages:
+#10 5.334   patch less ssh-client
+#10 5.488 The following NEW packages will be installed:
+#10 5.488   binutils binutils-common binutils-x86-64-linux-gnu cpp cpp-13
+#10 5.488   cpp-13-x86-64-linux-gnu cpp-x86-64-linux-gnu g++ g++-13
+#10 5.488   g++-13-x86-64-linux-gnu g++-x86-64-linux-gnu gcc gcc-13 gcc-13-base
+#10 5.488   gcc-13-x86-64-linux-gnu gcc-x86-64-linux-gnu libasan8 libbinutils libcc1-0
+#10 5.489   libctf-nobfd0 libctf0 libgcc-13-dev libgprofng0 libhwasan0 libisl23
+#10 5.491   libjansson4 libmpc3 libmpfr6 libsframe1 libstdc++-13-dev libtsan2 make
+#10 5.491   python3-pip-whl python3-setuptools-whl python3-venv python3.12-venv tini
+#10 5.492 The following packages will be upgraded:
+#10 5.494   ca-certificates git git-man
+#10 5.662 3 upgraded, 37 newly installed, 0 to remove and 5 not upgraded.
+#10 5.662 Need to get 70.4 MB of archives.
+#10 5.662 After this operation, 221 MB of additional disk space will be used.
+#10 5.662 Get:1 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 ca-certificates all 20260816ubuntu0.24.04.1 [139 kB]
+#10 5.945 Get:2 http://archive.ubuntu.com/ubuntu noble/main amd64 libjansson4 amd64 2.14-2build2 [32.8 kB]
+#10 5.957 Get:3 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 binutils-common amd64 2.42-4ubuntu2.10 [240 kB]
+#10 6.160 Get:4 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libsframe1 amd64 2.42-4ubuntu2.10 [15.7 kB]
+#10 6.165 Get:5 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libbinutils amd64 2.42-4ubuntu2.10 [577 kB]
+#10 6.382 Get:6 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libctf-nobfd0 amd64 2.42-4ubuntu2.10 [98.0 kB]
+#10 6.404 Get:7 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libctf0 amd64 2.42-4ubuntu2.10 [94.5 kB]
+#10 6.425 Get:8 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libgprofng0 amd64 2.42-4ubuntu2.10 [849 kB]
+#10 6.579 Get:9 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 binutils-x86-64-linux-gnu amd64 2.42-4ubuntu2.10 [2463 kB]
+#10 6.847 Get:10 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 binutils amd64 2.42-4ubuntu2.10 [18.2 kB]
+#10 6.848 Get:11 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 gcc-13-base amd64 13.3.0-6ubuntu2~24.04.1 [51.6 kB]
+#10 6.852 Get:12 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libisl23 amd64 0.26-3build1.1 [680 kB]
+#10 6.903 Get:13 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libmpfr6 amd64 4.2.1-1build1.1 [353 kB]
+#10 6.927 Get:14 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libmpc3 amd64 1.3.1-1build1.1 [54.6 kB]
+#10 6.930 Get:15 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 cpp-13-x86-64-linux-gnu amd64 13.3.0-6ubuntu2~24.04.1 [10.7 MB]
+#10 7.346 Get:16 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 cpp-13 amd64 13.3.0-6ubuntu2~24.04.1 [1042 B]
+#10 7.347 Get:17 http://archive.ubuntu.com/ubuntu noble/main amd64 cpp-x86-64-linux-gnu amd64 4:13.2.0-7ubuntu1 [5326 B]
+#10 7.347 Get:18 http://archive.ubuntu.com/ubuntu noble/main amd64 cpp amd64 4:13.2.0-7ubuntu1 [22.4 kB]
+#10 7.347 Get:19 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libcc1-0 amd64 14.2.0-4ubuntu2~24.04.1 [48.0 kB]
+#10 7.348 Get:20 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libasan8 amd64 14.2.0-4ubuntu2~24.04.1 [3027 kB]
+#10 7.417 Get:21 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libtsan2 amd64 14.2.0-4ubuntu2~24.04.1 [2772 kB]
+#10 7.477 Get:22 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libhwasan0 amd64 14.2.0-4ubuntu2~24.04.1 [1641 kB]
+#10 7.514 Get:23 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libgcc-13-dev amd64 13.3.0-6ubuntu2~24.04.1 [2681 kB]
+#10 7.573 Get:24 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 gcc-13-x86-64-linux-gnu amd64 13.3.0-6ubuntu2~24.04.1 [21.1 MB]
+#10 8.036 Get:25 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 gcc-13 amd64 13.3.0-6ubuntu2~24.04.1 [494 kB]
+#10 8.047 Get:26 http://archive.ubuntu.com/ubuntu noble/main amd64 gcc-x86-64-linux-gnu amd64 4:13.2.0-7ubuntu1 [1212 B]
+#10 8.047 Get:27 http://archive.ubuntu.com/ubuntu noble/main amd64 gcc amd64 4:13.2.0-7ubuntu1 [5018 B]
+#10 8.048 Get:28 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libstdc++-13-dev amd64 13.3.0-6ubuntu2~24.04.1 [2420 kB]
+#10 8.101 Get:29 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 g++-13-x86-64-linux-gnu amd64 13.3.0-6ubuntu2~24.04.1 [12.2 MB]
+#10 8.375 Get:30 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 g++-13 amd64 13.3.0-6ubuntu2~24.04.1 [16.0 kB]
+#10 8.376 Get:31 http://archive.ubuntu.com/ubuntu noble/main amd64 g++-x86-64-linux-gnu amd64 4:13.2.0-7ubuntu1 [964 B]
+#10 8.376 Get:32 http://archive.ubuntu.com/ubuntu noble/main amd64 g++ amd64 4:13.2.0-7ubuntu1 [1100 B]
+#10 8.376 Get:33 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 git-man all 1:2.43.0-1ubuntu7.4 [1101 kB]
+#10 8.394 Get:34 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 git amd64 1:2.43.0-1ubuntu7.4 [3681 kB]
+#10 8.476 Get:35 http://archive.ubuntu.com/ubuntu noble/main amd64 make amd64 4.3-4.1build2 [180 kB]
+#10 8.481 Get:36 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 python3-pip-whl all 24.0+dfsg-1ubuntu1.3 [1707 kB]
+#10 8.517 Get:37 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 python3-setuptools-whl all 68.1.2-2ubuntu1.2 [716 kB]
+#10 8.533 Get:38 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 python3.12-venv amd64 3.12.3-1ubuntu0.17 [5684 B]
+#10 8.533 Get:39 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 python3-venv amd64 3.12.3-0ubuntu2.1 [1032 B]
+#10 8.533 Get:40 http://archive.ubuntu.com/ubuntu noble/universe amd64 tini amd64 0.19.0-1 [276 kB]
+#10 8.854 debconf: delaying package configuration, since apt-utils is not installed
+#10 8.922 Fetched 70.4 MB in 3s (23.3 MB/s)
+#10 9.019 (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 38996 files and directories currently installed.)
+#10 9.239 Preparing to unpack .../00-ca-certificates_20260816ubuntu0.24.04.1_all.deb ...
+#10 9.253 Unpacking ca-certificates (20260816ubuntu0.24.04.1) over (20260601~24.04.1) ...
+#10 9.489 Selecting previously unselected package libjansson4:amd64.
+#10 9.497 Preparing to unpack .../01-libjansson4_2.14-2build2_amd64.deb ...
+#10 9.508 Unpacking libjansson4:amd64 (2.14-2build2) ...
+#10 9.563 Selecting previously unselected package binutils-common:amd64.
+#10 9.570 Preparing to unpack .../02-binutils-common_2.42-4ubuntu2.10_amd64.deb ...
+#10 9.576 Unpacking binutils-common:amd64 (2.42-4ubuntu2.10) ...
+#10 9.645 Selecting previously unselected package libsframe1:amd64.
+#10 9.652 Preparing to unpack .../03-libsframe1_2.42-4ubuntu2.10_amd64.deb ...
+#10 9.658 Unpacking libsframe1:amd64 (2.42-4ubuntu2.10) ...
+#10 9.713 Selecting previously unselected package libbinutils:amd64.
+#10 9.721 Preparing to unpack .../04-libbinutils_2.42-4ubuntu2.10_amd64.deb ...
+#10 9.726 Unpacking libbinutils:amd64 (2.42-4ubuntu2.10) ...
+#10 9.808 Selecting previously unselected package libctf-nobfd0:amd64.
+#10 9.816 Preparing to unpack .../05-libctf-nobfd0_2.42-4ubuntu2.10_amd64.deb ...
+#10 9.822 Unpacking libctf-nobfd0:amd64 (2.42-4ubuntu2.10) ...
+#10 9.885 Selecting previously unselected package libctf0:amd64.
+#10 9.893 Preparing to unpack .../06-libctf0_2.42-4ubuntu2.10_amd64.deb ...
+#10 9.898 Unpacking libctf0:amd64 (2.42-4ubuntu2.10) ...
+#10 9.961 Selecting previously unselected package libgprofng0:amd64.
+#10 9.968 Preparing to unpack .../07-libgprofng0_2.42-4ubuntu2.10_amd64.deb ...
+#10 9.974 Unpacking libgprofng0:amd64 (2.42-4ubuntu2.10) ...
+#10 10.07 Selecting previously unselected package binutils-x86-64-linux-gnu.
+#10 10.08 Preparing to unpack .../08-binutils-x86-64-linux-gnu_2.42-4ubuntu2.10_amd64.deb ...
+#10 10.09 Unpacking binutils-x86-64-linux-gnu (2.42-4ubuntu2.10) ...
+#10 10.27 Selecting previously unselected package binutils.
+#10 10.28 Preparing to unpack .../09-binutils_2.42-4ubuntu2.10_amd64.deb ...
+#10 10.28 Unpacking binutils (2.42-4ubuntu2.10) ...
+#10 10.35 Selecting previously unselected package gcc-13-base:amd64.
+#10 10.36 Preparing to unpack .../10-gcc-13-base_13.3.0-6ubuntu2~24.04.1_amd64.deb ...
+#10 10.36 Unpacking gcc-13-base:amd64 (13.3.0-6ubuntu2~24.04.1) ...
+#10 10.43 Selecting previously unselected package libisl23:amd64.
+#10 10.44 Preparing to unpack .../11-libisl23_0.26-3build1.1_amd64.deb ...
+#10 10.44 Unpacking libisl23:amd64 (0.26-3build1.1) ...
+#10 10.54 Selecting previously unselected package libmpfr6:amd64.
+#10 10.55 Preparing to unpack .../12-libmpfr6_4.2.1-1build1.1_amd64.deb ...
+#10 10.55 Unpacking libmpfr6:amd64 (4.2.1-1build1.1) ...
+#10 10.62 Selecting previously unselected package libmpc3:amd64.
+#10 10.63 Preparing to unpack .../13-libmpc3_1.3.1-1build1.1_amd64.deb ...
+#10 10.64 Unpacking libmpc3:amd64 (1.3.1-1build1.1) ...
+#10 10.69 Selecting previously unselected package cpp-13-x86-64-linux-gnu.
+#10 10.70 Preparing to unpack .../14-cpp-13-x86-64-linux-gnu_13.3.0-6ubuntu2~24.04.1_amd64.deb ...
+#10 10.71 Unpacking cpp-13-x86-64-linux-gnu (13.3.0-6ubuntu2~24.04.1) ...
+#10 11.10 Selecting previously unselected package cpp-13.
+#10 11.10 Preparing to unpack .../15-cpp-13_13.3.0-6ubuntu2~24.04.1_amd64.deb ...
+#10 11.11 Unpacking cpp-13 (13.3.0-6ubuntu2~24.04.1) ...
+#10 11.16 Selecting previously unselected package cpp-x86-64-linux-gnu.
+#10 11.17 Preparing to unpack .../16-cpp-x86-64-linux-gnu_4%3a13.2.0-7ubuntu1_amd64.deb ...
+#10 11.18 Unpacking cpp-x86-64-linux-gnu (4:13.2.0-7ubuntu1) ...
+#10 11.24 Selecting previously unselected package cpp.
+#10 11.25 Preparing to unpack .../17-cpp_4%3a13.2.0-7ubuntu1_amd64.deb ...
+#10 11.27 Unpacking cpp (4:13.2.0-7ubuntu1) ...
+#10 11.33 Selecting previously unselected package libcc1-0:amd64.
+#10 11.34 Preparing to unpack .../18-libcc1-0_14.2.0-4ubuntu2~24.04.1_amd64.deb ...
+#10 11.35 Unpacking libcc1-0:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+#10 11.41 Selecting previously unselected package libasan8:amd64.
+#10 11.42 Preparing to unpack .../19-libasan8_14.2.0-4ubuntu2~24.04.1_amd64.deb ...
+#10 11.43 Unpacking libasan8:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+#10 11.61 Selecting previously unselected package libtsan2:amd64.
+#10 11.62 Preparing to unpack .../20-libtsan2_14.2.0-4ubuntu2~24.04.1_amd64.deb ...
+#10 11.62 Unpacking libtsan2:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+#10 11.79 Selecting previously unselected package libhwasan0:amd64.
+#10 11.80 Preparing to unpack .../21-libhwasan0_14.2.0-4ubuntu2~24.04.1_amd64.deb ...
+#10 11.80 Unpacking libhwasan0:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+#10 11.92 Selecting previously unselected package libgcc-13-dev:amd64.
+#10 11.92 Preparing to unpack .../22-libgcc-13-dev_13.3.0-6ubuntu2~24.04.1_amd64.deb ...
+#10 11.93 Unpacking libgcc-13-dev:amd64 (13.3.0-6ubuntu2~24.04.1) ...
+#10 12.11 Selecting previously unselected package gcc-13-x86-64-linux-gnu.
+#10 12.12 Preparing to unpack .../23-gcc-13-x86-64-linux-gnu_13.3.0-6ubuntu2~24.04.1_amd64.deb ...
+#10 12.12 Unpacking gcc-13-x86-64-linux-gnu (13.3.0-6ubuntu2~24.04.1) ...
+#10 12.82 Selecting previously unselected package gcc-13.
+#10 12.83 Preparing to unpack .../24-gcc-13_13.3.0-6ubuntu2~24.04.1_amd64.deb ...
+#10 12.84 Unpacking gcc-13 (13.3.0-6ubuntu2~24.04.1) ...
+#10 12.90 Selecting previously unselected package gcc-x86-64-linux-gnu.
+#10 12.91 Preparing to unpack .../25-gcc-x86-64-linux-gnu_4%3a13.2.0-7ubuntu1_amd64.deb ...
+#10 12.92 Unpacking gcc-x86-64-linux-gnu (4:13.2.0-7ubuntu1) ...
+#10 12.98 Selecting previously unselected package gcc.
+#10 12.99 Preparing to unpack .../26-gcc_4%3a13.2.0-7ubuntu1_amd64.deb ...
+#10 13.00 Unpacking gcc (4:13.2.0-7ubuntu1) ...
+#10 13.05 Selecting previously unselected package libstdc++-13-dev:amd64.
+#10 13.06 Preparing to unpack .../27-libstdc++-13-dev_13.3.0-6ubuntu2~24.04.1_amd64.deb ...
+#10 13.07 Unpacking libstdc++-13-dev:amd64 (13.3.0-6ubuntu2~24.04.1) ...
+#10 13.35 Selecting previously unselected package g++-13-x86-64-linux-gnu.
+#10 13.36 Preparing to unpack .../28-g++-13-x86-64-linux-gnu_13.3.0-6ubuntu2~24.04.1_amd64.deb ...
+#10 13.37 Unpacking g++-13-x86-64-linux-gnu (13.3.0-6ubuntu2~24.04.1) ...
+#10 13.79 Selecting previously unselected package g++-13.
+#10 13.80 Preparing to unpack .../29-g++-13_13.3.0-6ubuntu2~24.04.1_amd64.deb ...
+#10 13.81 Unpacking g++-13 (13.3.0-6ubuntu2~24.04.1) ...
+#10 13.85 Selecting previously unselected package g++-x86-64-linux-gnu.
+#10 13.86 Preparing to unpack .../30-g++-x86-64-linux-gnu_4%3a13.2.0-7ubuntu1_amd64.deb ...
+#10 13.87 Unpacking g++-x86-64-linux-gnu (4:13.2.0-7ubuntu1) ...
+#10 13.93 Selecting previously unselected package g++.
+#10 13.93 Preparing to unpack .../31-g++_4%3a13.2.0-7ubuntu1_amd64.deb ...
+#10 13.94 Unpacking g++ (4:13.2.0-7ubuntu1) ...
+#10 14.00 Preparing to unpack .../32-git-man_1%3a2.43.0-1ubuntu7.4_all.deb ...
+#10 14.01 Unpacking git-man (1:2.43.0-1ubuntu7.4) over (1:2.43.0-1ubuntu7.3) ...
+#10 14.12 Preparing to unpack .../33-git_1%3a2.43.0-1ubuntu7.4_amd64.deb ...
+#10 14.18 Unpacking git (1:2.43.0-1ubuntu7.4) over (1:2.43.0-1ubuntu7.3) ...
+#10 14.58 Selecting previously unselected package make.
+#10 14.59 Preparing to unpack .../34-make_4.3-4.1build2_amd64.deb ...
+#10 14.60 Unpacking make (4.3-4.1build2) ...
+#10 14.66 Selecting previously unselected package python3-pip-whl.
+#10 14.67 Preparing to unpack .../35-python3-pip-whl_24.0+dfsg-1ubuntu1.3_all.deb ...
+#10 14.68 Unpacking python3-pip-whl (24.0+dfsg-1ubuntu1.3) ...
+#10 14.75 Selecting previously unselected package python3-setuptools-whl.
+#10 14.75 Preparing to unpack .../36-python3-setuptools-whl_68.1.2-2ubuntu1.2_all.deb ...
+#10 14.76 Unpacking python3-setuptools-whl (68.1.2-2ubuntu1.2) ...
+#10 14.83 Selecting previously unselected package python3.12-venv.
+#10 14.84 Preparing to unpack .../37-python3.12-venv_3.12.3-1ubuntu0.17_amd64.deb ...
+#10 14.84 Unpacking python3.12-venv (3.12.3-1ubuntu0.17) ...
+#10 14.90 Selecting previously unselected package python3-venv.
+#10 14.91 Preparing to unpack .../38-python3-venv_3.12.3-0ubuntu2.1_amd64.deb ...
+#10 14.91 Unpacking python3-venv (3.12.3-0ubuntu2.1) ...
+#10 14.97 Selecting previously unselected package tini.
+#10 14.97 Preparing to unpack .../39-tini_0.19.0-1_amd64.deb ...
+#10 14.98 Unpacking tini (0.19.0-1) ...
+#10 15.12 Setting up python3-setuptools-whl (68.1.2-2ubuntu1.2) ...
+#10 15.14 Setting up binutils-common:amd64 (2.42-4ubuntu2.10) ...
+#10 15.16 Setting up libctf-nobfd0:amd64 (2.42-4ubuntu2.10) ...
+#10 15.17 Setting up libsframe1:amd64 (2.42-4ubuntu2.10) ...
+#10 15.19 Setting up libjansson4:amd64 (2.14-2build2) ...
+#10 15.20 Setting up ca-certificates (20260816ubuntu0.24.04.1) ...
+#10 15.35 debconf: unable to initialize frontend: Dialog
+#10 15.35 debconf: (TERM is not set, so the dialog frontend is not usable.)
+#10 15.35 debconf: falling back to frontend: Readline
+#10 15.38 debconf: unable to initialize frontend: Readline
+#10 15.38 debconf: (This frontend requires a controlling tty.)
+#10 15.38 debconf: falling back to frontend: Teletype
+#10 18.77 Updating certificates in /etc/ssl/certs...
+#10 20.72 rehash: warning: skipping ca-certificates.crt,it does not contain exactly one certificate or CRL
+#10 20.73 4 added, 5 removed; done.
+#10 20.79 Setting up gcc-13-base:amd64 (13.3.0-6ubuntu2~24.04.1) ...
+#10 20.81 Setting up make (4.3-4.1build2) ...
+#10 20.85 Setting up libmpfr6:amd64 (4.2.1-1build1.1) ...
+#10 20.94 Setting up libmpc3:amd64 (1.3.1-1build1.1) ...
+#10 20.99 Setting up tini (0.19.0-1) ...
+#10 21.04 Setting up libhwasan0:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+#10 21.24 Setting up libasan8:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+#10 21.26 Setting up git-man (1:2.43.0-1ubuntu7.4) ...
+#10 21.27 Setting up libtsan2:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+#10 21.29 Setting up libbinutils:amd64 (2.42-4ubuntu2.10) ...
+#10 21.30 Setting up libisl23:amd64 (0.26-3build1.1) ...
+#10 21.32 Setting up libcc1-0:amd64 (14.2.0-4ubuntu2~24.04.1) ...
+#10 21.33 Setting up libctf0:amd64 (2.42-4ubuntu2.10) ...
+#10 21.35 Setting up python3-pip-whl (24.0+dfsg-1ubuntu1.3) ...
+#10 21.36 Setting up cpp-13-x86-64-linux-gnu (13.3.0-6ubuntu2~24.04.1) ...
+#10 21.38 Setting up libgprofng0:amd64 (2.42-4ubuntu2.10) ...
+#10 21.39 Setting up git (1:2.43.0-1ubuntu7.4) ...
+#10 21.43 Setting up libgcc-13-dev:amd64 (13.3.0-6ubuntu2~24.04.1) ...
+#10 21.45 Setting up libstdc++-13-dev:amd64 (13.3.0-6ubuntu2~24.04.1) ...
+#10 21.46 Setting up binutils-x86-64-linux-gnu (2.42-4ubuntu2.10) ...
+#10 21.48 Setting up cpp-x86-64-linux-gnu (4:13.2.0-7ubuntu1) ...
+#10 21.49 Setting up cpp-13 (13.3.0-6ubuntu2~24.04.1) ...
+#10 21.51 Setting up python3.12-venv (3.12.3-1ubuntu0.17) ...
+#10 21.62 Setting up gcc-13-x86-64-linux-gnu (13.3.0-6ubuntu2~24.04.1) ...
+#10 21.64 Setting up binutils (2.42-4ubuntu2.10) ...
+#10 21.66 Setting up python3-venv (3.12.3-0ubuntu2.1) ...
+#10 21.67 Setting up gcc-13 (13.3.0-6ubuntu2~24.04.1) ...
+#10 21.69 Setting up cpp (4:13.2.0-7ubuntu1) ...
+#10 21.75 Setting up g++-13-x86-64-linux-gnu (13.3.0-6ubuntu2~24.04.1) ...
+#10 21.76 Setting up gcc-x86-64-linux-gnu (4:13.2.0-7ubuntu1) ...
+#10 21.78 Setting up gcc (4:13.2.0-7ubuntu1) ...
+#10 21.83 Setting up g++-x86-64-linux-gnu (4:13.2.0-7ubuntu1) ...
+#10 21.84 Setting up g++-13 (13.3.0-6ubuntu2~24.04.1) ...
+#10 21.86 Setting up g++ (4:13.2.0-7ubuntu1) ...
+#10 21.87 update-alternatives: using /usr/bin/g++ to provide /usr/bin/c++ (c++) in auto mode
+#10 21.87 update-alternatives: warning: skip creation of /usr/share/man/man1/c++.1.gz because associated file /usr/share/man/man1/g++.1.gz (of link group c++) doesn't exist
+#10 21.89 Processing triggers for libc-bin (2.39-0ubuntu8.9) ...
+#10 23.77 Processing triggers for ca-certificates (20260816ubuntu0.24.04.1) ...
+#10 23.79 Updating certificates in /etc/ssl/certs...
+#10 25.02 0 added, 0 removed; done.
+#10 25.02 Running hooks in /etc/ca-certificates/update.d...
+#10 25.04 done.
+#10 DONE 25.2s
+
+#11 [rocm_base 3/3] WORKDIR /opt/maya
+#11 DONE 0.1s
+
+#12 [build_maya 1/3] RUN apt-get update &&     apt-get install -y --no-install-recommends cmake ninja-build ccache &&     rm -rf /var/lib/apt/lists/*
+#12 0.363 Get:1 https://s3.arkprojects.space/apt-gfx906/ubuntu noble InRelease [4312 B]
+#12 0.424 Get:2 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+#12 0.511 Get:3 https://s3.arkprojects.space/apt-gfx906/ubuntu noble/main amd64 Packages [194 kB]
+#12 0.573 Get:4 http://archive.ubuntu.com/ubuntu noble InRelease [256 kB]
+#12 0.860 Get:5 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [1412 kB]
+#12 1.185 Get:6 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [2122 kB]
+#12 1.272 Get:7 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1550 kB]
+#12 1.317 Get:8 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [55.6 kB]
+#12 1.481 Get:9 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+#12 1.698 Get:10 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+#12 1.916 Get:11 http://archive.ubuntu.com/ubuntu noble/multiverse amd64 Packages [331 kB]
+#12 2.110 Get:12 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages [1808 kB]
+#12 2.460 Get:13 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages [19.3 MB]
+#12 3.515 Get:14 http://archive.ubuntu.com/ubuntu noble/restricted amd64 Packages [117 kB]
+#12 3.520 Get:15 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [61.7 kB]
+#12 3.522 Get:16 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [2172 kB]
+#12 3.641 Get:17 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1739 kB]
+#12 3.737 Get:18 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [2235 kB]
+#12 3.836 Get:19 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 Packages [36.0 kB]
+#12 3.838 Get:20 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Packages [49.0 kB]
+#12 3.840 Get:21 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Packages [669 B]
+#12 ...
+
+#13 [final 1/6] RUN python3 -m venv .venv
+#13 DONE 4.5s
+
+#14 [files_maya 1/5] RUN <<'EOF' bash
+#14 0.190 Cloning into '.'...
+#14 ...
+
+#12 [build_maya 1/3] RUN apt-get update &&     apt-get install -y --no-install-recommends cmake ninja-build ccache &&     rm -rf /var/lib/apt/lists/*
+#12 4.842 Fetched 33.8 MB in 5s (7396 kB/s)
+#12 4.842 Reading package lists...
+#12 6.009 Reading package lists...
+#12 7.267 Building dependency tree...
+#12 7.503 Reading state information...
+#12 7.778 The following additional packages will be installed:
+#12 ...
+
+#14 [files_maya 1/5] RUN <<'EOF' bash
+#14 6.033 Note: switching to 'b04264526e93a3c7d3c051cb9cec97af86ae8a37'.
+#14 6.033 
+#14 6.033 You are in 'detached HEAD' state. You can look around, make experimental
+#14 6.033 changes and commit them, and you can discard any commits you make in this
+#14 6.033 state without impacting any branches by switching back to a branch.
+#14 6.033 
+#14 6.033 If you want to create a new branch to retain commits you create, you may
+#14 6.033 do so (now or later) by using -c with the switch command. Example:
+#14 6.033 
+#14 6.033   git switch -c <new-branch-name>
+#14 6.033 
+#14 6.033 Or undo this operation with:
+#14 6.033 
+#14 6.033   git switch -
+#14 6.033 
+#14 6.033 Turn off this advice by setting config variable advice.detachedHead to false
+#14 6.033 
+#14 7.278 From https://github.com/mw00/project-maya
+#14 7.278  * branch            9a0876f5861de25f4cb56b7e19e1c8b63704dcda -> FETCH_HEAD
+#14 7.511 Previous HEAD position was b042645 v1.1.34
+#14 7.512 HEAD is now at 9a0876f HIP: add opt-in exact peer-VRAM prefill reductions with steady deadlines
+#14 DONE 7.8s
+
+#12 [build_maya 1/3] RUN apt-get update &&     apt-get install -y --no-install-recommends cmake ninja-build ccache &&     rm -rf /var/lib/apt/lists/*
+#12 7.779   cmake-data libarchive13t64 libhiredis1.1.0 libicu74 libjsoncpp25 librhash0
+#12 7.780   libuv1t64 libxml2
+#12 7.781 Suggested packages:
+#12 7.781   distcc | icecc cmake-doc cmake-format elpa-cmake-mode lrzip
+#12 7.892 The following NEW packages will be installed:
+#12 ...
+
+#15 [files_maya 2/5] COPY patch/v1.1.32.patch /tmp/v1.1.32.patch
+#15 DONE 0.1s
+
+#12 [build_maya 1/3] RUN apt-get update &&     apt-get install -y --no-install-recommends cmake ninja-build ccache &&     rm -rf /var/lib/apt/lists/*
+#12 7.892   ccache cmake cmake-data libarchive13t64 libhiredis1.1.0 libicu74
+#12 7.894   libjsoncpp25 librhash0 libuv1t64 libxml2 ninja-build
+#12 ...
+
+#16 [files_maya 3/5] RUN <<'EOF' bash
+#16 DONE 0.2s
+
+#12 [build_maya 1/3] RUN apt-get update &&     apt-get install -y --no-install-recommends cmake ninja-build ccache &&     rm -rf /var/lib/apt/lists/*
+#12 8.217 0 upgraded, 11 newly installed, 0 to remove and 5 not upgraded.
+#12 8.217 Need to get 26.4 MB of archives.
+#12 8.217 After this operation, 91.3 MB of additional disk space will be used.
+#12 8.217 Get:1 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libicu74 amd64 74.2-1ubuntu3.1 [10.9 MB]
+#12 10.09 Get:2 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libxml2 amd64 2.9.14+dfsg-1.3ubuntu3.10 [764 kB]
+#12 10.28 Get:3 http://archive.ubuntu.com/ubuntu noble/main amd64 libuv1t64 amd64 1.48.0-1.1build1 [97.3 kB]
+#12 10.29 Get:4 http://archive.ubuntu.com/ubuntu noble/universe amd64 libhiredis1.1.0 amd64 1.2.0-6ubuntu3 [41.4 kB]
+#12 10.29 Get:5 http://archive.ubuntu.com/ubuntu noble/universe amd64 ccache amd64 4.9.1-1 [592 kB]
+#12 10.30 Get:6 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libarchive13t64 amd64 3.7.2-2ubuntu0.9 [383 kB]
+#12 10.31 Get:7 http://archive.ubuntu.com/ubuntu noble/main amd64 libjsoncpp25 amd64 1.9.5-6build1 [82.8 kB]
+#12 10.31 Get:8 http://archive.ubuntu.com/ubuntu noble/main amd64 librhash0 amd64 1.4.3-3build1 [129 kB]
+#12 10.31 Get:9 http://archive.ubuntu.com/ubuntu noble/main amd64 cmake-data all 3.28.3-1build7 [2155 kB]
+#12 10.45 Get:10 http://archive.ubuntu.com/ubuntu noble/main amd64 cmake amd64 3.28.3-1build7 [11.2 MB]
+#12 11.08 Get:11 http://archive.ubuntu.com/ubuntu noble/universe amd64 ninja-build amd64 1.11.1-2 [129 kB]
+#12 11.29 debconf: delaying package configuration, since apt-utils is not installed
+#12 11.35 Fetched 26.4 MB in 3s (8320 kB/s)
+#12 11.40 Selecting previously unselected package libicu74:amd64.
+#12 11.40 (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 40535 files and directories currently installed.)
+#12 11.43 Preparing to unpack .../00-libicu74_74.2-1ubuntu3.1_amd64.deb ...
+#12 11.45 Unpacking libicu74:amd64 (74.2-1ubuntu3.1) ...
+#12 11.81 Selecting previously unselected package libxml2:amd64.
+#12 11.82 Preparing to unpack .../01-libxml2_2.9.14+dfsg-1.3ubuntu3.10_amd64.deb ...
+#12 11.82 Unpacking libxml2:amd64 (2.9.14+dfsg-1.3ubuntu3.10) ...
+#12 11.91 Selecting previously unselected package libuv1t64:amd64.
+#12 11.92 Preparing to unpack .../02-libuv1t64_1.48.0-1.1build1_amd64.deb ...
+#12 11.92 Unpacking libuv1t64:amd64 (1.48.0-1.1build1) ...
+#12 11.99 Selecting previously unselected package libhiredis1.1.0:amd64.
+#12 12.00 Preparing to unpack .../03-libhiredis1.1.0_1.2.0-6ubuntu3_amd64.deb ...
+#12 12.00 Unpacking libhiredis1.1.0:amd64 (1.2.0-6ubuntu3) ...
+#12 12.07 Selecting previously unselected package ccache.
+#12 12.08 Preparing to unpack .../04-ccache_4.9.1-1_amd64.deb ...
+#12 12.09 Unpacking ccache (4.9.1-1) ...
+#12 12.20 Selecting previously unselected package libarchive13t64:amd64.
+#12 12.21 Preparing to unpack .../05-libarchive13t64_3.7.2-2ubuntu0.9_amd64.deb ...
+#12 12.22 Unpacking libarchive13t64:amd64 (3.7.2-2ubuntu0.9) ...
+#12 12.30 Selecting previously unselected package libjsoncpp25:amd64.
+#12 12.30 Preparing to unpack .../06-libjsoncpp25_1.9.5-6build1_amd64.deb ...
+#12 12.31 Unpacking libjsoncpp25:amd64 (1.9.5-6build1) ...
+#12 12.43 Selecting previously unselected package librhash0:amd64.
+#12 12.44 Preparing to unpack .../07-librhash0_1.4.3-3build1_amd64.deb ...
+#12 12.50 Unpacking librhash0:amd64 (1.4.3-3build1) ...
+#12 12.64 Selecting previously unselected package cmake-data.
+#12 12.65 Preparing to unpack .../08-cmake-data_3.28.3-1build7_all.deb ...
+#12 12.72 Unpacking cmake-data (3.28.3-1build7) ...
+#12 ...
+
+#17 [files_maya 4/5] RUN python3 -c 'import setup; setup.get_llama_cpp()'
+#17 2.115   llama.cpp source:   0.01 / 0.04 GB (21%)   
+#17 2.943   [ok] llama.cpp source downloaded
+#17 DONE 5.2s
+
+#12 [build_maya 1/3] RUN apt-get update &&     apt-get install -y --no-install-recommends cmake ninja-build ccache &&     rm -rf /var/lib/apt/lists/*
+#12 13.43 Selecting previously unselected package cmake.
+#12 13.44 Preparing to unpack .../09-cmake_3.28.3-1build7_amd64.deb ...
+#12 13.45 Unpacking cmake (3.28.3-1build7) ...
+#12 ...
+
+#18 [files_maya 5/5] RUN python3 tools/vision/glm5next_patch.py third_party/llama.cpp
+#18 0.260 llama.cpp at third_party/llama.cpp: glm5next vision added
+#18 DONE 0.4s
+
+#12 [build_maya 1/3] RUN apt-get update &&     apt-get install -y --no-install-recommends cmake ninja-build ccache &&     rm -rf /var/lib/apt/lists/*
+#12 13.98 Selecting previously unselected package ninja-build.
+#12 13.99 Preparing to unpack .../10-ninja-build_1.11.1-2_amd64.deb ...
+#12 14.00 Unpacking ninja-build (1.11.1-2) ...
+#12 14.09 Setting up libuv1t64:amd64 (1.48.0-1.1build1) ...
+#12 14.11 Setting up ninja-build (1.11.1-2) ...
+#12 14.13 Setting up libjsoncpp25:amd64 (1.9.5-6build1) ...
+#12 14.14 Setting up libicu74:amd64 (74.2-1ubuntu3.1) ...
+#12 14.16 Setting up librhash0:amd64 (1.4.3-3build1) ...
+#12 14.17 Setting up cmake-data (3.28.3-1build7) ...
+#12 14.20 Setting up libhiredis1.1.0:amd64 (1.2.0-6ubuntu3) ...
+#12 14.22 Setting up libxml2:amd64 (2.9.14+dfsg-1.3ubuntu3.10) ...
+#12 14.23 Setting up ccache (4.9.1-1) ...
+#12 14.24 Updating symlinks in /usr/lib/ccache ...
+#12 14.27 Setting up libarchive13t64:amd64 (3.7.2-2ubuntu0.9) ...
+#12 14.29 Setting up cmake (3.28.3-1build7) ...
+#12 14.31 Processing triggers for libc-bin (2.39-0ubuntu8.9) ...
+#12 DONE 14.5s
+
+#19 [final 2/6] COPY --from=files_maya /opt/maya /opt/maya
+#19 DONE 0.9s
+
+#20 [build_maya 2/3] COPY --from=files_maya /opt/maya /opt/maya
+#20 DONE 0.8s
+
+#21 [build_maya 3/3] RUN --mount=type=cache,target=/ccache <<'EOF' bash
+#21 0.408 -- The CXX compiler identification is Clang 24.0.0
+#21 0.509 -- Detecting CXX compiler ABI info
+#21 0.749 -- Detecting CXX compiler ABI info - done
+#21 0.772 -- Check for working CXX compiler: /opt/rocm/llvm/bin/clang++ - skipped
+#21 0.772 -- Detecting CXX compile features
+#21 0.774 -- Detecting CXX compile features - done
+#21 0.779 -- Maya HIP: gfx906 is a wave64 CDNA card running through the half-wavefront compat layer (experimental)
+#21 2.592 -- The HIP compiler identification is Clang 24.0.0
+#21 2.717 -- Detecting HIP compiler ABI info
+#21 3.739 -- Detecting HIP compiler ABI info - done
+#21 3.769 -- Check for working HIP compiler: /opt/rocm/llvm/bin/clang++ - skipped
+#21 3.769 -- Detecting HIP compile features
+#21 3.770 -- Detecting HIP compile features - done
+#21 3.777 -- HIP: Using hipcc from relative path: /opt/rocm/bin/hipcc
+#21 3.814 -- HIP_PLATFORM using hip_HIPCONFIG_EXECUTABLE: amd
+#21 3.867 -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+#21 4.060 -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+#21 4.063 -- Found Threads: TRUE  
+#21 4.066 -- Performing Test HIP_CLANG_SUPPORTS_PARALLEL_JOBS
+#21 4.242 -- Performing Test HIP_CLANG_SUPPORTS_PARALLEL_JOBS - Success
+#21 4.298 -- HIP: Using hipcc from relative path: /opt/rocm/bin/hipcc
+#21 4.392 -- Strata: HIP enabled, arch gfx906
+#21 4.394 -- maya: pack/full/experts.bin absent - the expert arena load test is NOT registered
+#21 4.404 -- Performing Test MAYA_CPU_VNNI_ASM
+#21 5.276 -- Performing Test MAYA_CPU_VNNI_ASM - Success
+#21 5.400 -- The C compiler identification is Clang 24.0.0
+#21 5.473 -- Detecting C compiler ABI info
+#21 5.691 -- Detecting C compiler ABI info - done
+#21 5.714 -- Check for working C compiler: /opt/rocm/llvm/bin/clang - skipped
+#21 5.714 -- Detecting C compile features
+#21 5.715 -- Detecting C compile features - done
+#21 5.836 -- The ASM compiler identification is Clang with GNU-like command-line
+#21 5.843 -- Found assembler: /opt/rocm/llvm/bin/clang
+#21 6.001 -- CMAKE_SYSTEM_PROCESSOR: x86_64
+#21 6.001 -- GGML_SYSTEM_ARCH: x86
+#21 6.009 -- Including CPU backend
+#21 6.010 -- x86 detected
+#21 6.010 -- Adding CPU backend variant ggml-cpu: -msse4.2;-mf16c;-mfma;-mbmi2;-mavx;-mavx2 GGML_SSE42;GGML_F16C;GGML_FMA;GGML_BMI2;GGML_AVX;GGML_AVX2
+#21 6.024 -- ggml version: 0.24.0
+#21 6.024 -- ggml commit:  unknown
+#21 6.026 -- Configuring done (5.8s)
+#21 6.147 -- Generating done (0.1s)
+#21 6.157 -- Build files have been written to: /opt/maya/build-hip
+#21 6.226 [0/2] Re-checking globbed directories...
+#21 6.282 [1/164] Building HIP object CMakeFiles/strata_core.dir/src/core/device.cu.o
+#21 6.285 [2/164] Building HIP object CMakeFiles/strata_core.dir/src/core/pinned.cu.o
+#21 6.287 [3/164] Building CXX object CMakeFiles/strata_core.dir/src/platform/memory.cpp.o
+#21 6.288 [4/164] Building CXX object CMakeFiles/strata_core.dir/src/core/weights.cpp.o
+#21 6.289 [5/164] Building CXX object CMakeFiles/strata_core.dir/src/core/layout.cpp.o
+#21 6.290 [6/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/dequant_s2.cu.o
+#21 6.292 [7/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/s2_gemv.cu.o
+#21 6.293 [8/164] Building CXX object CMakeFiles/strata_core.dir/src/core/graph.cpp.o
+#21 6.303 [9/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/s_gemv.cu.o
+#21 6.306 [10/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/router_sigmoid.cu.o
+#21 6.307 [11/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/s2_gemv_quads.cu.o
+#21 6.308 [12/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/router_top10.cu.o
+#21 6.310 [13/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/rope.cu.o
+#21 6.314 [14/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/s2_gemv_fast.cu.o
+#21 6.315 [15/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/quantize_act.cu.o
+#21 6.322 [16/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/sampler.cu.o
+#21 6.325 [17/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/s2_expert_grouped.cu.o
+#21 6.327 [18/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/s2_gemv_q8.cu.o
+#21 6.331 [19/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/gr.cu.o
+#21 6.333 [20/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/shared_expert.cu.o
+#21 6.335 [21/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/gdn.cu.o
+#21 6.336 [22/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/glm_hc.cu.o
+#21 6.346 [23/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/glm_kda.cu.o
+#21 6.347 [24/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/glm_ffn.cu.o
+#21 6.349 [25/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/glm_dsa.cu.o
+#21 6.350 [26/164] Linking HIP static library libstrata_core.a
+#21 6.352 [27/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/qsa.cu.o
+#21 6.353 [28/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/elementwise.cu.o
+#21 6.354 [29/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/bf16_gemv.cu.o
+#21 6.363 [30/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_gr_norm.cu.o
+#21 6.366 [31/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_bf16.cu.o
+#21 6.367 [32/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_mmvq.cu.o
+#21 6.369 [33/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_gr_postops.cu.o
+#21 6.369 [34/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_gdn.cu.o
+#21 6.371 [35/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_moe.cu.o
+#21 6.372 [36/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_gdn_preprocess.cu.o
+#21 6.374 [37/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_router.cu.o
+#21 6.375 [38/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_rope.cu.o
+#21 6.382 [39/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_qsa.cu.o
+#21 6.383 [40/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_ple_postops.cu.o
+#21 6.384 [41/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_qsa_indexer.cu.o
+#21 6.385 [42/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_flash_attn.cu.o
+#21 6.387 [43/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/ple.cu.o
+#21 6.399 [44/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/kv_stream.cu.o
+#21 6.401 [45/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/native_qsa_score.cu.o
+#21 6.402 [46/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/kv_q8.cu.o
+#21 6.403 [47/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/kv_q4.cu.o
+#21 6.404 [48/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/fused_gr.cu.o
+#21 6.405 [49/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/cvec.cu.o
+#21 6.406 [50/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/qsa_decode_attn.cu.o
+#21 6.407 [51/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/qsa_prompt_attn.cu.o
+#21 6.416 [52/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/dequant_bf16.cu.o
+#21 6.420 [53/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/fused_gdn.cu.o
+#21 6.421 [54/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/qsa_select.cu.o
+#21 6.422 [55/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/verify_kernels.cu.o
+#21 6.430 [56/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/glm_batch.cu.o
+#21 6.432 [57/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/exl3_legacy.cu.o
+#21 6.437 [58/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/glm_kv_stream.cu.o
+#21 6.439 [59/164] Building CXX object CMakeFiles/strata_kernels.dir/src/ngram/ple_reader.cpp.o
+#21 6.447 [60/164] Building CXX object CMakeFiles/strata_kernels.dir/src/platform/direct_file.cpp.o
+#21 6.450 [61/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/exl3.cu.o
+#21 6.459 [62/164] Building CXX object CMakeFiles/strata_engine.dir/src/core/layer.cpp.o
+#21 6.467 [63/164] Building CXX object CMakeFiles/strata_engine.dir/src/core/session.cpp.o
+#21 6.470 [64/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/glm_fast.cu.o
+#21 6.473 [65/164] Building CXX object CMakeFiles/strata_engine.dir/src/core/expert_cache.cpp.o
+#21 6.494 [66/164] Building CXX object CMakeFiles/strata_engine.dir/src/core/mtp.cpp.o
+#21 8.492 [67/164] Building CXX object CMakeFiles/strata_kernels.dir/src/kernels/ngram.cpp.o
+#21 8.589 [68/164] Building CXX object CMakeFiles/strata_engine.dir/src/core/native_head.cpp.o
+#21 9.161 [69/164] Building CXX object CMakeFiles/strata_engine.dir/src/core/native_dense.cpp.o
+#21 10.60 [70/164] Building CXX object CMakeFiles/strata_engine.dir/src/core/remote_experts.cpp.o
+#21 11.03 [71/164] Building CXX object CMakeFiles/strata_engine.dir/src/core/verify.cpp.o
+#21 11.51 [72/164] Building CXX object CMakeFiles/strata_engine.dir/src/core/expert_source.cpp.o
+#21 11.88 [73/164] Building HIP object CMakeFiles/strata_kernels.dir/src/kernels/cuda/iq_kernels.cu.o
+#21 11.96 [74/164] Linking HIP static library libstrata_kernels.a
+#21 16.32 [75/164] Building HIP object CMakeFiles/strata_engine.dir/src/core/glm_multi.cu.o
+#21 17.93 [76/164] Building HIP object CMakeFiles/strata_engine.dir/src/core/glm_rows.cu.o
+#21 17.94 [77/164] Building HIP object CMakeFiles/strata_prefill.dir/src/prefill/gemm.cu.o
+#21 17.96 [78/164] Building HIP object CMakeFiles/strata_prefill.dir/src/prefill/kernels.cu.o
+#21 19.22 [79/164] Building HIP object CMakeFiles/strata_engine.dir/src/core/glm_mtp.cu.o
+#21 19.55 [80/164] Building HIP object CMakeFiles/strata_engine.dir/src/core/glm_window.cu.o
+#21 21.39 [81/164] Building HIP object CMakeFiles/strata_engine.dir/src/core/glm_dflash.cu.o
+#21 22.41 [82/164] Building HIP object CMakeFiles/strata_engine.dir/src/core/glm_model.cu.o
+#21 22.51 [83/164] Building HIP object CMakeFiles/strata_engine.dir/src/core/glm_prefill.cu.o
+#21 22.53 [84/164] Building HIP object CMakeFiles/maya-ds4.dir/src/ds4/ds4_vision.cu.o
+#21 22.54 [85/164] Building HIP object CMakeFiles/maya-ds4.dir/src/ds4/ds4_gguf.cu.o
+#21 22.56 [86/164] Building CXX object CMakeFiles/maya-ds4.dir/src/ds4/ds4_gguf_cpu.cpp.o
+#21 22.62 [87/164] Building HIP object CMakeFiles/maya-ds4.dir/src/ds4/ds4_iq.cu.o
+#21 22.64 [88/164] Building CXX object CMakeFiles/maya-ds4.dir/src/ds4/ds4_iq_cpu.cpp.o
+#21 22.66 [89/164] Building HIP object CMakeFiles/maya-ds4.dir/src/ds4/ds4_lt.cu.o
+#21 22.68 [90/164] Building CXX object CMakeFiles/maya-ds4.dir/src/ds4/ds4_host_ar.cpp.o
+#21 22.69 [91/164] Building CXX object CMakeFiles/strata_spec.dir/src/spec/suffix_drafter.cpp.o
+#21 22.70 [92/164] Building CXX object CMakeFiles/strata_spec.dir/src/spec/controller.cpp.o
+#21 22.72 [93/164] Building CXX object CMakeFiles/strata_spec.dir/src/spec/draft_policy.cpp.o
+#21 22.77 [94/164] Linking CXX static library libstrata_spec.a
+#21 22.79 [95/164] Building CXX object CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/pool.cpp.o
+#21 22.81 [96/164] Building CXX object CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/expert_layout.cpp.o
+#21 22.82 [97/164] Building CXX object CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/exl3_ref.cpp.o
+#21 23.13 [98/164] Building CXX object CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o
+#21 23.14 [99/164] Building CXX object CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/q2_avx2.cpp.o
+#21 23.17 [100/164] Building CXX object CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/exl3_cpu.cpp.o
+#21 23.19 [101/164] Building CXX object CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/native_expert.cpp.o
+#21 23.20 [102/164] Building CXX object CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/iq_avx512.cpp.o
+#21 23.22 [103/164] Building CXX object CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/iq_avx2.cpp.o
+#21 23.24 [104/164] Building CXX object CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/kq_avx512.cpp.o
+#21 23.25 [105/164] Building CXX object CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/iq_avx512_one.cpp.o
+#21 23.28 [106/164] Building HIP object CMakeFiles/strata_mmq.dir/src/prefill/moe_mmq.cu.o
+#21 23.30 [107/164] Building HIP object CMakeFiles/strata_mmq.dir/src/prefill/moe_fused_rdna4.cu.o
+#21 23.31 [108/164] Building HIP object CMakeFiles/strata_mmq.dir/src/prefill/ggml_cuda_host.cu.o
+#21 23.33 [109/164] Building HIP object CMakeFiles/strata_mmq.dir/third_party/llama.cpp/ggml/src/ggml-cuda/quantize.cu.o
+#21 23.34 [110/164] Building HIP object CMakeFiles/strata_mmq.dir/third_party/llama.cpp/ggml/src/ggml-cuda/convert.cu.o
+#21 23.37 [111/164] Building HIP object CMakeFiles/strata_mmq.dir/third_party/llama.cpp/ggml/src/ggml-cuda/template-instances/mmq-instance-q2_0.cu.o
+#21 23.39 [112/164] Building HIP object CMakeFiles/strata_mmq.dir/third_party/llama.cpp/ggml/src/ggml-cuda/template-instances/mmq-instance-iq2_xxs.cu.o
+#21 23.41 [113/164] Building HIP object CMakeFiles/strata_mmq.dir/third_party/llama.cpp/ggml/src/ggml-cuda/template-instances/mmq-instance-iq2_xs.cu.o
+#21 23.43 [114/164] Building HIP object CMakeFiles/strata_mmq.dir/third_party/llama.cpp/ggml/src/ggml-cuda/template-instances/mmq-instance-iq2_s.cu.o
+#21 23.45 [115/164] Building HIP object CMakeFiles/strata_mmq.dir/third_party/llama.cpp/ggml/src/ggml-cuda/template-instances/mmq-instance-iq3_xxs.cu.o
+#21 23.47 [116/164] Building HIP object CMakeFiles/strata_mmq.dir/third_party/llama.cpp/ggml/src/ggml-cuda/template-instances/mmq-instance-iq3_s.cu.o
+#21 23.49 [117/164] Building HIP object CMakeFiles/strata_mmq.dir/third_party/llama.cpp/ggml/src/ggml-cuda/template-instances/mmq-instance-iq4_nl.cu.o
+#21 23.51 [118/164] Building HIP object CMakeFiles/strata_mmq.dir/third_party/llama.cpp/ggml/src/ggml-cuda/template-instances/mmq-instance-iq4_xs.cu.o
+#21 23.54 [119/164] Building HIP object CMakeFiles/strata_mmq.dir/third_party/llama.cpp/ggml/src/ggml-cuda/template-instances/mmq-instance-q8_0.cu.o
+#21 23.56 [120/164] Building HIP object CMakeFiles/strata_mmq.dir/third_party/llama.cpp/ggml/src/ggml-cuda/template-instances/mmq-instance-iq1_s.cu.o
+#21 23.58 [121/164] Building HIP object CMakeFiles/strata_mmq.dir/third_party/llama.cpp/ggml/src/ggml-cuda/template-instances/mmq-instance-q2_k.cu.o
+#21 23.61 [122/164] Building HIP object CMakeFiles/strata_mmq.dir/third_party/llama.cpp/ggml/src/ggml-cuda/template-instances/mmq-instance-q3_k.cu.o
+#21 23.63 [123/164] Building HIP object CMakeFiles/strata_mmq.dir/third_party/llama.cpp/ggml/src/ggml-cuda/template-instances/mmq-instance-q4_k.cu.o
+#21 23.65 [124/164] Building HIP object CMakeFiles/strata_mmq.dir/third_party/llama.cpp/ggml/src/ggml-cuda/template-instances/mmq-instance-q5_k.cu.o
+#21 23.68 [125/164] Building HIP object CMakeFiles/strata_mmq.dir/third_party/llama.cpp/ggml/src/ggml-cuda/template-instances/mmq-instance-q6_k.cu.o
+#21 23.69 [126/164] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml.c.o
+#21 23.71 [127/164] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml.cpp.o
+#21 23.72 [128/164] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml-alloc.c.o
+#21 23.73 [129/164] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-backend.cpp.o
+#21 23.75 [130/164] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-backend-meta.cpp.o
+#21 23.76 [131/164] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-opt.cpp.o
+#21 23.77 [132/164] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-threading.cpp.o
+#21 23.79 [133/164] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml-quants.c.o
+#21 23.80 [134/164] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/gguf.cpp.o
+#21 23.86 [135/164] Linking CXX static library ggml/src/libggml-base.a
+#21 23.92 [136/164] Linking HIP static library libstrata_mmq.a
+#21 23.94 [137/164] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.c.o
+#21 23.96 [138/164] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.cpp.o
+#21 23.98 [139/164] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/repack.cpp.o
+#21 23.99 [140/164] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/iqp.cpp.o
+#21 24.00 [141/164] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/hbm.cpp.o
+#21 24.02 [142/164] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/quants.c.o
+#21 24.03 [143/164] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/traits.cpp.o
+#21 24.05 [144/164] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/amx/amx.cpp.o
+#21 24.06 [145/164] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/amx/mmq.cpp.o
+#21 24.08 [146/164] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/binary-ops.cpp.o
+#21 24.11 [147/164] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/unary-ops.cpp.o
+#21 24.13 [148/164] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/vec.cpp.o
+#21 24.15 [149/164] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ops.cpp.o
+#21 24.17 [150/164] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/quants.c.o
+#21 24.19 [151/164] Building HIP object CMakeFiles/strata_engine.dir/src/core/glm_mtp_rows.cu.o
+#21 24.19 [152/164] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/repack.cpp.o
+#21 24.25 [153/164] Linking CXX static library ggml/src/libggml-cpu.a
+#21 25.36 [154/164] Building CXX object CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/expert.cpp.o
+#21 25.42 [155/164] Linking CXX static library libstrata_kernels_cpu.a
+#21 26.10 [156/164] Building CXX object CMakeFiles/maya-ds4.dir/src/ds4/ds4_main.cpp.o
+#21 26.55 [157/164] Building HIP object CMakeFiles/strata_engine.dir/src/core/glm_fast_path.cu.o
+#21 26.61 [158/164] Linking HIP static library libstrata_engine.a
+#21 26.66 [159/164] Linking HIP static library libstrata_prefill.a
+#21 33.45 [160/164] Building CXX object CMakeFiles/maya.dir/src/program/generate.cpp.o
+#21 33.58 [161/164] Linking HIP executable maya
+#21 34.10 [162/164] Building HIP object CMakeFiles/maya-ds4.dir/src/ds4/ds4_kernels.cu.o
+#21 34.10 ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+#21 34.10 ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+#21 34.10 ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+#21 34.10 ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+#21 34.10 ld.lld: warning: <unknown>:0:0: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering
+#21 67.04 [163/164] Building HIP object CMakeFiles/maya-ds4.dir/src/ds4/ds4_model.cu.o
+#21 67.30 [164/164] Linking HIP executable maya-ds4
+#21 67.50 -- The C compiler identification is Clang 24.0.0
+#21 67.63 -- The CXX compiler identification is Clang 24.0.0
+#21 67.72 -- Detecting C compiler ABI info
+#21 67.94 -- Detecting C compiler ABI info - done
+#21 67.96 -- Check for working C compiler: /opt/rocm/llvm/bin/clang - skipped
+#21 67.96 -- Detecting C compile features
+#21 67.96 -- Detecting C compile features - done
+#21 68.02 -- Detecting CXX compiler ABI info
+#21 68.24 -- Detecting CXX compiler ABI info - done
+#21 68.26 -- Check for working CXX compiler: /opt/rocm/llvm/bin/clang++ - skipped
+#21 68.26 -- Detecting CXX compile features
+#21 68.26 -- Detecting CXX compile features - done
+#21 68.27 -- llama.cpp version: 0.4.1-dev
+#21 68.27 CMAKE_BUILD_TYPE=Release
+#21 68.32 -- Found Git: /usr/bin/git (found version "2.43.0") 
+#21 68.32 fatal: not a git repository (or any of the parent directories): .git
+#21 68.32 fatal: not a git repository (or any of the parent directories): .git
+#21 68.43 -- The ASM compiler identification is Clang with GNU-like command-line
+#21 68.44 -- Found assembler: /opt/rocm/llvm/bin/clang
+#21 68.51 -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+#21 68.67 -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+#21 68.68 -- Found Threads: TRUE  
+#21 68.74 -- CMAKE_SYSTEM_PROCESSOR: x86_64
+#21 68.74 -- GGML_SYSTEM_ARCH: x86
+#21 68.75 -- Including CPU backend
+#21 68.75 -- x86 detected
+#21 68.75 -- Adding CPU backend variant ggml-cpu: -msse4.2;-mf16c;-mfma;-mbmi2;-mavx;-mavx2 GGML_SSE42;GGML_F16C;GGML_FMA;GGML_BMI2;GGML_AVX;GGML_AVX2
+#21 68.77 -- ggml version: 0.24.0
+#21 68.77 -- ggml commit:  unknown
+#21 68.79 -- Configuring done (1.4s)
+#21 68.83 -- Generating done (0.0s)
+#21 68.84 -- Build files have been written to: /opt/maya/build-vision-cpu
+#21 68.91 [1/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-base.dir/ggml.cpp.o
+#21 68.91 [2/132] Building C object llama/ggml/src/CMakeFiles/ggml-base.dir/ggml-alloc.c.o
+#21 68.91 [3/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-base.dir/ggml-threading.cpp.o
+#21 68.91 [4/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-base.dir/ggml-backend-meta.cpp.o
+#21 68.91 [5/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-base.dir/ggml-backend.cpp.o
+#21 68.91 [6/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-base.dir/ggml-opt.cpp.o
+#21 68.91 [7/132] Building CXX object CMakeFiles/maya-vision.dir/strata_vision.cpp.o
+#21 68.91 [8/132] Building C object llama/ggml/src/CMakeFiles/ggml-base.dir/ggml.c.o
+#21 68.92 [9/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-base.dir/gguf.cpp.o
+#21 68.92 [10/132] Building C object llama/ggml/src/CMakeFiles/ggml-base.dir/ggml-quants.c.o
+#21 68.93 [11/132] Building CXX object llama/ggml/src/CMakeFiles/ggml.dir/ggml-backend-reg.cpp.o
+#21 68.93 [12/132] Building CXX object llama/ggml/src/CMakeFiles/ggml.dir/ggml-backend-dl.cpp.o
+#21 68.93 [13/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/hbm.cpp.o
+#21 68.93 [14/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/iqp.cpp.o
+#21 68.93 [15/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.cpp.o
+#21 68.94 [16/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/repack.cpp.o
+#21 68.94 [17/132] Building C object llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.c.o
+#21 68.94 [18/132] Building C object llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/quants.c.o
+#21 68.95 [19/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/traits.cpp.o
+#21 68.95 [20/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/binary-ops.cpp.o
+#21 68.95 [21/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/amx/amx.cpp.o
+#21 68.95 [22/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/amx/mmq.cpp.o
+#21 68.96 [23/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/unary-ops.cpp.o
+#21 68.96 [24/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/vec.cpp.o
+#21 68.96 [25/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/llamafile/sgemm.cpp.o
+#21 68.96 [26/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ops.cpp.o
+#21 68.97 [27/132] Building C object llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/quants.c.o
+#21 68.97 [28/132] Building CXX object llama/ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/repack.cpp.o
+#21 68.98 [29/132] Linking CXX static library llama/ggml/src/libggml-base.a
+#21 68.98 [30/132] Building CXX object llama/src/CMakeFiles/llama.dir/Unity/unity_6_cxx.cxx.o
+#21 68.98 [31/132] Building CXX object llama/src/CMakeFiles/llama.dir/Unity/unity_8_cxx.cxx.o
+#21 68.98 [32/132] Building CXX object llama/src/CMakeFiles/llama.dir/Unity/unity_7_cxx.cxx.o
+#21 68.98 [33/132] Building CXX object llama/src/CMakeFiles/llama.dir/Unity/unity_9_cxx.cxx.o
+#21 68.98 [34/132] Building CXX object llama/src/CMakeFiles/llama.dir/Unity/unity_5_cxx.cxx.o
+#21 68.99 [35/132] Building CXX object llama/src/CMakeFiles/llama.dir/Unity/unity_4_cxx.cxx.o
+#21 68.99 [36/132] Building CXX object llama/src/CMakeFiles/llama.dir/Unity/unity_2_cxx.cxx.o
+#21 68.99 [37/132] Building CXX object llama/src/CMakeFiles/llama.dir/Unity/unity_3_cxx.cxx.o
+#21 69.00 [38/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-adapter.cpp.o
+#21 69.00 [39/132] Building CXX object llama/src/CMakeFiles/llama.dir/Unity/unity_0_cxx.cxx.o
+#21 69.00 [40/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama.cpp.o
+#21 69.00 [41/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-arch.cpp.o
+#21 69.00 [42/132] Building CXX object llama/src/CMakeFiles/llama.dir/Unity/unity_1_cxx.cxx.o
+#21 69.01 [43/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-batch.cpp.o
+#21 69.01 [44/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-cparams.cpp.o
+#21 69.01 [45/132] Linking CXX static library llama/ggml/src/libggml-cpu.a
+#21 69.02 [46/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-chat.cpp.o
+#21 69.02 [47/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-grammar.cpp.o
+#21 69.02 [48/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-context.cpp.o
+#21 69.02 [49/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-graph.cpp.o
+#21 69.02 [50/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-hparams.cpp.o
+#21 69.02 [51/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-impl.cpp.o
+#21 69.02 [52/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-io.cpp.o
+#21 69.03 [53/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-kv-cache.cpp.o
+#21 69.03 [54/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-kv-cache-iswa.cpp.o
+#21 69.03 [55/132] Linking CXX static library llama/ggml/src/libggml.a
+#21 69.03 [56/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-kv-cache-dsa.cpp.o
+#21 69.03 [57/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-kv-cache-dsa-iswa.cpp.o
+#21 69.04 [58/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-kv-cache-msa.cpp.o
+#21 69.04 [59/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-kv-cache-dsv4.cpp.o
+#21 69.04 [60/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-memory.cpp.o
+#21 69.04 [61/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-memory-hybrid.cpp.o
+#21 69.05 [62/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-memory-hybrid-iswa.cpp.o
+#21 69.05 [63/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-memory-hybrid-idx.cpp.o
+#21 69.05 [64/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-memory-recurrent.cpp.o
+#21 69.05 [65/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-model-saver.cpp.o
+#21 69.05 [66/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-mmap.cpp.o
+#21 69.05 [67/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-model-loader.cpp.o
+#21 69.06 [68/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-model.cpp.o
+#21 69.06 [69/132] Building CXX object llama/src/CMakeFiles/llama.dir/unicode-data.cpp.o
+#21 69.06 [70/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-quant.cpp.o
+#21 69.06 [71/132] Building CXX object llama/src/CMakeFiles/llama.dir/unicode.cpp.o
+#21 69.06 [72/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-sampler.cpp.o
+#21 69.06 [73/132] Building CXX object llama/vendor/hash/CMakeFiles/vendor-hash.dir/hash.cpp.o
+#21 69.07 [74/132] Building CXX object llama/src/CMakeFiles/llama.dir/llama-vocab.cpp.o
+#21 69.07 [75/132] Building CXX object llama/vendor/hash/CMakeFiles/vendor-hash.dir/sha1/sha1.c.o
+#21 69.07 [76/132] Building C object llama/vendor/hash/CMakeFiles/vendor-hash.dir/xxhash/xxhash.c.o
+#21 69.07 [77/132] Building C object llama/vendor/hash/CMakeFiles/vendor-hash.dir/sha256/sha256.c.o
+#21 69.08 [78/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/mtmd-audio.cpp.o
+#21 69.08 [79/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/mtmd.cpp.o
+#21 69.08 [80/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/mtmd-image.cpp.o
+#21 69.08 [81/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/mtmd-helper-gen.cpp.o
+#21 69.09 [82/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/clip.cpp.o
+#21 69.09 [83/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/mtmd-helper.cpp.o
+#21 69.10 [84/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/cogvlm.cpp.o
+#21 69.10 [85/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/conformer.cpp.o
+#21 69.10 [86/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/dots3note.cpp.o
+#21 69.10 [87/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/deepseek4v.cpp.o
+#21 69.10 [88/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/dotsocr.cpp.o
+#21 69.10 [89/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/exaone4_5.cpp.o
+#21 69.11 [90/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/gemma4a.cpp.o
+#21 69.11 [91/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/gemma4ua.cpp.o
+#21 69.11 [92/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/gemma4v.cpp.o
+#21 69.12 [93/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/gemma4uv.cpp.o
+#21 69.12 [94/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/glm4v.cpp.o
+#21 69.12 [95/132] Linking CXX static library llama/vendor/hash/libvendor-hash.a
+#21 69.12 [96/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/glm5next.cpp.o
+#21 69.13 [97/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/granite-speech.cpp.o
+#21 69.13 [98/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/granite4-vision.cpp.o
+#21 69.13 [99/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/internvl.cpp.o
+#21 69.13 [100/132] Linking CXX static library llama/src/libllama.a
+#21 69.13 [101/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/hunyuanvl.cpp.o
+#21 69.13 [102/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/kimivl.cpp.o
+#21 69.14 [103/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/kimik25.cpp.o
+#21 69.14 [104/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/nemotron-v2-vl.cpp.o
+#21 69.14 [105/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/muse-glimmer.cpp.o
+#21 69.14 [106/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/llava.cpp.o
+#21 69.15 [107/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/llama4.cpp.o
+#21 69.15 [108/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/paddleocr.cpp.o
+#21 69.15 [109/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/minicpmv.cpp.o
+#21 69.15 [110/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/pixtral.cpp.o
+#21 69.15 [111/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/qwen2vl.cpp.o
+#21 69.15 [112/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/minimax-m3.cpp.o
+#21 69.15 [113/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/mimovl.cpp.o
+#21 69.16 [114/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/qwen3vl.cpp.o
+#21 69.16 [115/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/mimo-audio.cpp.o
+#21 69.16 [116/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/qwen3a.cpp.o
+#21 69.16 [117/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/qwen3tts-gen.cpp.o
+#21 69.17 [118/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/qwen3tts-spkenc.cpp.o
+#21 69.17 [119/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/pockettts-seanet.cpp.o
+#21 69.17 [120/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/siglip.cpp.o
+#21 69.17 [121/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/pockettts-spkenc.cpp.o
+#21 69.17 [122/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/pockettts-gen.cpp.o
+#21 69.18 [123/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/step3vl.cpp.o
+#21 69.18 [124/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/deepseekocr.cpp.o
+#21 69.18 [125/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/whisper-enc.cpp.o
+#21 69.18 [126/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/deepseekocr2.cpp.o
+#21 69.18 [127/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/mobilenetv5.cpp.o
+#21 69.19 [128/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/parakeet.cpp.o
+#21 69.19 [129/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/yasa2.cpp.o
+#21 69.20 [130/132] Building CXX object llama/tools/mtmd/CMakeFiles/mtmd.dir/models/youtuvl.cpp.o
+#21 69.25 [131/132] Linking CXX static library llama/tools/mtmd/libmtmd.a
+#21 69.35 [132/132] Linking CXX executable bin/maya-vision
+#21 DONE 70.0s
+
+#22 [final 3/6] COPY --from=build_maya /opt/maya/build-hip/maya /opt/maya/build-hip/maya-ds4 /opt/maya/build-hip/MAYA-BUILD.json ./build-hip/
+#22 DONE 0.1s
+
+#23 [final 4/6] COPY --from=build_maya /opt/maya/build-vision-cpu/bin/maya-vision ./build-vision-cpu/bin/
+#23 DONE 0.1s
+
+#24 [final 5/6] COPY extra/ /opt/maya/
+#24 DONE 0.1s
+
+#25 [final 6/6] RUN /opt/maya/install-python-deps.sh && /opt/maya/validate-build.sh
+#25 0.231   Installing Python dependencies ...
+#25 0.231   > /opt/maya/.venv/bin/python -m pip install --quiet --disable-pip-version-check numpy jinja2 regex pyyaml tqdm requests cmake ninja pillow psutil jsonschema>=4.18,<5 tokenizers huggingface_hub
+#25 24.42   [ok] Python dependencies installed
+#25 DONE 26.5s
+
+#26 exporting to image
+#26 exporting layers
+#26 exporting layers 13.4s done
+#26 exporting manifest sha256:3063e35de96907d8624df4f2a6ebf0905fd56de168cf6583762b25134ae903a5 0.0s done
+#26 exporting config sha256:45ee9b5af8f85801b683493e6627479ca5e401448fe64c450cd6dc37d468d95e 0.0s done
+#26 exporting attestation manifest sha256:1b51a5066d9487533a2e79f613b40b4353234056c435e0ac29223cda15c36bb2 0.0s done
+#26 exporting manifest list sha256:a7fc0bd66b45730217061a38a60ce983930fe3c938da226e3301ded61e97a9e4
+#26 ...
+
+#27 [auth] apps/maya-gfx906:pull,push token for registry.arkprojects.space
+#27 DONE 0.0s
+
+#26 exporting to image
+#26 exporting manifest list sha256:a7fc0bd66b45730217061a38a60ce983930fe3c938da226e3301ded61e97a9e4 0.0s done
+#26 pushing layers
+#26 pushing layers 3.8s done
+#26 pushing manifest for registry.arkprojects.space/apps/maya-gfx906:v1.1.34-pr592-9a0876f-rocm-10.1-e61d86c-pre@sha256:a7fc0bd66b45730217061a38a60ce983930fe3c938da226e3301ded61e97a9e4
+#26 pushing manifest for registry.arkprojects.space/apps/maya-gfx906:v1.1.34-pr592-9a0876f-rocm-10.1-e61d86c-pre@sha256:a7fc0bd66b45730217061a38a60ce983930fe3c938da226e3301ded61e97a9e4 2.6s done
+#26 DONE 20.0s

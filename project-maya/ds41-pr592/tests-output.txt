@@ -1,0 +1,12 @@
+test_bad_done (test_bench.BenchTests.test_bad_done) ... ok
+test_eos_is_retained (test_bench.BenchTests.test_eos_is_retained) ... ok
+test_frozen_order_and_unchanged_inputs (test_bench.BenchTests.test_frozen_order_and_unchanged_inputs) ... ok
+test_good_sample (test_bench.BenchTests.test_good_sample) ... ok
+test_incomplete_zero_context_not_scored (test_bench.BenchTests.test_incomplete_zero_context_not_scored) ... ok
+test_reject_oom_throttle_and_skip (test_bench.BenchTests.test_reject_oom_throttle_and_skip) ... ok
+test_reject_reuse (test_bench.BenchTests.test_reject_reuse) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.018s
+
+OK

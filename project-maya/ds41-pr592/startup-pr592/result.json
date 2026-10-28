@@ -1,0 +1,54 @@
+{
+  "complete": false,
+  "before": {
+    "memory.current": "19222528",
+    "memory.peak": "19222528",
+    "memory.max": "236223201280",
+    "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+    "cpu.max": "max 100000",
+    "cpu.stat": "usage_usec 277168\nuser_usec 110260\nsystem_usec 166907\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+  },
+  "source_commit": "9a0876f5861de25f4cb56b7e19e1c8b63704dcda",
+  "build": {
+    "backend": "hip",
+    "src": "d2d3cbc30041bb81",
+    "archs": [
+      "gfx906"
+    ],
+    "rocm": "/opt/rocm",
+    "gpu_ids": [
+      0
+    ],
+    "llama": "/opt/maya/third_party/llama.cpp",
+    "lib_dirs": [
+      "/opt/rocm/lib"
+    ],
+    "targets": [
+      "maya",
+      "maya-ds4"
+    ]
+  },
+  "seed_profile_sha256": "a9e8219fd4c34ddfa6be80528eb8834322d791d783a1a08364d6f987be00b999",
+  "ready": [
+    "INFO context=196608 kv=fp4 kv_resident=196608 expert_slots=5142 engine_kind=ds4 cpu_experts=10218 ram_experts=10218 cpu_threads=56 engine=ds4-0.1",
+    "VRAM dev=0 pci=0000:33:00.0 total=34342961152 free=3011510272 weights=3703330816 kv=54974592 kv_ram=0 act=126711596 drafter=2670888960 window=0 pool=21752340480 tail=0 borrow=0 vision=0 vision_own=0 prompt=1859454208 tp=703799680 tp_n=2 slots=2314 ctx=196608 layers=0-19",
+    "VRAM dev=1 pci=0000:36:00.0 total=34342961152 free=436207616 weights=3784775424 kv=55008384 kv_ram=0 act=126711596 drafter=5174661120 window=0 pool=21752340480 tail=0 borrow=0 vision=0 vision_own=0 prompt=1859454208 tp=703833472 tp_n=2 slots=2314 ctx=196608 layers=0-19",
+    "VRAM dev=2 pci=0000:4d:00.0 total=34342961152 free=434110464 weights=4215796480 kv=36852096 kv_ram=0 act=138890540 drafter=0 window=0 pool=26960117760 tail=0 borrow=0 vision=0 vision_own=0 prompt=1789854976 tp=368595072 tp_n=2 slots=2868 ctx=196608 layers=20-39",
+    "VRAM dev=3 pci=0000:50:00.0 total=34342961152 free=578813952 weights=4083392256 kv=36852096 kv_ram=0 act=130603564 drafter=0 window=0 pool=26960117760 tail=0 borrow=0 vision=0 vision_own=0 prompt=1789854976 tp=368595072 tp_n=2 slots=2868 ctx=196608 layers=20-39",
+    "INFO engram_layers=2 engram_lookups=48",
+    "INFO vision=ds4 vision_patch=14 vision_merge=3 vision_min_pixels=295936 vision_max_tokens=1024 vision_max_wh_ratio=0 image_token=129264 vision_gpu=0 vision_mib=0 vision_room_mib=318 vision_room=chunk",
+    "READY 196608 stop"
+  ],
+  "load_s": 236.532948341046,
+  "peer_groups_enabled": 2,
+  "error": "Traceback (most recent call last):\n  File \"/data/experiment/startup.py\", line 134, in main\n    line = engine.line(started + 900)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/data/experiment/startup.py\", line 60, in line\n    raise RuntimeError(line)\nRuntimeError: ERR peer all-reduce failed; model state invalid, reload required\n",
+  "engine_exit_code": 0,
+  "after": {
+    "memory.current": "8351797248",
+    "memory.peak": "210776895488",
+    "memory.max": "236223201280",
+    "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+    "cpu.max": "max 100000",
+    "cpu.stat": "usage_usec 1377618046\nuser_usec 147130780\nsystem_usec 1230487266\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"
+  }
+}

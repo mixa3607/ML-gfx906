@@ -1,0 +1,6 @@
+NAME                                        READY   STATUS    RESTARTS        AGE     IP             NODE                           NOMINATED NODE   READINESS GATES
+comfyui-cuda-67468d9d5-gmcr6                2/2     Running   2 (3d18h ago)   12d     10.42.3.166    kube-worker6.arkprojects.lan   <none>           <none>
+hf-cache-ttyd-54d9f49bc8-9xb64              1/1     Running   0               4d15h   10.42.0.82     kube-master1                   <none>           <none>
+hf-cache-worker6-ttyd-744dd7955b-6l2b6      1/1     Running   1 (3d18h ago)   4d15h   10.42.3.162    kube-worker6.arkprojects.lan   <none>           <none>
+llama-server-amd-llamacpp-8f569566f-drhxf   2/2     Running   0               36h     10.42.3.188    kube-worker6.arkprojects.lan   <none>           <none>
+rocm-toolkit-0                              1/1     Running   0               3d18h   192.168.1.18   kube-worker6.arkprojects.lan   <none>           <none>

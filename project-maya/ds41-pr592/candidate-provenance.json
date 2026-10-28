@@ -1,0 +1,82 @@
+{
+  "SLSA": {
+    "buildDefinition": {
+      "buildType": "https://github.com/moby/buildkit/blob/master/docs/attestations/slsa-definitions.md",
+      "externalParameters": {
+        "configSource": {
+          "path": "build-image.Dockerfile"
+        },
+        "request": {
+          "args": {
+            "cmdline": "docker/dockerfile:1",
+            "source": "docker/dockerfile:1",
+            "target": "final"
+          },
+          "compatibilityVersion": 20,
+          "frontend": "gateway.v0",
+          "locals": [
+            {
+              "name": "context"
+            },
+            {
+              "name": "dockerfile"
+            }
+          ],
+          "root": {
+            "configSource": {
+              "path": "build-image.Dockerfile"
+            },
+            "request": {
+              "args": {
+                "target": "final",
+                "vcs:localdir:context": "project-maya/build-context",
+                "vcs:localdir:dockerfile": "project-maya",
+                "vcs:revision": "e61d86cdab26c29698e0e043122fa9822324faea",
+                "vcs:source": "git@github.com:mixa3607/llama.cpp-gfx906.git"
+              }
+            }
+          }
+        }
+      },
+      "internalParameters": {
+        "builderPlatform": "linux/amd64"
+      },
+      "resolvedDependencies": [
+        {
+          "digest": {
+            "sha256": "4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e"
+          },
+          "uri": "pkg:docker/docker/dockerfile@1"
+        },
+        {
+          "digest": {
+            "sha256": "2c124ecab56dd5f509a4310507435bc75588b3fed2e1d4fa28671a2977406395"
+          },
+          "uri": "pkg:docker/mixa3607/rocm-gfx906?digest=sha256:2c124ecab56dd5f509a4310507435bc75588b3fed2e1d4fa28671a2977406395\u0026platform=linux%2Famd64"
+        }
+      ]
+    },
+    "runDetails": {
+      "builder": {
+        "id": ""
+      },
+      "metadata": {
+        "buildkit_completeness": {
+          "request": false,
+          "resolvedDependencies": false
+        },
+        "buildkit_metadata": {
+          "vcs": {
+            "localdir:context": "project-maya/build-context",
+            "localdir:dockerfile": "project-maya",
+            "revision": "e61d86cdab26c29698e0e043122fa9822324faea",
+            "source": "git@github.com:mixa3607/llama.cpp-gfx906.git"
+          }
+        },
+        "finishedOn": "2026-10-28T08:16:39.771779792Z",
+        "invocationId": "mn2k3p1bpif6s7a3qqk11d3mn",
+        "startedOn": "2026-10-28T08:14:05.139472593Z"
+      }
+    }
+  }
+}

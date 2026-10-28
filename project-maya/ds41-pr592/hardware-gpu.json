@@ -1,0 +1,1940 @@
+{
+    "gpu_data": [
+        {
+            "gpu": 0,
+            "asic": {
+                "market_name": "AMD Instinct MI60 / MI50",
+                "vendor_id": "0x1002",
+                "vendor_name": "Advanced Micro Devices Inc. [AMD/ATI]",
+                "subvendor_id": "0x1002",
+                "device_id": "0x66a1",
+                "subsystem_id": "0x0834",
+                "rev_id": "0x02",
+                "chip_rev_id": "0x01",
+                "external_rev_id": "0x29",
+                "asic_serial": "0x7794892173497DD4",
+                "oam_id": "N/A",
+                "physical_acc_id": "N/A",
+                "num_compute_units": 60,
+                "target_graphics_version": "gfx906",
+                "flags": 0
+            },
+            "bus": {
+                "bdf": "0000:33:00.0",
+                "max_pcie_width": 16,
+                "max_pcie_speed": {
+                    "value": 16,
+                    "unit": "GT/s"
+                },
+                "pcie_levels": {
+                    "0": [
+                        "8.0 GT/s",
+                        "8"
+                    ],
+                    "1": [
+                        "8.0 GT/s",
+                        "8"
+                    ]
+                },
+                "pcie_interface_version": "Gen 4",
+                "slot_type": "CEM"
+            },
+            "ifwi": {
+                "name": "Vega20 A1 SERVER XL D16317 Hynix/Samsung 32GB 8HI",
+                "build_date": "2020/01/16 21:38",
+                "part_number": "113-D1631700-111",
+                "version": "016.004.000.056.013522",
+                "boot_firmware": "N/A"
+            },
+            "limit": {
+                "ppt0": {
+                    "max_power_limit": {
+                        "value": 225,
+                        "unit": "W"
+                    },
+                    "min_power_limit": {
+                        "value": 0,
+                        "unit": "W"
+                    },
+                    "socket_power_limit": {
+                        "value": 225,
+                        "unit": "W"
+                    }
+                },
+                "ppt1": {
+                    "max_power_limit": "N/A",
+                    "min_power_limit": "N/A",
+                    "socket_power_limit": "N/A"
+                },
+                "slowdown_edge_temperature": {
+                    "value": 100,
+                    "unit": "C"
+                },
+                "slowdown_hotspot_temperature": {
+                    "value": 100,
+                    "unit": "C"
+                },
+                "slowdown_vram_temperature": {
+                    "value": 94,
+                    "unit": "C"
+                },
+                "shutdown_edge_temperature": {
+                    "value": 105,
+                    "unit": "C"
+                },
+                "shutdown_hotspot_temperature": {
+                    "value": 105,
+                    "unit": "C"
+                },
+                "shutdown_vram_temperature": {
+                    "value": 99,
+                    "unit": "C"
+                },
+                "ptl_state": "N/A",
+                "ptl_format": "N/A"
+            },
+            "driver": {
+                "name": "amdgpu",
+                "version": "N/A",
+                "os_kernel_version": "6.8.0-147-generic"
+            },
+            "board": {
+                "model_number": "102-D16317-11",
+                "product_serial": "6921210044327dd4",
+                "fru_id": "113-AMDD16317110A100-1.02",
+                "product_name": "Radeon Instinct MI50 32GB",
+                "manufacturer_name": "AMD"
+            },
+            "ras": {
+                "eeprom_version": "0x10000",
+                "bad_page_threshold": 327,
+                "bad_page_threshold_exceeded": "False",
+                "parity_schema": "ENABLED",
+                "single_bit_schema": "ENABLED",
+                "double_bit_schema": "ENABLED",
+                "poison_schema": "DISABLED",
+                "ecc_block_state": {
+                    "UMC": "ENABLED",
+                    "SDMA": "ENABLED",
+                    "GFX": "ENABLED",
+                    "MMHUB": "ENABLED",
+                    "ATHUB": "ENABLED",
+                    "PCIE_BIF": "ENABLED",
+                    "HDP": "ENABLED",
+                    "XGMI_WAFL": "DISABLED",
+                    "DF": "ENABLED",
+                    "SMN": "ENABLED",
+                    "SEM": "ENABLED",
+                    "MP0": "ENABLED",
+                    "MP1": "ENABLED",
+                    "FUSE": "ENABLED",
+                    "MCA": "ENABLED",
+                    "VCN": "DISABLED",
+                    "JPEG": "DISABLED",
+                    "IH": "DISABLED",
+                    "MPIO": "DISABLED",
+                    "MMSCH": "DISABLED",
+                    "MP5": "DISABLED",
+                    "ATU": "DISABLED",
+                    "DACC_BE": "DISABLED",
+                    "ECLR": "DISABLED",
+                    "KPX_SERDES": "DISABLED",
+                    "LSDMA": "DISABLED",
+                    "MPART": "DISABLED",
+                    "MPIFOE": "DISABLED",
+                    "MPRAS": "DISABLED",
+                    "NBIF": "DISABLED",
+                    "NBIO": "DISABLED",
+                    "OXRP": "DISABLED",
+                    "PCIE_PL": "DISABLED",
+                    "PCS_XGMI": "DISABLED",
+                    "PIE": "DISABLED",
+                    "CS": "DISABLED",
+                    "SHUB": "DISABLED",
+                    "SSBDCI": "DISABLED",
+                    "UCIE_PCS": "DISABLED"
+                }
+            },
+            "soc_pstate": "N/A",
+            "xgmi_plpd": "N/A",
+            "profile": {
+                "available_profiles": [
+                    "CUSTOM",
+                    "VIDEO",
+                    "POWER_SAVING",
+                    "COMPUTE",
+                    "VR",
+                    "3D_FULL_SCREEN",
+                    "BOOTUP_DEFAULT"
+                ],
+                "current": "BOOTUP_DEFAULT",
+                "num_profiles": 35
+            },
+            "process_isolation": "N/A",
+            "numa": {
+                "node": 0,
+                "affinity": 0,
+                "cpu_affinity": {
+                    "cpu_list_0": {
+                        "bitmask": "0000003FFFFFFFFF",
+                        "cpu_cores_affinity": "0-37"
+                    },
+                    "cpu_list_1": {
+                        "bitmask": "0000000000000000",
+                        "cpu_cores_affinity": "N/A"
+                    }
+                },
+                "socket_affinity": {
+                    "cpu_list_0": {
+                        "bitmask": "0000003FFFFFFFFF",
+                        "cpu_cores_affinity": "0-37"
+                    },
+                    "cpu_list_1": {
+                        "bitmask": "0000000000000000",
+                        "cpu_cores_affinity": "N/A"
+                    }
+                }
+            },
+            "vram": {
+                "type": "HBM",
+                "vendor": "HYNIX",
+                "size": {
+                    "value": 32752,
+                    "unit": "MB"
+                },
+                "bit_width": 4096,
+                "max_bandwidth": {
+                    "value": "N/A",
+                    "unit": "GB/s"
+                }
+            },
+            "cache_info": [
+                {
+                    "cache": 0,
+                    "cache_acronym": "L1D",
+                    "cache_properties": [
+                        "DATA_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 16,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 1,
+                    "num_cache_instance": 64,
+                    "total_cache_size": {
+                        "value": 1024,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 1,
+                    "cache_acronym": "L1I",
+                    "cache_properties": [
+                        "INST_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 32,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 2,
+                    "num_cache_instance": 4,
+                    "total_cache_size": {
+                        "value": 128,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 2,
+                    "cache_acronym": "L1I",
+                    "cache_properties": [
+                        "INST_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 32,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 3,
+                    "num_cache_instance": 16,
+                    "total_cache_size": {
+                        "value": 512,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 3,
+                    "cache_acronym": "L1I",
+                    "cache_properties": [
+                        "INST_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 32,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 1,
+                    "num_cache_instance": 4,
+                    "total_cache_size": {
+                        "value": 128,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 4,
+                    "cache_acronym": "L1D",
+                    "cache_properties": [
+                        "DATA_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 16,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 2,
+                    "num_cache_instance": 4,
+                    "total_cache_size": {
+                        "value": 64,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 5,
+                    "cache_acronym": "L1D",
+                    "cache_properties": [
+                        "DATA_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 16,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 3,
+                    "num_cache_instance": 16,
+                    "total_cache_size": {
+                        "value": 256,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 6,
+                    "cache_acronym": "L2",
+                    "cache_properties": [
+                        "DATA_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 8192,
+                        "unit": "KB"
+                    },
+                    "cache_level": 2,
+                    "max_num_cu_shared": 60,
+                    "num_cache_instance": 1,
+                    "total_cache_size": {
+                        "value": 8192,
+                        "unit": "KB"
+                    }
+                }
+            ],
+            "mem_carveout": "N/A",
+            "clock": {
+                "sys": {
+                    "current_level": 1,
+                    "frequency_levels": {
+                        "Level 0": {
+                            "value": "925",
+                            "unit": "MHz"
+                        },
+                        "Level 1": {
+                            "value": "930",
+                            "unit": "MHz"
+                        },
+                        "Level 2": {
+                            "value": "1032",
+                            "unit": "MHz"
+                        },
+                        "Level 3": {
+                            "value": "1143",
+                            "unit": "MHz"
+                        },
+                        "Level 4": {
+                            "value": "1282",
+                            "unit": "MHz"
+                        },
+                        "Level 5": {
+                            "value": "1386",
+                            "unit": "MHz"
+                        },
+                        "Level 6": {
+                            "value": "1485",
+                            "unit": "MHz"
+                        },
+                        "Level 7": {
+                            "value": "1606",
+                            "unit": "MHz"
+                        },
+                        "Level 8": {
+                            "value": "1725",
+                            "unit": "MHz"
+                        }
+                    }
+                },
+                "mem": {
+                    "current_level": 0,
+                    "frequency_levels": {
+                        "Level 0": {
+                            "value": "350",
+                            "unit": "MHz"
+                        },
+                        "Level 1": {
+                            "value": "800",
+                            "unit": "MHz"
+                        },
+                        "Level 2": {
+                            "value": "1180",
+                            "unit": "MHz"
+                        }
+                    }
+                },
+                "df": {
+                    "current_level": 0,
+                    "frequency_levels": {
+                        "Level 0": {
+                            "value": "550",
+                            "unit": "MHz"
+                        },
+                        "Level 1": {
+                            "value": "610",
+                            "unit": "MHz"
+                        },
+                        "Level 2": {
+                            "value": "690",
+                            "unit": "MHz"
+                        },
+                        "Level 3": {
+                            "value": "760",
+                            "unit": "MHz"
+                        },
+                        "Level 4": {
+                            "value": "870",
+                            "unit": "MHz"
+                        },
+                        "Level 5": {
+                            "value": "960",
+                            "unit": "MHz"
+                        },
+                        "Level 6": {
+                            "value": "1080",
+                            "unit": "MHz"
+                        },
+                        "Level 7": {
+                            "value": "1278",
+                            "unit": "MHz"
+                        }
+                    }
+                },
+                "soc": {
+                    "current_level": 0,
+                    "frequency_levels": {
+                        "Level 0": {
+                            "value": "309",
+                            "unit": "MHz"
+                        },
+                        "Level 1": {
+                            "value": "523",
+                            "unit": "MHz"
+                        },
+                        "Level 2": {
+                            "value": "566",
+                            "unit": "MHz"
+                        },
+                        "Level 3": {
+                            "value": "618",
+                            "unit": "MHz"
+                        },
+                        "Level 4": {
+                            "value": "680",
+                            "unit": "MHz"
+                        },
+                        "Level 5": {
+                            "value": "755",
+                            "unit": "MHz"
+                        },
+                        "Level 6": {
+                            "value": "850",
+                            "unit": "MHz"
+                        },
+                        "Level 7": {
+                            "value": "971",
+                            "unit": "MHz"
+                        }
+                    }
+                },
+                "dcef": "N/A",
+                "vclk0": "N/A",
+                "vclk1": "N/A",
+                "dclk0": "N/A",
+                "dclk1": "N/A"
+            }
+        },
+        {
+            "gpu": 1,
+            "asic": {
+                "market_name": "AMD Instinct MI60 / MI50",
+                "vendor_id": "0x1002",
+                "vendor_name": "Advanced Micro Devices Inc. [AMD/ATI]",
+                "subvendor_id": "0x1002",
+                "device_id": "0x66a1",
+                "subsystem_id": "0x0834",
+                "rev_id": "0x02",
+                "chip_rev_id": "0x01",
+                "external_rev_id": "0x29",
+                "asic_serial": "0xABEE51217348C2F5",
+                "oam_id": "N/A",
+                "physical_acc_id": "N/A",
+                "num_compute_units": 60,
+                "target_graphics_version": "gfx906",
+                "flags": 0
+            },
+            "bus": {
+                "bdf": "0000:36:00.0",
+                "max_pcie_width": 16,
+                "max_pcie_speed": {
+                    "value": 16,
+                    "unit": "GT/s"
+                },
+                "pcie_levels": {
+                    "0": [
+                        "8.0 GT/s",
+                        "8"
+                    ],
+                    "1": [
+                        "8.0 GT/s",
+                        "8"
+                    ]
+                },
+                "pcie_interface_version": "Gen 4",
+                "slot_type": "CEM"
+            },
+            "ifwi": {
+                "name": "Vega20 A1 SERVER XL D16317 Hynix/Samsung 32GB 8HI",
+                "build_date": "2020/01/16 21:38",
+                "part_number": "113-D1631700-111",
+                "version": "016.004.000.056.013522",
+                "boot_firmware": "N/A"
+            },
+            "limit": {
+                "ppt0": {
+                    "max_power_limit": {
+                        "value": 225,
+                        "unit": "W"
+                    },
+                    "min_power_limit": {
+                        "value": 0,
+                        "unit": "W"
+                    },
+                    "socket_power_limit": {
+                        "value": 225,
+                        "unit": "W"
+                    }
+                },
+                "ppt1": {
+                    "max_power_limit": "N/A",
+                    "min_power_limit": "N/A",
+                    "socket_power_limit": "N/A"
+                },
+                "slowdown_edge_temperature": {
+                    "value": 100,
+                    "unit": "C"
+                },
+                "slowdown_hotspot_temperature": {
+                    "value": 100,
+                    "unit": "C"
+                },
+                "slowdown_vram_temperature": {
+                    "value": 94,
+                    "unit": "C"
+                },
+                "shutdown_edge_temperature": {
+                    "value": 105,
+                    "unit": "C"
+                },
+                "shutdown_hotspot_temperature": {
+                    "value": 105,
+                    "unit": "C"
+                },
+                "shutdown_vram_temperature": {
+                    "value": 99,
+                    "unit": "C"
+                },
+                "ptl_state": "N/A",
+                "ptl_format": "N/A"
+            },
+            "driver": {
+                "name": "amdgpu",
+                "version": "N/A",
+                "os_kernel_version": "6.8.0-147-generic"
+            },
+            "board": {
+                "model_number": "102-D16317-11",
+                "product_serial": "692121005385c2f5",
+                "fru_id": "113-AMDD16317110A100-1.02",
+                "product_name": "Radeon Instinct MI50 32GB",
+                "manufacturer_name": "AMD"
+            },
+            "ras": {
+                "eeprom_version": "0x10000",
+                "bad_page_threshold": 327,
+                "bad_page_threshold_exceeded": "False",
+                "parity_schema": "ENABLED",
+                "single_bit_schema": "ENABLED",
+                "double_bit_schema": "ENABLED",
+                "poison_schema": "DISABLED",
+                "ecc_block_state": {
+                    "UMC": "ENABLED",
+                    "SDMA": "ENABLED",
+                    "GFX": "ENABLED",
+                    "MMHUB": "ENABLED",
+                    "ATHUB": "ENABLED",
+                    "PCIE_BIF": "ENABLED",
+                    "HDP": "ENABLED",
+                    "XGMI_WAFL": "DISABLED",
+                    "DF": "ENABLED",
+                    "SMN": "ENABLED",
+                    "SEM": "ENABLED",
+                    "MP0": "ENABLED",
+                    "MP1": "ENABLED",
+                    "FUSE": "ENABLED",
+                    "MCA": "ENABLED",
+                    "VCN": "DISABLED",
+                    "JPEG": "DISABLED",
+                    "IH": "DISABLED",
+                    "MPIO": "DISABLED",
+                    "MMSCH": "DISABLED",
+                    "MP5": "DISABLED",
+                    "ATU": "DISABLED",
+                    "DACC_BE": "DISABLED",
+                    "ECLR": "DISABLED",
+                    "KPX_SERDES": "DISABLED",
+                    "LSDMA": "DISABLED",
+                    "MPART": "DISABLED",
+                    "MPIFOE": "DISABLED",
+                    "MPRAS": "DISABLED",
+                    "NBIF": "DISABLED",
+                    "NBIO": "DISABLED",
+                    "OXRP": "DISABLED",
+                    "PCIE_PL": "DISABLED",
+                    "PCS_XGMI": "DISABLED",
+                    "PIE": "DISABLED",
+                    "CS": "DISABLED",
+                    "SHUB": "DISABLED",
+                    "SSBDCI": "DISABLED",
+                    "UCIE_PCS": "DISABLED"
+                }
+            },
+            "soc_pstate": "N/A",
+            "xgmi_plpd": "N/A",
+            "profile": {
+                "available_profiles": [
+                    "CUSTOM",
+                    "VIDEO",
+                    "POWER_SAVING",
+                    "COMPUTE",
+                    "VR",
+                    "3D_FULL_SCREEN",
+                    "BOOTUP_DEFAULT"
+                ],
+                "current": "BOOTUP_DEFAULT",
+                "num_profiles": 35
+            },
+            "process_isolation": "N/A",
+            "numa": {
+                "node": 0,
+                "affinity": 0,
+                "cpu_affinity": {
+                    "cpu_list_0": {
+                        "bitmask": "0000003FFFFFFFFF",
+                        "cpu_cores_affinity": "0-37"
+                    },
+                    "cpu_list_1": {
+                        "bitmask": "0000000000000000",
+                        "cpu_cores_affinity": "N/A"
+                    }
+                },
+                "socket_affinity": {
+                    "cpu_list_0": {
+                        "bitmask": "0000003FFFFFFFFF",
+                        "cpu_cores_affinity": "0-37"
+                    },
+                    "cpu_list_1": {
+                        "bitmask": "0000000000000000",
+                        "cpu_cores_affinity": "N/A"
+                    }
+                }
+            },
+            "vram": {
+                "type": "HBM",
+                "vendor": "HYNIX",
+                "size": {
+                    "value": 32752,
+                    "unit": "MB"
+                },
+                "bit_width": 4096,
+                "max_bandwidth": {
+                    "value": "N/A",
+                    "unit": "GB/s"
+                }
+            },
+            "cache_info": [
+                {
+                    "cache": 0,
+                    "cache_acronym": "L1D",
+                    "cache_properties": [
+                        "DATA_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 16,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 1,
+                    "num_cache_instance": 64,
+                    "total_cache_size": {
+                        "value": 1024,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 1,
+                    "cache_acronym": "L1I",
+                    "cache_properties": [
+                        "INST_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 32,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 2,
+                    "num_cache_instance": 4,
+                    "total_cache_size": {
+                        "value": 128,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 2,
+                    "cache_acronym": "L1I",
+                    "cache_properties": [
+                        "INST_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 32,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 3,
+                    "num_cache_instance": 16,
+                    "total_cache_size": {
+                        "value": 512,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 3,
+                    "cache_acronym": "L1I",
+                    "cache_properties": [
+                        "INST_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 32,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 1,
+                    "num_cache_instance": 4,
+                    "total_cache_size": {
+                        "value": 128,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 4,
+                    "cache_acronym": "L1D",
+                    "cache_properties": [
+                        "DATA_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 16,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 2,
+                    "num_cache_instance": 4,
+                    "total_cache_size": {
+                        "value": 64,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 5,
+                    "cache_acronym": "L1D",
+                    "cache_properties": [
+                        "DATA_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 16,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 3,
+                    "num_cache_instance": 16,
+                    "total_cache_size": {
+                        "value": 256,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 6,
+                    "cache_acronym": "L2",
+                    "cache_properties": [
+                        "DATA_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 8192,
+                        "unit": "KB"
+                    },
+                    "cache_level": 2,
+                    "max_num_cu_shared": 60,
+                    "num_cache_instance": 1,
+                    "total_cache_size": {
+                        "value": 8192,
+                        "unit": "KB"
+                    }
+                }
+            ],
+            "mem_carveout": "N/A",
+            "clock": {
+                "sys": {
+                    "current_level": 1,
+                    "frequency_levels": {
+                        "Level 0": {
+                            "value": "925",
+                            "unit": "MHz"
+                        },
+                        "Level 1": {
+                            "value": "930",
+                            "unit": "MHz"
+                        },
+                        "Level 2": {
+                            "value": "1032",
+                            "unit": "MHz"
+                        },
+                        "Level 3": {
+                            "value": "1143",
+                            "unit": "MHz"
+                        },
+                        "Level 4": {
+                            "value": "1282",
+                            "unit": "MHz"
+                        },
+                        "Level 5": {
+                            "value": "1386",
+                            "unit": "MHz"
+                        },
+                        "Level 6": {
+                            "value": "1485",
+                            "unit": "MHz"
+                        },
+                        "Level 7": {
+                            "value": "1606",
+                            "unit": "MHz"
+                        },
+                        "Level 8": {
+                            "value": "1725",
+                            "unit": "MHz"
+                        }
+                    }
+                },
+                "mem": {
+                    "current_level": 0,
+                    "frequency_levels": {
+                        "Level 0": {
+                            "value": "350",
+                            "unit": "MHz"
+                        },
+                        "Level 1": {
+                            "value": "800",
+                            "unit": "MHz"
+                        },
+                        "Level 2": {
+                            "value": "1180",
+                            "unit": "MHz"
+                        }
+                    }
+                },
+                "df": {
+                    "current_level": 0,
+                    "frequency_levels": {
+                        "Level 0": {
+                            "value": "550",
+                            "unit": "MHz"
+                        },
+                        "Level 1": {
+                            "value": "610",
+                            "unit": "MHz"
+                        },
+                        "Level 2": {
+                            "value": "690",
+                            "unit": "MHz"
+                        },
+                        "Level 3": {
+                            "value": "760",
+                            "unit": "MHz"
+                        },
+                        "Level 4": {
+                            "value": "870",
+                            "unit": "MHz"
+                        },
+                        "Level 5": {
+                            "value": "960",
+                            "unit": "MHz"
+                        },
+                        "Level 6": {
+                            "value": "1080",
+                            "unit": "MHz"
+                        },
+                        "Level 7": {
+                            "value": "1278",
+                            "unit": "MHz"
+                        }
+                    }
+                },
+                "soc": {
+                    "current_level": 0,
+                    "frequency_levels": {
+                        "Level 0": {
+                            "value": "309",
+                            "unit": "MHz"
+                        },
+                        "Level 1": {
+                            "value": "523",
+                            "unit": "MHz"
+                        },
+                        "Level 2": {
+                            "value": "566",
+                            "unit": "MHz"
+                        },
+                        "Level 3": {
+                            "value": "618",
+                            "unit": "MHz"
+                        },
+                        "Level 4": {
+                            "value": "680",
+                            "unit": "MHz"
+                        },
+                        "Level 5": {
+                            "value": "755",
+                            "unit": "MHz"
+                        },
+                        "Level 6": {
+                            "value": "850",
+                            "unit": "MHz"
+                        },
+                        "Level 7": {
+                            "value": "971",
+                            "unit": "MHz"
+                        }
+                    }
+                },
+                "dcef": "N/A",
+                "vclk0": "N/A",
+                "vclk1": "N/A",
+                "dclk0": "N/A",
+                "dclk1": "N/A"
+            }
+        },
+        {
+            "gpu": 2,
+            "asic": {
+                "market_name": "AMD Instinct MI60 / MI50",
+                "vendor_id": "0x1002",
+                "vendor_name": "Advanced Micro Devices Inc. [AMD/ATI]",
+                "subvendor_id": "0x1002",
+                "device_id": "0x66a1",
+                "subsystem_id": "0x0834",
+                "rev_id": "0x02",
+                "chip_rev_id": "0x01",
+                "external_rev_id": "0x29",
+                "asic_serial": "0x778878A173497DD4",
+                "oam_id": "N/A",
+                "physical_acc_id": "N/A",
+                "num_compute_units": 60,
+                "target_graphics_version": "gfx906",
+                "flags": 0
+            },
+            "bus": {
+                "bdf": "0000:4d:00.0",
+                "max_pcie_width": 16,
+                "max_pcie_speed": {
+                    "value": 16,
+                    "unit": "GT/s"
+                },
+                "pcie_levels": {
+                    "0": [
+                        "8.0 GT/s",
+                        "8"
+                    ],
+                    "1": [
+                        "8.0 GT/s",
+                        "8"
+                    ]
+                },
+                "pcie_interface_version": "Gen 4",
+                "slot_type": "CEM"
+            },
+            "ifwi": {
+                "name": "Vega20 A1 SERVER XL D16317 Hynix/Samsung 32GB 8HI",
+                "build_date": "2020/01/16 21:38",
+                "part_number": "113-D1631700-111",
+                "version": "016.004.000.056.013522",
+                "boot_firmware": "N/A"
+            },
+            "limit": {
+                "ppt0": {
+                    "max_power_limit": {
+                        "value": 225,
+                        "unit": "W"
+                    },
+                    "min_power_limit": {
+                        "value": 0,
+                        "unit": "W"
+                    },
+                    "socket_power_limit": {
+                        "value": 225,
+                        "unit": "W"
+                    }
+                },
+                "ppt1": {
+                    "max_power_limit": "N/A",
+                    "min_power_limit": "N/A",
+                    "socket_power_limit": "N/A"
+                },
+                "slowdown_edge_temperature": {
+                    "value": 100,
+                    "unit": "C"
+                },
+                "slowdown_hotspot_temperature": {
+                    "value": 100,
+                    "unit": "C"
+                },
+                "slowdown_vram_temperature": {
+                    "value": 94,
+                    "unit": "C"
+                },
+                "shutdown_edge_temperature": {
+                    "value": 105,
+                    "unit": "C"
+                },
+                "shutdown_hotspot_temperature": {
+                    "value": 105,
+                    "unit": "C"
+                },
+                "shutdown_vram_temperature": {
+                    "value": 99,
+                    "unit": "C"
+                },
+                "ptl_state": "N/A",
+                "ptl_format": "N/A"
+            },
+            "driver": {
+                "name": "amdgpu",
+                "version": "N/A",
+                "os_kernel_version": "6.8.0-147-generic"
+            },
+            "board": {
+                "model_number": "102-D16317-11",
+                "product_serial": "6921210068537dd4",
+                "fru_id": "113-AMDD16317110A100-1.02",
+                "product_name": "Radeon Instinct MI50 32GB",
+                "manufacturer_name": "AMD"
+            },
+            "ras": {
+                "eeprom_version": "0x10000",
+                "bad_page_threshold": 327,
+                "bad_page_threshold_exceeded": "False",
+                "parity_schema": "ENABLED",
+                "single_bit_schema": "ENABLED",
+                "double_bit_schema": "ENABLED",
+                "poison_schema": "DISABLED",
+                "ecc_block_state": {
+                    "UMC": "ENABLED",
+                    "SDMA": "ENABLED",
+                    "GFX": "ENABLED",
+                    "MMHUB": "ENABLED",
+                    "ATHUB": "ENABLED",
+                    "PCIE_BIF": "ENABLED",
+                    "HDP": "ENABLED",
+                    "XGMI_WAFL": "DISABLED",
+                    "DF": "ENABLED",
+                    "SMN": "ENABLED",
+                    "SEM": "ENABLED",
+                    "MP0": "ENABLED",
+                    "MP1": "ENABLED",
+                    "FUSE": "ENABLED",
+                    "MCA": "ENABLED",
+                    "VCN": "DISABLED",
+                    "JPEG": "DISABLED",
+                    "IH": "DISABLED",
+                    "MPIO": "DISABLED",
+                    "MMSCH": "DISABLED",
+                    "MP5": "DISABLED",
+                    "ATU": "DISABLED",
+                    "DACC_BE": "DISABLED",
+                    "ECLR": "DISABLED",
+                    "KPX_SERDES": "DISABLED",
+                    "LSDMA": "DISABLED",
+                    "MPART": "DISABLED",
+                    "MPIFOE": "DISABLED",
+                    "MPRAS": "DISABLED",
+                    "NBIF": "DISABLED",
+                    "NBIO": "DISABLED",
+                    "OXRP": "DISABLED",
+                    "PCIE_PL": "DISABLED",
+                    "PCS_XGMI": "DISABLED",
+                    "PIE": "DISABLED",
+                    "CS": "DISABLED",
+                    "SHUB": "DISABLED",
+                    "SSBDCI": "DISABLED",
+                    "UCIE_PCS": "DISABLED"
+                }
+            },
+            "soc_pstate": "N/A",
+            "xgmi_plpd": "N/A",
+            "profile": {
+                "available_profiles": [
+                    "CUSTOM",
+                    "VIDEO",
+                    "POWER_SAVING",
+                    "COMPUTE",
+                    "VR",
+                    "3D_FULL_SCREEN",
+                    "BOOTUP_DEFAULT"
+                ],
+                "current": "BOOTUP_DEFAULT",
+                "num_profiles": 35
+            },
+            "process_isolation": "N/A",
+            "numa": {
+                "node": 0,
+                "affinity": 0,
+                "cpu_affinity": {
+                    "cpu_list_0": {
+                        "bitmask": "0000003FFFFFFFFF",
+                        "cpu_cores_affinity": "0-37"
+                    },
+                    "cpu_list_1": {
+                        "bitmask": "0000000000000000",
+                        "cpu_cores_affinity": "N/A"
+                    }
+                },
+                "socket_affinity": {
+                    "cpu_list_0": {
+                        "bitmask": "0000003FFFFFFFFF",
+                        "cpu_cores_affinity": "0-37"
+                    },
+                    "cpu_list_1": {
+                        "bitmask": "0000000000000000",
+                        "cpu_cores_affinity": "N/A"
+                    }
+                }
+            },
+            "vram": {
+                "type": "HBM",
+                "vendor": "HYNIX",
+                "size": {
+                    "value": 32752,
+                    "unit": "MB"
+                },
+                "bit_width": 4096,
+                "max_bandwidth": {
+                    "value": "N/A",
+                    "unit": "GB/s"
+                }
+            },
+            "cache_info": [
+                {
+                    "cache": 0,
+                    "cache_acronym": "L1D",
+                    "cache_properties": [
+                        "DATA_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 16,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 1,
+                    "num_cache_instance": 64,
+                    "total_cache_size": {
+                        "value": 1024,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 1,
+                    "cache_acronym": "L1I",
+                    "cache_properties": [
+                        "INST_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 32,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 2,
+                    "num_cache_instance": 4,
+                    "total_cache_size": {
+                        "value": 128,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 2,
+                    "cache_acronym": "L1I",
+                    "cache_properties": [
+                        "INST_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 32,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 3,
+                    "num_cache_instance": 16,
+                    "total_cache_size": {
+                        "value": 512,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 3,
+                    "cache_acronym": "L1I",
+                    "cache_properties": [
+                        "INST_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 32,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 1,
+                    "num_cache_instance": 4,
+                    "total_cache_size": {
+                        "value": 128,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 4,
+                    "cache_acronym": "L1D",
+                    "cache_properties": [
+                        "DATA_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 16,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 2,
+                    "num_cache_instance": 4,
+                    "total_cache_size": {
+                        "value": 64,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 5,
+                    "cache_acronym": "L1D",
+                    "cache_properties": [
+                        "DATA_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 16,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 3,
+                    "num_cache_instance": 16,
+                    "total_cache_size": {
+                        "value": 256,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 6,
+                    "cache_acronym": "L2",
+                    "cache_properties": [
+                        "DATA_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 8192,
+                        "unit": "KB"
+                    },
+                    "cache_level": 2,
+                    "max_num_cu_shared": 60,
+                    "num_cache_instance": 1,
+                    "total_cache_size": {
+                        "value": 8192,
+                        "unit": "KB"
+                    }
+                }
+            ],
+            "mem_carveout": "N/A",
+            "clock": {
+                "sys": {
+                    "current_level": 1,
+                    "frequency_levels": {
+                        "Level 0": {
+                            "value": "925",
+                            "unit": "MHz"
+                        },
+                        "Level 1": {
+                            "value": "930",
+                            "unit": "MHz"
+                        },
+                        "Level 2": {
+                            "value": "1032",
+                            "unit": "MHz"
+                        },
+                        "Level 3": {
+                            "value": "1143",
+                            "unit": "MHz"
+                        },
+                        "Level 4": {
+                            "value": "1282",
+                            "unit": "MHz"
+                        },
+                        "Level 5": {
+                            "value": "1386",
+                            "unit": "MHz"
+                        },
+                        "Level 6": {
+                            "value": "1485",
+                            "unit": "MHz"
+                        },
+                        "Level 7": {
+                            "value": "1606",
+                            "unit": "MHz"
+                        },
+                        "Level 8": {
+                            "value": "1725",
+                            "unit": "MHz"
+                        }
+                    }
+                },
+                "mem": {
+                    "current_level": 0,
+                    "frequency_levels": {
+                        "Level 0": {
+                            "value": "350",
+                            "unit": "MHz"
+                        },
+                        "Level 1": {
+                            "value": "800",
+                            "unit": "MHz"
+                        },
+                        "Level 2": {
+                            "value": "1180",
+                            "unit": "MHz"
+                        }
+                    }
+                },
+                "df": {
+                    "current_level": 0,
+                    "frequency_levels": {
+                        "Level 0": {
+                            "value": "550",
+                            "unit": "MHz"
+                        },
+                        "Level 1": {
+                            "value": "610",
+                            "unit": "MHz"
+                        },
+                        "Level 2": {
+                            "value": "690",
+                            "unit": "MHz"
+                        },
+                        "Level 3": {
+                            "value": "760",
+                            "unit": "MHz"
+                        },
+                        "Level 4": {
+                            "value": "870",
+                            "unit": "MHz"
+                        },
+                        "Level 5": {
+                            "value": "960",
+                            "unit": "MHz"
+                        },
+                        "Level 6": {
+                            "value": "1080",
+                            "unit": "MHz"
+                        },
+                        "Level 7": {
+                            "value": "1278",
+                            "unit": "MHz"
+                        }
+                    }
+                },
+                "soc": {
+                    "current_level": 0,
+                    "frequency_levels": {
+                        "Level 0": {
+                            "value": "309",
+                            "unit": "MHz"
+                        },
+                        "Level 1": {
+                            "value": "523",
+                            "unit": "MHz"
+                        },
+                        "Level 2": {
+                            "value": "566",
+                            "unit": "MHz"
+                        },
+                        "Level 3": {
+                            "value": "618",
+                            "unit": "MHz"
+                        },
+                        "Level 4": {
+                            "value": "680",
+                            "unit": "MHz"
+                        },
+                        "Level 5": {
+                            "value": "755",
+                            "unit": "MHz"
+                        },
+                        "Level 6": {
+                            "value": "850",
+                            "unit": "MHz"
+                        },
+                        "Level 7": {
+                            "value": "971",
+                            "unit": "MHz"
+                        }
+                    }
+                },
+                "dcef": "N/A",
+                "vclk0": "N/A",
+                "vclk1": "N/A",
+                "dclk0": "N/A",
+                "dclk1": "N/A"
+            }
+        },
+        {
+            "gpu": 3,
+            "asic": {
+                "market_name": "AMD Instinct MI60 / MI50",
+                "vendor_id": "0x1002",
+                "vendor_name": "Advanced Micro Devices Inc. [AMD/ATI]",
+                "subvendor_id": "0x1002",
+                "device_id": "0x66a1",
+                "subsystem_id": "0x0834",
+                "rev_id": "0x02",
+                "chip_rev_id": "0x01",
+                "external_rev_id": "0x29",
+                "asic_serial": "0x216C192173497DD3",
+                "oam_id": "N/A",
+                "physical_acc_id": "N/A",
+                "num_compute_units": 60,
+                "target_graphics_version": "gfx906",
+                "flags": 0
+            },
+            "bus": {
+                "bdf": "0000:50:00.0",
+                "max_pcie_width": 16,
+                "max_pcie_speed": {
+                    "value": 16,
+                    "unit": "GT/s"
+                },
+                "pcie_levels": {
+                    "0": [
+                        "8.0 GT/s",
+                        "8"
+                    ],
+                    "1": [
+                        "8.0 GT/s",
+                        "8"
+                    ]
+                },
+                "pcie_interface_version": "Gen 4",
+                "slot_type": "CEM"
+            },
+            "ifwi": {
+                "name": "Vega20 A1 SERVER XL D16317 Hynix/Samsung 32GB 8HI",
+                "build_date": "2020/01/16 21:38",
+                "part_number": "113-D1631700-111",
+                "version": "016.004.000.056.013522",
+                "boot_firmware": "N/A"
+            },
+            "limit": {
+                "ppt0": {
+                    "max_power_limit": {
+                        "value": 225,
+                        "unit": "W"
+                    },
+                    "min_power_limit": {
+                        "value": 0,
+                        "unit": "W"
+                    },
+                    "socket_power_limit": {
+                        "value": 225,
+                        "unit": "W"
+                    }
+                },
+                "ppt1": {
+                    "max_power_limit": "N/A",
+                    "min_power_limit": "N/A",
+                    "socket_power_limit": "N/A"
+                },
+                "slowdown_edge_temperature": {
+                    "value": 100,
+                    "unit": "C"
+                },
+                "slowdown_hotspot_temperature": {
+                    "value": 100,
+                    "unit": "C"
+                },
+                "slowdown_vram_temperature": {
+                    "value": 94,
+                    "unit": "C"
+                },
+                "shutdown_edge_temperature": {
+                    "value": 105,
+                    "unit": "C"
+                },
+                "shutdown_hotspot_temperature": {
+                    "value": 105,
+                    "unit": "C"
+                },
+                "shutdown_vram_temperature": {
+                    "value": 99,
+                    "unit": "C"
+                },
+                "ptl_state": "N/A",
+                "ptl_format": "N/A"
+            },
+            "driver": {
+                "name": "amdgpu",
+                "version": "N/A",
+                "os_kernel_version": "6.8.0-147-generic"
+            },
+            "board": {
+                "model_number": "102-D16317-11",
+                "product_serial": "6921210062047dd3",
+                "fru_id": "113-AMDD16317110A100-1.02",
+                "product_name": "Radeon Instinct MI50 32GB",
+                "manufacturer_name": "AMD"
+            },
+            "ras": {
+                "eeprom_version": "0x10000",
+                "bad_page_threshold": 327,
+                "bad_page_threshold_exceeded": "False",
+                "parity_schema": "ENABLED",
+                "single_bit_schema": "ENABLED",
+                "double_bit_schema": "ENABLED",
+                "poison_schema": "DISABLED",
+                "ecc_block_state": {
+                    "UMC": "ENABLED",
+                    "SDMA": "ENABLED",
+                    "GFX": "ENABLED",
+                    "MMHUB": "ENABLED",
+                    "ATHUB": "ENABLED",
+                    "PCIE_BIF": "ENABLED",
+                    "HDP": "ENABLED",
+                    "XGMI_WAFL": "DISABLED",
+                    "DF": "ENABLED",
+                    "SMN": "ENABLED",
+                    "SEM": "ENABLED",
+                    "MP0": "ENABLED",
+                    "MP1": "ENABLED",
+                    "FUSE": "ENABLED",
+                    "MCA": "ENABLED",
+                    "VCN": "DISABLED",
+                    "JPEG": "DISABLED",
+                    "IH": "DISABLED",
+                    "MPIO": "DISABLED",
+                    "MMSCH": "DISABLED",
+                    "MP5": "DISABLED",
+                    "ATU": "DISABLED",
+                    "DACC_BE": "DISABLED",
+                    "ECLR": "DISABLED",
+                    "KPX_SERDES": "DISABLED",
+                    "LSDMA": "DISABLED",
+                    "MPART": "DISABLED",
+                    "MPIFOE": "DISABLED",
+                    "MPRAS": "DISABLED",
+                    "NBIF": "DISABLED",
+                    "NBIO": "DISABLED",
+                    "OXRP": "DISABLED",
+                    "PCIE_PL": "DISABLED",
+                    "PCS_XGMI": "DISABLED",
+                    "PIE": "DISABLED",
+                    "CS": "DISABLED",
+                    "SHUB": "DISABLED",
+                    "SSBDCI": "DISABLED",
+                    "UCIE_PCS": "DISABLED"
+                }
+            },
+            "soc_pstate": "N/A",
+            "xgmi_plpd": "N/A",
+            "profile": {
+                "available_profiles": [
+                    "CUSTOM",
+                    "VIDEO",
+                    "POWER_SAVING",
+                    "COMPUTE",
+                    "VR",
+                    "3D_FULL_SCREEN",
+                    "BOOTUP_DEFAULT"
+                ],
+                "current": "BOOTUP_DEFAULT",
+                "num_profiles": 35
+            },
+            "process_isolation": "N/A",
+            "numa": {
+                "node": 0,
+                "affinity": 0,
+                "cpu_affinity": {
+                    "cpu_list_0": {
+                        "bitmask": "0000003FFFFFFFFF",
+                        "cpu_cores_affinity": "0-37"
+                    },
+                    "cpu_list_1": {
+                        "bitmask": "0000000000000000",
+                        "cpu_cores_affinity": "N/A"
+                    }
+                },
+                "socket_affinity": {
+                    "cpu_list_0": {
+                        "bitmask": "0000003FFFFFFFFF",
+                        "cpu_cores_affinity": "0-37"
+                    },
+                    "cpu_list_1": {
+                        "bitmask": "0000000000000000",
+                        "cpu_cores_affinity": "N/A"
+                    }
+                }
+            },
+            "vram": {
+                "type": "HBM",
+                "vendor": "HYNIX",
+                "size": {
+                    "value": 32752,
+                    "unit": "MB"
+                },
+                "bit_width": 4096,
+                "max_bandwidth": {
+                    "value": "N/A",
+                    "unit": "GB/s"
+                }
+            },
+            "cache_info": [
+                {
+                    "cache": 0,
+                    "cache_acronym": "L1D",
+                    "cache_properties": [
+                        "DATA_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 16,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 1,
+                    "num_cache_instance": 64,
+                    "total_cache_size": {
+                        "value": 1024,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 1,
+                    "cache_acronym": "L1I",
+                    "cache_properties": [
+                        "INST_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 32,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 2,
+                    "num_cache_instance": 4,
+                    "total_cache_size": {
+                        "value": 128,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 2,
+                    "cache_acronym": "L1I",
+                    "cache_properties": [
+                        "INST_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 32,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 3,
+                    "num_cache_instance": 16,
+                    "total_cache_size": {
+                        "value": 512,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 3,
+                    "cache_acronym": "L1I",
+                    "cache_properties": [
+                        "INST_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 32,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 1,
+                    "num_cache_instance": 4,
+                    "total_cache_size": {
+                        "value": 128,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 4,
+                    "cache_acronym": "L1D",
+                    "cache_properties": [
+                        "DATA_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 16,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 2,
+                    "num_cache_instance": 4,
+                    "total_cache_size": {
+                        "value": 64,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 5,
+                    "cache_acronym": "L1D",
+                    "cache_properties": [
+                        "DATA_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 16,
+                        "unit": "KB"
+                    },
+                    "cache_level": 1,
+                    "max_num_cu_shared": 3,
+                    "num_cache_instance": 16,
+                    "total_cache_size": {
+                        "value": 256,
+                        "unit": "KB"
+                    }
+                },
+                {
+                    "cache": 6,
+                    "cache_acronym": "L2",
+                    "cache_properties": [
+                        "DATA_CACHE",
+                        "SIMD_CACHE"
+                    ],
+                    "cache_size": {
+                        "value": 8192,
+                        "unit": "KB"
+                    },
+                    "cache_level": 2,
+                    "max_num_cu_shared": 60,
+                    "num_cache_instance": 1,
+                    "total_cache_size": {
+                        "value": 8192,
+                        "unit": "KB"
+                    }
+                }
+            ],
+            "mem_carveout": "N/A",
+            "clock": {
+                "sys": {
+                    "current_level": 1,
+                    "frequency_levels": {
+                        "Level 0": {
+                            "value": "925",
+                            "unit": "MHz"
+                        },
+                        "Level 1": {
+                            "value": "930",
+                            "unit": "MHz"
+                        },
+                        "Level 2": {
+                            "value": "1032",
+                            "unit": "MHz"
+                        },
+                        "Level 3": {
+                            "value": "1143",
+                            "unit": "MHz"
+                        },
+                        "Level 4": {
+                            "value": "1282",
+                            "unit": "MHz"
+                        },
+                        "Level 5": {
+                            "value": "1386",
+                            "unit": "MHz"
+                        },
+                        "Level 6": {
+                            "value": "1485",
+                            "unit": "MHz"
+                        },
+                        "Level 7": {
+                            "value": "1606",
+                            "unit": "MHz"
+                        },
+                        "Level 8": {
+                            "value": "1725",
+                            "unit": "MHz"
+                        }
+                    }
+                },
+                "mem": {
+                    "current_level": 0,
+                    "frequency_levels": {
+                        "Level 0": {
+                            "value": "350",
+                            "unit": "MHz"
+                        },
+                        "Level 1": {
+                            "value": "800",
+                            "unit": "MHz"
+                        },
+                        "Level 2": {
+                            "value": "1180",
+                            "unit": "MHz"
+                        }
+                    }
+                },
+                "df": {
+                    "current_level": 0,
+                    "frequency_levels": {
+                        "Level 0": {
+                            "value": "550",
+                            "unit": "MHz"
+                        },
+                        "Level 1": {
+                            "value": "610",
+                            "unit": "MHz"
+                        },
+                        "Level 2": {
+                            "value": "690",
+                            "unit": "MHz"
+                        },
+                        "Level 3": {
+                            "value": "760",
+                            "unit": "MHz"
+                        },
+                        "Level 4": {
+                            "value": "870",
+                            "unit": "MHz"
+                        },
+                        "Level 5": {
+                            "value": "960",
+                            "unit": "MHz"
+                        },
+                        "Level 6": {
+                            "value": "1080",
+                            "unit": "MHz"
+                        },
+                        "Level 7": {
+                            "value": "1278",
+                            "unit": "MHz"
+                        }
+                    }
+                },
+                "soc": {
+                    "current_level": 0,
+                    "frequency_levels": {
+                        "Level 0": {
+                            "value": "309",
+                            "unit": "MHz"
+                        },
+                        "Level 1": {
+                            "value": "523",
+                            "unit": "MHz"
+                        },
+                        "Level 2": {
+                            "value": "566",
+                            "unit": "MHz"
+                        },
+                        "Level 3": {
+                            "value": "618",
+                            "unit": "MHz"
+                        },
+                        "Level 4": {
+                            "value": "680",
+                            "unit": "MHz"
+                        },
+                        "Level 5": {
+                            "value": "755",
+                            "unit": "MHz"
+                        },
+                        "Level 6": {
+                            "value": "850",
+                            "unit": "MHz"
+                        },
+                        "Level 7": {
+                            "value": "971",
+                            "unit": "MHz"
+                        }
+                    }
+                },
+                "dcef": "N/A",
+                "vclk0": "N/A",
+                "vclk1": "N/A",
+                "dclk0": "N/A",
+                "dclk1": "N/A"
+            }
+        }
+    ]
+}

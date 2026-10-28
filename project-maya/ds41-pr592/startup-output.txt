@@ -1,0 +1,48 @@
+INFO context=196608 kv=fp4 kv_resident=196608 expert_slots=5142 engine_kind=ds4 cpu_experts=10218 ram_experts=10218 cpu_threads=56 engine=ds4-0.1
+VRAM dev=0 pci=0000:33:00.0 total=34342961152 free=3095396352 weights=3703330816 kv=54974592 kv_ram=0 act=42809088 drafter=2670888960 window=0 pool=21752340480 tail=0 borrow=0 vision=0 vision_own=0 prompt=1859454208 tp=703799680 tp_n=2 slots=2314 ctx=196608 layers=0-19
+VRAM dev=1 pci=0000:36:00.0 total=34342961152 free=520093696 weights=3784775424 kv=55008384 kv_ram=0 act=42809088 drafter=5174661120 window=0 pool=21752340480 tail=0 borrow=0 vision=0 vision_own=0 prompt=1859454208 tp=703833472 tp_n=2 slots=2314 ctx=196608 layers=0-19
+VRAM dev=2 pci=0000:4d:00.0 total=34342961152 free=517996544 weights=4215796480 kv=36852096 kv_ram=0 act=54988032 drafter=0 window=0 pool=26960117760 tail=0 borrow=0 vision=0 vision_own=0 prompt=1789854976 tp=368595072 tp_n=2 slots=2868 ctx=196608 layers=20-39
+VRAM dev=3 pci=0000:50:00.0 total=34342961152 free=662700032 weights=4083392256 kv=36852096 kv_ram=0 act=46701056 drafter=0 window=0 pool=26960117760 tail=0 borrow=0 vision=0 vision_own=0 prompt=1789854976 tp=368595072 tp_n=2 slots=2868 ctx=196608 layers=20-39
+INFO engram_layers=2 engram_lookups=48
+INFO vision=ds4 vision_patch=14 vision_merge=3 vision_min_pixels=295936 vision_max_tokens=1024 vision_max_wh_ratio=0 image_token=129264 vision_gpu=0 vision_mib=0 vision_room_mib=318 vision_room=chunk
+READY 196608 stop
+PP 2048 2048 32314.1 63.4 0
+T 5
+T 24236
+T 33247
+T 3556
+T 6724
+T 6800
+T 25188
+T 1571
+STAT tok_s=18.04 ms_tok=55.43 vram_hit=0.7333 cpu=69.143 ram=69.143 promo=3.429 engram_ms=3.132 vram_used=5142 ram_used=10218 cpu_n=10218 vram_gb=96.67 ram_gb=192.10 eg_cache_rows=88588 eg_cache_cap=1016800 eg_cache_row_bytes=264 eg_lookup_rows=98640 eg_lookup_hits=10052 eg_lookup_reads=88588 disk_mb=0.146 disk=0.008 ram_fetch=69.135 drafts=1.000
+T 27908
+T 95027
+T 51563
+T 20003
+T 271
+T 372
+T 62607
+T 10807
+STAT tok_s=21.93 ms_tok=45.61 vram_hit=0.7589 cpu=62.200 ram=62.200 promo=3.200 engram_ms=2.253 vram_used=5142 ram_used=10218 cpu_n=10218 vram_gb=96.67 ram_gb=192.10 eg_cache_rows=88972 eg_cache_cap=1016800 eg_cache_row_bytes=264 eg_lookup_rows=99024 eg_lookup_hits=10052 eg_lookup_reads=88972 disk_mb=0.179 disk=0.010 ram_fetch=62.190 drafts=1.000
+T 109383
+T 58499
+T 1240
+T 92727
+T 15875
+T 66311
+T 49318
+T 1857
+STAT tok_s=19.52 ms_tok=51.22 vram_hit=0.7766 cpu=57.300 ram=57.300 promo=2.933 engram_ms=2.125 vram_used=5142 ram_used=10218 cpu_n=10218 vram_gb=96.67 ram_gb=192.10 eg_cache_rows=89628 eg_cache_cap=1016800 eg_cache_row_bytes=264 eg_lookup_rows=99744 eg_lookup_hits=10116 eg_lookup_reads=89628 disk_mb=0.181 disk=0.010 ram_fetch=57.290 drafts=0.667
+T 839
+T 4038
+T 12664
+T 1130
+T 32326
+T 14
+T 29584
+T 1489
+STAT tok_s=21.69 ms_tok=46.10 vram_hit=0.7751 cpu=57.541 ram=57.541 promo=3.027 engram_ms=1.969 vram_used=5142 ram_used=10218 cpu_n=10218 vram_gb=96.67 ram_gb=192.10 eg_cache_rows=89932 eg_cache_cap=1016800 eg_cache_row_bytes=264 eg_lookup_rows=100080 eg_lookup_hits=10148 eg_lookup_reads=89932 disk_mb=0.183 disk=0.010 ram_fetch=57.531 drafts=0.727
+STAT tok_s=21.69 ms_tok=46.10 vram_hit=0.7751 cpu=57.541 ram=57.541 promo=3.027 engram_ms=1.969 vram_used=5142 ram_used=10218 cpu_n=10218 vram_gb=96.67 ram_gb=192.10 eg_cache_rows=89932 eg_cache_cap=1016800 eg_cache_row_bytes=264 eg_lookup_rows=100080 eg_lookup_hits=10148 eg_lookup_reads=89932 disk_mb=0.183 disk=0.010 ram_fetch=57.531 drafts=0.727
+DONE 32 2048 32336.4 1475.3 length 16 22 0 7336 9465
+{"complete": true, "before": {"memory.current": "10375168", "memory.peak": "10375168", "memory.max": "236223201280", "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0", "cpu.max": "max 100000", "cpu.stat": "usage_usec 529032\nuser_usec 252165\nsystem_usec 276867\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"}, "source_commit": "b04264526e93a3c7d3c051cb9cec97af86ae8a37", "build": {"backend": "hip", "src": "119835894a3d65dc", "archs": ["gfx906"], "rocm": "/opt/rocm", "gpu_ids": [0], "llama": "/opt/maya/third_party/llama.cpp", "lib_dirs": ["/opt/rocm/lib"], "targets": ["maya", "maya-ds4"]}, "seed_profile_sha256": "a9e8219fd4c34ddfa6be80528eb8834322d791d783a1a08364d6f987be00b999", "ready": ["INFO context=196608 kv=fp4 kv_resident=196608 expert_slots=5142 engine_kind=ds4 cpu_experts=10218 ram_experts=10218 cpu_threads=56 engine=ds4-0.1", "VRAM dev=0 pci=0000:33:00.0 total=34342961152 free=3095396352 weights=3703330816 kv=54974592 kv_ram=0 act=42809088 drafter=2670888960 window=0 pool=21752340480 tail=0 borrow=0 vision=0 vision_own=0 prompt=1859454208 tp=703799680 tp_n=2 slots=2314 ctx=196608 layers=0-19", "VRAM dev=1 pci=0000:36:00.0 total=34342961152 free=520093696 weights=3784775424 kv=55008384 kv_ram=0 act=42809088 drafter=5174661120 window=0 pool=21752340480 tail=0 borrow=0 vision=0 vision_own=0 prompt=1859454208 tp=703833472 tp_n=2 slots=2314 ctx=196608 layers=0-19", "VRAM dev=2 pci=0000:4d:00.0 total=34342961152 free=517996544 weights=4215796480 kv=36852096 kv_ram=0 act=54988032 drafter=0 window=0 pool=26960117760 tail=0 borrow=0 vision=0 vision_own=0 prompt=1789854976 tp=368595072 tp_n=2 slots=2868 ctx=196608 layers=20-39", "VRAM dev=3 pci=0000:50:00.0 total=34342961152 free=662700032 weights=4083392256 kv=36852096 kv_ram=0 act=46701056 drafter=0 window=0 pool=26960117760 tail=0 borrow=0 vision=0 vision_own=0 prompt=1789854976 tp=368595072 tp_n=2 slots=2868 ctx=196608 layers=20-39", "INFO engram_layers=2 engram_lookups=48", "INFO vision=ds4 vision_patch=14 vision_merge=3 vision_min_pixels=295936 vision_max_tokens=1024 vision_max_wh_ratio=0 image_token=129264 vision_gpu=0 vision_mib=0 vision_room_mib=318 vision_room=chunk", "READY 196608 stop"], "load_s": 250.79695953498594, "done": "DONE 32 2048 32336.4 1475.3 length 16 22 0 7336 9465", "tokens": [5, 24236, 33247, 3556, 6724, 6800, 25188, 1571, 27908, 95027, 51563, 20003, 271, 372, 62607, 10807, 109383, 58499, 1240, 92727, 15875, 66311, 49318, 1857, 839, 4038, 12664, 1130, 32326, 14, 29584, 1489], "request_wall_s": 34.18336875602836, "output_text": "# Шахматы для неподготовленного читателя\n\n## Что это вообще такое?\n\nПредставьте себе настольную игру, где д", "engine_exit_code": 0, "after": {"memory.current": "10117619712", "memory.peak": "217345142784", "memory.max": "236223201280", "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0", "cpu.max": "max 100000", "cpu.stat": "usage_usec 1420952714\nuser_usec 278056169\nsystem_usec 1142896545\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0"}}

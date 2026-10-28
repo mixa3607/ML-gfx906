@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/data/experiment/startup.py", line 148, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/data/experiment/startup.py", line 97, in main
+    record = {'complete': False, 'before': snapshot(),
+                                           ^^^^^^^^^^
+  File "/data/experiment/startup.py", line 23, in snapshot
+    result[name] = (root / name).read_text().strip()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1029, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/sys/fs/cgroup/memory.current'
+command terminated with exit code 1

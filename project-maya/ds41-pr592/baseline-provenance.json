@@ -1,0 +1,253 @@
+{
+  "SLSA": {
+    "buildDefinition": {
+      "buildType": "https://github.com/moby/buildkit/blob/master/docs/attestations/slsa-definitions.md",
+      "externalParameters": {
+        "configSource": {
+          "path": "build-image.Dockerfile"
+        },
+        "request": {
+          "args": {
+            "cmdline": "docker/dockerfile:1",
+            "source": "docker/dockerfile:1",
+            "target": "final"
+          },
+          "compatibilityVersion": 30,
+          "frontend": "gateway.v0",
+          "locals": [
+            {
+              "name": "context"
+            },
+            {
+              "name": "dockerfile"
+            }
+          ],
+          "root": {
+            "configSource": {
+              "path": "build-image.Dockerfile"
+            },
+            "request": {
+              "args": {
+                "target": "final",
+                "vcs:localdir:context": "project-maya/build-context",
+                "vcs:localdir:dockerfile": "project-maya",
+                "vcs:revision": "79215eac60ae9b844bb1d8884a7c7432310e3ee6",
+                "vcs:source": "https://github.com/mixa3607/ML-gfx906"
+              }
+            }
+          }
+        }
+      },
+      "internalParameters": {
+        "builderPlatform": "linux/amd64",
+        "github_actor": "mixa3607",
+        "github_actor_id": "30209772",
+        "github_event_name": "workflow_dispatch",
+        "github_event_payload": {
+          "inputs": {
+            "force_build": "false"
+          },
+          "ref": "refs/heads/master",
+          "repository": {
+            "allow_forking": true,
+            "archive_url": "https://api.github.com/repos/mixa3607/ML-gfx906/{archive_format}{/ref}",
+            "archived": false,
+            "assignees_url": "https://api.github.com/repos/mixa3607/ML-gfx906/assignees{/user}",
+            "blobs_url": "https://api.github.com/repos/mixa3607/ML-gfx906/git/blobs{/sha}",
+            "branches_url": "https://api.github.com/repos/mixa3607/ML-gfx906/branches{/branch}",
+            "clone_url": "https://github.com/mixa3607/ML-gfx906.git",
+            "collaborators_url": "https://api.github.com/repos/mixa3607/ML-gfx906/collaborators{/collaborator}",
+            "comments_url": "https://api.github.com/repos/mixa3607/ML-gfx906/comments{/number}",
+            "commits_url": "https://api.github.com/repos/mixa3607/ML-gfx906/commits{/sha}",
+            "compare_url": "https://api.github.com/repos/mixa3607/ML-gfx906/compare/{base}...{head}",
+            "contents_url": "https://api.github.com/repos/mixa3607/ML-gfx906/contents/{+path}",
+            "contributors_url": "https://api.github.com/repos/mixa3607/ML-gfx906/contributors",
+            "created_at": "2025-07-13T20:21:34Z",
+            "default_branch": "master",
+            "deployments_url": "https://api.github.com/repos/mixa3607/ML-gfx906/deployments",
+            "description": "ML software (llama.cpp, ComfyUI, Strata, Maya, ...) builds for AMD gfx906 GPUs, e.g. Radeon VII / MI50 / MI60",
+            "disabled": false,
+            "downloads_url": "https://api.github.com/repos/mixa3607/ML-gfx906/downloads",
+            "events_url": "https://api.github.com/repos/mixa3607/ML-gfx906/events",
+            "fork": false,
+            "forks": 39,
+            "forks_count": 39,
+            "forks_url": "https://api.github.com/repos/mixa3607/ML-gfx906/forks",
+            "full_name": "mixa3607/ML-gfx906",
+            "git_commits_url": "https://api.github.com/repos/mixa3607/ML-gfx906/git/commits{/sha}",
+            "git_refs_url": "https://api.github.com/repos/mixa3607/ML-gfx906/git/refs{/sha}",
+            "git_tags_url": "https://api.github.com/repos/mixa3607/ML-gfx906/git/tags{/sha}",
+            "git_url": "git://github.com/mixa3607/ML-gfx906.git",
+            "has_discussions": false,
+            "has_downloads": false,
+            "has_issues": true,
+            "has_pages": false,
+            "has_projects": false,
+            "has_pull_requests": true,
+            "has_wiki": false,
+            "homepage": "https://arkprojects.space/wiki/AMD_GFX906",
+            "hooks_url": "https://api.github.com/repos/mixa3607/ML-gfx906/hooks",
+            "html_url": "https://github.com/mixa3607/ML-gfx906",
+            "id": 1019136973,
+            "is_template": false,
+            "issue_comment_url": "https://api.github.com/repos/mixa3607/ML-gfx906/issues/comments{/number}",
+            "issue_events_url": "https://api.github.com/repos/mixa3607/ML-gfx906/issues/events{/number}",
+            "issues_url": "https://api.github.com/repos/mixa3607/ML-gfx906/issues{/number}",
+            "keys_url": "https://api.github.com/repos/mixa3607/ML-gfx906/keys{/key_id}",
+            "labels_url": "https://api.github.com/repos/mixa3607/ML-gfx906/labels{/name}",
+            "language": "C++",
+            "languages_url": "https://api.github.com/repos/mixa3607/ML-gfx906/languages",
+            "license": {
+              "key": "mit",
+              "name": "MIT License",
+              "node_id": "MDc6TGljZW5zZTEz",
+              "spdx_id": "MIT",
+              "url": "https://api.github.com/licenses/mit"
+            },
+            "merges_url": "https://api.github.com/repos/mixa3607/ML-gfx906/merges",
+            "milestones_url": "https://api.github.com/repos/mixa3607/ML-gfx906/milestones{/number}",
+            "mirror_url": null,
+            "name": "ML-gfx906",
+            "node_id": "R_kgDOPL7LzQ",
+            "notifications_url": "https://api.github.com/repos/mixa3607/ML-gfx906/notifications{?since,all,participating}",
+            "open_issues": 6,
+            "open_issues_count": 6,
+            "owner": {
+              "avatar_url": "https://avatars.githubusercontent.com/u/30209772?v=4",
+              "events_url": "https://api.github.com/users/mixa3607/events{/privacy}",
+              "followers_url": "https://api.github.com/users/mixa3607/followers",
+              "following_url": "https://api.github.com/users/mixa3607/following{/other_user}",
+              "gists_url": "https://api.github.com/users/mixa3607/gists{/gist_id}",
+              "gravatar_id": "",
+              "html_url": "https://github.com/mixa3607",
+              "id": 30209772,
+              "login": "mixa3607",
+              "node_id": "MDQ6VXNlcjMwMjA5Nzcy",
+              "organizations_url": "https://api.github.com/users/mixa3607/orgs",
+              "received_events_url": "https://api.github.com/users/mixa3607/received_events",
+              "repos_url": "https://api.github.com/users/mixa3607/repos",
+              "site_admin": false,
+              "starred_url": "https://api.github.com/users/mixa3607/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/mixa3607/subscriptions",
+              "type": "User",
+              "url": "https://api.github.com/users/mixa3607",
+              "user_view_type": "public"
+            },
+            "private": false,
+            "pull_request_creation_policy": "all",
+            "pulls_url": "https://api.github.com/repos/mixa3607/ML-gfx906/pulls{/number}",
+            "pushed_at": "2026-10-27T17:45:25Z",
+            "releases_url": "https://api.github.com/repos/mixa3607/ML-gfx906/releases{/id}",
+            "size": 20166,
+            "ssh_url": "git@github.com:mixa3607/ML-gfx906.git",
+            "stargazers_count": 361,
+            "stargazers_url": "https://api.github.com/repos/mixa3607/ML-gfx906/stargazers",
+            "statuses_url": "https://api.github.com/repos/mixa3607/ML-gfx906/statuses/{sha}",
+            "subscribers_url": "https://api.github.com/repos/mixa3607/ML-gfx906/subscribers",
+            "subscription_url": "https://api.github.com/repos/mixa3607/ML-gfx906/subscription",
+            "svn_url": "https://github.com/mixa3607/ML-gfx906",
+            "tags_url": "https://api.github.com/repos/mixa3607/ML-gfx906/tags",
+            "teams_url": "https://api.github.com/repos/mixa3607/ML-gfx906/teams",
+            "topics": [
+              "amd-gpu",
+              "comfyui",
+              "llamacpp",
+              "maya",
+              "strata",
+              "torch"
+            ],
+            "trees_url": "https://api.github.com/repos/mixa3607/ML-gfx906/git/trees{/sha}",
+            "updated_at": "2026-10-27T17:45:29Z",
+            "url": "https://api.github.com/repos/mixa3607/ML-gfx906",
+            "visibility": "public",
+            "watchers": 361,
+            "watchers_count": 361,
+            "web_commit_signoff_required": false
+          },
+          "sender": {
+            "avatar_url": "https://avatars.githubusercontent.com/u/30209772?v=4",
+            "events_url": "https://api.github.com/users/mixa3607/events{/privacy}",
+            "followers_url": "https://api.github.com/users/mixa3607/followers",
+            "following_url": "https://api.github.com/users/mixa3607/following{/other_user}",
+            "gists_url": "https://api.github.com/users/mixa3607/gists{/gist_id}",
+            "gravatar_id": "",
+            "html_url": "https://github.com/mixa3607",
+            "id": 30209772,
+            "login": "mixa3607",
+            "node_id": "MDQ6VXNlcjMwMjA5Nzcy",
+            "organizations_url": "https://api.github.com/users/mixa3607/orgs",
+            "received_events_url": "https://api.github.com/users/mixa3607/received_events",
+            "repos_url": "https://api.github.com/users/mixa3607/repos",
+            "site_admin": false,
+            "starred_url": "https://api.github.com/users/mixa3607/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/mixa3607/subscriptions",
+            "type": "User",
+            "url": "https://api.github.com/users/mixa3607",
+            "user_view_type": "public"
+          },
+          "workflow": ".github/workflows/maya-build.yaml"
+        },
+        "github_job": "build",
+        "github_ref": "refs/heads/master",
+        "github_ref_name": "master",
+        "github_ref_protected": "true",
+        "github_ref_type": "branch",
+        "github_repository": "mixa3607/ML-gfx906",
+        "github_repository_id": "1019136973",
+        "github_repository_owner": "mixa3607",
+        "github_repository_owner_id": "30209772",
+        "github_run_attempt": "1",
+        "github_run_id": "40642503306",
+        "github_run_number": "11",
+        "github_runner_arch": "X64",
+        "github_runner_environment": "github-hosted",
+        "github_runner_image_os": "ubuntu24",
+        "github_runner_image_version": "20261023.334.3",
+        "github_runner_name": "GitHub Actions 1000001640",
+        "github_runner_os": "Linux",
+        "github_runner_tracking_id": "github_fc5858df-75cb-40ba-a597-251285928668",
+        "github_server_url": "https://github.com",
+        "github_triggering_actor": "mixa3607",
+        "github_workflow": "Project Maya build",
+        "github_workflow_ref": "mixa3607/ML-gfx906/.github/workflows/maya-build.yaml@refs/heads/master",
+        "github_workflow_sha": "60b81fb56f6ea67740f2bc831694a0c5df6d3553"
+      },
+      "resolvedDependencies": [
+        {
+          "digest": {
+            "sha256": "4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e"
+          },
+          "uri": "pkg:docker/docker/dockerfile@1"
+        },
+        {
+          "digest": {
+            "sha256": "b1d72163863a56b6b2bf498d159c1dc17627f8751aed6c8b8de2ebe9882972b4"
+          },
+          "uri": "pkg:docker/mixa3607/rocm-gfx906@10.1-complete?platform=linux%2Famd64"
+        }
+      ]
+    },
+    "runDetails": {
+      "builder": {
+        "id": ""
+      },
+      "metadata": {
+        "buildkit_completeness": {
+          "request": false,
+          "resolvedDependencies": false
+        },
+        "buildkit_metadata": {
+          "vcs": {
+            "localdir:context": "project-maya/build-context",
+            "localdir:dockerfile": "project-maya",
+            "revision": "79215eac60ae9b844bb1d8884a7c7432310e3ee6",
+            "source": "https://github.com/mixa3607/ML-gfx906"
+          }
+        },
+        "finishedOn": "2026-10-28T06:22:44.479987502Z",
+        "invocationId": "b9ymr3418hod3i5yx232d9bam",
+        "startedOn": "2026-10-28T06:14:23.797498925Z"
+      }
+    }
+  }
+}

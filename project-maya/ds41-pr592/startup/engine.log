@@ -1,0 +1,43 @@
+ds4: tensor parallel 2: the experts' n_ff 2304 in 32-value blocks, 1152 to 1152 a member (the odd blocks going round the members layer by layer) (DS4_TP_GGUF_UNEVEN)
+ds4: the one-GPU decode path (in-place pulls, windows streamed, landings): off (v1.1.27's path: not Linux + NVIDIA + one GPU)
+ds4: DS4_DRAFT_DEV 0,1,1: DSpark block 0 on CUDA0 (member 0), 1 on CUDA1 (member 1), 2 on CUDA1 (member 1) - each block's experts out of its own member's room
+ds4: the experts VRAM leaves over (~188.6 GB) are read in place from the model's files (copied into RAM after the GPUs' share when the RAM holds them all; --mmap-experts on keeps them in place) (235.5 GB of RAM free to keep them: the most-routed 188.6 GB read ahead; prompts in chunks of 2048)
+ds4: copied expert cache: DONTNEED hints accepted for 191.979 GB of whole source pages (eviction is advisory)
+ds4: the copied experts pinned (192.9 GB in 46.0 s): the prompt path DMAs them in place
+ds4: 10218 of the CPU lane's 10218 experts copied into RAM (192.1 GB, 2 NUMA parts) in 165.7 s
+ds4: CUDA0 layers [0, 40] (tensor parallel 2, part 0) + blocks 0: weights 4.62 GB, experts 24.16 GB (2422 of 7808 in VRAM), caches 0.11 GB, 2952 MiB free
+ds4: CUDA1 layers [0, 42] (tensor parallel 2, part 1) + blocks 1,2: weights 4.80 GB, experts 26.57 GB (2550 of 7936 in VRAM), caches 0.11 GB, 496 MiB free
+ds4: CUDA2 layers [20, 39] (tensor parallel 2, part 0) + head: weights 4.55 GB, experts 26.96 GB (2848 of 7680 in VRAM), caches 0.07 GB, 494 MiB free
+ds4: CUDA3 layers [20, 39] (tensor parallel 2, part 1): weights 4.42 GB, experts 26.96 GB (2848 of 7680 in VRAM), caches 0.07 GB, 632 MiB free
+ds4: 10218 routed experts on the CPU lane (192.1 GB): 10218 copied into RAM (2 NUMA parts), the rest in place in the model's files; 56 threads
+maya ds4 serve: GEN <max_new> [keys] <ids>; GENI <max_new> [keys] <pictures> <ids>; STOP, QUIT
+
+rocblaslt error: Cannot read "TensileLibrary_lazy_gfx906.dat" (or .zlib variant): No such file or directory
+
+rocblaslt error: Could not load "TensileLibrary_lazy_gfx906.dat"
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 32336 ms (63.3 tok/s), 32 generated in 1475 ms (21.69 tok/s); CPU lane 0.4% of the experts
+maya ds4 serve: drafts 16 of 22 kept; per position (kept / reached): 1: 10/12 83% 2: 5/6 83% 3: 1/1 100%

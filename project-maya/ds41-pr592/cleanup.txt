@@ -1,0 +1,2 @@
+pod "maya-ds41-pr592-baseline" deleted
+pod "maya-ds41-pr592-candidate" deleted

@@ -1,0 +1,15 @@
+Name:      registry.arkprojects.space/apps/maya-gfx906:v1.1.34-pr592-9a0876f-rocm-10.1-e61d86c-pre
+MediaType: application/vnd.oci.image.index.v1+json
+Digest:    sha256:a7fc0bd66b45730217061a38a60ce983930fe3c938da226e3301ded61e97a9e4
+           
+Manifests: 
+  Name:        registry.arkprojects.space/apps/maya-gfx906:v1.1.34-pr592-9a0876f-rocm-10.1-e61d86c-pre@sha256:3063e35de96907d8624df4f2a6ebf0905fd56de168cf6583762b25134ae903a5
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    linux/amd64
+               
+  Name:        registry.arkprojects.space/apps/maya-gfx906:v1.1.34-pr592-9a0876f-rocm-10.1-e61d86c-pre@sha256:1b51a5066d9487533a2e79f613b40b4353234056c435e0ac29223cda15c36bb2
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    unknown/unknown
+  Annotations: 
+    vnd.docker.reference.type:   attestation-manifest
+    vnd.docker.reference.digest: sha256:3063e35de96907d8624df4f2a6ebf0905fd56de168cf6583762b25134ae903a5

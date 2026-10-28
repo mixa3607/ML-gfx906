@@ -1,0 +1,63 @@
+{
+  "comparisons": {},
+  "metrics": {
+    "A-baseline": {
+      "0": {
+        "valid": false,
+        "actual_tg": [
+          135,
+          165
+        ],
+        "metrics": null
+      },
+      "4096": {
+        "valid": true,
+        "actual_tg": [
+          256,
+          256
+        ],
+        "metrics": {
+          "requests": 2,
+          "pp_tok_s": 150.50551259509936,
+          "native_decode_tok_s": 25.876897004876017,
+          "mean_ttft_s": 27.2194222905091,
+          "wall_s": 74.14351130503928,
+          "drafted": 284,
+          "accepted": 245
+        }
+      },
+      "8192": {
+        "valid": true,
+        "actual_tg": [
+          256,
+          256
+        ],
+        "metrics": {
+          "requests": 2,
+          "pp_tok_s": 185.88482492744546,
+          "native_decode_tok_s": 28.09948318989741,
+          "mean_ttft_s": 44.07656043599127,
+          "wall_s": 106.29897555505158,
+          "drafted": 356,
+          "accepted": 298
+        }
+      },
+      "16384": {
+        "valid": true,
+        "actual_tg": [
+          256,
+          256
+        ],
+        "metrics": {
+          "requests": 2,
+          "pp_tok_s": 204.72617062471843,
+          "native_decode_tok_s": 24.555946631742657,
+          "mean_ttft_s": 80.04190074949292,
+          "wall_s": 180.84344051603694,
+          "drafted": 312,
+          "accepted": 242
+        }
+      }
+    }
+  }
+}

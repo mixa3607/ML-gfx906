@@ -1,0 +1,29 @@
+{
+  "warmups": 12,
+  "measurements": 8,
+  "tg": 256,
+  "context_order": [
+    0,
+    4096,
+    8192,
+    16384,
+    0,
+    4096,
+    8192,
+    16384
+  ],
+  "zero_context": "BOS token 0; actual PP1, not a zero-token prefill",
+  "files": {
+    "cases.jsonl": "f8b42d2a326af91e83a6fb52307df637581534781f020d7b56efe1b92ccdb83b",
+    "sources.jsonl": "f9d8d2dd91eeccbddff09d50139a3f762f31106ea8f0004187ebd95d595c14e9",
+    "corpus.py": "994859e575d0362058f0e39c524a63cfe6bdcd38b2fcd066b0b699441aead131",
+    "freeze_inputs.py": "3bd680ed2cf80b786914196b0757f02cc3a29203976f488795061b9ab28ef6e6"
+  },
+  "tokenizer_files": {
+    "vocab.json": "2f0bf5b31f4aa191d5d0d78291927a4f28c9ceb498a5e345b97e926c4cb99c1a",
+    "merges.txt": "547bace837acea98652eef5669c9b01cee1c73ad1d2a44d6fdce9e6a81c22147",
+    "token_type.json": "0a61021438e5ce6041133495f18fc360a6587aea748b17d953f552d2119ba51e",
+    "tokenizer.json": "5a47981b685b75154e29bfb0299584c9b3a4a28679585e86d524c34c065d037f",
+    "chat_template.jinja": "e9f7db2fa773233bdfd0c5f21cf5d300283aad08fd6d056593634a5a375306fa"
+  }
+}

@@ -1,0 +1,52 @@
+ds4: tensor parallel 2: the experts' n_ff 2304 in 32-value blocks, 1152 to 1152 a member (the odd blocks going round the members layer by layer) (DS4_TP_GGUF_UNEVEN)
+ds4: the one-GPU decode path (in-place pulls, windows streamed, landings): off (v1.1.27's path: not Linux + NVIDIA + one GPU)
+ds4: DS4_DRAFT_DEV 0,1,1: DSpark block 0 on CUDA0 (member 0), 1 on CUDA1 (member 1), 2 on CUDA1 (member 1) - each block's experts out of its own member's room
+ds4: the experts VRAM leaves over (~188.6 GB) are read in place from the model's files (copied into RAM after the GPUs' share when the RAM holds them all; --mmap-experts on keeps them in place) (235.5 GB of RAM free to keep them: the most-routed 188.6 GB read ahead; prompts in chunks of 2048)
+ds4: copied expert cache: DONTNEED hints accepted for 191.979 GB of whole source pages (eviction is advisory)
+ds4: the copied experts pinned (192.9 GB in 44.0 s): the prompt path DMAs them in place
+ds4: 10218 of the CPU lane's 10218 experts copied into RAM (192.1 GB, 2 NUMA parts) in 168.0 s
+ds4: exact peer prefill all-reduce enabled on HIP0/HIP1 (80 MiB/rank)
+ds4: exact peer prefill all-reduce enabled on HIP2/HIP3 (80 MiB/rank)
+ds4: CUDA0 layers [0, 40] (tensor parallel 2, part 0) + blocks 0: weights 4.62 GB, experts 24.16 GB (2422 of 7808 in VRAM), caches 0.11 GB, 2872 MiB free
+ds4: CUDA1 layers [0, 42] (tensor parallel 2, part 1) + blocks 1,2: weights 4.80 GB, experts 26.57 GB (2550 of 7936 in VRAM), caches 0.11 GB, 416 MiB free
+ds4: CUDA2 layers [20, 39] (tensor parallel 2, part 0) + head: weights 4.55 GB, experts 26.96 GB (2848 of 7680 in VRAM), caches 0.07 GB, 414 MiB free
+ds4: CUDA3 layers [20, 39] (tensor parallel 2, part 1): weights 4.42 GB, experts 26.96 GB (2848 of 7680 in VRAM), caches 0.07 GB, 552 MiB free
+ds4: 10218 routed experts on the CPU lane (192.1 GB): 10218 copied into RAM (2 NUMA parts), the rest in place in the model's files; 56 threads
+maya ds4 serve: GEN <max_new> [keys] <ids>; GENI <max_new> [keys] <pictures> <ids>; STOP, QUIT
+
+rocblaslt error: Cannot read "TensileLibrary_lazy_gfx906.dat" (or .zlib variant): No such file or directory
+
+rocblaslt error: Could not load "TensileLibrary_lazy_gfx906.dat"
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+PEER_AR_FAILURE gpu=0 rank=0 stream_status=0 copy_status=0 error=1 sequence=40
+PEER_AR_TIMEOUT_DETAIL gpu=0 rank=0 copy_status=0 captured=1 failed_sequence=7 observed=5 block=6 n4=2621440 elapsed_ticks=50000004 timeout_ticks=50000000 last_submitted_sequence=40
+PEER_AR_FAILURE gpu=1 rank=1 stream_status=0 copy_status=0 error=1 sequence=40
+PEER_AR_TIMEOUT_DETAIL gpu=1 rank=1 copy_status=0 captured=1 failed_sequence=7 observed=5 block=27 n4=2621440 elapsed_ticks=50000004 timeout_ticks=50000000 last_submitted_sequence=40
+PEER_AR_FAILURE gpu=2 rank=0 stream_status=0 copy_status=0 error=1 sequence=40
+PEER_AR_TIMEOUT_DETAIL gpu=2 rank=0 copy_status=0 captured=1 failed_sequence=1 observed=0 block=32 n4=2621440 elapsed_ticks=50000000 timeout_ticks=50000000 last_submitted_sequence=40
+PEER_AR_FAILURE gpu=3 rank=1 stream_status=0 copy_status=0 error=1 sequence=40
+PEER_AR_TIMEOUT_DETAIL gpu=3 rank=1 copy_status=0 captured=1 failed_sequence=1 observed=0 block=15 n4=2621440 elapsed_ticks=50000004 timeout_ticks=50000000 last_submitted_sequence=40
+ds4: peer all-reduce failed; model state invalid, reload required

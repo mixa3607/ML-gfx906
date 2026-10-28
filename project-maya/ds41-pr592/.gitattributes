@@ -1,0 +1,4 @@
+# Preserve original tool console output, including progress CRs and padding.
+build-pr592-output.txt -whitespace
+candidate-image.txt -whitespace
+gpu-*-cleanup.txt -whitespace
