@@ -1,5 +1,5 @@
 {
-  "suite": "ds41f-warm-cache-pp2k-32k",
+  "suite": "ds41f-ru-warm-cache-pp2k-32k",
   "model": "deepseek-v4.1-flash",
   "seed": 20261024,
   "tg": 256,
@@ -7,6 +7,10 @@
     "project": "project-maya",
     "tag": "v1.1.38",
     "commit": "cf6472cc84489765791ad97bb55b395e8f442088"
+  },
+  "corpus": {
+    "name": "ru-prose",
+    "sources_sha256": "f9d8d2dd91eeccbddff09d50139a3f762f31106ea8f0004187ebd95d595c14e9"
   },
   "warmup": {
     "pp": 2048,

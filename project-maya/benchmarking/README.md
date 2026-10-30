@@ -5,23 +5,41 @@ It measures **one autoregressive text request at a time** - warmed prefill and
 decode on an already loaded engine - not concurrency, not answer quality and
 not cold-start latency.
 
-- [CORPUS.md](CORPUS.md) - the rules for turning real prose into frozen cases.
+- [SUITES.md](SUITES.md) - how corpora and suites are structured and frozen.
 - [benchkit.py](benchkit.py) - the shared implementation: fetch, exact-length
-  cutting, checks, manifests, human-readable reports.
+  cutting, checks, manifests, reports.
 - [freeze.py](freeze.py) - the command line around it.
-- `CORPUS-*/` - one directory per suite: its configuration, frozen data and
-  description.
+- `corpora/` - model-independent text: article pools, tasks, frozen sources.
+- `suites/` - one directory per measured workload: model, encoder, schedule,
+  frozen cases.
+
+## Layout
+
+```text
+corpora/<corpus>/     corpus.py, sources.jsonl, SOURCES.md, README.md
+suites/<suite>/       suite.py, cases.jsonl, suite.json, CASES.md,
+                      cases.manifest.json, README.md
+```
+
+A **corpus** is text and tasks (what is read). A **suite** is a corpus plus a
+model, tokenizer, chat encoder and PP/TG schedule (how it is measured). The
+same corpus can feed several suites; every suite freezes its own token ids.
+
+## Corpora
+
+| Corpus | Language / domain | Pools | Used by |
+| --- | --- | --- | --- |
+| [ru-prose](corpora/ru-prose/) | Russian Wikipedia prose, six writing tasks | 12 warmup, 24 dev, 48 holdout (not shipped) | [ds41f-ru](suites/ds41f-ru/) |
 
 ## Suites
 
 | Suite | Model | Warmup | Measured | TG |
 | --- | --- | --- | --- | ---: |
-| [CORPUS-DS41F](CORPUS-DS41F/) | deepseek-v4.1-flash | 12 x PP2048 | 2 x (PP2048, PP4096, PP8192, PP16384, PP32768) | 256 |
+| [ds41f-ru](suites/ds41f-ru/) | deepseek-v4.1-flash | 12 x PP2048 | 2 x (PP2048, PP4096, PP8192, PP16384, PP32768) | 256 |
 
 Each suite directory has its own `README.md` (what and why), `CASES.md` (every
-request in feed order, readable), `SOURCES.md` (attributed articles) and
-`suite.json` (the order for a runner). The frozen requests themselves are in
-`cases.jsonl`.
+request in feed order, readable) and `suite.json` (the order for a runner). The
+frozen requests themselves are in `cases.jsonl`.
 
 ## Terms
 
@@ -124,38 +142,56 @@ repeat to expose filesystem-cache or thermal carry-over. Freeze any additional
 input order before running it; never pick the fastest order after seeing the
 results.
 
-## Building or changing a suite
-
-A suite is a directory with `suite.py` and its `sources.jsonl`. The suite
-decides what is measured; the shared kit decides how it is cut and frozen.
+## Building or changing a corpus or suite
 
 ```bash
-# inside a Maya image, with the pinned Maya source mounted at /src
-MAYA_ROOT=/src python3 freeze.py freeze CORPUS-DS41F --tokenizer /data/ds4/tokenizer --force
+cd project-maya/benchmarking
+
+# fill a corpus's sources.jsonl and SOURCES.md (network, once per revision)
+python3 freeze.py fetch corpora/ru-prose
+
+# regenerate SOURCES.md from an existing frozen file
+python3 freeze.py sources corpora/ru-prose
+
+# build a suite from its corpus (inside a Maya image; see below)
+python3 freeze.py freeze suites/ds41f-ru --tokenizer /data/ds4/tokenizer
 ```
 
-`freeze.py` writes `cases.jsonl`, `suite.json`, `CASES.md`, `SOURCES.md` and
-`cases.manifest.json`. It refuses to overwrite without `--force`, checks exact
-PP lengths, request uniqueness, non-overlapping source byte ranges, that the
-prompt re-tokenises to its ids, and that a suite's warmup reference still
-matches when one is pinned. Rerunning with the same inputs produces
-byte-identical files.
+Inside a container, mount the benchmark tree and the pinned Maya source:
+
+```bash
+docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
+  -e MAYA_ROOT=/src -e PYTHONDONTWRITEBYTECODE=1 -w /work \
+  --entrypoint python3 \
+  -v "$PWD/..":/work -v /path/to/project-maya:/src:ro \
+  -v /path/to/ds4/tokenizer:/data/ds4/tokenizer:ro \
+  YOUR_MAYA_IMAGE /work/freeze.py freeze suites/ds41f-ru \
+  --tokenizer /data/ds4/tokenizer
+```
+
+`freeze.py` writes `cases.jsonl`, `suite.json`, `CASES.md` and
+`cases.manifest.json` into the suite, and `SOURCES.md` into the corpus. It
+refuses to overwrite without `--force`, checks exact PP lengths, request
+uniqueness, non-overlapping source byte ranges, that the prompt re-tokenises to
+its ids, and that a suite's warmup reference still matches when one is pinned.
+Rerunning with the same inputs produces byte-identical files.
 
 The manifest hashes the suite's own files (`cases.jsonl`, `suite.json`,
-`CASES.md`, `SOURCES.md`, `suite.py`), pins `sources.jsonl`, the tokenizer files
-and the chat encoder, and records the hashes of `benchkit.py` and `freeze.py`
-used to build it. Documentation is not hashed.
+`CASES.md`, `suite.py`), pins the corpus (`corpus.py`, `sources.jsonl`), the
+tokenizer files and the chat encoder, and records the hashes of `benchkit.py`
+and `freeze.py` used to build it. Documentation is not hashed.
 
-A change to the tokenizer, chat template, encoder, seed or source pool is a new
-suite directory, not an edit of an existing one. Never hand-edit `cases.jsonl`.
+A change to the tokenizer, chat template, encoder, seed or schedule is a new
+suite; a change to the articles or tasks is a new corpus. Never hand-edit a
+frozen file.
 
 ## Limits
 
-- The shipped suites use Russian Wikipedia prose and writing tasks. They say
+- The shipped corpus is Russian Wikipedia prose and writing tasks. It says
   nothing about code, chat slang, tool calls, images or multi-turn behaviour.
-- A suite may use an article pool that earlier tuning already touched; that is
-  a baseline suite, not a blind holdout. A final check needs the disjoint pool
-  listed in the suite's `suite.py`, fetched and frozen separately.
+- A corpus may have been touched by earlier tuning; a suite built on it is a
+  baseline, not a blind holdout. A final check needs the disjoint pool listed in
+  the corpus, fetched and frozen separately.
 - These are single-request throughput samples, not a statistical steady state
   or a general model benchmark. Longer contexts, code, multilingual input,
-  vision and concurrency need their own suites.
+  vision and concurrency need their own corpora and suites.

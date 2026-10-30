@@ -1,25 +1,26 @@
 #!/usr/bin/env python3
 """Shared kit: turn frozen prose into exact-length benchmark suites.
 
-A suite lives in its own directory (``CORPUS-XXXX/``) and provides:
+The directory is split in two:
 
-    suite.py    a ``SUITE`` dict and the ``SOURCES`` / ``TASKS`` / ``TASK_LABELS``
-                that make it specific: article pools, task texts, seed, PP
-                schedule, TG, encoder pin, model-specific tokenizer settings.
+    corpora/<name>/corpus.py   model-independent: article pools, task texts,
+                               attribution notes and the frozen sources.jsonl;
+    suites/<name>/suite.py     model-specific: encoder pin, tokenizer settings,
+                               seed, PP schedule, TG, warmup/measurement splits.
 
 ``freeze.py`` is the command-line entry point; this module holds the parts that
-are the same for every suite:
+are the same for every corpus and suite:
 
     fetch_articles()   download attributed articles from the Wikipedia API;
     build_cases()      cut prose into requests of exactly PP tokens;
-    freeze_suite()     write cases.jsonl, suite.json, CASES.md, SOURCES.md and
+    freeze_suite()     write cases.jsonl, suite.json, CASES.md and
                        cases.manifest.json, with the checks that make them
                        trustworthy.
 
 The test for "generic" here is simple: nothing in this file knows a model name,
-an article title, a task text, a token or a PP length.  A suite that needs a
-different chat encoder or assistant header supplies its own strings and
-imports, so the cutting and freezing rules stay identical across suites.
+an article title, a task text, a token or a PP length.  A corpus supplies the
+text and tasks, a suite supplies the model and schedule, so the cutting and
+freezing rules stay identical across both.
 """
 from __future__ import annotations
 
@@ -55,9 +56,9 @@ def fetch_one(split, title):
             delay = max(60, int(e.headers.get('Retry-After', '60')))
             print(f'Wikipedia rate limit: waiting {delay}s', file=sys.stderr, flush=True)
             time.sleep(delay)
-    if len(raw) > 4 * 1024 * 1024:
+    if len(raw) > 4 * 1024 * 1024: # type: ignore
         raise ValueError(f'Oversized source: {title}')
-    page, = json.loads(raw)['query']['pages'].values()
+    page, = json.loads(raw)['query']['pages'].values() # type: ignore
     text = page.get('extract', '').strip()
     if len(text) < 1000:
         raise ValueError(f'Source too short or missing: {title}: {len(text)} characters')
@@ -91,8 +92,8 @@ def load_encoder(maya_root, tokenizer_dir):
     """Maya's byte-level tokenizer and chat template from the pinned source."""
     maya_root = Path(maya_root)
     sys.path[:0] = [str(maya_root), str(maya_root / 'tools')]
-    from strata_tokenizer import Tokenizer
-    from serve.frontend import ChatTemplate
+    from strata_tokenizer import Tokenizer # type: ignore
+    from serve.frontend import ChatTemplate # type: ignore
     return Tokenizer.from_dir(tokenizer_dir), ChatTemplate(Path(tokenizer_dir) / 'chat_template.jinja')
 
 
@@ -237,8 +238,8 @@ def cases_markdown(cases, tg):
         '',
         'PP is the complete tokenised input, including the chat template and the assistant '
         'header. The task is in front of the material; the source prose is cut only at the end '
-        'so the token count is exact. See `README.md` for this suite and the parent directory '
-        'for the measurement protocol; `suite.json` is the machine-readable order.',
+        'so the token count is exact. See `README.md` for this suite and `../../README.md` for '
+        'the measurement protocol; `suite.json` is the machine-readable order.',
         '',
         'In the previews, `⏎` marks a line break and the `<｜...｜>` sequences are the chat '
         'template tokens that the engine actually receives.',
@@ -308,23 +309,26 @@ def write_atomic(path, text, force):
     Path(path).write_text(text)
 
 
-def freeze_suite(suite, tasks, task_labels, out, source, tokenizer, maya_root, force=False):
+def freeze_suite(suite, corpus, corpus_dir, out, source, tokenizer, maya_root, force=False):
     """Build the configured phases and write every generated file.
 
-    ``suite`` is the dict from the suite directory's ``suite.py``; ``out`` is
-    that directory.  Returns the manifest.
+    ``suite`` is the dict from the suite's ``suite.py``; ``corpus`` is the
+    module from the corpus it names; ``out`` is the suite directory.  Returns
+    the manifest.
     """
     out = Path(out)
     source = Path(source)
+    corpus_dir = Path(corpus_dir)
     tok, template = load_encoder(maya_root, tokenizer)
     if tok.token_bytes(0).decode() != suite['bos_text']:
         raise SystemExit(f"Token zero is not {suite['bos_text']!r}")
     warm_cfg, meas_cfg = suite['warmup'], suite['measurement']
     warmup = build_cases(source, warm_cfg['split'], [warm_cfg['pp']], warm_cfg['count'], suite['seed'],
-                         tok, template, suite, tasks, task_labels, suite['task_position'])
+                         tok, template, suite, corpus.TASKS, corpus.TASK_LABELS, suite['task_position'])
     lengths = meas_cfg['pp'] * meas_cfg['rounds']
     measurement = build_cases(source, meas_cfg['split'], lengths, len(lengths), suite['seed'],
-                              tok, template, suite, tasks, task_labels, suite['task_position'])
+                              tok, template, suite, corpus.TASKS, corpus.TASK_LABELS,
+                              suite['task_position'])
     if suite.get('warmup_reference_sha') and warmup[0]['prompt_sha256'] != suite['warmup_reference_sha']:
         raise SystemExit('Warmup prompts differ from the frozen reference; the pipe changed')
     check_cases(warmup, source, warm_cfg['split'])
@@ -352,6 +356,7 @@ def freeze_suite(suite, tasks, task_labels, out, source, tokenizer, maya_root, f
     tokenizer_files = {p.name: sha(p) for p in sorted(Path(tokenizer).iterdir()) if p.is_file()}
     doc = {'suite': suite['name'], 'model': suite['model'], 'seed': suite['seed'], 'tg': suite['tg'],
            'encoder': suite['encoder'],
+           'corpus': {'name': corpus.NAME, 'sources_sha256': sha(source)},
            'warmup': {'pp': warm_cfg['pp'], 'count': warm_cfg['count'], 'split': warm_cfg['split'],
                       'scored': False},
            'measurement': {'pp': meas_cfg['pp'], 'rounds': meas_cfg['rounds'],
@@ -363,11 +368,9 @@ def freeze_suite(suite, tasks, task_labels, out, source, tokenizer, maya_root, f
                  ''.join(json.dumps(r, ensure_ascii=False) + '\n' for r in rows), force)
     write_atomic(out / 'suite.json', json.dumps(doc, ensure_ascii=False, indent=2) + '\n', force)
     write_atomic(out / 'CASES.md', cases_markdown(rows, suite['tg']), force)
-    write_atomic(out / 'SOURCES.md', sources_markdown(sources, suite['source_note'],
-                                                         suite['license_note']), force)
 
     kit_dir = Path(__file__).resolve().parent
-    local = ('cases.jsonl', 'suite.json', 'CASES.md', 'SOURCES.md', 'suite.py')
+    local = ('cases.jsonl', 'suite.json', 'CASES.md', 'suite.py')
     manifest = {
         'suite': suite['name'],
         'model': suite['model'],
@@ -377,16 +380,17 @@ def freeze_suite(suite, tasks, task_labels, out, source, tokenizer, maya_root, f
         'order': [s['id'] for s in steps],
         'protocol': suite.get('protocol', PROTOCOL),
         'encoder': suite['encoder'],
-        'sources': {'file': 'sources.jsonl', 'sha256': sha(source),
-                    'articles': {split: sum(1 for d in sources if d['split'] == split)
-                                 for split in sorted({d['split'] for d in sources})}},
+        'corpus': {'name': corpus.NAME,
+                   'files': {'corpus.py': sha(corpus_dir / 'corpus.py'), 'sources.jsonl': sha(source)},
+                   'articles': {split: sum(1 for d in sources if d['split'] == split)
+                                for split in sorted({d['split'] for d in sources})}},
         'tokenizer_files': tokenizer_files,
         'files': {name: sha(out / name) for name in local},
         'kit': {'benchkit.py': sha(kit_dir / 'benchkit.py'), 'freeze.py': sha(kit_dir / 'freeze.py')},
-        'generator': f'python3 freeze.py {out.name} --source {source.name}',
+        'generator': f'python3 freeze.py freeze suites/{out.name}',
         'rendered_text_exact': not inexact,
         'rendered_text_inexact_cases': inexact,
-        'notes': suite['notes'],
+        'notes': list(corpus.NOTES) + list(suite['notes']),
     }
     write_atomic(out / 'cases.manifest.json', json.dumps(manifest, ensure_ascii=False, indent=2) + '\n',
                  force)

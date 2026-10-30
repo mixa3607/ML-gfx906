@@ -1,5 +1,5 @@
 {
-  "suite": "ds41f-warm-cache-pp2k-32k",
+  "suite": "ds41f-ru-warm-cache-pp2k-32k",
   "model": "deepseek-v4.1-flash",
   "purpose": "warm-cache prefill and decode throughput, one request at a time",
   "seed": 20261024,
@@ -43,9 +43,12 @@
     "tag": "v1.1.38",
     "commit": "cf6472cc84489765791ad97bb55b395e8f442088"
   },
-  "sources": {
-    "file": "sources.jsonl",
-    "sha256": "f9d8d2dd91eeccbddff09d50139a3f762f31106ea8f0004187ebd95d595c14e9",
+  "corpus": {
+    "name": "ru-prose",
+    "files": {
+      "corpus.py": "75b0054cc51cf8c0b7227d81567ec44a0c12a2695c114e48b7ee2f37489567d0",
+      "sources.jsonl": "f9d8d2dd91eeccbddff09d50139a3f762f31106ea8f0004187ebd95d595c14e9"
+    },
     "articles": {
       "dev": 24,
       "warmup": 12
@@ -60,23 +63,23 @@
   },
   "files": {
     "cases.jsonl": "8a33850a48e4e88c5fb35300c04732ccb5b97f58722260d5069ea8c177ec64dd",
-    "suite.json": "e60b43b277e7912e4fd8aa6f14be1ce7d894e50c212ba42e483fe11ce3480508",
-    "CASES.md": "958acee8cca6406e8a7e52d5ead277340355c3fb89603456f26cec35243dddcf",
-    "SOURCES.md": "c1691a59359e4047bc48308d79124923618ab8c13127de335cf2bb2fe707bb13",
-    "suite.py": "efaecf4649290aae28ae618dbd44d2875aade778b7d0547275e7e2d9ae12a6eb"
+    "suite.json": "706a1f3b5be7912f71d2933df68c4fb5008027237efa2e6bb9b4ba439702a519",
+    "CASES.md": "3b09a7d30e4f9222868852ae8fa7f1056895016958aac2c9bd274666e2d10097",
+    "suite.py": "5d9920ae199da0c049a7db7ccb8b664e54867e35719bc052984e552812dce3e7"
   },
   "kit": {
-    "benchkit.py": "c01f2fe4d288e4c241d71ae429f005498749408766a435cfcb80867fa583f4ca",
-    "freeze.py": "542a5c63d02c8809acb9bff0550d99cbc6dd805dfc09f181550dc71610f984db"
+    "benchkit.py": "f3a282467f7d9489f8d6a5ecb3b93e385f192b92a1165ee47f32242039c988c6",
+    "freeze.py": "6329bd81bd61b88add5460ffbd4a9cd0aebc8273fd366d42d182cde639a8c625"
   },
-  "generator": "python3 freeze.py CORPUS-DS41F --source sources.jsonl",
+  "generator": "python3 freeze.py freeze suites/ds41f-ru",
   "rendered_text_exact": true,
   "rendered_text_inexact_cases": [],
   "notes": [
-    "The 12 warmups are identical to project-maya/ds41-pr592 (same pool, seed and PP).",
     "Sources are frozen Russian Wikipedia prose: page id, revision, URL and SHA-256 per article.",
-    "The dev pool was used by earlier Maya tuning; this is a baseline corpus, not a blind holdout.",
+    "The dev pool was used by earlier Maya tuning; a suite built on it is a baseline, not a blind holdout.",
     "The holdout article list here is intentionally not part of sources.jsonl.",
+    "Medical and legal texts are performance inputs, not advice or quality references.",
+    "The 12 warmups are identical to project-maya/ds41-pr592 (same pool, seed and PP).",
     "PP is the complete tokenised input; only source prose is cut to reach it.",
     "TG256 is a request parameter, not part of the frozen files.",
     "README.md is documentation; it is not covered by the file hashes in the manifest."

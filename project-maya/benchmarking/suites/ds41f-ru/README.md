@@ -1,30 +1,28 @@
-# CORPUS-DS41F
+# ds41f-ru
 
-Frozen inputs for **DeepSeek-V4.1-Flash** on Maya: 12 unscored warmups at
-PP2048, then a two-round sweep through PP2048, 4096, 8192, 16384 and 32768, with
-**TG256** for every request.
+DeepSeek-V4.1-Flash reading the [`ru-prose`](../../corpora/ru-prose/) corpus:
+12 unscored warmups at PP2048, then a two-round sweep through PP2048, 4096,
+8192, 16384 and 32768, with **TG256** for every request.
 
-This suite only defines *what* is measured. The measurement protocol, metrics
-and acceptance rules are in [`../README.md`](../README.md); the general corpus
-rules are in [`../CORPUS.md`](../CORPUS.md). The shared machinery lives in
-[`../benchkit.py`](../benchkit.py) and [`../freeze.py`](../freeze.py).
+The protocol, metrics and acceptance rules are in
+[`../../README.md`](../../README.md); the corpus/suite rules are in
+[`../../SUITES.md`](../../SUITES.md). This file describes only what is specific
+to this suite.
 
-## What is specific here
+## Specifics
 
 - **Model:** `deepseek-v4.1-flash`, Maya's DeepSeek engine.
+- **Corpus:** `ru-prose` — Russian Wikipedia prose, six writing tasks.
 - **Chat encoder:** `project-maya` tag `v1.1.38`
   (`cf6472cc84489765791ad97bb55b395e8f442088`), rendered with
   `reasoning_effort=none`; the assistant header is `<｜Assistant｜></think>`.
 - **BOS:** `<｜begin▁of▁sentence｜>` (token 0).
-- **Sources:** Russian Wikipedia prose, 12 warmup + 24 measurement articles,
-  frozen by revision and text hash.
-- **Tasks:** six Russian writing tasks, cycled in order; the task is at the
-  front of the user message.
+- **Seed:** `20261024`.
 - **Warmups:** the 12 PP2048 requests are bit-identical to
-  `project-maya/ds41-pr592` (same pool, seed `20261024` and lengths), so old and
-  new runs warm the engine on the same input.
+  `project-maya/ds41-pr592` (same corpus, seed and lengths), so old and new runs
+  warm the engine on the same input.
 
-The suite table:
+## Schedule
 
 | Phase | Requests | PP | TG | Scored |
 | --- | ---: | --- | ---: | --- |
@@ -33,9 +31,9 @@ The suite table:
 | Measurement, round 2 | 5 | the same five sizes | 256 | yes |
 
 PP is the complete tokenised input: BOS, the chat template, the task, the
-material and the assistant header. The generator cuts only source prose at the
-end, so each case is exactly its PP. TG256 is a request parameter, not part of
-the frozen files.
+material and the assistant header. The task is at the front of the user
+message; only source prose is cut at the end, so each case is exactly its PP.
+TG256 is a request parameter, not part of the frozen files.
 
 The feed order and one readable section per request are in
 [`CASES.md`](CASES.md); the same order for a runner is in
@@ -45,13 +43,15 @@ The feed order and one readable section per request are in
 
 | File | For | Contents |
 | --- | --- | --- |
-| `suite.py` | regeneration | this suite's configuration: pools, tasks, seed, sizes, encoder pin |
-| `sources.jsonl` | regeneration | frozen article text with revision, URL and SHA-256 |
+| `suite.py` | regeneration | model, encoder pin, seed, splits, PP/TG, corpus name |
 | `cases.jsonl` | runners and humans | the 22 requests: ids, readable prompt text, articles, hashes |
-| `suite.json` | runners | seed, PP schedule, TG, encoder, tokenizer hashes, ordered steps |
-| `cases.manifest.json` | verification | protocol, order, hashes of the suite files, tokenizer, sources and kit |
+| `suite.json` | runners | seed, PP schedule, TG, encoder, corpus, tokenizer hashes, ordered steps |
+| `cases.manifest.json` | verification | protocol, order, hashes of suite/corpus/tokenizer/kit |
 | `CASES.md` | humans | feed order and a section per case |
-| `SOURCES.md` | humans | the attributed articles and revisions |
+| `README.md` | humans | this file |
+
+The corpus text, its attribution and its own README live in
+[`../../corpora/ru-prose/`](../../corpora/ru-prose/).
 
 ## Regenerating
 
@@ -60,22 +60,24 @@ The tokenizer and encoder come from Maya, so run the freeze inside a Maya image
 mounted:
 
 ```bash
+cd project-maya/benchmarking
 docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp \
   -e MAYA_ROOT=/src -e PYTHONDONTWRITEBYTECODE=1 -w /work \
   --entrypoint python3 \
+  -v "$PWD/..":/work \
   -v /path/to/project-maya:/src:ro \
   -v /path/to/ds4/tokenizer:/data/ds4/tokenizer:ro \
-  -v "$PWD/..":/work \
-  YOUR_MAYA_IMAGE /work/freeze.py freeze CORPUS-DS41F \
+  YOUR_MAYA_IMAGE /work/freeze.py freeze suites/ds41f-ru \
   --tokenizer /data/ds4/tokenizer
 ```
 
 `/path/to/project-maya` must be the pinned source (tag `v1.1.38`), not a newer
 checkout whose chat encoder may have changed. Add `--force` to overwrite.
 
-To verify a directory without a tokenizer:
+To verify the frozen files without a tokenizer:
 
 ```bash
+cd project-maya/benchmarking/suites/ds41f-ru
 python3 - <<'PY'
 import hashlib, json
 from pathlib import Path
@@ -89,16 +91,13 @@ PY
 
 The measured requests have not changed since the suite was introduced:
 `cases.jsonl` is `8a33850a48e4e88c5fb35300c04732ccb5b97f58722260d5069ea8c177ec64dd`.
-A rerun with the same sources, tokenizer and encoder produces that file byte
-for byte.
+A rerun with the same corpus, tokenizer and encoder produces that file byte for
+byte.
 
-## What this suite is not
+## Limits
 
-- It is Russian Wikipedia prose with six writing tasks. It says nothing about
-  code, chat slang, tool calls, images or multi-turn behaviour.
-- The measurement (`dev`) pool was already used during earlier Maya tuning.
-  This is a baseline corpus, not a blind holdout; a final check needs the
-  disjoint pool listed in `suite.py`, fetched and frozen separately.
+- Russian Wikipedia prose only: no code, chat slang, tools, images or multi-turn.
+- The corpus `dev` pool was used by earlier Maya tuning; this is a baseline
+  suite, not a blind holdout.
 - It measures warmed single-request prefill and decode, not concurrency,
-  cold-server TTFT or answer quality. TG256 is a timing budget, not a quality
-  reference.
+  cold-server TTFT or answer quality. TG256 is a timing budget.
