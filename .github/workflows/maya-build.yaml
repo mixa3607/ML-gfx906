@@ -31,21 +31,21 @@ jobs:
             latest_type: "release"
             profile_suffix: ""
             rocm_version: "10.1"
-            release_tag: "20261030225217"
     env:
+      BUILD_REF: "20261030225217"
       MAYA_REPO: "${{ matrix.build.repo }}"
       MAYA_LATEST_TYPE: "${{ matrix.build.latest_type }}"
       MAYA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
       MAYA_PROFILE_SUFFIX: "${{ matrix.build.profile_suffix }}"
       MAYA_BRANCH: "${{ inputs.maya_tag }}"
-      MAYA_PATCH: "v1.1.41.patch"
+      MAYA_PATCH: "v1.1.44"
       MAYA_CMAKE_HIP_FLAGS: "-mllvm -amdgpu-sched-strategy=max-ilp"
       MAYA_FORCE_BUILD: "${{ inputs.force_build && '1' || '0' }}"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v7
         with:
-          ref: ${{ vars.BUILD_REF || matrix.build.release_tag }}
+          ref: ${{ vars.BUILD_REF || env.BUILD_REF }}
           fetch-depth: 0
 
       - name: Install yq

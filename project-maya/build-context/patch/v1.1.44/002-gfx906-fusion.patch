@@ -1,0 +1,56 @@
+Experimental admission of the existing decode fusion kernels on tested HIP architectures.
+Require every compiled architecture in the whitelist; keep runtime settings off by default.
+Preserve every startup parity check and the logical-32 wave64 compatibility.
+
+diff --git a/src/ds4/ds4_model.cu b/src/ds4/ds4_model.cu
+--- a/src/ds4/ds4_model.cu
++++ b/src/ds4/ds4_model.cu
+@@ -3244,6 +3244,21 @@ struct Model::Impl {
+                     if (!gg::q8_batch_check(id, err)) return false;
+             }
+         }
++#ifdef STRATA_HIP_WAVE64
++        // Keep logical-32 shuffles and every startup parity check.
++        constexpr std::array fusion_tested_archs = {"gfx906"};
++        const bool wave64_fusion_supported = [&] {
++            const std::string archs = STRATA_HIP_ARCHS;
++            if (archs.empty() || archs.back() == ',') return false;
++            std::istringstream targets(archs);
++            for (std::string arch; std::getline(targets, arch, ',');) {
++                if (std::none_of(fusion_tested_archs.begin(), fusion_tested_archs.end(),
++                                 [&](const char* tested) { return arch == tested; }))
++                    return false;
++            }
++            return true;
++        }();
++#endif
+         if (const char* v = ds4_env("DS4_HC_FUSE")) {   // (MAYA_DS4_HC_FUSE)
+             if (std::strcmp(v, "1") != 0 && std::strcmp(v, "2") != 0 && std::strcmp(v, "0") != 0) {
+                 err = std::string("DS4_HC_FUSE=") + v + ": 2, 1 or 0";
+@@ -3252,7 +3267,7 @@ struct Model::Impl {
+             hc_fuse = std::strcmp(v, "1") == 0 || std::strcmp(v, "2") == 0;
+             hc_fuse_win = std::strcmp(v, "2") == 0;
+ #ifdef STRATA_HIP_WAVE64
+-            if (hc_fuse) {   // (its warp roundings are a 32-lane warp's)
++            if (hc_fuse && !wave64_fusion_supported) {   // (its warp roundings are a 32-lane warp's)
+                 err = std::string("DS4_HC_FUSE=") + v + " on a wave64 build";
+                 return false;
+             }
+@@ -3315,7 +3330,7 @@ struct Model::Impl {
+             }
+             decode_trim = (int) b;
+ #ifdef STRATA_HIP_WAVE64
+-            if (decode_trim & 3) {   // (the int8 roundings are a 32-lane warp's)
++            if ((decode_trim & 3) && !wave64_fusion_supported) {   // (the int8 roundings are a 32-lane warp's)
+                 err = std::string("DS4_DECODE_TRIM=") + v + ": bits 1 / 2 on a wave64 build";
+                 return false;
+             }
+@@ -3341,7 +3356,7 @@ struct Model::Impl {
+             route_fuse = std::strcmp(v, "1") == 0 || std::strcmp(v, "2") == 0;
+             route_fuse_win = std::strcmp(v, "2") == 0;
+ #ifdef STRATA_HIP_WAVE64
+-            if (route_fuse) {   // (its warp reductions are a 32-lane warp's)
++            if (route_fuse && !wave64_fusion_supported) {   // (its warp reductions are a 32-lane warp's)
+                 err = std::string("DS4_ROUTE_FUSE=") + v + " on a wave64 build";
+                 return false;
+             }

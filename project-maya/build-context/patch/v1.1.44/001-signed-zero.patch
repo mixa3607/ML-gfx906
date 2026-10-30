@@ -1,8 +1,4 @@
-Local gfx906 signed-zero fix for Project Maya v1.1.41 (1710777).
-
-Upstream already includes gfx906 registration, signed dot4 and transfer fixes.
-Preserve Vega20's signed zero in INT8 latent-cache reads, retaining upstream's
-gfx942/gfx950 exceptions. Both Vega20's F32 reference and FP16 product keep -0.
+Local gfx906 signed-zero fix, identical to ../v1.1.41.patch.
 
 diff --git a/src/kernels/cuda/glm_lat8.cuh b/src/kernels/cuda/glm_lat8.cuh
 --- a/src/kernels/cuda/glm_lat8.cuh
