@@ -11,6 +11,7 @@
   "warmup": {
     "pp": 2048,
     "count": 12,
+    "split": "warmup",
     "scored": false
   },
   "measurement": {
@@ -23,6 +24,7 @@
     ],
     "rounds": 2,
     "count": 10,
+    "split": "dev",
     "scored": true
   },
   "tokenizer_files": {

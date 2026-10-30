@@ -30,12 +30,13 @@
   ],
   "protocol": [
     "Load the model once and keep the process alive for the whole suite.",
-    "Send the 12 warmup requests in file order, TG256 each; do not score them.",
-    "In the same process, send the 10 measurement requests in file order, TG256 each.",
+    "Send every warmup request in file order at the suite TG; do not score them.",
+    "In the same process, send the measurement requests in file order at the suite TG.",
     "One request at a time, greedy, speculation off, approximate skips off.",
     "Zero cross-request prefix/KV reuse; ordinary KV caching inside one generation stays.",
     "Do not reload the model, clear its caches or change placement settings between phases.",
-    "Keep incomplete requests; a natural EOS before 256 tokens is not a completed TG256 sample."
+    "Keep incomplete requests; a natural EOS before the TG budget is not a completed sample.",
+    "Baseline: approximate prompt skips off, dense and expert precision unmodified."
   ],
   "encoder": {
     "project": "project-maya",
@@ -46,8 +47,8 @@
     "file": "sources.jsonl",
     "sha256": "f9d8d2dd91eeccbddff09d50139a3f762f31106ea8f0004187ebd95d595c14e9",
     "articles": {
-      "warmup": 12,
-      "dev": 24
+      "dev": 24,
+      "warmup": 12
     }
   },
   "tokenizer_files": {
@@ -59,21 +60,25 @@
   },
   "files": {
     "cases.jsonl": "8a33850a48e4e88c5fb35300c04732ccb5b97f58722260d5069ea8c177ec64dd",
-    "suite.json": "bacd620afb15981d4662d0333b8e082f3b481036513912ba26396292de428003",
-    "CASES.md": "3fc60474550fbe31818e906421132032a35ad925d849283f0de3e63df0be523d",
+    "suite.json": "e60b43b277e7912e4fd8aa6f14be1ce7d894e50c212ba42e483fe11ce3480508",
+    "CASES.md": "958acee8cca6406e8a7e52d5ead277340355c3fb89603456f26cec35243dddcf",
     "SOURCES.md": "c1691a59359e4047bc48308d79124923618ab8c13127de335cf2bb2fe707bb13",
-    "corpus.py": "2398ab0b93e3197168ba22110e4fd72b8defa8354dac4134f98504dafeae16e9",
-    "freeze_inputs.py": "de29d740453ccd0207689d63df3e9694250bad922613b407173113aac27f29cd"
+    "suite.py": "efaecf4649290aae28ae618dbd44d2875aade778b7d0547275e7e2d9ae12a6eb"
   },
+  "kit": {
+    "benchkit.py": "c01f2fe4d288e4c241d71ae429f005498749408766a435cfcb80867fa583f4ca",
+    "freeze.py": "542a5c63d02c8809acb9bff0550d99cbc6dd805dfc09f181550dc71610f984db"
+  },
+  "generator": "python3 freeze.py CORPUS-DS41F --source sources.jsonl",
   "rendered_text_exact": true,
   "rendered_text_inexact_cases": [],
   "notes": [
     "The 12 warmups are identical to project-maya/ds41-pr592 (same pool, seed and PP).",
     "Sources are frozen Russian Wikipedia prose: page id, revision, URL and SHA-256 per article.",
     "The dev pool was used by earlier Maya tuning; this is a baseline corpus, not a blind holdout.",
-    "The holdout article list in corpus.py is intentionally not part of sources.jsonl.",
+    "The holdout article list here is intentionally not part of sources.jsonl.",
     "PP is the complete tokenised input; only source prose is cut to reach it.",
     "TG256 is a request parameter, not part of the frozen files.",
-    "README.md is documentation; it is not covered by the hashes above."
+    "README.md is documentation; it is not covered by the file hashes in the manifest."
   ]
 }

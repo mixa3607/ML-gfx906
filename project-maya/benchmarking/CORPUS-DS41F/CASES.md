@@ -1,8 +1,8 @@
 # Suite cases
 
-22 requests: 12 unscored warmups at PP2048, then 10 scored measurements in two rounds (2048 -> 4096 -> 8192 -> 16384 -> 32768 each). Every request asks for TG256.
+22 requests: 12 unscored warmups at PP2048, then 10 scored measurements in 2 rounds (2048 -> 4096 -> 8192 -> 16384 -> 32768 each). Every request asks for TG256.
 
-PP is the complete tokenised input, including the chat template and the assistant header. The task is in front of the material; the source prose is cut only at the end so the token count is exact. See `README.md` for the protocol and `suite.json` for the machine-readable order.
+PP is the complete tokenised input, including the chat template and the assistant header. The task is in front of the material; the source prose is cut only at the end so the token count is exact. See `README.md` for this suite and the parent directory for the measurement protocol; `suite.json` is the machine-readable order.
 
 In the previews, `⏎` marks a line break and the `<｜...｜>` sequences are the chat template tokens that the engine actually receives.
 
