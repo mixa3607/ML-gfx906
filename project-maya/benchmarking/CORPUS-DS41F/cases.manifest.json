@@ -1,0 +1,79 @@
+{
+  "suite": "ds41f-warm-cache-pp2k-32k",
+  "model": "deepseek-v4.1-flash",
+  "purpose": "warm-cache prefill and decode throughput, one request at a time",
+  "seed": 20261024,
+  "tg": 256,
+  "order": [
+    "warmup-20261024-00-pp2048",
+    "warmup-20261024-01-pp2048",
+    "warmup-20261024-02-pp2048",
+    "warmup-20261024-03-pp2048",
+    "warmup-20261024-04-pp2048",
+    "warmup-20261024-05-pp2048",
+    "warmup-20261024-06-pp2048",
+    "warmup-20261024-07-pp2048",
+    "warmup-20261024-08-pp2048",
+    "warmup-20261024-09-pp2048",
+    "warmup-20261024-10-pp2048",
+    "warmup-20261024-11-pp2048",
+    "dev-20261024-00-pp2048",
+    "dev-20261024-01-pp4096",
+    "dev-20261024-02-pp8192",
+    "dev-20261024-03-pp16384",
+    "dev-20261024-04-pp32768",
+    "dev-20261024-05-pp2048",
+    "dev-20261024-06-pp4096",
+    "dev-20261024-07-pp8192",
+    "dev-20261024-08-pp16384",
+    "dev-20261024-09-pp32768"
+  ],
+  "protocol": [
+    "Load the model once and keep the process alive for the whole suite.",
+    "Send the 12 warmup requests in file order, TG256 each; do not score them.",
+    "In the same process, send the 10 measurement requests in file order, TG256 each.",
+    "One request at a time, greedy, speculation off, approximate skips off.",
+    "Zero cross-request prefix/KV reuse; ordinary KV caching inside one generation stays.",
+    "Do not reload the model, clear its caches or change placement settings between phases.",
+    "Keep incomplete requests; a natural EOS before 256 tokens is not a completed TG256 sample."
+  ],
+  "encoder": {
+    "project": "project-maya",
+    "tag": "v1.1.38",
+    "commit": "cf6472cc84489765791ad97bb55b395e8f442088"
+  },
+  "sources": {
+    "file": "sources.jsonl",
+    "sha256": "f9d8d2dd91eeccbddff09d50139a3f762f31106ea8f0004187ebd95d595c14e9",
+    "articles": {
+      "warmup": 12,
+      "dev": 24
+    }
+  },
+  "tokenizer_files": {
+    "chat_template.jinja": "e9f7db2fa773233bdfd0c5f21cf5d300283aad08fd6d056593634a5a375306fa",
+    "merges.txt": "547bace837acea98652eef5669c9b01cee1c73ad1d2a44d6fdce9e6a81c22147",
+    "token_type.json": "0a61021438e5ce6041133495f18fc360a6587aea748b17d953f552d2119ba51e",
+    "tokenizer.json": "5a47981b685b75154e29bfb0299584c9b3a4a28679585e86d524c34c065d037f",
+    "vocab.json": "2f0bf5b31f4aa191d5d0d78291927a4f28c9ceb498a5e345b97e926c4cb99c1a"
+  },
+  "files": {
+    "cases.jsonl": "8a33850a48e4e88c5fb35300c04732ccb5b97f58722260d5069ea8c177ec64dd",
+    "suite.json": "bacd620afb15981d4662d0333b8e082f3b481036513912ba26396292de428003",
+    "CASES.md": "3fc60474550fbe31818e906421132032a35ad925d849283f0de3e63df0be523d",
+    "SOURCES.md": "c1691a59359e4047bc48308d79124923618ab8c13127de335cf2bb2fe707bb13",
+    "corpus.py": "2398ab0b93e3197168ba22110e4fd72b8defa8354dac4134f98504dafeae16e9",
+    "freeze_inputs.py": "de29d740453ccd0207689d63df3e9694250bad922613b407173113aac27f29cd"
+  },
+  "rendered_text_exact": true,
+  "rendered_text_inexact_cases": [],
+  "notes": [
+    "The 12 warmups are identical to project-maya/ds41-pr592 (same pool, seed and PP).",
+    "Sources are frozen Russian Wikipedia prose: page id, revision, URL and SHA-256 per article.",
+    "The dev pool was used by earlier Maya tuning; this is a baseline corpus, not a blind holdout.",
+    "The holdout article list in corpus.py is intentionally not part of sources.jsonl.",
+    "PP is the complete tokenised input; only source prose is cut to reach it.",
+    "TG256 is a request parameter, not part of the frozen files.",
+    "README.md is documentation; it is not covered by the hashes above."
+  ]
+}
