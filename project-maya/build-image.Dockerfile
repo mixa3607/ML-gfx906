@@ -40,6 +40,7 @@ RUN <<'EOF' bash
       git checkout --detach FETCH_HEAD
   fi
   git rev-parse HEAD > SOURCE_COMMIT
+  git rev-parse HEAD > BUILD_ID
 EOF
 
 COPY patch/${MAYA_PATCH} /tmp/${MAYA_PATCH}

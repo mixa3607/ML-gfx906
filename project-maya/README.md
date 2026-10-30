@@ -7,8 +7,7 @@ Model weights and PyTorch conversion are not included.
 
 ## Compatibility
 
-- Use **gfx906**, without `HSA_OVERRIDE_GFX_VERSION`. The
-  [v1.1.32 patch](build-context/patch/v1.1.32.patch) only preserves signed zero
+- The [v1.1.41 patch](build-context/patch/v1.1.41.patch) only preserves signed zero
   in INT8 latent-cache reads on Vega20.
 - Provide `/dev/kfd`, `/dev/dri`, shared memory and an adequate memlock limit.
 - Set `MAYA_GLM_RAM_GB` explicitly for GLM: the engine's free-RAM detection can
@@ -27,22 +26,12 @@ Requires Docker Buildx and the [ROCm base image](../rocm/README.md).
 Log in to the destination registry and run from this directory:
 
 ```bash
-export MAYA_BRANCH=v1.1.32
-export MAYA_PATCH=v1.1.32.patch
+export MAYA_BRANCH=v1.1.41
+export MAYA_PATCH=v1.1.41.patch
 export MAYA_CMAKE_HIP_FLAGS="-mllvm -amdgpu-sched-strategy=max-ilp"
 export MAYA_IMAGE=registry.example.com/apps/maya-gfx906
 ./build-and-push.image.sh
 ```
-
-For local test builds, `../.build/.env-local.sh` sets `MAYA_IMAGE` to the
-private test registry.
-
-The example enables the tested max-ILP scheduling flag. The defaults use `main`
-and `empty.patch` (no changes to upstream); gfx906 needs a matching patch selected
-explicitly, as above.
-
-The script builds and pushes, skipping existing tags; `MAYA_FORCE_BUILD=1`
-forces a rebuild. The build log is saved to `./logs/build_<timestamp>.log`.
 
 Defaults are defined in [`build-and-push.image.sh`](build-and-push.image.sh).
 Export a variable to override it.
