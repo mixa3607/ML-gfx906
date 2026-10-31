@@ -1,15 +1,14 @@
-# Benchmark inputs
+# LLM benchmarks
 
-This directory prepares requests, not measurements. There is no benchmark runner.
+Prepare frozen requests and run them through Maya's native engine protocol.
 
 - `corpora/<name>/corpus.py`: `ARTICLE_TITLES` and `INSTRUCTIONS`, independent of the model.
 - `corpora/<name>/sources.jsonl`: frozen article text with revision URLs and attribution.
 - `suites/<name>/suite.py`: corpus, seed, input lengths, output budget and chat settings.
 - `suites/<name>/cases.jsonl`: ready-to-use requests in execution order.
 - `freeze.py`: downloads articles or builds requests. No GPU needed.
+- `run.py`: feeds requests to one resident engine using a Maya JSON config.
 
-The shipped `ds41f-ru` suite uses DeepSeek-V4.1-Flash: 12 warmups at PP2048,
-then two sweeps through PP2048, 4096, 8192, 16384 and 32768. Every request has TG256.
 PP includes the chat template and assistant header; TG is the output token limit.
 
 ## Using the requests
@@ -29,15 +28,41 @@ Report prefill and decode separately; pool token counts over elapsed times rathe
 than averaging tok/s. For A/B runs, keep inputs, hardware and warmup history fixed.
 This measures warm single-request throughput, not quality, concurrency or cold start.
 
+## Running
+
+Run this instead of the API server, not alongside another loaded engine:
+
+```bash
+python3 run.py --maya-root /opt/maya --config "$MAYA_CONFIG" \
+  suites/ds41f-ru-smoke/cases.jsonl > results.jsonl 2> engine.log
+```
+
+The runner uses Maya's `engine_args()` and `child_env()` with the config's `exe`
+and `cwd`. It waits for `READY`, sends each request with `temperature=0 spec=0`,
+waits for `DONE`, and sends `QUIT` after the last request. It does not tokenise
+text, start HTTP, change the config or decode the output. `ERR` or EOF aborts the run.
+
+Each stdout JSONL row contains `id`, `phase` and the raw `done` line; engine stderr
+is inherited. Both warmup and measurement results are kept, without aggregation.
+The native DS4 line is:
+
+```text
+DONE generated prompt_tokens prompt_ms decode_ms finish drafts_accepted drafts_offered reused hits lookups
+```
+
+Timings are native engine milliseconds, not client TTFT or per-token latency.
+The runner does not disable KV reuse; check `reused` before treating a result as
+a no-reuse baseline. Context capacity must cover the largest `pp + tg`.
+
 ## Rebuilding requests
 
-Use the Maya revision named in `suite.py` and the model pack's tokenizer directory
+Use the Maya source checkout and the model pack's tokenizer directory
 (with `vocab.json`, `merges.txt`, `token_type.json`, `tokenizer.json` and
 `chat_template.jinja`). Python dependencies: `regex`, `jinja2`.
 
 ```bash
 cd project-maya/benchmarking
-python3 freeze.py freeze suites/ds41f-ru \
+python3 freeze.py freeze suites/ds41f-ru-smoke \
   --maya-root /path/to/project-maya --tokenizer /path/to/pack/tokenizer
 ```
 
@@ -55,4 +80,4 @@ Fetch downloads the warmup/measurement articles listed in `ARTICLE_TITLES`. It c
 `sources.jsonl` exclusively; a failed download leaves a partial file to remove
 before retrying. Reuse frozen sources for comparisons instead of fetching per run.
 
-CPU tests: `python3 -m unittest -v test_freeze.py`.
+CPU tests (including a fake engine): `python3 -m unittest -v`.
