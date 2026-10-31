@@ -41,7 +41,7 @@ def run(cases, engine):
     for line in cases:
         case = json.loads(line)
         ids = ','.join(map(str, case['ids']))
-        engine.stdin.write(f"GEN {case['tg']} temperature=0 spec=0 {ids}\n")
+        engine.stdin.write(f"GEN {case['tg']} temperature=0 spec=1 {ids}\n")
         engine.stdin.flush()
         done = parse_done(read_until(engine.stdout, 'DONE '))
         print(json.dumps({'id': case['id'], 'phase': case['phase'], 'done': done}), flush=True)

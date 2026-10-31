@@ -1,0 +1,14 @@
+ds4: tensor parallel 4 -> 2: the experts' 32-value blocks split n_ff 2304 no other way (each GPU its own layers)
+ds4: the one-GPU decode path (in-place pulls, windows streamed, landings): off (v1.1.27's path: not NVIDIA + one GPU)
+maya-ds4: DS4_DRAFT_DEV=1,2,3: not one whole number, or one a block (3), each 0 .. 1 (the drafter's group's members)
+Traceback (most recent call last):
+  File "/data/input/project-maya/benchmarking/run.py", line 77, in <module>
+    main()
+  File "/data/input/project-maya/benchmarking/run.py", line 73, in main
+    run(cases, engine)
+  File "/data/input/project-maya/benchmarking/run.py", line 40, in run
+    read_until(engine.stdout, 'READY ')
+  File "/data/input/project-maya/benchmarking/run.py", line 13, in read_until
+    line = next(stream).rstrip()
+           ^^^^^^^^^^^^
+StopIteration

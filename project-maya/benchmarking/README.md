@@ -19,7 +19,7 @@ Read `cases.jsonl` in file order. Each row contains `id`, `phase`, `pp`, `tg`,
 and may contain replacement characters if a token cut splits a UTF-8 character.
 
 Keep one loaded engine, run warmups without scoring, then measure the remaining
-requests one at a time. Use greedy decoding, thinking off, speculation off and
+requests one at a time. Use greedy decoding, thinking off, speculation on and
 no cross-request prefix/KV reuse. Do not truncate inputs or reload between phases.
 Respect natural EOS and record actual generated tokens and stop reasons.
 
@@ -38,9 +38,12 @@ python3 run.py --maya-root /opt/maya --config "$MAYA_CONFIG" \
 ```
 
 The runner uses Maya's `engine_args()` and `child_env()` with the config's `exe`
-and `cwd`. It waits for `READY`, sends each request with `temperature=0 spec=0`,
+and `cwd`. It waits for `READY`, sends each request with `temperature=0 spec=1`,
 waits for `DONE`, and sends `QUIT` after the last request. It does not tokenise
 text, start HTTP, change the config or decode the output. `ERR` or EOF aborts the run.
+Use a config and pack with the drafter enabled; for DS4, retain `--dspark on`.
+Record draft counters to establish whether speculation actually ran. Results
+from the earlier runner that forced `spec=0` are not the same benchmark mode.
 
 Each stdout JSONL row contains `id`, `phase` and a parsed `done` object; engine stderr
 is inherited. Both warmup and measurement results are kept, without aggregation.

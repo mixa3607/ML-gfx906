@@ -93,8 +93,8 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(commands, [
             {'args': ['--serve', '--pack', '/unused', '--from-helper'], 'env': 'ok'},
-            'GEN 2 temperature=0 spec=0 0,123',
-            'GEN 3 temperature=0 spec=0 0,123',
+            'GEN 2 temperature=0 spec=1 0,123',
+            'GEN 3 temperature=0 spec=1 0,123',
             'QUIT',
         ])
         self.assertIn('engine diagnostics', result.stderr)

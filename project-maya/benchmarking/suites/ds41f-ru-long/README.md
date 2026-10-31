@@ -1,6 +1,8 @@
 # ds41f-ru
 
 DeepSeek-V4.1-Flash, thinking off, reading the `ru-prose` corpus.
+The runner requests speculative decoding (`spec=1`); use a config and pack
+with DSpark enabled.
 `suite.py` defines the schedule: 12 unscored PP2048 warmups, then
 `[2048, 4096, 8192, 16384, 32768]` twice, with TG256 for all 22 requests.
 
