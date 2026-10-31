@@ -2,7 +2,7 @@
 
 This directory prepares requests, not measurements. There is no benchmark runner.
 
-- `corpora/<name>/corpus.py`: article titles and tasks, independent of the model.
+- `corpora/<name>/corpus.py`: `ARTICLE_TITLES` and `INSTRUCTIONS`, independent of the model.
 - `corpora/<name>/sources.jsonl`: frozen article text with revision URLs and attribution.
 - `suites/<name>/suite.py`: corpus, seed, input lengths, output budget and chat settings.
 - `suites/<name>/cases.jsonl`: ready-to-use requests in execution order.
@@ -51,7 +51,7 @@ To download a new corpus revision, remove its old `sources.jsonl` first, then ru
 python3 freeze.py fetch corpora/ru-prose
 ```
 
-Fetch downloads the configured warmup/dev pools, not `HOLDOUT`. It creates
+Fetch downloads the warmup/dev articles listed in `ARTICLE_TITLES`. It creates
 `sources.jsonl` exclusively; a failed download leaves a partial file to remove
 before retrying. Reuse frozen sources for comparisons instead of fetching per run.
 

@@ -25,7 +25,7 @@ def load_config(path):
 def fetch(corpus_dir):
     corpus = load_config(corpus_dir / 'corpus.py')
     with (corpus_dir / 'sources.jsonl').open('x') as output:
-        for split, titles in corpus.SOURCES.items():
+        for split, titles in corpus.ARTICLE_TITLES.items():
             for title in titles:
                 query = urllib.parse.urlencode({
                     'action': 'query',
@@ -61,7 +61,7 @@ def fetch(corpus_dir):
                 time.sleep(2)
 
 
-def build_cases(sources, tasks, suite, tokenizer, template):
+def build_cases(sources, instructions, suite, tokenizer, template):
     suffix = tokenizer.encode(suite.ASSISTANT_SUFFIX, parse_special=True)
     phases = (
         ('warmup', 'warmup', suite.WARMUP_PP),
@@ -84,8 +84,8 @@ def build_cases(sources, tasks, suite, tokenizer, template):
             )
             if not material:
                 raise ValueError(f'{phase}: source corpus exhausted at request {index}')
-            task = tasks[index % len(tasks)]
-            content = ordered[0]['title'] + '. ' + task + '\n\nМатериалы:\n' + material
+            instruction = instructions[index % len(instructions)]
+            content = ordered[0]['title'] + '. ' + instruction + '\n\nМатериалы:\n' + material
             rendered = template.render([{'role': 'user', 'content': content}], **suite.RENDER_KWARGS)
             ids = tokenizer.encode(rendered, parse_special=True)
             if ids[-len(suffix):] != suffix:
@@ -93,7 +93,7 @@ def build_cases(sources, tasks, suite, tokenizer, template):
             if len(ids) < pp:
                 raise ValueError(f'{phase}: need {pp} tokens, only {len(ids)} available')
 
-            # Keep the task and assistant header; cut only the source prose.
+            # Keep the instruction and assistant header; cut only the source prose.
             ids = ids[:pp - len(suffix)] + suffix
             body_start = len(rendered[:rendered.index(material)].encode())
             body_bytes = sum(len(tokenizer.token_bytes(token)) for token in ids[:-len(suffix)]) - body_start
@@ -138,7 +138,7 @@ def freeze(suite_dir, tokenizer_dir, maya_root, output):
 
     tokenizer = Tokenizer.from_dir(tokenizer_dir)
     template = ChatTemplate(tokenizer_dir / 'chat_template.jinja')
-    cases = list(build_cases(sources, corpus.TASKS, suite, tokenizer, template))
+    cases = list(build_cases(sources, corpus.INSTRUCTIONS, suite, tokenizer, template))
     output.write_text(''.join(json.dumps(case, ensure_ascii=False) + '\n' for case in cases))
     print(f'{output}: {len(cases)} requests')
 

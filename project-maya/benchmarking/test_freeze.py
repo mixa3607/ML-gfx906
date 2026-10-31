@@ -47,11 +47,11 @@ class FreezeTests(unittest.TestCase):
         self.assertEqual([case['pp'] for case in cases], [101, 150, 203, 501, 199])
         self.assertEqual([case['phase'] for case in cases], ['warmup'] * 2 + ['measurement'] * 3)
         offsets = {}
-        for case, task in zip(cases, ['Explain', 'Summarise', 'Explain', 'Summarise', 'Explain']):
+        for case, instruction in zip(cases, ['Explain', 'Summarise', 'Explain', 'Summarise', 'Explain']):
             self.assertEqual(len(case['ids']), case['pp'])
             self.assertEqual(case['tg'], 256)
             self.assertTrue(case['prompt'].endswith('<assistant>'))
-            self.assertIn(task, case['prompt'])
+            self.assertIn(instruction, case['prompt'])
             for passage in case['passages']:
                 pageid = passage['pageid']
                 start, end = passage['start_byte'], passage['end_byte']
@@ -86,7 +86,7 @@ class FreezeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'ASSISTANT_SUFFIX'):
             self.build()
 
-    def test_fetch_excludes_holdout(self):
+    def test_fetch_article_titles(self):
         corpus = freeze.load_config(freeze.ROOT / 'corpora/ru-prose/corpus.py')
         article = {'extract': 'Article text', 'title': 'Article', 'pageid': 1,
                    'revisions': [{'revid': 2}]}
