@@ -2,24 +2,22 @@
 """Fetch corpus articles or build tokenised benchmark requests."""
 
 import argparse
-import importlib.util
 import json
 import random
+import runpy
 import sys
 import time
 import urllib.parse
 import urllib.request
 from pathlib import Path
+from types import SimpleNamespace
 
 
 ROOT = Path(__file__).resolve().parent
 
 
 def load_config(path):
-    spec = importlib.util.spec_from_file_location(path.stem, path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return SimpleNamespace(**runpy.run_path(str(path)))
 
 
 def fetch(corpus_dir):
@@ -133,8 +131,9 @@ def freeze(suite_dir, tokenizer_dir, maya_root, output):
         raise ValueError('Corpus contains duplicate Wikipedia pages (possibly redirects)')
 
     sys.path[:0] = [str(maya_root), str(maya_root / 'tools')]
-    from strata_tokenizer import Tokenizer
-    from serve.frontend import ChatTemplate
+    # These modules come from the external --maya-root checkout.
+    from strata_tokenizer import Tokenizer  # pyright: ignore[reportMissingImports]
+    from serve.frontend import ChatTemplate  # pyright: ignore[reportMissingImports]
 
     tokenizer = Tokenizer.from_dir(tokenizer_dir)
     template = ChatTemplate(tokenizer_dir / 'chat_template.jinja')
