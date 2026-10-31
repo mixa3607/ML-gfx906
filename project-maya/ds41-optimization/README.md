@@ -1,0 +1,175 @@
+# DeepSeek V4.1 Flash: flag inventory
+
+This is the inventory of flags discussed for the gfx906 optimization task, not
+the complete Maya engine reference and not a step-by-step test plan.
+The starting configuration is [base-params](base-params): Maya v1.1.45,
+ROCm 10.1, the [v1.1.44 local patches](../build-context/patch/v1.1.44),
+four MI50 GPUs and the existing UD-Q8_K_XL pack. The target CPU has two NUMA
+nodes with SMT disabled.
+
+## Reading the tables
+
+| Status | Meaning |
+| --- | --- |
+| Always enabled | Kept unconditionally in the baseline, including fixed layout and model arguments. Not a claim of measured optimality. |
+| Tested | Measured on this target in this task; the best accepted value and evidence must be recorded. No flags have this status yet. |
+| Awaiting test | An accepted candidate; its current value is not a measured optimum. |
+| Not used for now | Its tuning is excluded or inapplicable under the current constraints. This does not automatically turn off an existing upstream default. |
+
+**Fixed / best tested value** contains only an unconditional baseline decision or
+a measured, accepted optimum. `—` means neither has been selected. Defaults and
+candidate values are separate columns: a default is not a test result. An unset
+flag means it is not present in `base-params/maya-config.json`; the displayed
+default is documented upstream behavior, not a runtime observation.
+
+Classification follows the documentation; hypothetical implementation bugs do
+not reclassify a flag. Bit-exactness refers to the same target pack and the
+relevant computation path, not equality to the original checkpoint or DeepSeek
+API. DSpark controls documented to preserve verified answer tokens are accepted
+in group 1, including `MAYA_DS4_MARKOV_Q8`, even if drafter internals change.
+Documented changes to target arithmetic or prompt semantics are not bit-exact.
+
+The rows within each optimization group retain the approximate ordering by
+potential additional benefit on gfx906 in an applicable workload. TTFT, prefill
+and decode gains are different metrics, so this is not a universal speed ranking.
+There are no measured gfx906 speedups or selected tested optima yet.
+The [completed TP4 baseline](results/baseline-spec1-tp4/README.md) measures the
+joint baseline configuration, not individual flag optima: pooled prefill
+369.11 tok/s, decode 31.24 tok/s, with speculation requested and no KV reuse.
+The per-flag decision statuses therefore remain unchanged.
+
+## Fixed baseline and inherited placement
+
+These settings identify the workload and preserve the starting configuration.
+Keeping them does not assert bit-exactness across alternative layouts. TP widths
+other than 4 and Maya's non-bit-exact tuning are excluded.
+
+| Flag | Current baseline | Other values discussed | Status | Fixed / best tested value | Role / decision |
+| --- | --- | --- | --- | --- | --- |
+| `--pack` | `/data/ds4` | Other quants are outside this task | Always enabled | `/data/ds4` (UD-Q8_K_XL) | Keep the original model pack and weight revisions. |
+| `--gpus` | `0,1,2,3` | None | Always enabled | `0,1,2,3` | Four process-local GPU IDs. |
+| `HIP_VISIBLE_DEVICES` | `1,0,3,2` | GPU permutations are excluded | Always enabled | `1,0,3,2` | Preserve the baseline device order. |
+| `--tp` | `4` | `1`, `2`: excluded | Always enabled | `4` | No alternative tensor-parallel width. |
+| `MAYA_DS4_TP_GGUF_UNEVEN` | Explicit `1` | No alternative selected | Always enabled | `1` | Whole-quant-block partitions preserve the requested TP4 instead of the ordinary path's automatic TP2 reduction. Added after the documented failed startup; not a cross-layout bit-exactness claim. |
+| `--max-context` | `524288` | Smaller contexts are not substitutes | Always enabled | `524288` | Keep the target context capacity. |
+| `--prefill-chunk` | `4096` | `2048`, `8192`: excluded | Always enabled | `4096` | Changing chunk boundaries can change arithmetic; keep the baseline size. |
+| `--mmap-experts` | `off` | No alternative selected | Always enabled | `off` | Preserve expert-copy mode; this alone does not guarantee every CPU expert is copied. |
+| `--dspark` | `on` | No disablement selected | Always enabled | `on` | Drafting is already enabled; do not count its initial enablement as a new speedup. |
+| `--vision` | `on` | No disablement selected | Always enabled | `on` | Preserve vision support. |
+| `--expert-profile` | `/data/expert-profile.bin` | Profile refresh: excluded | Always enabled | `/data/expert-profile.bin` | Preserve the seed/profile path; the engine may update its counts. Alternative profiles can change CPU/GPU execution placement and output numerics. |
+| `DS4_COPY_NUMA` | `2` | No alternative selected | Always enabled | `2` | Two NUMA parts on the actual two-node host. SMT is disabled. |
+| `MAYA_DS4_DRAFT_DEV` | `1,2,3` | Lead-only and other placements: excluded | Always enabled | `1,2,3` | Preserve existing drafter placement. Changing it is not part of bit-exact tuning. |
+
+## 1. Bit-exact / verified-answer-preserving candidates
+
+The fusion patch admits gfx906 for `HC_FUSE`, `ROUTE_FUSE` and `DECODE_TRIM`
+bits 1 and 2, preserving the upstream startup parity checks. The signed-zero
+patch is a correctness fix, not a separate tunable speed switch.
+
+| Flag | Current baseline / default | Candidate values | Status | Fixed / best tested value | Effect and limits |
+| --- | --- | --- | --- | --- | --- |
+| `MAYA_DS4_SLOT_KEEP` | Explicit `1` | No tuning requested | Always enabled | `1` | Restore parked conversation state instead of rereading its full prompt when requests switch; potentially the largest agent TTFT benefit, not faster individual decode steps. |
+| `MAYA_DS4_SLOT_CAP` | Explicit `4` | `8` was discussed but is not selected | Always enabled | `4` | Up to four parked conversations in RAM; excess states spill to the slot directory. |
+| `DS4_SKIP_UNPICKED` | Unset; HIP default off | `0`, `1` | Awaiting test | — | Stream only experts the chunk picks, preserving batches and accumulation order. Potentially large for short/medium prefill; long chunks can lose cross-layer read-ahead. Not used by `DS4_FLOW_TP` or decode. |
+| `DS4_ENGRAM_CACHE_MB` | Explicit `256` | `256`, `1024`, `4096`, `8192` | Awaiting test | — | More exact Engram row payloads cached in RAM; useful when Engram I/O is limiting. Competes with expert RAM and other host allocations. |
+| `DS4_ENGRAM_RAM` | Unset; default `0` | `0`, `1`, only with sufficient RAM | Awaiting test | — | Lock both complete Engram tables, including scales. Requires a full-table RAM budget and memlock allowance; not a universal gain over a warm page cache. |
+| `--cpu-threads` | Unset; automatic choice selected 74 in the baseline run | `48`, `56`; extend by 8 cores only if the difference is meaningful | Awaiting test | — | Physical-core counts on the SMT-disabled host. No tested optimum or explicit count is selected; the 48/56-core alternatives remain untested. |
+| `MAYA_DS4_CPU_LANE` | Unset; measured choice | `cores`, `node`, `smt` were discussed; no separate policy tuning selected | Not used for now | — | The accepted CPU search is explicit 48/56-core counts. With SMT disabled, `smt` offers no extra logical siblings. An explicit thread count bypasses the automatic thread-choice measurement. |
+| `MAYA_DS4_HC_FUSE` | Unset; default `0` | `0`, `1`, `2` | Awaiting test | — | Fuse HC split/norm and attention int8 rounding; `2` also covers DSpark verify windows and rounds the FFN input for the shared expert. Allowed on gfx906 by the local patch. |
+| `MAYA_DS4_DECODE_TRIM` | Unset; default `0` | Individual bits `1`, `2`, `4`, `8`; combinations up to `15` | Awaiting test | — | `1`: shared-expert SwiGLU produces its int8 down input; `2`: q norm produces wq_b's int8 input; `4`: fuse snapshot/latent copies; `8`: mapped-host drafter handoffs. Local patch admits bits 1/2 on gfx906. |
+| `MAYA_DS4_ROUTE_FUSE` | Unset; default `0` | `0`, `1`, `2` | Awaiting test | — | Router/lookahead in two launches instead of four; `2` also covers verify windows. Requires `DS4_AHEAD=1`; allowed on gfx906 by the local patch. |
+| `DS4_AHEAD` | Unset; default `1` | Keep `1` while evaluating route fusion | Always enabled | `1` (upstream default) | One layer of lookahead; dependency of `ROUTE_FUSE`, not an independent selected speed experiment. |
+| `MAYA_DS4_HC_MIX_SPLIT` | Unset; default `0` | `0`, `1`; `2` was discussed for NVIDIA's side stream only | Awaiting test | — | Fuse HC mix/split on the layer's stream. On AMD the relevant comparison is `0` vs `1`; do not expect a distinct NVIDIA-side-stream benefit from `2`. |
+| `MAYA_DS4_DRAFT_COST` | Unset; default `0` | `0`, `1` | Awaiting test | — | Choose verified window length from measured time/acceptance cost, preserving the answer. Alternative to the cumulative-confidence policy, not an independent multiplicative gain. |
+| `MAYA_DS4_DSPARK_CUM` | Unset; default `0.5` | `0`, `0.25`, `0.5`, `0.75` | Awaiting test | — | Limit verification by cumulative draft confidence; relevant to the fixed-cut policy. The baseline already gets default `0.5`. |
+| `--dspark-conf` | Unset; default `0.5` | `0.3`, `0.5`, `0.7` | Awaiting test | — | Per-draft confidence floor; balance accepted tokens against verification cost. |
+| `DS4_DSPARK_LAZY` | Unset; default `1` | `0`, `1` | Awaiting test | — | Avoid drafter head/Markov work for rows the round cannot retain. Same drafts and answer tokens; already on by default, not an unconditional new enablement. |
+| `MAYA_DS4_HEAD_COLS` | Unset; default `8` | `4`, `8`, `16` | Awaiting test | — | Output-head activations per pass. Same logits at every count; larger values help only when the call has enough rows. |
+| `DS4_COPY_PIN` | Unset; default on with multiple GPUs, RAM copies and chunked prompts | `0`, `1` | Awaiting test | — | Copy prompt experts directly from pinned RAM without extra CPU staging. Setting/default alone does not prove pinning succeeded. |
+| `DS4_REQUIRE_ALL_RAM` | Unset; default `0` | `0`, `1`, only with sufficient RAM | Awaiting test | — | With `--mmap-experts off`, require every CPU-lane expert in anonymous RAM or fail startup. A placement guarantee, not a gain if the baseline already copies them all; does not lock expert RAM. |
+| `MAYA_DS4_MARKOV_Q8` | Unset; default `0` | `0`, `1` | Awaiting test | — | Halve the drafter Markov-head storage/traffic using Q8_0. Accepted as bit-exact at the verified-answer level by task agreement; drafter values and proposed tokens may change. |
+| `MAYA_DS4_Q8_BATCH` | Unset; default `1` | `0`, `1` | Awaiting test | — | Batch int8 input-rounding jobs into one launch, same bits. Already enabled by default; no measured optimum selected. |
+| `MAYA_DS4_Q8_SHARE` | Unset; default `1` | `0`, `1` | Awaiting test | — | Share identical rounded inputs across jobs, same bits. Already enabled by default; no measured optimum selected. |
+
+`MAYA_DS4_SLOT_RAM_GB` and `MAYA_DS4_SLOT_DIR` are related slot configuration
+controls, recorded because RAM budgeting and the slot directory were discussed:
+
+| Flag | Current baseline / default | Candidate values | Status | Fixed / best tested value | Effect and limits |
+| --- | --- | --- | --- | --- | --- |
+| `MAYA_DS4_SLOT_RAM_GB` | Unset; default `0` (count-limited only) | No explicit RAM cap selected | Not used for now | — | An optional parked-state RAM budget; the incoming serialization can temporarily exceed it, and one state is retained even if larger than the cap. `SLOT_CAP=4` remains the selected limit. |
+| `MAYA_DS4_SLOT_DIR` | Unset; default `<pack>/slots` | No alternative path selected | Not used for now | — | Persistent state spill/restart directory. No path override added to the baseline. |
+
+## 2. DeepSeek-designed non-bit-exact optimization
+
+All applicable additional optimization switches in this category are enabled
+immediately. There is one active candidate: `PROMPT_SKIP=2`. The TP-flow bridge
+is conditional and does not require enabling another prompt path.
+
+| Flag | Current baseline / default | Candidate values | Status | Fixed / best tested value | Effect and limits |
+| --- | --- | --- | --- | --- | --- |
+| `MAYA_DS4_PROMPT_SKIP` | Explicit `2` | `0`/`1` are reference modes, not selected alternatives | Always enabled | `2` | DeepSeek's approximate bounded replay: full layers 20-39 work on the last 128 prompt tokens. Answers can shift. TP4 off-flow can round the kept span to chunk boundaries, limiting the incremental gain over mode `1`. |
+| `MAYA_DS4_YOCO_TP` | Unset; default off | `1` only if the single TP group uses `DS4_FLOW_TP=1` | Not used for now | — | Permit the prompt skip on a TP flow group. The baseline uses no TP flow; off-flow TP already supports the skip. |
+| `DS4_FLOW_TP` | Unset; default off | No prompt-path change selected | Not used for now | — | TP experts use the streamed prompt flow. This is a path selector/dependency, not a new DeepSeek approximation; it is not needed to enable `PROMPT_SKIP=2` off-flow. |
+
+Native DeepSeek FP8/FP4 rounding and packed attention caches are already part of
+the engine/model path, not additional flags to enable. Their presence does not
+imply hardware FP8/FP4 matrix acceleration on gfx906. DSpark is already enabled
+and is not itself a non-bit-exact answer approximation.
+
+## 3. Maya non-bit-exact tuning: excluded
+
+Keep these rows for completeness, not as accepted experiments. Changes to TP,
+chunk size, profile and drafter placement are recorded in the fixed-baseline
+table rather than duplicated here. Exclusion of tuning does not retroactively
+remove behavior already inherited from the starting configuration.
+
+| Flag | Current baseline / default | Values discussed; not selected | Status | Fixed / best tested value | Effect / reason for exclusion |
+| --- | --- | --- | --- | --- | --- |
+| `--experts` | Unset; model default `6` | `6`, `5`, `4`, aggressive `3` | Not used for now | — | Fewer routed experts with renormalization. Changes the model; excluded even if expert compute/traffic falls substantially. |
+| `MAYA_DS4_RAM_SKIP_W` | Unset; default `0` | `0`, `0.05`, `0.10`, `0.14` | Not used for now | — | Drop light routed experts absent from VRAM, including RAM-resident ones. Changes answers. Overrides the disk-skip mechanism when active. |
+| `--threads` | Unset; TP4 already uses host threads | `on` for the rejected TP1 layout | Not used for now | — | No explicit override needed for the selected TP4 baseline. |
+| `DS4_SPLIT` | Unset; automatic layer layout | Manual pipeline splits | Not used for now | — | Alternative layer/group layouts and summation paths were excluded. |
+| `MAYA_DS4_DISK_SKIP_W` | Unset; default `0` | `0`, `0.05`, `0.10`, `0.14` | Not used for now | — | Drop light experts whose pages are not in RAM. Changes answers; no expected benefit if every CPU-lane expert is already in RAM. |
+| `MAYA_DS4_DISK_SKIP_AUTO` | Unset; default `0` | `1` with disk skipping | Not used for now | — | Restrict approximate disk skipping to cold phases. Still changes answers while active. |
+| `MAYA_DS4_DRAFT_VRAM` | Unset; automatic placement | Per-block expert-cache limits; no numeric grid selected | Not used for now | — | Rebalance drafter versus trunk cache room; changing CPU/GPU execution placement can change numerics. |
+| `MAYA_DS4_DENSE_REQ` | Unset; default off | `q5_k`, then `q4_k` / `iq4_xs` | Not used for now | — | Additional dense-matrix requantization at load, not DeepSeek's native format. Changes target weights/answers. |
+| `--suffix-draft` | Unset; default `3`, active | `0`, `3`, `4`, `6` | Not used for now | — | Prompt lookup can accelerate repeated code/text, but AMD long verify windows are documented not to give the same bits. Tuning is excluded; the inherited default has not been explicitly disabled. |
+| `MAYA_DS4_KEEP_THINKING` | Unset; default off | `1` | Not used for now | — | Changes ordinary-chat prompt semantics by retaining earlier reasoning. Tool requests already retain it. |
+| `MAYA_DS4_RESTORE_POINTS` | Unset; default `4`, active | No alternative count selected | Not used for now | — | Restore-point tuning is excluded: prompt segmentation and interaction with skip can change the first read's answer. The inherited default has not been explicitly disabled. |
+| `MAYA_DS4_EXPERT_MMQ` | Unset; default off | `1` | Not used for now | — | Approximate IQ-expert prompt path with int8 activation/intermediate rounding; not a candidate for the current native-MXFP4 pack on gfx906. |
+| `MAYA_DS4_PREFILL_FUSED` | Unset; not enabled by default on gfx906 | `1` on supported architectures/formats | Not used for now | — | Approximate fused WMMA prompt experts. RDNA/Strix speedups are not gfx906 evidence, and this is outside the accepted pack/path scope. |
+
+## Other excluded or unclassified flags
+
+| Flag | Current baseline / default | Values discussed; not selected | Status | Fixed / best tested value | Effect / reason for exclusion |
+| --- | --- | --- | --- | --- | --- |
+| `MAYA_DS4_HIP_PEER_AR` | Unset; default off | `auto`, `1` | Not used for now | — | Exact transport for eligible two-member HIP TP prompt groups only; not applicable to TP4. |
+| `MAYA_DS4_AR2` | Unset; default `0` | `1` exact F32; `2` approximate FP16 on the wire | Not used for now | — | Two-member TP prompt all-reduce only. Both modes excluded under TP4; mode `2` also belongs to the rejected Maya approximations. |
+| `MAYA_DS4_AR2_DECODE` | Unset; default `0` | `1` | Not used for now | — | Exact two-member TP decode all-reduce; not applicable to TP4. |
+| `DS4_ENGRAM_PREFETCH` | Unset; default `0` | `1` | Not used for now | — | Exact Engram prompt read-ahead documented for one GPU; excluded from the four-GPU baseline. |
+| `DS4_HIP_ATTN_SWIZZLE` | Unset; opt-in | `1` | Not used for now | — | LDS-layout optimization. No explicit bit-exact promise was found in the reviewed documentation, so do not guess its class or silently enable it. |
+
+## Sources and evidence
+
+- [Baseline JSON](base-params/maya-config.json) and
+  [preparation script](base-params/prepare.sh).
+- Maya v1.1.45
+  [settings](https://github.com/mw00/project-maya/blob/v1.1.45/docs/SETTINGS.md),
+  [models](https://github.com/mw00/project-maya/blob/v1.1.45/docs/MODELS.md) and
+  [changelog](https://github.com/mw00/project-maya/blob/v1.1.45/CHANGELOG.md).
+- [Skip-unpicked behavior and parity contract](https://github.com/mw00/project-maya/blob/v1.1.45/docs/ds4-skip-unpicked.md).
+- [Exact HIP TP2 prompt transport](https://github.com/mw00/project-maya/blob/v1.1.45/docs/HIP_PEER_PREFILL.md).
+- [Expert-profile placement and numerical caveats](https://github.com/mw00/project-maya/blob/v1.1.45/docs/DS4_PROFILE_REFRESH.md).
+- [DeepSeek model configuration](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017/blob/main/config.json):
+  six routed experts per target token; native FP8/FP4 formats.
+
+Local `git apply --check` accepted both v1.1.44 patches against upstream
+v1.1.45. JSON/consistency/format checks are not GPU tests. The
+[first baseline attempt](results/baseline-spec1/README.md) failed before READY:
+the engine reduced TP4 to TP2 and rejected the drafter's member IDs. No requests
+ran and no performance result was produced. `MAYA_DS4_TP_GGUF_UNEVEN=1` was
+subsequently approved as a fixed baseline setting to preserve TP4.
+The [subsequent baseline](results/baseline-spec1-tp4/README.md) completed all
+22 requests on actual TP4 with `spec=1`. Its raw logs, counters, hashes and
+timing summary are retained, including rocBLASLt/Tensile module-load diagnostics.
+GPU runs and Kubernetes writes require separate explicit approval.

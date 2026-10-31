@@ -1,0 +1,12 @@
+{
+  "checks": {
+    "gfx906_fusion_whitelist": true,
+    "wave64_fusion_gate": true,
+    "gfx906_signed_zero": true
+  },
+  "source_sha256": {
+    "/opt/maya/src/ds4/ds4_model.cu": "c603808dc56aa7dacee8c1b5b64e360f500e5a6e37cba4bdf48321db86484726",
+    "/opt/maya/src/kernels/cuda/glm_lat8.cuh": "4e2598dd8ef6cb100b512576aff6b2a23a6e0121b834f5b802972ed9a9362ac7"
+  },
+  "rocm_path": "/opt/rocm"
+}
