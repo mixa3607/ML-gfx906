@@ -5,6 +5,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import run
+
 
 HELPERS = '''
 import os
@@ -47,6 +49,20 @@ with Path('commands.jsonl').open('w') as log:
 
 
 class RunnerTests(unittest.TestCase):
+    def test_parse_done(self):
+        self.assertEqual(run.parse_done('DONE 12 2048 1.5 2.75 length 3 4 5 6 7'), {
+            'generated': 12,
+            'prompt_tokens': 2048,
+            'prompt_ms': 1.5,
+            'decode_ms': 2.75,
+            'finish': 'length',
+            'drafts_accepted': 3,
+            'drafts_offered': 4,
+            'reused': 5,
+            'hits': 6,
+            'lookups': 7,
+        })
+
     def invoke(self, mode):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -83,7 +99,11 @@ class RunnerTests(unittest.TestCase):
         ])
         self.assertIn('engine diagnostics', result.stderr)
         self.assertEqual([json.loads(line) for line in result.stdout.splitlines()], [
-            {'id': phase, 'phase': phase, 'done': 'DONE 1 2 10.0 20.0 stop 0 0 0 0 0'}
+            {'id': phase, 'phase': phase, 'done': {
+                'generated': 1, 'prompt_tokens': 2, 'prompt_ms': 10.0, 'decode_ms': 20.0,
+                'finish': 'stop', 'drafts_accepted': 0, 'drafts_offered': 0,
+                'reused': 0, 'hits': 0, 'lookups': 0,
+            }}
             for phase in ('warmup', 'measurement')
         ])
 

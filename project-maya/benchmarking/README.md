@@ -42,13 +42,16 @@ and `cwd`. It waits for `READY`, sends each request with `temperature=0 spec=0`,
 waits for `DONE`, and sends `QUIT` after the last request. It does not tokenise
 text, start HTTP, change the config or decode the output. `ERR` or EOF aborts the run.
 
-Each stdout JSONL row contains `id`, `phase` and the raw `done` line; engine stderr
+Each stdout JSONL row contains `id`, `phase` and a parsed `done` object; engine stderr
 is inherited. Both warmup and measurement results are kept, without aggregation.
 The native DS4 line is:
 
 ```text
 DONE generated prompt_tokens prompt_ms decode_ms finish drafts_accepted drafts_offered reused hits lookups
 ```
+
+`done` uses these field names: counters are integers, timings are floats and
+`finish` is a string.
 
 Timings are native engine milliseconds, not client TTFT or per-token latency.
 The runner does not disable KV reuse; check `reused` before treating a result as

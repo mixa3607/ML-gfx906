@@ -17,6 +17,25 @@ def read_until(stream, prefix):
             return line
 
 
+def parse_done(line):
+    (
+        _, generated, prompt_tokens, prompt_ms, decode_ms, finish,
+        drafts_accepted, drafts_offered, reused, hits, lookups,
+    ) = line.split()
+    return {
+        'generated': int(generated),
+        'prompt_tokens': int(prompt_tokens),
+        'prompt_ms': float(prompt_ms),
+        'decode_ms': float(decode_ms),
+        'finish': finish,
+        'drafts_accepted': int(drafts_accepted),
+        'drafts_offered': int(drafts_offered),
+        'reused': int(reused),
+        'hits': int(hits),
+        'lookups': int(lookups),
+    }
+
+
 def run(cases, engine):
     read_until(engine.stdout, 'READY ')
     for line in cases:
@@ -24,7 +43,7 @@ def run(cases, engine):
         ids = ','.join(map(str, case['ids']))
         engine.stdin.write(f"GEN {case['tg']} temperature=0 spec=0 {ids}\n")
         engine.stdin.flush()
-        done = read_until(engine.stdout, 'DONE ')
+        done = parse_done(read_until(engine.stdout, 'DONE '))
         print(json.dumps({'id': case['id'], 'phase': case['phase'], 'done': done}), flush=True)
     engine.stdin.write('QUIT\n')
     engine.stdin.flush()
