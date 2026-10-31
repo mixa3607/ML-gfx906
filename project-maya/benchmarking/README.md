@@ -51,7 +51,7 @@ To download a new corpus revision, remove its old `sources.jsonl` first, then ru
 python3 freeze.py fetch corpora/ru-prose
 ```
 
-Fetch downloads the warmup/dev articles listed in `ARTICLE_TITLES`. It creates
+Fetch downloads the warmup/measurement articles listed in `ARTICLE_TITLES`. It creates
 `sources.jsonl` exclusively; a failed download leaves a partial file to remove
 before retrying. Reuse frozen sources for comparisons instead of fetching per run.
 

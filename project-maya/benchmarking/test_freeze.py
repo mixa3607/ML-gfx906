@@ -29,7 +29,7 @@ class FreezeTests(unittest.TestCase):
     def setUp(self):
         self.sources = [
             {'split': split, 'pageid': pageid, 'title': 'Article', 'text': 'Проза ' * 100}
-            for pageid, split in enumerate(('warmup', 'warmup', 'dev', 'dev'))
+            for pageid, split in enumerate(('warmup', 'warmup', 'measurement', 'measurement'))
         ]
         self.suite = SimpleNamespace(
             SEED=42, TG=256, WARMUP_PP=[101, 150], MEASUREMENT_PP=[203, 501, 199],
@@ -103,7 +103,7 @@ class FreezeTests(unittest.TestCase):
                 freeze.fetch(path)
             self.assertEqual(get.call_count, 36)
             rows = [json.loads(line) for line in (path / 'sources.jsonl').read_text().splitlines()]
-            self.assertEqual({row['split'] for row in rows}, {'warmup', 'dev'})
+            self.assertEqual({row['split'] for row in rows}, {'warmup', 'measurement'})
 
 
 if __name__ == '__main__':

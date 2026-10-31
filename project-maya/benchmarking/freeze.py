@@ -64,11 +64,11 @@ def fetch(corpus_dir):
 def build_cases(sources, instructions, suite, tokenizer, template):
     suffix = tokenizer.encode(suite.ASSISTANT_SUFFIX, parse_special=True)
     phases = (
-        ('warmup', 'warmup', suite.WARMUP_PP),
-        ('measurement', 'dev', suite.MEASUREMENT_PP),
+        ('warmup', suite.WARMUP_PP),
+        ('measurement', suite.MEASUREMENT_PP),
     )
-    for phase, split, lengths in phases:
-        documents = [doc for doc in sources if doc['split'] == split]
+    for phase, lengths in phases:
+        documents = [doc for doc in sources if doc['split'] == phase]
         random.Random(suite.SEED).shuffle(documents)
         offsets = {doc['pageid']: 0 for doc in documents}
         for index, pp in enumerate(lengths):
