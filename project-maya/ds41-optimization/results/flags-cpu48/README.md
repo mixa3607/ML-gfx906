@@ -7,7 +7,7 @@ All five runners exited with code 0. All 110 requests completed TG256 with
 The five test pods were deleted; every post-cleanup sample shows all four
 GPUs at 0% utilization and 10 MB VRAM used each.
 
-## Results (no performance verdict)
+## Results
 
 Each arm pools ten measurement requests; twelve warmups per arm are excluded.
 Each measurement set contains 126976 prompt tokens and 2560 generated tokens.
@@ -22,12 +22,13 @@ Each measurement set contains 126976 prompt tokens and 2560 generated tokens.
 
 The fresh control differs from the selected CPU48 measurement by -0.85% PP
 and -1.72% TG. All flag deltas use this block's fresh control, not CPU74 or
-the earlier CPU48 measurement. The active baseline remains unchanged; no
-performance threshold, pass/fail verdict or flag promotion is applied.
+the earlier CPU48 measurement. No performance threshold or automatic
+pass/fail decision was applied during the runs. The active baseline remains
+unchanged; the subsequent user selection is recorded below.
 
 [comparison.md](comparison.md) contains per-length results;
 [comparison.json](comparison.json) also retains per-request deltas and
-diagnostic counts. Observations without an acceptance decision:
+diagnostic counts. Per-length observations retained alongside the selection:
 
 - `skip`: per-length PP gains range from +77.21% at PP2048 to +3.51% at
   PP32768; all ten individual PP measurements improved. TG varies by length:
@@ -44,6 +45,21 @@ not confidence intervals, significance tests or isolated kernel timings.
 Draft counters and adaptive histories differ; no output-token parity or
 quality conclusion follows from timing or native fusion checks.
 
+## Accepted individual best-tested values
+
+By task agreement, record the following in the inventory's best-tested column:
+
+- `DS4_SKIP_UNPICKED=1`
+- `DS4_HIP_ATTN_SWIZZLE=1`
+- `MAYA_DS4_HC_FUSE=2`
+- `MAYA_DS4_ROUTE_FUSE=2`
+
+These are accepted results of separate single-flag tests, not an automatically
+updated baseline or a tested combined configuration. The skip selection accepts
+the observed PP/TG tradeoff, including pooled TG -0.79% and PP16384 TG -5.87%.
+Small gains in other arms do not establish statistical significance. No new
+run or combined-speedup claim accompanies this documentation decision.
+
 ## Approved scope
 
 Run serially, each variant independently on the captured
@@ -57,10 +73,11 @@ Run serially, each variant independently on the captured
 | 4 | `hcfuse` | `MAYA_DS4_HC_FUSE=2` |
 | 5 | `routefuse` | `MAYA_DS4_ROUTE_FUSE=2`; keep inherited `DS4_AHEAD=1` |
 
-There are no performance success/failure thresholds or automatic baseline
-changes. Report PP/TG results and deltas versus the fresh control; decisions
-are deferred to the user. Runtime/setup validation is separate from judging
-performance. No cumulative combinations, extra CPU values or additional flags.
+The run scope specified no performance success/failure thresholds or automatic
+baseline changes. Report PP/TG results and deltas versus the fresh control;
+selection is a separate user decision. Runtime/setup validation is separate
+from judging performance. No cumulative combinations, extra CPU values or
+additional flags.
 
 ## Method and provenance
 

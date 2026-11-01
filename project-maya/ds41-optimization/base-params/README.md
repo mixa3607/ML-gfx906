@@ -14,7 +14,9 @@ CPU56 and CPU48 differ by less than 0.2% in pooled PP/TG; this selection is
 not a claim that CPU48 is a unique or universal optimum.
 The [five-arm flag block](../results/flags-cpu48/README.md) compares four
 individual flags with a fresh CPU48 control. It does not change this baseline;
-performance acceptance decisions are deferred.
+`DS4_SKIP_UNPICKED=1`, `DS4_HIP_ATTN_SWIZZLE=1`, `MAYA_DS4_HC_FUSE=2` and
+`MAYA_DS4_ROUTE_FUSE=2` are accepted as individually best-tested values in the
+inventory, not enabled here. Their combination has not been tested.
 
 ## Baseline settings
 

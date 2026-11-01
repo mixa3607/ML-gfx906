@@ -22,6 +22,9 @@ selected. Defaults and candidate values are separate columns: a default is not
 a test result. An unset flag means it is not present in
 `base-params/maya-config.json`; the displayed
 default is documented upstream behavior, not a runtime observation.
+Individually accepted best-tested flag values need not be enabled in the
+current baseline. Their combined effect is untested unless explicitly measured;
+individual speedups must not be added or multiplied as a measured prediction.
 
 Classification follows the documentation and explicit task agreements;
 hypothetical implementation bugs do not reclassify a flag. Bit-exactness refers
@@ -47,9 +50,10 @@ respectively. Both improved TG versus CPU74 by about 18.7%; the difference
 between 56 and 48 is below 0.2% on pooled PP/TG. CPU48 is selected by task
 agreement, not as a proven winner over CPU56. No additional CPU count is selected.
 The [five-arm CPU48 flag block](results/flags-cpu48/README.md) measured a fresh
-control plus skip, swizzle, HC fuse and route fuse separately. Results and
-per-length/per-request deltas are retained without performance verdicts or
-baseline changes; flag acceptance decisions are deferred.
+control plus skip, swizzle, HC fuse and route fuse separately. By task agreement,
+their individually best-tested values are `1`, `1`, `2` and `2`, respectively.
+Per-length/per-request deltas and regressions remain recorded. The active
+baseline is unchanged, and the combination has not been tested.
 
 ## Fixed baseline and inherited placement
 
@@ -83,17 +87,17 @@ patch is a correctness fix, not a separate tunable speed switch.
 | --- | --- | --- | --- | --- | --- |
 | `MAYA_DS4_SLOT_KEEP` | Explicit `0` | No tuning requested | Not used for now | `0` | Disable conversation-slot save/load and spill so independent requests do not pay for preserving the preceding conversation. |
 | `MAYA_DS4_SLOT_CAP` | Explicit `4`, inactive | No tuning requested | Not used for now | — | Ignored while `SLOT_KEEP=0`. |
-| `DS4_SKIP_UNPICKED` | Unset; HIP default off | `0`, `1` | Tested | — | CPU48 at `1`: PP +15.12%, TG -0.79% versus fresh control. PP2048 +77.21%, PP32768 +3.51%; PP16384 TG -5.87%. No performance verdict or baseline change; see the five-arm block. Streams only experts picked by the chunk; unused by `DS4_FLOW_TP` or decode. |
+| `DS4_SKIP_UNPICKED` | Unset; HIP default off | `0`, `1` | Tested | `1` | CPU48 at `1`: PP +15.12%, TG -0.79% versus fresh control. PP2048 +77.21%, PP32768 +3.51%; PP16384 TG -5.87%. Accepted individually by task agreement with this PP/TG tradeoff; baseline unchanged. Streams only experts picked by the chunk; unused by `DS4_FLOW_TP` or decode. |
 | `DS4_ENGRAM_CACHE_MB` | Explicit `256` | `256`, `1024`, `4096`, `8192` | Awaiting test | — | More exact Engram row payloads cached in RAM; useful when Engram I/O is limiting. Competes with expert RAM and other host allocations. |
 | `DS4_ENGRAM_RAM` | Unset; default `0` | None; `1` excluded | Not used for now | — | Lock both complete Engram tables, including scales. Excluded from testing on this host because there is insufficient RAM for the full tables alongside the existing workload. |
 | `--cpu-threads` | Explicit `48` | `74`, `56`, `48` measured; extend by 8 cores only if the difference is meaningful and another run is approved | Tested | `48` (selected baseline) | CPU48: PP +3.91%, TG +18.61% versus CPU74. Selected by task agreement; no meaningful 56-vs-48 winner established. See the linked CPU-thread comparison. |
 | `MAYA_DS4_CPU_LANE` | Unset; automatic policy bypassed by explicit CPU count | `cores`, `node`, `smt` were discussed; no separate policy tuning selected | Not used for now | — | CPU74/56/48 were measured with explicit thread counts. With SMT disabled, `smt` offers no extra logical siblings. Explicit counts bypass automatic thread-choice measurement. |
-| `MAYA_DS4_HC_FUSE` | Unset; default `0` | `0`, `1`, `2`; `2` measured | Tested | — | CPU48 at `2`: PP +1.77%, TG +5.69% versus fresh control. Native single-/16-row parity checks passed on all four GPUs. Fuses HC split/norm and int8 rounding, including verify windows and shared-expert FFN input at `2`. No performance verdict or baseline change. |
+| `MAYA_DS4_HC_FUSE` | Unset; default `0` | `0`, `1`, `2`; `2` measured | Tested | `2` | CPU48 at `2`: PP +1.77%, TG +5.69% versus fresh control. Native single-/16-row parity checks passed on all four GPUs. Fuses HC split/norm and int8 rounding, including verify windows and shared-expert FFN input at `2`. Accepted individually by task agreement; baseline unchanged. |
 | `MAYA_DS4_DECODE_TRIM` | Unset; default `0` | Individual bits `1`, `2`, `4`, `8`; combinations up to `15` | Awaiting test | — | `1`: shared-expert SwiGLU produces its int8 down input; `2`: q norm produces wq_b's int8 input; `4`: fuse snapshot/latent copies; `8`: mapped-host drafter handoffs. Local patch admits bits 1/2 on gfx906. |
-| `MAYA_DS4_ROUTE_FUSE` | Unset; default `0` | `0`, `1`, `2`; `2` measured | Tested | — | CPU48 at `2`: PP +2.50%, TG +0.75% versus fresh control. Native single-/3-/16-row parity checks passed on all four GPUs. Router/lookahead in two launches, including verify windows at `2`; requires `DS4_AHEAD=1`. No performance verdict or baseline change. |
+| `MAYA_DS4_ROUTE_FUSE` | Unset; default `0` | `0`, `1`, `2`; `2` measured | Tested | `2` | CPU48 at `2`: PP +2.50%, TG +0.75% versus fresh control. Native single-/3-/16-row parity checks passed on all four GPUs. Router/lookahead in two launches, including verify windows at `2`; requires `DS4_AHEAD=1`. Accepted individually by task agreement; baseline unchanged. |
 | `DS4_AHEAD` | Unset; default `1` | Keep `1` while evaluating route fusion | Always enabled | `1` (upstream default) | One layer of lookahead; dependency of `ROUTE_FUSE`, not an independent selected speed experiment. |
 | `MAYA_DS4_HC_MIX_SPLIT` | Unset; default `0` | `0`, `1`; `2` was discussed for NVIDIA's side stream only | Awaiting test | — | Fuse HC mix/split on the layer's stream. On AMD the relevant comparison is `0` vs `1`; do not expect a distinct NVIDIA-side-stream benefit from `2`. |
-| `DS4_HIP_ATTN_SWIZZLE` | Unset; opt-in | `0`, `1` | Tested | — | CPU48 at `1`: PP +3.80%, TG +0.81% versus fresh control. HIP attention LDS-layout optimization, accepted as bit-exact based on the user's reported prior tests; no new parity test here. No performance verdict or baseline change. |
+| `DS4_HIP_ATTN_SWIZZLE` | Unset; opt-in | `0`, `1` | Tested | `1` | CPU48 at `1`: PP +3.80%, TG +0.81% versus fresh control. HIP attention LDS-layout optimization, accepted as bit-exact based on the user's reported prior tests; no new parity test here. Accepted individually by task agreement; baseline unchanged. |
 | `MAYA_DS4_DRAFT_COST` | Unset; default `0` | `0`, `1` | Awaiting test | — | Choose verified window length from measured time/acceptance cost, preserving the answer. Alternative to the cumulative-confidence policy, not an independent multiplicative gain. |
 | `MAYA_DS4_DSPARK_CUM` | Unset; default `0.5` | `0`, `0.25`, `0.5`, `0.75` | Awaiting test | — | Limit verification by cumulative draft confidence; relevant to the fixed-cut policy. The baseline already gets default `0.5`. |
 | `--dspark-conf` | Unset; default `0.5` | `0.3`, `0.5`, `0.7` | Awaiting test | — | Per-draft confidence floor; balance accepted tokens against verification cost. |
