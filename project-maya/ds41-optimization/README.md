@@ -23,11 +23,12 @@ a test result. An unset flag means it is not present in
 `base-params/maya-config.json`; the displayed
 default is documented upstream behavior, not a runtime observation.
 
-Classification follows the documentation; hypothetical implementation bugs do
-not reclassify a flag. Bit-exactness refers to the same target pack and the
-relevant computation path, not equality to the original checkpoint or DeepSeek
-API. DSpark controls documented to preserve verified answer tokens are accepted
-in group 1, including `MAYA_DS4_MARKOV_Q8`, even if drafter internals change.
+Classification follows the documentation and explicit task agreements;
+hypothetical implementation bugs do not reclassify a flag. Bit-exactness refers
+to the same target pack and the relevant computation path, not equality to the
+original checkpoint or DeepSeek API. DSpark controls documented to preserve
+verified answer tokens are accepted in group 1, including `MAYA_DS4_MARKOV_Q8`,
+even if drafter internals change.
 Documented changes to target arithmetic or prompt semantics are not bit-exact.
 
 The rows within each optimization group retain the approximate ordering by
@@ -80,7 +81,7 @@ patch is a correctness fix, not a separate tunable speed switch.
 | `MAYA_DS4_SLOT_CAP` | Explicit `4`, inactive | No tuning requested | Not used for now | — | Ignored while `SLOT_KEEP=0`. |
 | `DS4_SKIP_UNPICKED` | Unset; HIP default off | `0`, `1` | Awaiting test | — | Stream only experts the chunk picks, preserving batches and accumulation order. Long chunks can lose cross-layer read-ahead. Not used by `DS4_FLOW_TP` or decode. |
 | `DS4_ENGRAM_CACHE_MB` | Explicit `256` | `256`, `1024`, `4096`, `8192` | Awaiting test | — | More exact Engram row payloads cached in RAM; useful when Engram I/O is limiting. Competes with expert RAM and other host allocations. |
-| `DS4_ENGRAM_RAM` | Unset; default `0` | `0`, `1`, only with sufficient RAM | Awaiting test | — | Lock both complete Engram tables, including scales. Requires a full-table RAM budget and memlock allowance; not a universal gain over a warm page cache. |
+| `DS4_ENGRAM_RAM` | Unset; default `0` | None; `1` excluded | Not used for now | — | Lock both complete Engram tables, including scales. Excluded from testing on this host because there is insufficient RAM for the full tables alongside the existing workload. |
 | `--cpu-threads` | Explicit `48` | `74`, `56`, `48` measured; extend by 8 cores only if the difference is meaningful and another run is approved | Tested | `48` (selected baseline) | CPU48: PP +3.91%, TG +18.61% versus CPU74. Selected by task agreement; no meaningful 56-vs-48 winner established. See the linked CPU-thread comparison. |
 | `MAYA_DS4_CPU_LANE` | Unset; automatic policy bypassed by explicit CPU count | `cores`, `node`, `smt` were discussed; no separate policy tuning selected | Not used for now | — | CPU74/56/48 were measured with explicit thread counts. With SMT disabled, `smt` offers no extra logical siblings. Explicit counts bypass automatic thread-choice measurement. |
 | `MAYA_DS4_HC_FUSE` | Unset; default `0` | `0`, `1`, `2` | Awaiting test | — | Fuse HC split/norm and attention int8 rounding; `2` also covers DSpark verify windows and rounds the FFN input for the shared expert. Allowed on gfx906 by the local patch, with native startup parity checks. |
@@ -88,6 +89,7 @@ patch is a correctness fix, not a separate tunable speed switch.
 | `MAYA_DS4_ROUTE_FUSE` | Unset; default `0` | `0`, `1`, `2` | Awaiting test | — | Router/lookahead in two launches instead of four; `2` also covers verify windows. Requires `DS4_AHEAD=1`; allowed on gfx906 by the local patch. |
 | `DS4_AHEAD` | Unset; default `1` | Keep `1` while evaluating route fusion | Always enabled | `1` (upstream default) | One layer of lookahead; dependency of `ROUTE_FUSE`, not an independent selected speed experiment. |
 | `MAYA_DS4_HC_MIX_SPLIT` | Unset; default `0` | `0`, `1`; `2` was discussed for NVIDIA's side stream only | Awaiting test | — | Fuse HC mix/split on the layer's stream. On AMD the relevant comparison is `0` vs `1`; do not expect a distinct NVIDIA-side-stream benefit from `2`. |
+| `DS4_HIP_ATTN_SWIZZLE` | Unset; opt-in | `0`, `1` | Awaiting test | — | HIP attention LDS-layout optimization. Accepted as bit-exact for this task based on the user's reported prior tests; not reverified in this task. Remains disabled in the baseline pending performance testing. |
 | `MAYA_DS4_DRAFT_COST` | Unset; default `0` | `0`, `1` | Awaiting test | — | Choose verified window length from measured time/acceptance cost, preserving the answer. Alternative to the cumulative-confidence policy, not an independent multiplicative gain. |
 | `MAYA_DS4_DSPARK_CUM` | Unset; default `0.5` | `0`, `0.25`, `0.5`, `0.75` | Awaiting test | — | Limit verification by cumulative draft confidence; relevant to the fixed-cut policy. The baseline already gets default `0.5`. |
 | `--dspark-conf` | Unset; default `0.5` | `0.3`, `0.5`, `0.7` | Awaiting test | — | Per-draft confidence floor; balance accepted tokens against verification cost. |
@@ -155,7 +157,6 @@ remove behavior already inherited from the starting configuration.
 | `MAYA_DS4_AR2` | Unset; default `0` | `1` exact F32; `2` approximate FP16 on the wire | Not used for now | — | Two-member TP prompt all-reduce only. Both modes excluded under TP4; mode `2` also belongs to the rejected Maya approximations. |
 | `MAYA_DS4_AR2_DECODE` | Unset; default `0` | `1` | Not used for now | — | Exact two-member TP decode all-reduce; not applicable to TP4. |
 | `DS4_ENGRAM_PREFETCH` | Unset; default `0` | `1` | Not used for now | — | Exact Engram prompt read-ahead documented for one GPU; excluded from the four-GPU baseline. |
-| `DS4_HIP_ATTN_SWIZZLE` | Unset; opt-in | `1` | Not used for now | — | LDS-layout optimization. No explicit bit-exact promise was found in the reviewed documentation, so do not guess its class or silently enable it. |
 
 ## Sources and evidence
 
