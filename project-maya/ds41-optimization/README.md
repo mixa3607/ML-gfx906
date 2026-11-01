@@ -33,18 +33,18 @@ Documented changes to target arithmetic or prompt semantics are not bit-exact.
 The rows within each optimization group retain the approximate ordering by
 potential additional benefit on gfx906 in an applicable workload. TTFT, prefill
 and decode gains are different metrics, so this is not a universal speed ranking.
-The benchmark baseline fixes CPU74, TP4 and `spec=1`, with
+The benchmark baseline fixes CPU48, TP4 and `spec=1`, with
 `MAYA_DS4_SLOT_KEEP=0` to exclude conversation-slot save/load and disk spill.
 Independent requests must report zero KV reuse. Native prompt timings still
 include engine preparation and checkpoints; they are not pure GPU-kernel time.
-The [baseline result](results/baseline/README.md) records all 22 suite requests
-completed, pooled prefill 334.56 tok/s and decode 30.07 tok/s over the ten
-measurement requests. It measures the joint configuration, not flag optima.
+The [selected CPU48 result](results/cpu-threads/README.md) records all 22 suite
+requests completed, pooled prefill 347.64 tok/s and decode 35.67 tok/s over
+the ten measurement requests. It measures the joint configuration, not flag optima.
 The [CPU-thread comparison](results/cpu-threads/README.md) completed CPU56
 and CPU48: pooled PP 347.03 / 347.64 tok/s and TG 35.72 / 35.67 tok/s,
 respectively. Both improved TG versus CPU74 by about 18.7%; the difference
-between 56 and 48 is below 0.2% on pooled PP/TG. Baseline remains CPU74;
-no replacement or additional CPU count was selected automatically.
+between 56 and 48 is below 0.2% on pooled PP/TG. CPU48 is selected by task
+agreement, not as a proven winner over CPU56. No additional CPU count is selected.
 
 ## Fixed baseline and inherited placement
 
@@ -81,7 +81,7 @@ patch is a correctness fix, not a separate tunable speed switch.
 | `DS4_SKIP_UNPICKED` | Unset; HIP default off | `0`, `1` | Awaiting test | — | Stream only experts the chunk picks, preserving batches and accumulation order. Long chunks can lose cross-layer read-ahead. Not used by `DS4_FLOW_TP` or decode. |
 | `DS4_ENGRAM_CACHE_MB` | Explicit `256` | `256`, `1024`, `4096`, `8192` | Awaiting test | — | More exact Engram row payloads cached in RAM; useful when Engram I/O is limiting. Competes with expert RAM and other host allocations. |
 | `DS4_ENGRAM_RAM` | Unset; default `0` | `0`, `1`, only with sufficient RAM | Awaiting test | — | Lock both complete Engram tables, including scales. Requires a full-table RAM budget and memlock allowance; not a universal gain over a warm page cache. |
-| `--cpu-threads` | Explicit `74` | `48`, `56` measured; extend by 8 cores only if the difference is meaningful and another run is approved | Tested | `74` (fixed baseline, not an optimum) | CPU56: PP +3.73%, TG +18.80%; CPU48: PP +3.91%, TG +18.61% versus CPU74. No meaningful 56-vs-48 winner established; baseline unchanged. See the linked CPU-thread comparison. |
+| `--cpu-threads` | Explicit `48` | `74`, `56`, `48` measured; extend by 8 cores only if the difference is meaningful and another run is approved | Tested | `48` (selected baseline) | CPU48: PP +3.91%, TG +18.61% versus CPU74. Selected by task agreement; no meaningful 56-vs-48 winner established. See the linked CPU-thread comparison. |
 | `MAYA_DS4_CPU_LANE` | Unset; automatic policy bypassed by explicit CPU count | `cores`, `node`, `smt` were discussed; no separate policy tuning selected | Not used for now | — | CPU74/56/48 were measured with explicit thread counts. With SMT disabled, `smt` offers no extra logical siblings. Explicit counts bypass automatic thread-choice measurement. |
 | `MAYA_DS4_HC_FUSE` | Unset; default `0` | `0`, `1`, `2` | Awaiting test | — | Fuse HC split/norm and attention int8 rounding; `2` also covers DSpark verify windows and rounds the FFN input for the shared expert. Allowed on gfx906 by the local patch, with native startup parity checks. |
 | `MAYA_DS4_DECODE_TRIM` | Unset; default `0` | Individual bits `1`, `2`, `4`, `8`; combinations up to `15` | Awaiting test | — | `1`: shared-expert SwiGLU produces its int8 down input; `2`: q norm produces wq_b's int8 input; `4`: fuse snapshot/latent copies; `8`: mapped-host drafter handoffs. Local patch admits bits 1/2 on gfx906. |
@@ -173,6 +173,7 @@ remove behavior already inherited from the starting configuration.
 
 Local `git apply --check` accepted both v1.1.44 patches against upstream
 v1.1.45. JSON/consistency/format checks are not GPU tests.
-The [baseline](results/baseline/README.md) retains its raw results, input and
+The [selected CPU48 baseline and CPU comparison](results/cpu-threads/README.md)
+and [CPU74 reference](results/baseline/README.md) retain raw results, input and
 artifact hashes, hardware metadata and rocBLASLt/Tensile diagnostics.
 GPU runs and Kubernetes writes require separate explicit approval.

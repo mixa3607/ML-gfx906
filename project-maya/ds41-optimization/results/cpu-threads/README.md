@@ -5,6 +5,11 @@ baseline-equivalence and artifact/hash validation. Each completed all 22
 requests at TG256, `finish=length`, `reused=0` and nonzero speculative offers;
 neither log contains conversation-slot operations.
 
+**Selected baseline:** CPU48, by task agreement. The
+[active configuration](../../base-params/maya-config.json) matches the captured
+[CPU48 configuration](cpu48/maya-config.json). The CPU48 result below is the
+baseline measurement; the CPU74/56/48 raw artifacts remain unchanged.
+
 ## Results
 
 Ten measured requests per setting, excluding twelve warmups:
@@ -32,19 +37,19 @@ a meaningful winner between them. The decode difference from CPU74 is large
 and consistent within these measurements, but runs were sequential, not
 randomized/repeated trials. Draft counters and adaptive histories differ;
 this is an end-to-end engine result, not an isolated CPU-kernel benchmark or
-an output-token parity check. Baseline remains CPU74; no additional CPU
-values were run or automatically selected.
+an output-token parity check. CPU48 is selected by task agreement, not as a
+proven performance winner over CPU56. No additional CPU values were run.
 
 ## Method
 
-Compare the recorded [CPU74 baseline](../baseline/README.md) with two serial
-full-suite runs, CPU56 followed by CPU48. Change only `--cpu-threads`; leave
-the baseline configuration and artifacts unchanged.
+Compare the recorded [CPU74 reference](../baseline/README.md) with two serial
+full-suite runs, CPU56 followed by CPU48. Only `--cpu-threads` differs between
+the three captured configurations; their artifacts remain unchanged.
 
 Each candidate uses its own pod on `kube-worker6.arkprojects.lan`, fresh
 image-provided expert-profile seed, generated pack index and resident engine.
 The seed, model/drafter/vision identities, image digest, engine hash, effective
-environment, non-CPU arguments and hardware/limits must match the baseline.
+environment, non-CPU arguments and hardware/limits match the CPU74 reference.
 No model weights are downloaded or copied. Source PVCs are read-only.
 
 The frozen `ds41f-ru-long` schedule is unchanged: 12 PP2048 warmups, then
@@ -57,7 +62,7 @@ Pool token counts over native engine milliseconds, excluding warmups; report
 PP and TG separately. These are not client TTFT or GPU-kernel-only timings.
 One run per setting and two prompts per length do not establish significance
 or a universal optimum. Draft acceptance combines DSpark and prompt lookup.
-Do not change baseline CPU74 or launch additional CPU values automatically.
+CPU48 is the active baseline; do not launch additional CPU values automatically.
 
 ## Provenance and cleanup
 
@@ -81,20 +86,26 @@ Do not change baseline CPU74 or launch additional CPU values automatically.
   byte-for-byte and all recorded input, script and artifact hashes verify.
 - Both test pods were deleted. After each run, all four GPUs were at 0%
   utilization with 10 MB VRAM used. No other workload or source PVC was modified.
-- CPU validation: 11 benchmarking tests and 14 experiment tests passed,
+- CPU validation: 11 benchmarking tests and 15 experiment tests passed,
   covering config isolation, aggregation/warmup exclusion, invalid CPU/TP/spec,
-  slots, KV reuse, schedule/offer validation, seed/environment drift and comparison.
+  slots, KV reuse, schedule/offer validation, seed/environment drift, comparison
+  and equality of the active baseline to the captured CPU48 configuration.
 
-## Execution
+## Recorded execution
 
-From the repository root, **only after explicit GPU and pod-write approval**:
+The recorded GPU runs used these commands from the repository root, with
+explicit GPU and pod-write approval:
 
 ```bash
 python3 project-maya/ds41-optimization/results/cpu-threads/scripts/run.py 56
 python3 project-maya/ds41-optimization/results/cpu-threads/scripts/run.py 48
 ```
 
-The launcher refuses to overwrite a result directory, exports full results,
+These frozen launch scripts are execution provenance, not the active baseline
+entry point. They expect the original CPU74 input configuration and refuse
+to overwrite existing results. A new GPU run requires a separate approved plan.
+
+The launcher exports full results,
 deletes each test pod and verifies idle GPUs after cleanup. Preparation uses
 the frozen baseline `scripts/remote.py`; both scripts and the pod template
 are recorded in the per-run script hash manifest.
@@ -111,7 +122,8 @@ python3 project-maya/ds41-optimization/results/cpu-threads/summarize.py \
 python3 project-maya/ds41-optimization/results/cpu-threads/compare.py
 ```
 
-`compare.py` checks artifact/script hashes and baseline equivalence, then
+`compare.py` checks artifact/script hashes and CPU74-reference equivalence
+using the captured CPU74 configuration, not the active baseline, then
 writes `comparison.json` and `comparison.md`, including pooled and per-length
 PP/TG deltas and per-request deltas. CPU checks for the experiment:
 

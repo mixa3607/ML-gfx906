@@ -1,4 +1,7 @@
-# DeepSeek-V4.1-Flash baseline
+# DeepSeek-V4.1-Flash CPU74 reference
+
+The active baseline is [CPU48](../cpu-threads/README.md). This directory
+retains the CPU74 reference run and its original configuration and artifacts.
 
 **Completed:** 2026-11-01 10:26:21–10:43:24 UTC, including startup, warmups,
 measurement requests and shutdown. Runner exit code: 0. All 22 requests
@@ -34,8 +37,8 @@ do not establish confidence intervals or a performance optimum.
 - `MAYA_DS4_SLOT_KEEP=0`: conversation-slot saving, restoring and spilling are
   disabled. `MAYA_DS4_SLOT_CAP=4` is inactive. Native prompt timings still
   include engine preparation and checkpoints, not just GPU-kernel computation.
-- Config: [current baseline](../../base-params/maya-config.json). The exact
-  config used for the run is captured as `maya-config.json`.
+- Config: [captured CPU74 configuration](maya-config.json). The
+  [active baseline configuration](../../base-params/maya-config.json) uses CPU48.
 - Image: `docker.io/mixa3607/maya-gfx906@sha256:50210b2fdec9c2e36b57fe0c8de2d3a9dd2d1fb33bb99757b37f229e824d51d2`.
   Maya v1.1.45, upstream source `6ecbd3cbc5330b57f70cd5cf8a5c42eb8ef950cc`,
   ROCm 10.1 with local gfx906 patches.

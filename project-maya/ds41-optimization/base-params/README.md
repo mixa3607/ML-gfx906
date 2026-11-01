@@ -6,12 +6,12 @@ See the [complete discussed flag inventory](../README.md) for classification,
 current/default values, candidate values, decision statuses and fixed or best
 tested values. Defaults are not measured optima.
 
-The [baseline result](../results/baseline/README.md) records pooled prefill
-334.56 tok/s and decode 30.07 tok/s on `ds41f-ru-long`, with CPU74, TP4,
-`spec=1`, disabled conversation slots and no KV reuse.
-The [CPU56/48 comparison](../results/cpu-threads/README.md) measured decode
-gains of +18.80% / +18.61% versus CPU74; 56 versus 48 differs by less than
-0.2% in pooled PP/TG. This baseline remains CPU74, not a measured optimum.
+The [selected CPU48 baseline result](../results/cpu-threads/README.md) records
+pooled prefill 347.64 tok/s and decode 35.67 tok/s on `ds41f-ru-long`, with
+TP4, `spec=1`, disabled conversation slots and no KV reuse. CPU48 is selected
+by task agreement: +3.91% PP and +18.61% TG versus the CPU74 reference.
+CPU56 and CPU48 differ by less than 0.2% in pooled PP/TG; this selection is
+not a claim that CPU48 is a unique or universal optimum.
 
 ## Baseline settings
 
@@ -26,7 +26,7 @@ The baseline explicitly sets:
 | Setting | Value | Purpose |
 | --- | --- | --- |
 | `MAYA_DS4_TP_GGUF_UNEVEN` | `1` | Permit whole-quant-block expert partitions so the requested TP4 is not reduced to TP2 by the ordinary path's 128-value FFN alignment rule. |
-| `--cpu-threads` | `74` | Pin the CPU lane instead of rerunning automatic thread selection. This is not a measured optimum. |
+| `--cpu-threads` | `48` | Selected CPU48 baseline; pin the CPU lane instead of rerunning automatic thread selection. |
 | `MAYA_DS4_PROMPT_SKIP` | `2` | DeepSeek's own approximate prompt skip: full work in layers 20-39 on the last 128 tokens, subject to the active path's chunk boundaries. This is intentionally not bit-exact. |
 | `MAYA_DS4_SLOT_KEEP` | `0` | Disable conversation-slot save/load and disk spill for independent benchmark requests. |
 | `MAYA_DS4_SLOT_CAP` | `4` | Inactive while `SLOT_KEEP=0`. |
@@ -44,10 +44,10 @@ setting is added.
   drafter outputs may change, but the documented verified answer does not. It
   remains a candidate and is not enabled in this baseline.
 - The target host has two NUMA nodes with SMT disabled. Keep `DS4_COPY_NUMA=2`.
-  CPU-thread candidates 48 and 56 were measured; neither is selected as a
-  baseline replacement automatically. A meaningful difference can warrant
+  CPU-thread candidates 48 and 56 were measured; 48 is the selected baseline.
+  A meaningful difference can warrant
   extending the range in increments of eight cores, with another run approval.
-  `--cpu-threads 74` remains fixed for this baseline.
+  No additional CPU-thread runs are selected.
 - This directory records the baseline and flag constraints, not a step-by-step
   test plan. The benchmark suite measures prompts up to 32768 tokens, not the
   full configured 512K-token context capacity.

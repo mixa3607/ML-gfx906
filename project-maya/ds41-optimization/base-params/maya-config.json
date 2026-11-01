@@ -12,7 +12,7 @@
     "--gpus", "0,1,2,3",
     "--max-context", "524288",
     "--tp", "4",
-    "--cpu-threads", "74",
+    "--cpu-threads", "48",
     "--prefill-chunk", "4096",
     "--mmap-experts", "off",
     "--dspark", "on",

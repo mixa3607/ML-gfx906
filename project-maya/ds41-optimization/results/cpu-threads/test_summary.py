@@ -19,9 +19,15 @@ CASES = REPO / 'project-maya/benchmarking/suites/ds41f-ru-long/cases.jsonl'
 spec = importlib.util.spec_from_file_location('cpu_launcher', HERE / 'scripts/run.py')
 launcher = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(launcher)
+launcher.CONFIG = launcher.BASELINE / 'maya-config.json'
 
 
 class SummaryTests(unittest.TestCase):
+    def test_selected_baseline_matches_cpu48(self):
+        active = REPO / 'project-maya/ds41-optimization/base-params/maya-config.json'
+        captured = HERE / 'cpu48/maya-config.json'
+        self.assertEqual(json.loads(active.read_text()), json.loads(captured.read_text()))
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(dir='/tmp/opencode')
         self.addCleanup(self.tmp.cleanup)

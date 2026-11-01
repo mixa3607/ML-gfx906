@@ -3,8 +3,13 @@
 import json
 from pathlib import Path
 
+from scripts import run as launcher
 from scripts.run import BASELINE, CASES, ROOT, sha, validate
 from summarize import summarize
+
+
+# Reconstruct the recorded comparison independently of the active baseline.
+launcher.CONFIG = BASELINE / 'maya-config.json'
 
 
 def delta(value, baseline):
