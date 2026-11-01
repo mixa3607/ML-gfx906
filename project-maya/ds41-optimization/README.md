@@ -25,6 +25,21 @@ universal optimality, isolated flag harm or statistical significance. No new
 control or GPU run, deployment or publication accompanies this selection.
 Historical inputs, results and hash manifests remain unchanged.
 
+### Separate layout/chunk side story
+
+The [approved side story](results/side-layout-cpu48/README.md) independently
+tests TP2 on all four GPUs (two pairs, preserving global drafter GPU placement)
+and TP4 with prefill chunk 2048, each starting from the final four-flag config.
+These explicitly relax the main campaign's fixed TP/chunk constraint and may
+change answer numerics. They do not reopen the final selection automatically;
+the active baseline and historical evidence remain unchanged. Exactly two new
+runs were approved, without a fresh control or combined TP2/chunk2048 arm.
+Both completed: TP2 measured pooled PP/TG 248.78/25.79 tok/s
+(-39.45%/-28.13% versus saved final-four), and chunk2048 measured
+352.54/35.08 (-14.19%/-2.23%). Both copied every CPU-lane expert into RAM,
+passed native fusion checks and completed without OOM. These are older-reference
+comparisons, not cross-layout answer-parity tests; the final baseline is unchanged.
+
 ## Reading the tables
 
 | Status | Meaning |
@@ -96,17 +111,18 @@ selects four flags, without draft cost, trim or HC mix, for the active baseline.
 
 These settings identify the workload and preserve the starting configuration.
 Keeping them does not assert bit-exactness across alternative layouts. TP widths
-other than 4 and Maya's non-bit-exact tuning are excluded.
+other than 4 and Maya's non-bit-exact tuning are excluded from the main
+campaign; the separate side story above explicitly tests TP2 and chunk2048.
 
 | Flag | Current baseline | Other values discussed | Status | Fixed / best tested value | Role / decision |
 | --- | --- | --- | --- | --- | --- |
 | `--pack` | `/data/ds4` | Other quants are outside this task | Always enabled | `/data/ds4` (UD-Q8_K_XL) | Keep the original model pack and weight revisions. |
 | `--gpus` | `0,1,2,3` | None | Always enabled | `0,1,2,3` | Four process-local GPU IDs. |
 | `HIP_VISIBLE_DEVICES` | `1,0,3,2` | GPU permutations are excluded | Always enabled | `1,0,3,2` | Preserve the baseline device order. |
-| `--tp` | `4` | `1`, `2`: excluded | Always enabled | `4` | No alternative tensor-parallel width. |
+| `--tp` | `4` | `1`: excluded; `2`: separate side story only | Always enabled | `4` | Final baseline remains TP4; the side story is not a baseline change. |
 | `MAYA_DS4_TP_GGUF_UNEVEN` | Explicit `1` | No alternative selected | Always enabled | `1` | Whole-quant-block partitions preserve the requested TP4 instead of the ordinary path's automatic TP2 reduction; not a cross-layout bit-exactness claim. |
 | `--max-context` | `524288` | Smaller contexts are not substitutes | Always enabled | `524288` | Keep the target context capacity. |
-| `--prefill-chunk` | `4096` | `2048`, `8192`: excluded | Always enabled | `4096` | Changing chunk boundaries can change arithmetic; keep the baseline size. |
+| `--prefill-chunk` | `4096` | `2048`: separate side story only; `8192`: excluded | Always enabled | `4096` | Changing chunk boundaries can change arithmetic; keep the final baseline size. |
 | `--mmap-experts` | `off` | No alternative selected | Always enabled | `off` | Preserve expert-copy mode; this alone does not guarantee every CPU expert is copied. |
 | `--dspark` | `on` | No disablement selected | Always enabled | `on` | Drafting is already enabled; do not count its initial enablement as a new speedup. |
 | `--vision` | `on` | No disablement selected | Always enabled | `on` | Preserve vision support. |

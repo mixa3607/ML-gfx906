@@ -23,7 +23,15 @@ trim and HC mix/split. The [six-/seven-flag comparison](../results/final-candida
 did not improve both pooled rates over four flags; draft cost/trim's earlier
 individual selection is superseded by this final combined choice. Old
 references are not contemporaneous controls, so this is not proof that a
-particular extra flag is always harmful. No further runs are selected.
+particular extra flag is always harmful. No further main-campaign runs are selected.
+
+The separately approved [layout/chunk side story](../results/side-layout-cpu48/README.md)
+tests TP2 and, independently, prefill chunk 2048 from this configuration. It
+does not modify this final baseline and does not assume cross-layout bit-exact
+answers.
+The two side runs completed at pooled PP/TG 248.78/25.79 tok/s for TP2 and
+352.54/35.08 for chunk2048, both below this baseline's saved 410.83/35.88.
+No fresh control or answer-parity test was run; this baseline remains unchanged.
 
 The [CPU-thread comparison](../results/cpu-threads/README.md),
 [individual flags](../results/flags-cpu48/README.md),
