@@ -1,0 +1,23 @@
+| PP | Requests | Generated | Prefill tok/s | Decode tok/s | Accepted / offered |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 2048 | 2 | 512 | 137.95 | 34.32 | 241 / 305 |
+| 4096 | 2 | 512 | 215.36 | 38.02 | 279 / 355 |
+| 8192 | 2 | 512 | 302.33 | 36.40 | 274 / 341 |
+| 16384 | 2 | 512 | 372.96 | 35.12 | 247 / 298 |
+| 32768 | 2 | 512 | 421.53 | 34.72 | 263 / 340 |
+{
+  "requests": 10,
+  "prompt_tokens": 126976,
+  "generated": 2560,
+  "prompt_ms": 365252.6,
+  "decode_ms": 71772.0,
+  "prefill_tokens_per_second": 347.63886691018763,
+  "decode_tokens_per_second": 35.66850582399822,
+  "drafts_accepted": 1304,
+  "drafts_offered": 1639,
+  "draft_acceptance": 0.7956070774862721,
+  "finish_counts": {
+    "length": 10
+  },
+  "reused": 0
+}

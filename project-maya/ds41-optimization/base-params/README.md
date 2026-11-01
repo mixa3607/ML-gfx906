@@ -9,6 +9,9 @@ tested values. Defaults are not measured optima.
 The [baseline result](../results/baseline/README.md) records pooled prefill
 334.56 tok/s and decode 30.07 tok/s on `ds41f-ru-long`, with CPU74, TP4,
 `spec=1`, disabled conversation slots and no KV reuse.
+The [CPU56/48 comparison](../results/cpu-threads/README.md) measured decode
+gains of +18.80% / +18.61% versus CPU74; 56 versus 48 differs by less than
+0.2% in pooled PP/TG. This baseline remains CPU74, not a measured optimum.
 
 ## Baseline settings
 
@@ -41,9 +44,10 @@ setting is added.
   drafter outputs may change, but the documented verified answer does not. It
   remains a candidate and is not enabled in this baseline.
 - The target host has two NUMA nodes with SMT disabled. Keep `DS4_COPY_NUMA=2`.
-  CPU-thread candidates are 48 and 56 physical cores; a meaningful difference
-  warrants extending the range in increments of eight cores. That search is
-  deferred; `--cpu-threads 74` is fixed for this baseline.
+  CPU-thread candidates 48 and 56 were measured; neither is selected as a
+  baseline replacement automatically. A meaningful difference can warrant
+  extending the range in increments of eight cores, with another run approval.
+  `--cpu-threads 74` remains fixed for this baseline.
 - This directory records the baseline and flag constraints, not a step-by-step
   test plan. The benchmark suite measures prompts up to 32768 tokens, not the
   full configured 512K-token context capacity.

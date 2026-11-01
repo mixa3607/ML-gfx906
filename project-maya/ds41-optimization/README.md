@@ -40,6 +40,11 @@ include engine preparation and checkpoints; they are not pure GPU-kernel time.
 The [baseline result](results/baseline/README.md) records all 22 suite requests
 completed, pooled prefill 334.56 tok/s and decode 30.07 tok/s over the ten
 measurement requests. It measures the joint configuration, not flag optima.
+The [CPU-thread comparison](results/cpu-threads/README.md) completed CPU56
+and CPU48: pooled PP 347.03 / 347.64 tok/s and TG 35.72 / 35.67 tok/s,
+respectively. Both improved TG versus CPU74 by about 18.7%; the difference
+between 56 and 48 is below 0.2% on pooled PP/TG. Baseline remains CPU74;
+no replacement or additional CPU count was selected automatically.
 
 ## Fixed baseline and inherited placement
 
@@ -76,8 +81,8 @@ patch is a correctness fix, not a separate tunable speed switch.
 | `DS4_SKIP_UNPICKED` | Unset; HIP default off | `0`, `1` | Awaiting test | — | Stream only experts the chunk picks, preserving batches and accumulation order. Long chunks can lose cross-layer read-ahead. Not used by `DS4_FLOW_TP` or decode. |
 | `DS4_ENGRAM_CACHE_MB` | Explicit `256` | `256`, `1024`, `4096`, `8192` | Awaiting test | — | More exact Engram row payloads cached in RAM; useful when Engram I/O is limiting. Competes with expert RAM and other host allocations. |
 | `DS4_ENGRAM_RAM` | Unset; default `0` | `0`, `1`, only with sufficient RAM | Awaiting test | — | Lock both complete Engram tables, including scales. Requires a full-table RAM budget and memlock allowance; not a universal gain over a warm page cache. |
-| `--cpu-threads` | Explicit `74` | `48`, `56` deferred; extend by 8 cores only if the difference is meaningful | Always enabled | `74` | Fixed by task agreement, not a measured optimum. |
-| `MAYA_DS4_CPU_LANE` | Unset; automatic policy bypassed by explicit CPU74 | `cores`, `node`, `smt` were discussed; no separate policy tuning selected | Not used for now | — | The 48/56-core search is deferred. With SMT disabled, `smt` offers no extra logical siblings. Explicit CPU74 bypasses the automatic thread-choice measurement. |
+| `--cpu-threads` | Explicit `74` | `48`, `56` measured; extend by 8 cores only if the difference is meaningful and another run is approved | Tested | `74` (fixed baseline, not an optimum) | CPU56: PP +3.73%, TG +18.80%; CPU48: PP +3.91%, TG +18.61% versus CPU74. No meaningful 56-vs-48 winner established; baseline unchanged. See the linked CPU-thread comparison. |
+| `MAYA_DS4_CPU_LANE` | Unset; automatic policy bypassed by explicit CPU count | `cores`, `node`, `smt` were discussed; no separate policy tuning selected | Not used for now | — | CPU74/56/48 were measured with explicit thread counts. With SMT disabled, `smt` offers no extra logical siblings. Explicit counts bypass automatic thread-choice measurement. |
 | `MAYA_DS4_HC_FUSE` | Unset; default `0` | `0`, `1`, `2` | Awaiting test | — | Fuse HC split/norm and attention int8 rounding; `2` also covers DSpark verify windows and rounds the FFN input for the shared expert. Allowed on gfx906 by the local patch, with native startup parity checks. |
 | `MAYA_DS4_DECODE_TRIM` | Unset; default `0` | Individual bits `1`, `2`, `4`, `8`; combinations up to `15` | Awaiting test | — | `1`: shared-expert SwiGLU produces its int8 down input; `2`: q norm produces wq_b's int8 input; `4`: fuse snapshot/latent copies; `8`: mapped-host drafter handoffs. Local patch admits bits 1/2 on gfx906. |
 | `MAYA_DS4_ROUTE_FUSE` | Unset; default `0` | `0`, `1`, `2` | Awaiting test | — | Router/lookahead in two launches instead of four; `2` also covers verify windows. Requires `DS4_AHEAD=1`; allowed on gfx906 by the local patch. |
