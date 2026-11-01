@@ -1,0 +1,102 @@
+{
+  "warmup_requests": 12,
+  "by_pp": {
+    "2048": {
+      "requests": 2,
+      "prompt_tokens": 4096,
+      "generated": 512,
+      "prompt_ms": 31008.6,
+      "decode_ms": 15070.7,
+      "prefill_tokens_per_second": 132.0923872732081,
+      "decode_tokens_per_second": 33.973206287697316,
+      "drafts_accepted": 233,
+      "drafts_offered": 290,
+      "draft_acceptance": 0.803448275862069,
+      "finish_counts": {
+        "length": 2
+      },
+      "reused": 0
+    },
+    "4096": {
+      "requests": 2,
+      "prompt_tokens": 8192,
+      "generated": 512,
+      "prompt_ms": 38512.7,
+      "decode_ms": 14211.400000000001,
+      "prefill_tokens_per_second": 212.7090544158161,
+      "decode_tokens_per_second": 36.02741461080541,
+      "drafts_accepted": 259,
+      "drafts_offered": 335,
+      "draft_acceptance": 0.7731343283582089,
+      "finish_counts": {
+        "length": 2
+      },
+      "reused": 0
+    },
+    "8192": {
+      "requests": 2,
+      "prompt_tokens": 16384,
+      "generated": 512,
+      "prompt_ms": 54323.4,
+      "decode_ms": 14289.8,
+      "prefill_tokens_per_second": 301.6011516215848,
+      "decode_tokens_per_second": 35.82975269073045,
+      "drafts_accepted": 270,
+      "drafts_offered": 351,
+      "draft_acceptance": 0.7692307692307693,
+      "finish_counts": {
+        "length": 2
+      },
+      "reused": 0
+    },
+    "16384": {
+      "requests": 2,
+      "prompt_tokens": 32768,
+      "generated": 512,
+      "prompt_ms": 88950.5,
+      "decode_ms": 14367.7,
+      "prefill_tokens_per_second": 368.3846633801946,
+      "decode_tokens_per_second": 35.635487934742514,
+      "drafts_accepted": 257,
+      "drafts_offered": 303,
+      "draft_acceptance": 0.8481848184818482,
+      "finish_counts": {
+        "length": 2
+      },
+      "reused": 0
+    },
+    "32768": {
+      "requests": 2,
+      "prompt_tokens": 65536,
+      "generated": 512,
+      "prompt_ms": 155577.0,
+      "decode_ms": 15085.2,
+      "prefill_tokens_per_second": 421.2447855402791,
+      "decode_tokens_per_second": 33.9405510036327,
+      "drafts_accepted": 265,
+      "drafts_offered": 339,
+      "draft_acceptance": 0.7817109144542773,
+      "finish_counts": {
+        "length": 2
+      },
+      "reused": 0
+    }
+  },
+  "pooled_measurement": {
+    "requests": 10,
+    "prompt_tokens": 126976,
+    "generated": 2560,
+    "prompt_ms": 368372.2,
+    "decode_ms": 73024.8,
+    "prefill_tokens_per_second": 344.69484939417254,
+    "decode_tokens_per_second": 35.05658351683264,
+    "drafts_accepted": 1284,
+    "drafts_offered": 1618,
+    "draft_acceptance": 0.7935723114956736,
+    "finish_counts": {
+      "length": 10
+    },
+    "reused": 0
+  },
+  "timing_convention": "Native DONE timings; sum(prompt_tokens)/sum(prompt_ms) and sum(generated)/sum(decode_ms). Not client TTFT."
+}

@@ -12,6 +12,9 @@ TP4, `spec=1`, disabled conversation slots and no KV reuse. CPU48 is selected
 by task agreement: +3.91% PP and +18.61% TG versus the CPU74 reference.
 CPU56 and CPU48 differ by less than 0.2% in pooled PP/TG; this selection is
 not a claim that CPU48 is a unique or universal optimum.
+The [five-arm flag block](../results/flags-cpu48/README.md) compares four
+individual flags with a fresh CPU48 control. It does not change this baseline;
+performance acceptance decisions are deferred.
 
 ## Baseline settings
 

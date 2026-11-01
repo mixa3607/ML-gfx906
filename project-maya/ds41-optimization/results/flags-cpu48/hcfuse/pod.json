@@ -1,0 +1,365 @@
+{
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+        "creationTimestamp": "2026-11-01T12:44:16Z",
+        "generation": 1,
+        "labels": {
+            "app.kubernetes.io/name": "maya-ds41-flags-hcfuse"
+        },
+        "name": "maya-ds41-flags-hcfuse",
+        "namespace": "apps-ml",
+        "resourceVersion": "295164281",
+        "uid": "192edf29-a9cc-4a81-8473-c90476ec3221"
+    },
+    "spec": {
+        "containers": [
+            {
+                "command": [
+                    "/bin/bash",
+                    "-lc",
+                    "exec sleep infinity"
+                ],
+                "env": [
+                    {
+                        "name": "HF_HUB_OFFLINE",
+                        "value": "1"
+                    },
+                    {
+                        "name": "TRANSFORMERS_OFFLINE",
+                        "value": "1"
+                    },
+                    {
+                        "name": "PYTHONDONTWRITEBYTECODE",
+                        "value": "1"
+                    }
+                ],
+                "image": "docker.io/mixa3607/maya-gfx906@sha256:50210b2fdec9c2e36b57fe0c8de2d3a9dd2d1fb33bb99757b37f229e824d51d2",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "benchmark",
+                "resources": {
+                    "limits": {
+                        "memory": "220Gi"
+                    },
+                    "requests": {
+                        "cpu": "4",
+                        "memory": "8Gi"
+                    }
+                },
+                "securityContext": {
+                    "capabilities": {
+                        "add": [
+                            "IPC_LOCK"
+                        ]
+                    },
+                    "privileged": true,
+                    "runAsUser": 0
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                    {
+                        "mountPath": "/root/.cache/huggingface",
+                        "name": "hf-cache",
+                        "readOnly": true
+                    },
+                    {
+                        "mountPath": "/prepared",
+                        "name": "prepared",
+                        "readOnly": true
+                    },
+                    {
+                        "mountPath": "/data",
+                        "name": "data"
+                    },
+                    {
+                        "mountPath": "/dev/shm",
+                        "name": "shm"
+                    },
+                    {
+                        "mountPath": "/dev/kfd",
+                        "name": "dev-kfd"
+                    },
+                    {
+                        "mountPath": "/dev/dri",
+                        "name": "dev-dri"
+                    },
+                    {
+                        "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                        "name": "kube-api-access-glp8j",
+                        "readOnly": true
+                    }
+                ]
+            }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "enableServiceLinks": false,
+        "imagePullSecrets": [
+            {
+                "name": "harbor-registry-pull-secret"
+            }
+        ],
+        "nodeName": "kube-worker6.arkprojects.lan",
+        "nodeSelector": {
+            "kubernetes.io/hostname": "kube-worker6.arkprojects.lan"
+        },
+        "preemptionPolicy": "PreemptLowerPriority",
+        "priority": 0,
+        "restartPolicy": "Never",
+        "schedulerName": "default-scheduler",
+        "securityContext": {},
+        "serviceAccount": "default",
+        "serviceAccountName": "default",
+        "terminationGracePeriodSeconds": 30,
+        "tolerations": [
+            {
+                "effect": "NoSchedule",
+                "key": "feature.node.kubernetes.io/amd-gpu",
+                "operator": "Equal",
+                "value": "true"
+            },
+            {
+                "effect": "NoSchedule",
+                "key": "feature.node.kubernetes.io/nvidia-gpu",
+                "operator": "Equal",
+                "value": "true"
+            },
+            {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+            },
+            {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+            }
+        ],
+        "volumes": [
+            {
+                "name": "hf-cache",
+                "persistentVolumeClaim": {
+                    "claimName": "worker6-hf-cache",
+                    "readOnly": true
+                }
+            },
+            {
+                "name": "prepared",
+                "persistentVolumeClaim": {
+                    "claimName": "maya-ds41",
+                    "readOnly": true
+                }
+            },
+            {
+                "emptyDir": {
+                    "sizeLimit": "8Gi"
+                },
+                "name": "data"
+            },
+            {
+                "emptyDir": {
+                    "medium": "Memory",
+                    "sizeLimit": "8Gi"
+                },
+                "name": "shm"
+            },
+            {
+                "hostPath": {
+                    "path": "/dev/kfd",
+                    "type": ""
+                },
+                "name": "dev-kfd"
+            },
+            {
+                "hostPath": {
+                    "path": "/dev/dri",
+                    "type": ""
+                },
+                "name": "dev-dri"
+            },
+            {
+                "name": "kube-api-access-glp8j",
+                "projected": {
+                    "defaultMode": 420,
+                    "sources": [
+                        {
+                            "serviceAccountToken": {
+                                "expirationSeconds": 3607,
+                                "path": "token"
+                            }
+                        },
+                        {
+                            "configMap": {
+                                "items": [
+                                    {
+                                        "key": "ca.crt",
+                                        "path": "ca.crt"
+                                    }
+                                ],
+                                "name": "kube-root-ca.crt"
+                            }
+                        },
+                        {
+                            "downwardAPI": {
+                                "items": [
+                                    {
+                                        "fieldRef": {
+                                            "apiVersion": "v1",
+                                            "fieldPath": "metadata.namespace"
+                                        },
+                                        "path": "namespace"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "status": {
+        "allocatedResources": {
+            "cpu": "4",
+            "memory": "8Gi"
+        },
+        "conditions": [
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-01T12:44:17Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-01T12:44:16Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-01T12:44:17Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-01T12:44:17Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-11-01T12:44:16Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+            }
+        ],
+        "containerStatuses": [
+            {
+                "allocatedResources": {
+                    "cpu": "4",
+                    "memory": "8Gi"
+                },
+                "containerID": "containerd://ce233ec7be3cc84fae547897b706268511278677a7916610379968d97563c979",
+                "image": "sha256:1d9d41ab5cc330ec48de48d2bb9a1563d65489619fcac9f90ea45bfc4565b3e8",
+                "imageID": "docker.io/mixa3607/maya-gfx906@sha256:50210b2fdec9c2e36b57fe0c8de2d3a9dd2d1fb33bb99757b37f229e824d51d2",
+                "lastState": {},
+                "name": "benchmark",
+                "ready": true,
+                "resources": {
+                    "limits": {
+                        "memory": "220Gi"
+                    },
+                    "requests": {
+                        "cpu": "4",
+                        "memory": "8Gi"
+                    }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                    "running": {
+                        "startedAt": "2026-11-01T12:44:17Z"
+                    }
+                },
+                "user": {
+                    "linux": {
+                        "gid": 0,
+                        "supplementalGroups": [
+                            0
+                        ],
+                        "uid": 0
+                    }
+                },
+                "volumeMounts": [
+                    {
+                        "mountPath": "/root/.cache/huggingface",
+                        "name": "hf-cache",
+                        "readOnly": true,
+                        "recursiveReadOnly": "Disabled"
+                    },
+                    {
+                        "mountPath": "/prepared",
+                        "name": "prepared",
+                        "readOnly": true,
+                        "recursiveReadOnly": "Disabled"
+                    },
+                    {
+                        "mountPath": "/data",
+                        "name": "data"
+                    },
+                    {
+                        "mountPath": "/dev/shm",
+                        "name": "shm"
+                    },
+                    {
+                        "mountPath": "/dev/kfd",
+                        "name": "dev-kfd"
+                    },
+                    {
+                        "mountPath": "/dev/dri",
+                        "name": "dev-dri"
+                    },
+                    {
+                        "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                        "name": "kube-api-access-glp8j",
+                        "readOnly": true,
+                        "recursiveReadOnly": "Disabled"
+                    }
+                ]
+            }
+        ],
+        "hostIP": "192.168.1.18",
+        "hostIPs": [
+            {
+                "ip": "192.168.1.18"
+            }
+        ],
+        "observedGeneration": 1,
+        "phase": "Running",
+        "podIP": "10.42.3.52",
+        "podIPs": [
+            {
+                "ip": "10.42.3.52"
+            }
+        ],
+        "qosClass": "Burstable",
+        "resources": {
+            "limits": {
+                "memory": "220Gi"
+            },
+            "requests": {
+                "cpu": "4",
+                "memory": "8Gi"
+            }
+        },
+        "startTime": "2026-11-01T12:44:16Z"
+    }
+}

@@ -46,6 +46,10 @@ and CPU48: pooled PP 347.03 / 347.64 tok/s and TG 35.72 / 35.67 tok/s,
 respectively. Both improved TG versus CPU74 by about 18.7%; the difference
 between 56 and 48 is below 0.2% on pooled PP/TG. CPU48 is selected by task
 agreement, not as a proven winner over CPU56. No additional CPU count is selected.
+The [five-arm CPU48 flag block](results/flags-cpu48/README.md) measured a fresh
+control plus skip, swizzle, HC fuse and route fuse separately. Results and
+per-length/per-request deltas are retained without performance verdicts or
+baseline changes; flag acceptance decisions are deferred.
 
 ## Fixed baseline and inherited placement
 
@@ -79,17 +83,17 @@ patch is a correctness fix, not a separate tunable speed switch.
 | --- | --- | --- | --- | --- | --- |
 | `MAYA_DS4_SLOT_KEEP` | Explicit `0` | No tuning requested | Not used for now | `0` | Disable conversation-slot save/load and spill so independent requests do not pay for preserving the preceding conversation. |
 | `MAYA_DS4_SLOT_CAP` | Explicit `4`, inactive | No tuning requested | Not used for now | — | Ignored while `SLOT_KEEP=0`. |
-| `DS4_SKIP_UNPICKED` | Unset; HIP default off | `0`, `1` | Awaiting test | — | Stream only experts the chunk picks, preserving batches and accumulation order. Long chunks can lose cross-layer read-ahead. Not used by `DS4_FLOW_TP` or decode. |
+| `DS4_SKIP_UNPICKED` | Unset; HIP default off | `0`, `1` | Tested | — | CPU48 at `1`: PP +15.12%, TG -0.79% versus fresh control. PP2048 +77.21%, PP32768 +3.51%; PP16384 TG -5.87%. No performance verdict or baseline change; see the five-arm block. Streams only experts picked by the chunk; unused by `DS4_FLOW_TP` or decode. |
 | `DS4_ENGRAM_CACHE_MB` | Explicit `256` | `256`, `1024`, `4096`, `8192` | Awaiting test | — | More exact Engram row payloads cached in RAM; useful when Engram I/O is limiting. Competes with expert RAM and other host allocations. |
 | `DS4_ENGRAM_RAM` | Unset; default `0` | None; `1` excluded | Not used for now | — | Lock both complete Engram tables, including scales. Excluded from testing on this host because there is insufficient RAM for the full tables alongside the existing workload. |
 | `--cpu-threads` | Explicit `48` | `74`, `56`, `48` measured; extend by 8 cores only if the difference is meaningful and another run is approved | Tested | `48` (selected baseline) | CPU48: PP +3.91%, TG +18.61% versus CPU74. Selected by task agreement; no meaningful 56-vs-48 winner established. See the linked CPU-thread comparison. |
 | `MAYA_DS4_CPU_LANE` | Unset; automatic policy bypassed by explicit CPU count | `cores`, `node`, `smt` were discussed; no separate policy tuning selected | Not used for now | — | CPU74/56/48 were measured with explicit thread counts. With SMT disabled, `smt` offers no extra logical siblings. Explicit counts bypass automatic thread-choice measurement. |
-| `MAYA_DS4_HC_FUSE` | Unset; default `0` | `0`, `1`, `2` | Awaiting test | — | Fuse HC split/norm and attention int8 rounding; `2` also covers DSpark verify windows and rounds the FFN input for the shared expert. Allowed on gfx906 by the local patch, with native startup parity checks. |
+| `MAYA_DS4_HC_FUSE` | Unset; default `0` | `0`, `1`, `2`; `2` measured | Tested | — | CPU48 at `2`: PP +1.77%, TG +5.69% versus fresh control. Native single-/16-row parity checks passed on all four GPUs. Fuses HC split/norm and int8 rounding, including verify windows and shared-expert FFN input at `2`. No performance verdict or baseline change. |
 | `MAYA_DS4_DECODE_TRIM` | Unset; default `0` | Individual bits `1`, `2`, `4`, `8`; combinations up to `15` | Awaiting test | — | `1`: shared-expert SwiGLU produces its int8 down input; `2`: q norm produces wq_b's int8 input; `4`: fuse snapshot/latent copies; `8`: mapped-host drafter handoffs. Local patch admits bits 1/2 on gfx906. |
-| `MAYA_DS4_ROUTE_FUSE` | Unset; default `0` | `0`, `1`, `2` | Awaiting test | — | Router/lookahead in two launches instead of four; `2` also covers verify windows. Requires `DS4_AHEAD=1`; allowed on gfx906 by the local patch. |
+| `MAYA_DS4_ROUTE_FUSE` | Unset; default `0` | `0`, `1`, `2`; `2` measured | Tested | — | CPU48 at `2`: PP +2.50%, TG +0.75% versus fresh control. Native single-/3-/16-row parity checks passed on all four GPUs. Router/lookahead in two launches, including verify windows at `2`; requires `DS4_AHEAD=1`. No performance verdict or baseline change. |
 | `DS4_AHEAD` | Unset; default `1` | Keep `1` while evaluating route fusion | Always enabled | `1` (upstream default) | One layer of lookahead; dependency of `ROUTE_FUSE`, not an independent selected speed experiment. |
 | `MAYA_DS4_HC_MIX_SPLIT` | Unset; default `0` | `0`, `1`; `2` was discussed for NVIDIA's side stream only | Awaiting test | — | Fuse HC mix/split on the layer's stream. On AMD the relevant comparison is `0` vs `1`; do not expect a distinct NVIDIA-side-stream benefit from `2`. |
-| `DS4_HIP_ATTN_SWIZZLE` | Unset; opt-in | `0`, `1` | Awaiting test | — | HIP attention LDS-layout optimization. Accepted as bit-exact for this task based on the user's reported prior tests; not reverified in this task. Remains disabled in the baseline pending performance testing. |
+| `DS4_HIP_ATTN_SWIZZLE` | Unset; opt-in | `0`, `1` | Tested | — | CPU48 at `1`: PP +3.80%, TG +0.81% versus fresh control. HIP attention LDS-layout optimization, accepted as bit-exact based on the user's reported prior tests; no new parity test here. No performance verdict or baseline change. |
 | `MAYA_DS4_DRAFT_COST` | Unset; default `0` | `0`, `1` | Awaiting test | — | Choose verified window length from measured time/acceptance cost, preserving the answer. Alternative to the cumulative-confidence policy, not an independent multiplicative gain. |
 | `MAYA_DS4_DSPARK_CUM` | Unset; default `0.5` | `0`, `0.25`, `0.5`, `0.75` | Awaiting test | — | Limit verification by cumulative draft confidence; relevant to the fixed-cut policy. The baseline already gets default `0.5`. |
 | `--dspark-conf` | Unset; default `0.5` | `0.3`, `0.5`, `0.7` | Awaiting test | — | Per-draft confidence floor; balance accepted tokens against verification cost. |

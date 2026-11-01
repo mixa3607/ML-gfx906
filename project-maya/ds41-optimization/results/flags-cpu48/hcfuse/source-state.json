@@ -1,0 +1,22 @@
+{
+  "repository_head": "fa971a616503d0fac6d621115645bce7bcf98247",
+  "arm": "hcfuse",
+  "overrides": {
+    "MAYA_DS4_HC_FUSE": "2"
+  },
+  "input_sha256": {
+    "runner": "3d33a1da5f086414833a2ff9139979640e4b9029e372d07eaddd3974041a0018",
+    "cases": "3195a02e90078b366c00dce429652b386fe3616d879cdd25c1a6f288435b46c3",
+    "config": "7094e28cc2ce8b0ef25fb0d457b7b1a3c698826bd8f38eebca8f37d0db0b7ef0"
+  },
+  "script_sha256": {
+    "../scripts/run.py": "da6b526a2435a014bc15cf397cd748bd30971eba046cab4a53f93c562bbec2c9",
+    "../analysis.py": "d7fe4a18faaffe0935c4b1310f6e6340181b9502c71ce0ff85e2d1b359cb1056",
+    "../baseline-config.json": "ee71559ddfad465301487e20d9f1fa4ef4346ee947054e4e506e4795b0b3d15e",
+    "../../cpu-threads/scripts/run.py": "b9ff797415cc8572d3927ecb7e32b46e23c6cbc2da22f019fc80879776eaa325",
+    "../../cpu-threads/scripts/remote.py": "d93d02beac6b0763783935513353dfc19dc1ca38652759334957560fc127a635",
+    "../../cpu-threads/summarize.py": "40ab588cd2f5e995ef81fb14f842af1d9e8b07a8a6839ad6c712c76d5961a2a7",
+    "../../baseline/scripts/remote.py": "8f30d2d0eae787488d93b3da493cf3837f05ed1811838280dc2e7a437ef4700a",
+    "../../baseline/scripts/pod.yaml": "caf3c8852e6e8afe194515c25e2f2c754552d62eca057b613fc9e3f1468fa576"
+  }
+}
