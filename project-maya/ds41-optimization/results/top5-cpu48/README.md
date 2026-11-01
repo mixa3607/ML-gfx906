@@ -53,6 +53,16 @@ histories can affect small differences. No statistical-significance or
 whole-answer parity claim, automatic flag acceptance or baseline/best-tested
 change is made.
 
+## Subsequent user selection
+
+Accept `MAYA_DS4_DRAFT_COST=1` and `MAYA_DS4_DECODE_TRIM=15` as individually
+selected values. Retain `DS4_ENGRAM_CACHE_MB=256` and unset/default-off
+`MAYA_DS4_MARKOV_Q8` (`0`). Leave `MAYA_DS4_HC_MIX_SPLIT` undecided for the
+[two combined-candidate tests](../final-candidates-cpu48/README.md).
+This is a separate user decision, not a threshold applied by the benchmark.
+The raw data and primary pooled summaries, including the slow PP32768 request,
+remain unchanged. The active baseline is not automatically updated.
+
 ## Approved scope
 
 Five serial full-suite runs, each independently over the unchanged

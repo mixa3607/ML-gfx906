@@ -1,0 +1,33 @@
+{
+  "repository_head": "9e88c91863530a2eaecf7910136a5bbb826ad0bf",
+  "arm": "six",
+  "overrides": {
+    "DS4_SKIP_UNPICKED": "1",
+    "DS4_HIP_ATTN_SWIZZLE": "1",
+    "MAYA_DS4_HC_FUSE": "2",
+    "MAYA_DS4_ROUTE_FUSE": "2",
+    "MAYA_DS4_DRAFT_COST": "1",
+    "MAYA_DS4_DECODE_TRIM": "15"
+  },
+  "fresh_control": false,
+  "comparison_control": "../../flags-cpu48/control",
+  "input_sha256": {
+    "runner": "3d33a1da5f086414833a2ff9139979640e4b9029e372d07eaddd3974041a0018",
+    "cases": "3195a02e90078b366c00dce429652b386fe3616d879cdd25c1a6f288435b46c3",
+    "config": "3d228bdfffde5043e265d86b7190146171a6b0d4a96f48834ebbcf05e8ed413e"
+  },
+  "script_sha256": {
+    "../scripts/run.py": "bc4092772d373ff5b44d52abc08c3a1e8531503fa5be8b49859e53c887e65037",
+    "../analysis.py": "0207b3a20f9ff9347fd1e7a721f8065f50a995d6bfef6c747dd88ddb9bf8eaf4",
+    "../../flags-cpu48/analysis.py": "d7fe4a18faaffe0935c4b1310f6e6340181b9502c71ce0ff85e2d1b359cb1056",
+    "../../combos-cpu48/analysis.py": "25220ceb092f646a2d370a4e04bcfd35a9b26e3af2ebc31cecf6918efa29944a",
+    "../../flags-cpu48/baseline-config.json": "ee71559ddfad465301487e20d9f1fa4ef4346ee947054e4e506e4795b0b3d15e",
+    "../../top5-cpu48/scripts/remote.py": "1a51129223e9f0883dad8ad2cf169239db38c65abcc3c36967dddc892330e7dc",
+    "../../top5-cpu48/memory_probe.py": "3da9ec68180c0aa18772eeabcd4be1ca0dfd103423adb80dfcb7d6b937c001e9",
+    "../../cpu-threads/scripts/run.py": "b9ff797415cc8572d3927ecb7e32b46e23c6cbc2da22f019fc80879776eaa325",
+    "../../cpu-threads/scripts/remote.py": "d93d02beac6b0763783935513353dfc19dc1ca38652759334957560fc127a635",
+    "../../cpu-threads/summarize.py": "40ab588cd2f5e995ef81fb14f842af1d9e8b07a8a6839ad6c712c76d5961a2a7",
+    "../../baseline/scripts/remote.py": "8f30d2d0eae787488d93b3da493cf3837f05ed1811838280dc2e7a437ef4700a",
+    "../../baseline/scripts/pod.yaml": "caf3c8852e6e8afe194515c25e2f2c754552d62eca057b613fc9e3f1468fa576"
+  }
+}

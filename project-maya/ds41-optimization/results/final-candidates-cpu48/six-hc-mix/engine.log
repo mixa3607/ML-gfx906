@@ -1,0 +1,183 @@
+ds4: a decoded token's HC split and norm in one launch, its attention input rounded to int8 there, the layer's pre copy by its FFN split (DS4_HC_FUSE); a decode window's rows too, the FFN input rounded for the shared expert (DS4_HC_FUSE=2)
+ds4: a window's HC mix and split in one launch where they run on the layer's stream (DS4_HC_MIX_SPLIT=1)
+ds4: DS4_DECODE_TRIM=15: the shared expert's swiglu rounds s2's int8 input; q's norm rounds wq_b's int8 input; the snapshot / latent copies one kernel each; the drafter's hand-offs by xfer;
+ds4: a decoded token's router stage on the lead in two launches: its gate and the next layer's, then the routing and the guesses (DS4_ROUTE_FUSE); a decode window's rows too (DS4_ROUTE_FUSE=2)
+ds4: tensor parallel 4: the experts' n_ff 2304 in 32-value blocks, 576 to 576 a member (the odd blocks going round the members layer by layer) (DS4_TP_GGUF_UNEVEN)
+ds4: the one-GPU decode path (in-place pulls, windows streamed, landings): off (v1.1.27's path: not NVIDIA + one GPU)
+ds4: DS4_DRAFT_DEV 1,2,3: DSpark block 0 on CUDA1 (member 1), 1 on CUDA2 (member 2), 2 on CUDA3 (member 3) - each block's experts out of its own member's room
+ds4: CUDA0 prompt ring: 88 slots of 4.5 MB, 22 a batch (394 MB) for its 13.0 GB/s link (DS4_RING_MB sets it)
+ds4: CUDA1 prompt ring: 88 slots of 4.5 MB, 22 a batch (394 MB) for its 13.0 GB/s link (DS4_RING_MB sets it)
+ds4: CUDA2 prompt ring: 88 slots of 4.5 MB, 22 a batch (394 MB) for its 13.0 GB/s link (DS4_RING_MB sets it)
+ds4: CUDA3 prompt ring: 88 slots of 4.5 MB, 22 a batch (394 MB) for its 13.0 GB/s link (DS4_RING_MB sets it)
+ds4: the experts VRAM leaves over (~196.9 GB) are read in place from the model's files (copied into RAM after the GPUs' share when the RAM holds them all; --mmap-experts on keeps them in place) (235.5 GB of RAM free to keep them: the most-routed 196.9 GB read ahead; prompts in chunks of 4096)
+ds4: copied expert cache: DONTNEED hints accepted for 200.040 GB of whole source pages (eviction is advisory)
+ds4: the copied experts pinned (200.9 GB in 32.3 s): the prompt path DMAs them in place
+ds4: 10647 of the CPU lane's 10647 experts copied into RAM (200.2 GB, 2 NUMA parts) in 185.7 s
+ds4: CUDA0 HC fuse check: 24 runs (layers 0 2 20 39; attention inputs of 2, 3, 4 GEMVs; attention and FFN; random / edges / ties): pre, post, comb, the pre copy, x, its int8 rounding and the attention GEMVs, the FFN's int8 rounding and the shared expert's w1 / w3 GEMVs the old kernels' bit for bit, all finite, every guard intact (DS4_HC_FUSE=2)
+ds4: CUDA1 HC fuse check: 24 runs (layers 0 2 20 39; attention inputs of 2, 3, 4 GEMVs; attention and FFN; random / edges / ties): pre, post, comb, the pre copy, x, its int8 rounding and the attention GEMVs, the FFN's int8 rounding and the shared expert's w1 / w3 GEMVs the old kernels' bit for bit, all finite, every guard intact (DS4_HC_FUSE=2)
+ds4: CUDA2 HC fuse check: 24 runs (layers 0 2 20 39; attention inputs of 2, 3, 4 GEMVs; attention and FFN; random / edges / ties): pre, post, comb, the pre copy, x, its int8 rounding and the attention GEMVs, the FFN's int8 rounding and the shared expert's w1 / w3 GEMVs the old kernels' bit for bit, all finite, every guard intact (DS4_HC_FUSE=2)
+ds4: CUDA3 HC fuse check: 24 runs (layers 0 2 20 39; attention inputs of 2, 3, 4 GEMVs; attention and FFN; random / edges / ties): pre, post, comb, the pre copy, x, its int8 rounding and the attention GEMVs, the FFN's int8 rounding and the shared expert's w1 / w3 GEMVs the old kernels' bit for bit, all finite, every guard intact (DS4_HC_FUSE=2)
+ds4: CUDA0 HC fuse check (16 rows): 24 runs (layers 0 2 20 39; attention inputs of 2, 3, 4 GEMVs; attention and FFN; random / edges / ties): pre, post, comb, the pre copy, x, its int8 rounding and the attention GEMVs, the FFN's int8 rounding and the shared expert's w1 / w3 GEMVs the old kernels' bit for bit, all finite, every guard intact (DS4_HC_FUSE=2)
+ds4: CUDA1 HC fuse check (16 rows): 24 runs (layers 0 2 20 39; attention inputs of 2, 3, 4 GEMVs; attention and FFN; random / edges / ties): pre, post, comb, the pre copy, x, its int8 rounding and the attention GEMVs, the FFN's int8 rounding and the shared expert's w1 / w3 GEMVs the old kernels' bit for bit, all finite, every guard intact (DS4_HC_FUSE=2)
+ds4: CUDA2 HC fuse check (16 rows): 24 runs (layers 0 2 20 39; attention inputs of 2, 3, 4 GEMVs; attention and FFN; random / edges / ties): pre, post, comb, the pre copy, x, its int8 rounding and the attention GEMVs, the FFN's int8 rounding and the shared expert's w1 / w3 GEMVs the old kernels' bit for bit, all finite, every guard intact (DS4_HC_FUSE=2)
+ds4: CUDA3 HC fuse check (16 rows): 24 runs (layers 0 2 20 39; attention inputs of 2, 3, 4 GEMVs; attention and FFN; random / edges / ties): pre, post, comb, the pre copy, x, its int8 rounding and the attention GEMVs, the FFN's int8 rounding and the shared expert's w1 / w3 GEMVs the old kernels' bit for bit, all finite, every guard intact (DS4_HC_FUSE=2)
+ds4: CUDA0 route fuse check: 11 runs (gates of layers 0 38 and their next; the routing: real, tied, past 20 and negative logits, the request's x copied and not, the image bias off / on / given and off, n 257, m 1 .. 16): both logits, the picks, weights, plan and the whole request the old launches' bit for bit, all finite, every guard intact (DS4_ROUTE_FUSE)
+ds4: CUDA1 route fuse check: 11 runs (gates of layers 0 38 and their next; the routing: real, tied, past 20 and negative logits, the request's x copied and not, the image bias off / on / given and off, n 257, m 1 .. 16): both logits, the picks, weights, plan and the whole request the old launches' bit for bit, all finite, every guard intact (DS4_ROUTE_FUSE)
+ds4: CUDA2 route fuse check: 11 runs (gates of layers 0 38 and their next; the routing: real, tied, past 20 and negative logits, the request's x copied and not, the image bias off / on / given and off, n 257, m 1 .. 16): both logits, the picks, weights, plan and the whole request the old launches' bit for bit, all finite, every guard intact (DS4_ROUTE_FUSE)
+ds4: CUDA3 route fuse check: 11 runs (gates of layers 0 38 and their next; the routing: real, tied, past 20 and negative logits, the request's x copied and not, the image bias off / on / given and off, n 257, m 1 .. 16): both logits, the picks, weights, plan and the whole request the old launches' bit for bit, all finite, every guard intact (DS4_ROUTE_FUSE)
+ds4: CUDA0 DS4_DECODE_TRIM check: 16 runs (the first and last layers; 1 and 16 rows; random / edges): swiglu_q8 + s2; q's norm + wq_b; the activations, int8 rows and scales and the GEMVs the old path's bit for bit, every guard intact
+ds4: CUDA1 DS4_DECODE_TRIM check: 16 runs (the first and last layers; 1 and 16 rows; random / edges): swiglu_q8 + s2; q's norm + wq_b; the activations, int8 rows and scales and the GEMVs the old path's bit for bit, every guard intact
+ds4: CUDA2 DS4_DECODE_TRIM check: 16 runs (the first and last layers; 1 and 16 rows; random / edges): swiglu_q8 + s2; q's norm + wq_b; the activations, int8 rows and scales and the GEMVs the old path's bit for bit, every guard intact
+ds4: CUDA3 DS4_DECODE_TRIM check: 16 runs (the first and last layers; 1 and 16 rows; random / edges): swiglu_q8 + s2; q's norm + wq_b; the activations, int8 rows and scales and the GEMVs the old path's bit for bit, every guard intact
+ds4: CUDA0 DS4_DECODE_TRIM check: copy_regions (4 regions, 1 .. 4099 floats) the runtime copies' bytes, every guard intact
+ds4: CUDA1 DS4_DECODE_TRIM check: copy_regions (4 regions, 1 .. 4099 floats) the runtime copies' bytes, every guard intact
+ds4: CUDA2 DS4_DECODE_TRIM check: copy_regions (4 regions, 1 .. 4099 floats) the runtime copies' bytes, every guard intact
+ds4: CUDA3 DS4_DECODE_TRIM check: copy_regions (4 regions, 1 .. 4099 floats) the runtime copies' bytes, every guard intact
+ds4: DS4_DECODE_TRIM check: the drafter's hand-offs by xfer, 12 device pairs (both regions, 1311232 + 327680 bytes): every row as put
+ds4: CUDA0 route fuse check (3 rows): 11 runs (gates of layers 0 38 and their next; the routing: real, tied, past 20 and negative logits, the request's x copied and not, the image bias off / on / given and off, n 257, m 1 .. 16): both logits, the picks, weights, plan and the whole request the old launches' bit for bit, all finite, every guard intact (DS4_ROUTE_FUSE=2)
+ds4: CUDA1 route fuse check (3 rows): 11 runs (gates of layers 0 38 and their next; the routing: real, tied, past 20 and negative logits, the request's x copied and not, the image bias off / on / given and off, n 257, m 1 .. 16): both logits, the picks, weights, plan and the whole request the old launches' bit for bit, all finite, every guard intact (DS4_ROUTE_FUSE=2)
+ds4: CUDA2 route fuse check (3 rows): 11 runs (gates of layers 0 38 and their next; the routing: real, tied, past 20 and negative logits, the request's x copied and not, the image bias off / on / given and off, n 257, m 1 .. 16): both logits, the picks, weights, plan and the whole request the old launches' bit for bit, all finite, every guard intact (DS4_ROUTE_FUSE=2)
+ds4: CUDA3 route fuse check (3 rows): 11 runs (gates of layers 0 38 and their next; the routing: real, tied, past 20 and negative logits, the request's x copied and not, the image bias off / on / given and off, n 257, m 1 .. 16): both logits, the picks, weights, plan and the whole request the old launches' bit for bit, all finite, every guard intact (DS4_ROUTE_FUSE=2)
+ds4: CUDA0 route fuse check (16 rows): 11 runs (gates of layers 0 38 and their next; the routing: real, tied, past 20 and negative logits, the request's x copied and not, the image bias off / on / given and off, n 257, m 1 .. 16): both logits, the picks, weights, plan and the whole request the old launches' bit for bit, all finite, every guard intact (DS4_ROUTE_FUSE=2)
+ds4: CUDA1 route fuse check (16 rows): 11 runs (gates of layers 0 38 and their next; the routing: real, tied, past 20 and negative logits, the request's x copied and not, the image bias off / on / given and off, n 257, m 1 .. 16): both logits, the picks, weights, plan and the whole request the old launches' bit for bit, all finite, every guard intact (DS4_ROUTE_FUSE=2)
+ds4: CUDA2 route fuse check (16 rows): 11 runs (gates of layers 0 38 and their next; the routing: real, tied, past 20 and negative logits, the request's x copied and not, the image bias off / on / given and off, n 257, m 1 .. 16): both logits, the picks, weights, plan and the whole request the old launches' bit for bit, all finite, every guard intact (DS4_ROUTE_FUSE=2)
+ds4: CUDA3 route fuse check (16 rows): 11 runs (gates of layers 0 38 and their next; the routing: real, tied, past 20 and negative logits, the request's x copied and not, the image bias off / on / given and off, n 257, m 1 .. 16): both logits, the picks, weights, plan and the whole request the old launches' bit for bit, all finite, every guard intact (DS4_ROUTE_FUSE=2)
+ds4: CUDA0 layers [0, 39] (tensor parallel 4, part 0) + head: weights 5.50 GB, experts 22.34 GB (4713 of 15360 in VRAM), caches 0.49 GB, 2938 MiB free
+ds4: CUDA1 layers [0, 40] (tensor parallel 4, part 1) + blocks 0: weights 5.63 GB, experts 24.75 GB (4841 of 15488 in VRAM), caches 0.49 GB, 538 MiB free
+ds4: CUDA2 layers [0, 41] (tensor parallel 4, part 2) + blocks 1: weights 5.63 GB, experts 24.75 GB (4841 of 15488 in VRAM), caches 0.49 GB, 538 MiB free
+ds4: CUDA3 layers [0, 42] (tensor parallel 4, part 3) + blocks 2: weights 5.63 GB, experts 24.75 GB (4841 of 15488 in VRAM), caches 0.49 GB, 538 MiB free
+ds4: 10647 routed experts on the CPU lane (200.2 GB): 10647 copied into RAM (2 NUMA parts), the rest in place in the model's files; 48 threads
+maya-ds4: DS4_DRAFT_COST: DSpark's window by the measured cost of its rows (opt-in; the same tokens)
+maya ds4 serve: GEN <max_new> [keys] <ids>; GENI <max_new> [keys] <pictures> <ids>; STOP, QUIT
+
+rocblaslt error: Cannot read "TensileLibrary_lazy_gfx906.dat" (or .zlib variant): No such file or directory
+
+rocblaslt error: Could not load "TensileLibrary_lazy_gfx906.dat"
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+maya ds4 serve: prompt read: 2048 tokens in 9.7 s; VRAM free CUDA0 2.9 of 32.0, CUDA1 0.5 of 32.0, CUDA2 0.5 of 32.0, CUDA3 0.5 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 9711 ms (210.9 tok/s), 256 generated in 14127 ms (18.12 tok/s); CPU lane 11.8% of the experts
+maya ds4 serve: drafts 120 of 174 kept; per position (kept / reached): 1: 71/86 83% 2: 33/45 73% 3: 12/15 80% 4: 4/4 100%
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:63.6(23) 2:80.4(28) 3:89.3(36) 4:105.4(15) 5:115.6(6) 6:124.2(1)
+maya ds4 serve: prompt read: 2048 tokens in 8.7 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 8677 ms (236.0 tok/s), 256 generated in 8381 ms (30.55 tok/s); CPU lane 9.8% of the experts
+maya ds4 serve: drafts 163 of 218 kept; per position (kept / reached): 1: 68/76 89% 2: 50/54 93% 3: 24/28 86% 4: 16/23 70% 5: 5/7 71%
+maya ds4 serve: prompt lookup: 5 rounds, 15 of its 35 drafts kept (in the above)
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:63.2(31) 2:75.7(43) 3:82.3(65) 4:105.4(16) 5:108.8(25) 6:123.9(11) 16:252.3(1)
+maya ds4 serve: prompt read: 2048 tokens in 8.6 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 8591 ms (238.4 tok/s), 256 generated in 9035 ms (28.34 tok/s); CPU lane 6.1% of the experts
+maya ds4 serve: drafts 114 of 145 kept; per position (kept / reached): 1: 56/67 84% 2: 34/37 92% 3: 14/18 78% 4: 10/12 83%
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:49.3(68) 2:64.0(69) 3:75.3(86) 4:101.0(19) 5:95.1(42) 6:123.9(11) 16:252.3(1)
+maya ds4 serve: prompt read: 2048 tokens in 9.3 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 9284 ms (220.6 tok/s), 256 generated in 7138 ms (35.87 tok/s); CPU lane 2.3% of the experts
+maya ds4 serve: drafts 133 of 175 kept; per position (kept / reached): 1: 60/70 86% 2: 38/45 84% 3: 18/22 82% 4: 17/18 94%
+maya ds4 serve: prompt lookup: 4 rounds, 11 of its 16 drafts kept (in the above)
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:46.4(94) 2:57.1(88) 3:65.0(110) 4:101.0(19) 5:82.7(69) 6:123.9(11) 16:252.3(1)
+maya ds4 serve: prompt read: 2048 tokens in 9.0 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 9027 ms (226.9 tok/s), 256 generated in 7449 ms (34.37 tok/s); CPU lane 2.3% of the experts
+maya ds4 serve: drafts 127 of 173 kept; per position (kept / reached): 1: 77/88 88% 2: 39/52 75% 3: 6/9 67% 4: 5/6 83%
+maya ds4 serve: prompt lookup: 4 rounds, 8 of its 16 drafts kept (in the above)
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:46.1(114) 2:55.7(117) 3:64.7(156) 4:101.0(19) 5:82.0(81) 6:123.9(11) 16:252.3(1)
+maya ds4 serve: prompt read: 2048 tokens in 8.3 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 8327 ms (245.9 tok/s), 256 generated in 7206 ms (35.52 tok/s); CPU lane 2.7% of the experts
+maya ds4 serve: drafts 128 of 187 kept; per position (kept / reached): 1: 62/77 81% 2: 35/44 80% 3: 12/14 86% 4: 9/11 82% 5: 4/5 80% 6: 1/1 100% 7: 1/1 100% 8: 1/1 100%
+maya ds4 serve: prompt lookup: 2 rounds, 15 of its 19 drafts kept (in the above)
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:44.4(139) 2:53.4(141) 3:62.6(189) 4:98.1(20) 5:81.8(92) 6:89.7(9) 16:186.7(3)
+maya ds4 serve: prompt read: 2048 tokens in 8.1 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 8125 ms (252.1 tok/s), 256 generated in 7397 ms (34.61 tok/s); CPU lane 2.3% of the experts
+maya ds4 serve: drafts 116 of 158 kept; per position (kept / reached): 1: 66/81 81% 2: 35/44 80% 3: 8/11 73% 4: 6/8 75% 5: 1/1 100%
+maya ds4 serve: prompt lookup: 1 rounds, 1 of its 2 drafts kept (in the above)
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:44.0(168) 2:52.8(171) 3:61.6(227) 4:95.6(21) 5:80.0(103) 6:89.3(10) 16:186.7(3)
+maya ds4 serve: prompt read: 2048 tokens in 8.6 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 8575 ms (238.8 tok/s), 256 generated in 6197 ms (41.31 tok/s); CPU lane 2.2% of the experts
+maya ds4 serve: drafts 149 of 185 kept; per position (kept / reached): 1: 69/77 90% 2: 45/54 83% 3: 17/18 94% 4: 14/16 88% 5: 4/5 80%
+maya ds4 serve: prompt lookup: 5 rounds, 11 of its 16 drafts kept (in the above)
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:43.6(183) 2:53.6(189) 3:61.8(262) 4:93.3(22) 5:78.7(118) 6:88.4(16) 16:186.7(3)
+maya ds4 serve: prompt read: 2048 tokens in 8.3 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 8325 ms (246.0 tok/s), 256 generated in 7364 ms (34.76 tok/s); CPU lane 2.5% of the experts
+maya ds4 serve: drafts 126 of 168 kept; per position (kept / reached): 1: 70/79 89% 2: 38/46 83% 3: 9/10 90% 4: 6/9 67% 5: 3/3 100%
+maya ds4 serve: prompt lookup: 1 rounds, 1 of its 15 drafts kept (in the above)
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:45.6(208) 2:55.8(219) 3:65.9(298) 4:93.3(22) 5:80.7(127) 6:88.4(19) 16:180.2(3)
+maya ds4 serve: prompt read: 2048 tokens in 8.8 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 8782 ms (233.2 tok/s), 256 generated in 6460 ms (39.63 tok/s); CPU lane 2.6% of the experts
+maya ds4 serve: drafts 149 of 186 kept; per position (kept / reached): 1: 64/70 91% 2: 43/51 84% 3: 19/21 90% 4: 16/18 89% 5: 7/8 88%
+maya ds4 serve: prompt lookup: 6 rounds, 16 of its 26 drafts kept (in the above)
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:44.6(226) 2:56.3(234) 3:63.4(326) 4:91.2(24) 5:81.7(142) 6:89.1(28) 16:180.2(3)
+maya ds4 serve: prompt read: 2048 tokens in 8.5 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 8525 ms (240.2 tok/s), 256 generated in 6987 ms (36.64 tok/s); CPU lane 2.1% of the experts
+maya ds4 serve: drafts 135 of 168 kept; per position (kept / reached): 1: 64/74 86% 2: 47/51 92% 3: 13/16 81% 4: 9/13 69% 5: 2/2 100%
+maya ds4 serve: prompt lookup: 3 rounds, 6 of its 12 drafts kept (in the above)
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:44.8(249) 2:56.5(251) 3:64.7(366) 4:91.2(24) 5:81.8(156) 6:90.1(31) 16:180.2(3)
+maya ds4 serve: prompt read: 2048 tokens in 9.4 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 9377 ms (218.4 tok/s), 256 generated in 7404 ms (34.58 tok/s); CPU lane 2.6% of the experts
+maya ds4 serve: drafts 134 of 171 kept; per position (kept / reached): 1: 63/72 88% 2: 37/40 92% 3: 17/19 89% 4: 12/16 75% 5: 5/7 71%
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:46.7(273) 2:57.5(275) 3:69.1(392) 4:88.9(26) 5:86.9(167) 6:93.8(40) 16:180.2(3)
+maya ds4 serve: prompt read: 2048 tokens in 9.1 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 9133 ms (224.2 tok/s), 256 generated in 8336 ms (30.71 tok/s); CPU lane 1.8% of the experts
+maya ds4 serve: drafts 102 of 133 kept; per position (kept / reached): 1: 71/83 86% 2: 29/38 76% 3: 2/3 67%
+maya ds4 serve: prompt lookup: 1 rounds, 0 of its 2 drafts kept (in the above)
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:46.6(308) 2:57.5(316) 3:68.8(428) 4:87.7(28) 5:86.0(170) 6:93.8(40) 16:180.2(3)
+maya ds4 serve: prompt read: 4096 tokens in 14.8 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 4096 tokens = 0 reused + 4096 read in 14783 ms (277.1 tok/s), 256 generated in 7274 ms (35.19 tok/s); CPU lane 1.3% of the experts
+maya ds4 serve: drafts 137 of 191 kept; per position (kept / reached): 1: 66/79 84% 2: 43/55 78% 3: 14/21 67% 4: 9/13 69% 5: 5/5 100%
+maya ds4 serve: prompt lookup: 4 rounds, 12 of its 20 drafts kept (in the above)
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:46.2(327) 2:59.2(336) 3:65.8(465) 4:87.0(29) 5:85.6(181) 6:92.3(50) 16:180.2(3)
+maya ds4 serve: prompt read: 8192 tokens in 23.7 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 8192 tokens = 0 reused + 8192 read in 23696 ms (345.7 tok/s), 256 generated in 7194 ms (35.59 tok/s); CPU lane 0.7% of the experts
+maya ds4 serve: drafts 131 of 170 kept; per position (kept / reached): 1: 66/75 88% 2: 34/42 81% 3: 17/18 94% 4: 9/9 100% 5: 5/7 71%
+maya ds4 serve: prompt lookup: 5 rounds, 8 of its 19 drafts kept (in the above)
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:46.2(327) 2:59.2(336) 3:65.8(465) 4:87.0(29) 5:85.6(181) 6:92.3(50) 16:180.2(3) | ctx<64K: 1:46.8(26) 2:58.1(28) 3:65.6(23) 4:75.7(15) 5:84.0(4) 6:91.3(9) 16:180.2(1)
+maya ds4 serve: prompt read: 16384 tokens in 38.3 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 16384 tokens = 0 reused + 16384 read in 38284 ms (428.0 tok/s), 256 generated in 6683 ms (38.31 tok/s); CPU lane 0.4% of the experts
+maya ds4 serve: drafts 145 of 199 kept; per position (kept / reached): 1: 70/79 89% 2: 42/53 79% 3: 20/23 87% 4: 8/12 67% 5: 5/5 100%
+maya ds4 serve: prompt lookup: 2 rounds, 1 of its 7 drafts kept (in the above)
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:46.2(327) 2:59.2(336) 3:65.8(465) 4:87.0(29) 5:85.6(181) 6:92.3(50) 16:180.2(3) | ctx<64K: 1:44.8(42) 2:55.5(46) 3:63.0(50) 4:73.3(32) 5:83.1(10) 6:91.7(19) 16:180.2(1)
+maya ds4 serve: prompt read: 32768 tokens in 72.0 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 32768 tokens = 0 reused + 32768 read in 72022 ms (455.0 tok/s), 256 generated in 7628 ms (33.56 tok/s); CPU lane 0.2% of the experts
+maya ds4 serve: drafts 119 of 156 kept; per position (kept / reached): 1: 59/71 83% 2: 37/42 88% 3: 17/19 89% 4: 5/7 71% 5: 1/1 100%
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:46.2(327) 2:59.2(336) 3:65.8(465) 4:87.0(29) 5:85.6(181) 6:92.3(50) 16:180.2(3) | ctx<64K: 1:46.9(74) 2:56.8(67) 3:66.1(75) 4:76.0(48) 5:84.8(18) 6:91.7(20) 16:180.2(1)
+maya ds4 serve: prompt read: 2048 tokens in 8.8 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 8777 ms (233.3 tok/s), 256 generated in 7303 ms (35.05 tok/s); CPU lane 2.2% of the experts
+maya ds4 serve: drafts 128 of 183 kept; per position (kept / reached): 1: 60/77 78% 2: 37/46 80% 3: 19/25 76% 4: 9/11 82% 5: 3/5 60%
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:45.5(27) 2:55.0(25) 3:64.1(25) 4:73.1(19) 5:82.5(9) 6:88.8(9) 16:180.2(3) | ctx<64K: 1:46.9(74) 2:56.8(67) 3:66.1(75) 4:76.0(48) 5:84.8(18) 6:91.7(20) 16:180.2(1)
+maya ds4 serve: prompt read: 4096 tokens in 13.4 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 4096 tokens = 0 reused + 4096 read in 13448 ms (304.6 tok/s), 256 generated in 7508 ms (34.10 tok/s); CPU lane 1.1% of the experts
+maya ds4 serve: drafts 115 of 150 kept; per position (kept / reached): 1: 64/75 85% 2: 30/39 77% 3: 16/17 94% 4: 4/7 57% 5: 1/1 100%
+maya ds4 serve: prompt lookup: 1 rounds, 1 of its 5 drafts kept (in the above)
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:44.0(60) 2:55.3(57) 3:64.1(47) 4:74.6(31) 5:82.0(16) 6:88.6(10) 16:180.2(3) | ctx<64K: 1:46.9(74) 2:56.8(67) 3:66.1(75) 4:76.0(48) 5:84.8(18) 6:91.7(20) 16:180.2(1)
+maya ds4 serve: prompt read: 8192 tokens in 21.8 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 8192 tokens = 0 reused + 8192 read in 21802 ms (375.7 tok/s), 256 generated in 6712 ms (38.14 tok/s); CPU lane 0.8% of the experts
+maya ds4 serve: drafts 146 of 200 kept; per position (kept / reached): 1: 65/73 89% 2: 44/54 81% 3: 21/26 81% 4: 11/14 79% 5: 5/6 83%
+maya ds4 serve: prompt lookup: 3 rounds, 3 of its 8 drafts kept (in the above)
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:44.0(60) 2:55.3(57) 3:64.1(47) 4:74.6(31) 5:82.0(16) 6:88.6(10) 16:180.2(3) | ctx<64K: 1:47.1(92) 2:56.1(82) 3:64.5(99) 4:75.9(59) 5:83.0(29) 6:91.8(32) 16:180.2(1)
+maya ds4 serve: prompt read: 16384 tokens in 38.5 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 16384 tokens = 0 reused + 16384 read in 38534 ms (425.2 tok/s), 256 generated in 7398 ms (34.60 tok/s); CPU lane 0.3% of the experts
+maya ds4 serve: drafts 111 of 143 kept; per position (kept / reached): 1: 63/77 82% 2: 30/36 83% 3: 12/13 92% 4: 6/7 86%
+maya ds4 serve: prompt lookup: 1 rounds, 1 of its 2 drafts kept (in the above)
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:44.0(60) 2:55.3(57) 3:64.1(47) 4:74.6(31) 5:82.0(16) 6:88.6(10) 16:180.2(3) | ctx<64K: 1:43.6(125) 2:53.6(118) 3:62.0(123) 4:72.5(69) 5:82.1(35) 6:92.0(33) 16:180.2(1)
+maya ds4 serve: prompt read: 32768 tokens in 73.7 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 32768 tokens = 0 reused + 32768 read in 73725 ms (444.5 tok/s), 256 generated in 7588 ms (33.74 tok/s); CPU lane 0.2% of the experts
+maya ds4 serve: drafts 132 of 195 kept; per position (kept / reached): 1: 61/73 84% 2: 36/46 78% 3: 22/24 92% 4: 10/12 83% 5: 3/4 75%
+maya ds4 serve: draft cost (DS4_DRAFT_COST), ms a round by its rows: alone ctx<8K: 1:44.0(60) 2:55.3(57) 3:64.1(47) 4:74.6(31) 5:82.0(16) 6:88.6(10) 16:180.2(3) | ctx<64K: 1:47.5(150) 2:57.0(134) 3:67.0(142) 4:75.5(85) 5:85.9(52) 6:92.5(38) 16:180.2(1)

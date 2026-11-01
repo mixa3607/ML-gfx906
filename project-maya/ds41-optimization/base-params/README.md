@@ -21,7 +21,11 @@ also measures two pairs and all four together against the saved control;
 it does not promote a combined configuration into this baseline.
 The [remaining top-five block](../results/top5-cpu48/README.md) separately
 tests draft-cost, trim mask 15, HC mix/split, cache 4096 and Markov Q8, using
-the saved control without changing this baseline or accepted best-tested values.
+the saved control. By subsequent agreement, draft-cost `1` and trim `15` join
+the accepted individual values, not this active baseline. Retain cache `256`
+and unset/default-off Markov Q8; HC mix/split is undecided. The
+[two final candidates](../results/final-candidates-cpu48/README.md) test six
+selected flags together, with HC mix/split added only in the second run.
 
 ## Baseline settings
 
