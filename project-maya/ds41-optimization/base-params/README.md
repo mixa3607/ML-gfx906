@@ -4,30 +4,29 @@ Use docker.io/mixa3607/maya-gfx906:v1.1.45-rocm-10.1
 
 See the [complete discussed flag inventory](../README.md) for classification,
 current/default values, candidate values, decision statuses and fixed or best
-tested values. Defaults are not measured optima. The first startup attempt was
-[blocked by automatic TP4 to TP2 reduction](../results/baseline-spec1/README.md).
-With `MAYA_DS4_TP_GGUF_UNEVEN=1`, the
-[TP4 baseline benchmark completed](../results/baseline-spec1-tp4/README.md):
-pooled prefill 369.11 tok/s and decode 31.24 tok/s with `spec=1`. Automatic CPU
-selection used 74 threads. Subsequent skip/fusion comparisons explicitly pin
-`--cpu-threads 74`; the 48/56-core candidates remain untested and deferred.
-The [four-arm skip/fusion comparison](../results/skip-hcfuse-cpu74/README.md)
-completed with an explicit-CPU74 control of PP 365.11 tok/s and TG 30.68 tok/s.
-Skip=1 did not pass the predeclared screening rule and neither HC fuse mode
-showed a useful gain; both switches remain unset at their off defaults.
+tested values. Defaults are not measured optima.
+
+The [baseline result](../results/baseline/README.md) records pooled prefill
+334.56 tok/s and decode 30.07 tok/s on `ds41f-ru-long`, with CPU74, TP4,
+`spec=1`, disabled conversation slots and no KV reuse.
 
 ## Baseline settings
 
 Keep the existing UD-Q8_K_XL pack, TP4, 524288-token context, 4096-token prefill
-chunk and DSpark enabled. The baseline explicitly enables:
+chunk and DSpark enabled. Requests use `temperature=0 spec=1`, without
+cross-request KV reuse. Conversation slots are disabled so prompt timings do
+not include saving/spilling the preceding conversation. Native prompt timings
+still include engine state preparation and checkpoints, not just GPU kernels.
+
+The baseline explicitly sets:
 
 | Setting | Value | Purpose |
 | --- | --- | --- |
 | `MAYA_DS4_TP_GGUF_UNEVEN` | `1` | Permit whole-quant-block expert partitions so the requested TP4 is not reduced to TP2 by the ordinary path's 128-value FFN alignment rule. |
-| `--cpu-threads` | `74` | Pin the CPU lane for the skip/fusion comparison instead of rerunning automatic thread selection. This is not a measured optimum. |
+| `--cpu-threads` | `74` | Pin the CPU lane instead of rerunning automatic thread selection. This is not a measured optimum. |
 | `MAYA_DS4_PROMPT_SKIP` | `2` | DeepSeek's own approximate prompt skip: full work in layers 20-39 on the last 128 tokens, subject to the active path's chunk boundaries. This is intentionally not bit-exact. |
-| `MAYA_DS4_SLOT_KEEP` | `1` | Save and restore conversations instead of rereading their entire prompts when requests switch. |
-| `MAYA_DS4_SLOT_CAP` | `4` | Keep up to four parked conversations in RAM; further conversations spill to the slot directory. |
+| `MAYA_DS4_SLOT_KEEP` | `0` | Disable conversation-slot save/load and disk spill for independent benchmark requests. |
+| `MAYA_DS4_SLOT_CAP` | `4` | Inactive while `SLOT_KEEP=0`. |
 
 `MAYA_DS4_YOCO_TP=1` is only needed to allow the prompt skip on a single TP group
 using `DS4_FLOW_TP=1`. The baseline does not enable that flow path, so neither
@@ -44,7 +43,7 @@ setting is added.
 - The target host has two NUMA nodes with SMT disabled. Keep `DS4_COPY_NUMA=2`.
   CPU-thread candidates are 48 and 56 physical cores; a meaningful difference
   warrants extending the range in increments of eight cores. That search is
-  deferred; `--cpu-threads 74` is fixed for the current skip/fusion experiments.
+  deferred; `--cpu-threads 74` is fixed for this baseline.
 - This directory records the baseline and flag constraints, not a step-by-step
-  test plan. The linked benchmarks are baseline and screening runs, not evidence
-  of universal flag optima or that a 512K-token prompt has been tested.
+  test plan. The benchmark suite measures prompts up to 32768 tokens, not the
+  full configured 512K-token context capacity.

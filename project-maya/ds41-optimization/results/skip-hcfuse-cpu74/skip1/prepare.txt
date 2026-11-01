@@ -1,1 +1,0 @@
-UD-Q8_K_XL: 48795 tensors in 11 files (BF16 17.5 GB, F32 0.5 GB, MXFP4 296.0 GB, MXFP8 202.8 GB, Q8_0 0.6 GB), Engram 2 layers x 24 hash columns, the DSpark drafter, the vision tower -> /data/ds4

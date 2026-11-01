@@ -19,8 +19,8 @@ nodes with SMT disabled.
 **Fixed / best tested value** contains only an unconditional baseline decision or
 a measured, accepted value for the tested suite. `—` means neither has been
 selected. Defaults and candidate values are separate columns: a default is not
-a test result. An unset
-flag means it is not present in `base-params/maya-config.json`; the displayed
+a test result. An unset flag means it is not present in
+`base-params/maya-config.json`; the displayed
 default is documented upstream behavior, not a runtime observation.
 
 Classification follows the documentation; hypothetical implementation bugs do
@@ -33,14 +33,13 @@ Documented changes to target arithmetic or prompt semantics are not bit-exact.
 The rows within each optimization group retain the approximate ordering by
 potential additional benefit on gfx906 in an applicable workload. TTFT, prefill
 and decode gains are different metrics, so this is not a universal speed ranking.
-No additional optimization has been accepted for the full suite yet.
-The [completed TP4 baseline](results/baseline-spec1-tp4/README.md) measures the
-joint baseline configuration, not individual flag optima: pooled prefill
-369.11 tok/s, decode 31.24 tok/s, with speculation requested and no KV reuse.
-The later [CPU74 skip/fusion comparison](results/skip-hcfuse-cpu74/README.md)
-screened two flags individually: retain skip=0 and HC fuse=0 for the full
-suite. Skip improved shorter prefill but failed the predeclared stability and
-decode-regression filter; neither fusion mode showed a useful gain.
+The benchmark baseline fixes CPU74, TP4 and `spec=1`, with
+`MAYA_DS4_SLOT_KEEP=0` to exclude conversation-slot save/load and disk spill.
+Independent requests must report zero KV reuse. Native prompt timings still
+include engine preparation and checkpoints; they are not pure GPU-kernel time.
+The [baseline result](results/baseline/README.md) records all 22 suite requests
+completed, pooled prefill 334.56 tok/s and decode 30.07 tok/s over the ten
+measurement requests. It measures the joint configuration, not flag optima.
 
 ## Fixed baseline and inherited placement
 
@@ -54,7 +53,7 @@ other than 4 and Maya's non-bit-exact tuning are excluded.
 | `--gpus` | `0,1,2,3` | None | Always enabled | `0,1,2,3` | Four process-local GPU IDs. |
 | `HIP_VISIBLE_DEVICES` | `1,0,3,2` | GPU permutations are excluded | Always enabled | `1,0,3,2` | Preserve the baseline device order. |
 | `--tp` | `4` | `1`, `2`: excluded | Always enabled | `4` | No alternative tensor-parallel width. |
-| `MAYA_DS4_TP_GGUF_UNEVEN` | Explicit `1` | No alternative selected | Always enabled | `1` | Whole-quant-block partitions preserve the requested TP4 instead of the ordinary path's automatic TP2 reduction. Added after the documented failed startup; not a cross-layout bit-exactness claim. |
+| `MAYA_DS4_TP_GGUF_UNEVEN` | Explicit `1` | No alternative selected | Always enabled | `1` | Whole-quant-block partitions preserve the requested TP4 instead of the ordinary path's automatic TP2 reduction; not a cross-layout bit-exactness claim. |
 | `--max-context` | `524288` | Smaller contexts are not substitutes | Always enabled | `524288` | Keep the target context capacity. |
 | `--prefill-chunk` | `4096` | `2048`, `8192`: excluded | Always enabled | `4096` | Changing chunk boundaries can change arithmetic; keep the baseline size. |
 | `--mmap-experts` | `off` | No alternative selected | Always enabled | `off` | Preserve expert-copy mode; this alone does not guarantee every CPU expert is copied. |
@@ -72,14 +71,14 @@ patch is a correctness fix, not a separate tunable speed switch.
 
 | Flag | Current baseline / default | Candidate values | Status | Fixed / best tested value | Effect and limits |
 | --- | --- | --- | --- | --- | --- |
-| `MAYA_DS4_SLOT_KEEP` | Explicit `1` | No tuning requested | Always enabled | `1` | Restore parked conversation state instead of rereading its full prompt when requests switch; potentially the largest agent TTFT benefit, not faster individual decode steps. |
-| `MAYA_DS4_SLOT_CAP` | Explicit `4` | `8` was discussed but is not selected | Always enabled | `4` | Up to four parked conversations in RAM; excess states spill to the slot directory. |
-| `DS4_SKIP_UNPICKED` | Unset; HIP default off | `0`, `1` | Tested | `0` (retain default) | CPU74 suite: pooled PP +5.37%, TG -2.22% at `1`; short PP improved, but PP2048 TG -6.86% and inconsistent pass direction failed screening. Not enabled for the full suite. See the linked comparison; no universal optimum claimed. |
+| `MAYA_DS4_SLOT_KEEP` | Explicit `0` | No tuning requested | Not used for now | `0` | Disable conversation-slot save/load and spill so independent requests do not pay for preserving the preceding conversation. |
+| `MAYA_DS4_SLOT_CAP` | Explicit `4`, inactive | No tuning requested | Not used for now | — | Ignored while `SLOT_KEEP=0`. |
+| `DS4_SKIP_UNPICKED` | Unset; HIP default off | `0`, `1` | Awaiting test | — | Stream only experts the chunk picks, preserving batches and accumulation order. Long chunks can lose cross-layer read-ahead. Not used by `DS4_FLOW_TP` or decode. |
 | `DS4_ENGRAM_CACHE_MB` | Explicit `256` | `256`, `1024`, `4096`, `8192` | Awaiting test | — | More exact Engram row payloads cached in RAM; useful when Engram I/O is limiting. Competes with expert RAM and other host allocations. |
 | `DS4_ENGRAM_RAM` | Unset; default `0` | `0`, `1`, only with sufficient RAM | Awaiting test | — | Lock both complete Engram tables, including scales. Requires a full-table RAM budget and memlock allowance; not a universal gain over a warm page cache. |
-| `--cpu-threads` | Explicit `74`; automatic choice selected 74 in the earlier baseline run | `48`, `56` deferred; extend by 8 cores only if the difference is meaningful | Always enabled | `74` | Fixed by task agreement for skip/fusion comparisons, not a tested optimum. The 48/56-core alternatives remain untested. |
-| `MAYA_DS4_CPU_LANE` | Unset; automatic policy bypassed by explicit CPU74 | `cores`, `node`, `smt` were discussed; no separate policy tuning selected | Not used for now | — | The earlier 48/56-core search is deferred. With SMT disabled, `smt` offers no extra logical siblings. Explicit CPU74 bypasses the automatic thread-choice measurement. |
-| `MAYA_DS4_HC_FUSE` | Unset; default `0` | `0`, `1`, `2` | Tested | `0` (retain default) | Native startup parity passed on all four GPUs at `1` and `2`, including 16-row checks at `2`. CPU74 suite: TG -0.62% / -0.61%, PP +0.10% / -3.12% respectively; no useful gain observed, so retain `0`. |
+| `--cpu-threads` | Explicit `74` | `48`, `56` deferred; extend by 8 cores only if the difference is meaningful | Always enabled | `74` | Fixed by task agreement, not a measured optimum. |
+| `MAYA_DS4_CPU_LANE` | Unset; automatic policy bypassed by explicit CPU74 | `cores`, `node`, `smt` were discussed; no separate policy tuning selected | Not used for now | — | The 48/56-core search is deferred. With SMT disabled, `smt` offers no extra logical siblings. Explicit CPU74 bypasses the automatic thread-choice measurement. |
+| `MAYA_DS4_HC_FUSE` | Unset; default `0` | `0`, `1`, `2` | Awaiting test | — | Fuse HC split/norm and attention int8 rounding; `2` also covers DSpark verify windows and rounds the FFN input for the shared expert. Allowed on gfx906 by the local patch, with native startup parity checks. |
 | `MAYA_DS4_DECODE_TRIM` | Unset; default `0` | Individual bits `1`, `2`, `4`, `8`; combinations up to `15` | Awaiting test | — | `1`: shared-expert SwiGLU produces its int8 down input; `2`: q norm produces wq_b's int8 input; `4`: fuse snapshot/latent copies; `8`: mapped-host drafter handoffs. Local patch admits bits 1/2 on gfx906. |
 | `MAYA_DS4_ROUTE_FUSE` | Unset; default `0` | `0`, `1`, `2` | Awaiting test | — | Router/lookahead in two launches instead of four; `2` also covers verify windows. Requires `DS4_AHEAD=1`; allowed on gfx906 by the local patch. |
 | `DS4_AHEAD` | Unset; default `1` | Keep `1` while evaluating route fusion | Always enabled | `1` (upstream default) | One layer of lookahead; dependency of `ROUTE_FUSE`, not an independent selected speed experiment. |
@@ -100,8 +99,8 @@ controls, recorded because RAM budgeting and the slot directory were discussed:
 
 | Flag | Current baseline / default | Candidate values | Status | Fixed / best tested value | Effect and limits |
 | --- | --- | --- | --- | --- | --- |
-| `MAYA_DS4_SLOT_RAM_GB` | Unset; default `0` (count-limited only) | No explicit RAM cap selected | Not used for now | — | An optional parked-state RAM budget; the incoming serialization can temporarily exceed it, and one state is retained even if larger than the cap. `SLOT_CAP=4` remains the selected limit. |
-| `MAYA_DS4_SLOT_DIR` | Unset; default `<pack>/slots` | No alternative path selected | Not used for now | — | Persistent state spill/restart directory. No path override added to the baseline. |
+| `MAYA_DS4_SLOT_RAM_GB` | Unset; inactive | No explicit RAM cap selected | Not used for now | — | Parked-state RAM budgeting is inactive while `SLOT_KEEP=0`. |
+| `MAYA_DS4_SLOT_DIR` | Unset; inactive | No alternative path selected | Not used for now | — | Persistent slot storage is inactive while `SLOT_KEEP=0`. |
 
 ## 2. DeepSeek-designed non-bit-exact optimization
 
@@ -168,16 +167,7 @@ remove behavior already inherited from the starting configuration.
   six routed experts per target token; native FP8/FP4 formats.
 
 Local `git apply --check` accepted both v1.1.44 patches against upstream
-v1.1.45. JSON/consistency/format checks are not GPU tests. The
-[first baseline attempt](results/baseline-spec1/README.md) failed before READY:
-the engine reduced TP4 to TP2 and rejected the drafter's member IDs. No requests
-ran and no performance result was produced. `MAYA_DS4_TP_GGUF_UNEVEN=1` was
-subsequently approved as a fixed baseline setting to preserve TP4.
-The [subsequent baseline](results/baseline-spec1-tp4/README.md) completed all
-22 requests on actual TP4 with `spec=1`. Its raw logs, counters, hashes and
-timing summary are retained, including rocBLASLt/Tensile module-load diagnostics.
-The [CPU74 comparison](results/skip-hcfuse-cpu74/README.md) then completed four
-full-suite arms with explicit CPU74 and fresh per-arm seed profiles. It retains
-the same library diagnostics and native fusion parity evidence. Neither tested
-optimization was accepted for the full-suite baseline.
+v1.1.45. JSON/consistency/format checks are not GPU tests.
+The [baseline](results/baseline/README.md) retains its raw results, input and
+artifact hashes, hardware metadata and rocBLASLt/Tensile diagnostics.
 GPU runs and Kubernetes writes require separate explicit approval.
