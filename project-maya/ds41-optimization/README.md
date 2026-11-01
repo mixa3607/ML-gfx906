@@ -12,13 +12,14 @@ nodes with SMT disabled.
 | Status | Meaning |
 | --- | --- |
 | Always enabled | Kept unconditionally in the baseline, including fixed layout and model arguments. Not a claim of measured optimality. |
-| Tested | Measured on this target in this task; the best accepted value and evidence must be recorded. No flags have this status yet. |
+| Tested | Measured on this target in this task; the retained value and evidence are recorded. This is not a claim of a universal optimum. |
 | Awaiting test | An accepted candidate; its current value is not a measured optimum. |
 | Not used for now | Its tuning is excluded or inapplicable under the current constraints. This does not automatically turn off an existing upstream default. |
 
 **Fixed / best tested value** contains only an unconditional baseline decision or
-a measured, accepted optimum. `—` means neither has been selected. Defaults and
-candidate values are separate columns: a default is not a test result. An unset
+a measured, accepted value for the tested suite. `—` means neither has been
+selected. Defaults and candidate values are separate columns: a default is not
+a test result. An unset
 flag means it is not present in `base-params/maya-config.json`; the displayed
 default is documented upstream behavior, not a runtime observation.
 
@@ -32,11 +33,14 @@ Documented changes to target arithmetic or prompt semantics are not bit-exact.
 The rows within each optimization group retain the approximate ordering by
 potential additional benefit on gfx906 in an applicable workload. TTFT, prefill
 and decode gains are different metrics, so this is not a universal speed ranking.
-There are no measured gfx906 speedups or selected tested optima yet.
+No additional optimization has been accepted for the full suite yet.
 The [completed TP4 baseline](results/baseline-spec1-tp4/README.md) measures the
 joint baseline configuration, not individual flag optima: pooled prefill
 369.11 tok/s, decode 31.24 tok/s, with speculation requested and no KV reuse.
-The per-flag decision statuses therefore remain unchanged.
+The later [CPU74 skip/fusion comparison](results/skip-hcfuse-cpu74/README.md)
+screened two flags individually: retain skip=0 and HC fuse=0 for the full
+suite. Skip improved shorter prefill but failed the predeclared stability and
+decode-regression filter; neither fusion mode showed a useful gain.
 
 ## Fixed baseline and inherited placement
 
@@ -70,12 +74,12 @@ patch is a correctness fix, not a separate tunable speed switch.
 | --- | --- | --- | --- | --- | --- |
 | `MAYA_DS4_SLOT_KEEP` | Explicit `1` | No tuning requested | Always enabled | `1` | Restore parked conversation state instead of rereading its full prompt when requests switch; potentially the largest agent TTFT benefit, not faster individual decode steps. |
 | `MAYA_DS4_SLOT_CAP` | Explicit `4` | `8` was discussed but is not selected | Always enabled | `4` | Up to four parked conversations in RAM; excess states spill to the slot directory. |
-| `DS4_SKIP_UNPICKED` | Unset; HIP default off | `0`, `1` | Awaiting test | — | Stream only experts the chunk picks, preserving batches and accumulation order. Potentially large for short/medium prefill; long chunks can lose cross-layer read-ahead. Not used by `DS4_FLOW_TP` or decode. |
+| `DS4_SKIP_UNPICKED` | Unset; HIP default off | `0`, `1` | Tested | `0` (retain default) | CPU74 suite: pooled PP +5.37%, TG -2.22% at `1`; short PP improved, but PP2048 TG -6.86% and inconsistent pass direction failed screening. Not enabled for the full suite. See the linked comparison; no universal optimum claimed. |
 | `DS4_ENGRAM_CACHE_MB` | Explicit `256` | `256`, `1024`, `4096`, `8192` | Awaiting test | — | More exact Engram row payloads cached in RAM; useful when Engram I/O is limiting. Competes with expert RAM and other host allocations. |
 | `DS4_ENGRAM_RAM` | Unset; default `0` | `0`, `1`, only with sufficient RAM | Awaiting test | — | Lock both complete Engram tables, including scales. Requires a full-table RAM budget and memlock allowance; not a universal gain over a warm page cache. |
-| `--cpu-threads` | Unset; automatic choice selected 74 in the baseline run | `48`, `56`; extend by 8 cores only if the difference is meaningful | Awaiting test | — | Physical-core counts on the SMT-disabled host. No tested optimum or explicit count is selected; the 48/56-core alternatives remain untested. |
-| `MAYA_DS4_CPU_LANE` | Unset; measured choice | `cores`, `node`, `smt` were discussed; no separate policy tuning selected | Not used for now | — | The accepted CPU search is explicit 48/56-core counts. With SMT disabled, `smt` offers no extra logical siblings. An explicit thread count bypasses the automatic thread-choice measurement. |
-| `MAYA_DS4_HC_FUSE` | Unset; default `0` | `0`, `1`, `2` | Awaiting test | — | Fuse HC split/norm and attention int8 rounding; `2` also covers DSpark verify windows and rounds the FFN input for the shared expert. Allowed on gfx906 by the local patch. |
+| `--cpu-threads` | Explicit `74`; automatic choice selected 74 in the earlier baseline run | `48`, `56` deferred; extend by 8 cores only if the difference is meaningful | Always enabled | `74` | Fixed by task agreement for skip/fusion comparisons, not a tested optimum. The 48/56-core alternatives remain untested. |
+| `MAYA_DS4_CPU_LANE` | Unset; automatic policy bypassed by explicit CPU74 | `cores`, `node`, `smt` were discussed; no separate policy tuning selected | Not used for now | — | The earlier 48/56-core search is deferred. With SMT disabled, `smt` offers no extra logical siblings. Explicit CPU74 bypasses the automatic thread-choice measurement. |
+| `MAYA_DS4_HC_FUSE` | Unset; default `0` | `0`, `1`, `2` | Tested | `0` (retain default) | Native startup parity passed on all four GPUs at `1` and `2`, including 16-row checks at `2`. CPU74 suite: TG -0.62% / -0.61%, PP +0.10% / -3.12% respectively; no useful gain observed, so retain `0`. |
 | `MAYA_DS4_DECODE_TRIM` | Unset; default `0` | Individual bits `1`, `2`, `4`, `8`; combinations up to `15` | Awaiting test | — | `1`: shared-expert SwiGLU produces its int8 down input; `2`: q norm produces wq_b's int8 input; `4`: fuse snapshot/latent copies; `8`: mapped-host drafter handoffs. Local patch admits bits 1/2 on gfx906. |
 | `MAYA_DS4_ROUTE_FUSE` | Unset; default `0` | `0`, `1`, `2` | Awaiting test | — | Router/lookahead in two launches instead of four; `2` also covers verify windows. Requires `DS4_AHEAD=1`; allowed on gfx906 by the local patch. |
 | `DS4_AHEAD` | Unset; default `1` | Keep `1` while evaluating route fusion | Always enabled | `1` (upstream default) | One layer of lookahead; dependency of `ROUTE_FUSE`, not an independent selected speed experiment. |
@@ -172,4 +176,8 @@ subsequently approved as a fixed baseline setting to preserve TP4.
 The [subsequent baseline](results/baseline-spec1-tp4/README.md) completed all
 22 requests on actual TP4 with `spec=1`. Its raw logs, counters, hashes and
 timing summary are retained, including rocBLASLt/Tensile module-load diagnostics.
+The [CPU74 comparison](results/skip-hcfuse-cpu74/README.md) then completed four
+full-suite arms with explicit CPU74 and fresh per-arm seed profiles. It retains
+the same library diagnostics and native fusion parity evidence. Neither tested
+optimization was accepted for the full-suite baseline.
 GPU runs and Kubernetes writes require separate explicit approval.

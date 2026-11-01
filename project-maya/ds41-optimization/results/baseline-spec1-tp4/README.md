@@ -38,8 +38,10 @@ over any other configuration.
   contains both local gfx906 patches; fusion switches were not enabled.
 - Suite: `project-maya/benchmarking/suites/ds41f-ru-long/cases.jsonl`, unchanged.
   SHA-256: `3195a02e90078b366c00dce429652b386fe3616d879cdd25c1a6f288435b46c3`.
-- Config: [maya-config.json](maya-config.json), matching the updated
-  [baseline](../../base-params/maya-config.json). TP4, context 524288,
+- Config: [maya-config.json](maya-config.json), matching the
+  [baseline](../../base-params/maya-config.json) at the time of this run. The
+  current baseline additionally pins `--cpu-threads 74` for later comparisons;
+  this historical run used automatic selection. TP4, context 524288,
   prefill chunk 4096, DSpark on, vision on, expert copying off mmap,
   two NUMA parts, Engram cache 256 MB, drafter members `1,2,3`,
   `PROMPT_SKIP=2`, `SLOT_KEEP=1`, `SLOT_CAP=4`.

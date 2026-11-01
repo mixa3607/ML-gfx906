@@ -1,0 +1,154 @@
+ds4: tensor parallel 4: the experts' n_ff 2304 in 32-value blocks, 576 to 576 a member (the odd blocks going round the members layer by layer) (DS4_TP_GGUF_UNEVEN)
+ds4: the one-GPU decode path (in-place pulls, windows streamed, landings): off (v1.1.27's path: not NVIDIA + one GPU)
+ds4: DS4_DRAFT_DEV 1,2,3: DSpark block 0 on CUDA1 (member 1), 1 on CUDA2 (member 2), 2 on CUDA3 (member 3) - each block's experts out of its own member's room
+ds4: CUDA0 prompt ring: 88 slots of 4.5 MB, 22 a batch (394 MB) for its 13.0 GB/s link (DS4_RING_MB sets it)
+ds4: CUDA1 prompt ring: 88 slots of 4.5 MB, 22 a batch (394 MB) for its 13.0 GB/s link (DS4_RING_MB sets it)
+ds4: CUDA2 prompt ring: 88 slots of 4.5 MB, 22 a batch (394 MB) for its 13.0 GB/s link (DS4_RING_MB sets it)
+ds4: CUDA3 prompt ring: 88 slots of 4.5 MB, 22 a batch (394 MB) for its 13.0 GB/s link (DS4_RING_MB sets it)
+ds4: the experts VRAM leaves over (~196.9 GB) are read in place from the model's files (copied into RAM after the GPUs' share when the RAM holds them all; --mmap-experts on keeps them in place) (235.5 GB of RAM free to keep them: the most-routed 196.9 GB read ahead; prompts in chunks of 4096)
+ds4: copied expert cache: DONTNEED hints accepted for 200.040 GB of whole source pages (eviction is advisory)
+ds4: the copied experts pinned (200.9 GB in 18.8 s): the prompt path DMAs them in place
+ds4: 10647 of the CPU lane's 10647 experts copied into RAM (200.2 GB, 2 NUMA parts) in 123.5 s
+ds4: CUDA0 layers [0, 39] (tensor parallel 4, part 0) + head: weights 5.50 GB, experts 22.34 GB (4713 of 15360 in VRAM), caches 0.49 GB, 2974 MiB free
+ds4: CUDA1 layers [0, 40] (tensor parallel 4, part 1) + blocks 0: weights 5.63 GB, experts 24.75 GB (4841 of 15488 in VRAM), caches 0.49 GB, 574 MiB free
+ds4: CUDA2 layers [0, 41] (tensor parallel 4, part 2) + blocks 1: weights 5.63 GB, experts 24.75 GB (4841 of 15488 in VRAM), caches 0.49 GB, 574 MiB free
+ds4: CUDA3 layers [0, 42] (tensor parallel 4, part 3) + blocks 2: weights 5.63 GB, experts 24.75 GB (4841 of 15488 in VRAM), caches 0.49 GB, 574 MiB free
+ds4: 10647 routed experts on the CPU lane (200.2 GB): 10647 copied into RAM (2 NUMA parts), the rest in place in the model's files; 74 threads
+maya ds4 serve: GEN <max_new> [keys] <ids>; GENI <max_new> [keys] <pictures> <ids>; STOP, QUIT
+ds4 slots: folder /data/ds4/slots: 0 conversation(s) kept from earlier runs (0.00 GB)
+
+rocblaslt error: Cannot read "TensileLibrary_lazy_gfx906.dat" (or .zlib variant): No such file or directory
+
+rocblaslt error: Could not load "TensileLibrary_lazy_gfx906.dat"
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack-.hsaco
+ error: file not found
+hipModuleLoad failed: Kernels.so-000-gfx906-xnack+.hsaco
+ error: file not found
+maya ds4 serve: prompt read: 2048 tokens in 17.7 s; VRAM free CUDA0 2.9 of 32.0, CUDA1 0.6 of 32.0, CUDA2 0.6 of 32.0, CUDA3 0.6 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 17707 ms (115.7 tok/s), 256 generated in 13156 ms (19.46 tok/s); CPU lane 10.9% of the experts
+maya ds4 serve: drafts 123 of 145 kept; per position (kept / reached): 1: 69/79 87% 2: 37/40 92% 3: 13/14 93% 4: 3/4 75% 5: 1/1 100%
+maya ds4 serve: prompt lookup: 1 rounds, 2 of its 3 drafts kept (in the above)
+ds4 slots: saved a 2303-token conversation (0.01 GB in RAM in 0.0 s); 1 in RAM, 0 in /data/ds4/slots
+maya ds4 serve: prompt read: 2048 tokens in 12.8 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 12829 ms (159.6 tok/s), 256 generated in 9412 ms (27.20 tok/s); CPU lane 9.3% of the experts
+maya ds4 serve: drafts 167 of 193 kept; per position (kept / reached): 1: 71/76 93% 2: 47/52 90% 3: 22/28 79% 4: 13/14 93% 5: 4/4 100% 6: 1/1 100% 7: 1/1 100% 8: 1/1 100%
+maya ds4 serve: prompt lookup: 12 rounds, 49 of its 56 drafts kept (in the above)
+ds4 slots: saved a 2303-token conversation (0.01 GB in RAM in 0.0 s); 2 in RAM, 0 in /data/ds4/slots
+maya ds4 serve: prompt read: 2048 tokens in 12.5 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 12460 ms (164.4 tok/s), 256 generated in 11935 ms (21.45 tok/s); CPU lane 6.5% of the experts
+maya ds4 serve: drafts 113 of 134 kept; per position (kept / reached): 1: 62/69 90% 2: 31/38 82% 3: 14/18 78% 4: 4/4 100% 5: 2/2 100%
+ds4 slots: saved a 2303-token conversation (0.01 GB in RAM in 0.0 s); 3 in RAM, 0 in /data/ds4/slots
+maya ds4 serve: prompt read: 2048 tokens in 12.2 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 12163 ms (168.4 tok/s), 256 generated in 8968 ms (28.55 tok/s); CPU lane 3.2% of the experts
+maya ds4 serve: drafts 145 of 206 kept; per position (kept / reached): 1: 68/77 88% 2: 39/47 83% 3: 18/20 90% 4: 10/12 83% 5: 9/9 100% 6: 1/1 100% 7: 0/1 0%
+maya ds4 serve: prompt lookup: 5 rounds, 14 of its 55 drafts kept (in the above)
+ds4 slots: saved a 2303-token conversation (0.01 GB in RAM in 0.0 s); 4 in RAM, 0 in /data/ds4/slots
+maya ds4 serve: prompt read: 2048 tokens in 12.4 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 12388 ms (165.3 tok/s), 256 generated in 8714 ms (29.38 tok/s); CPU lane 2.4% of the experts
+maya ds4 serve: drafts 135 of 159 kept; per position (kept / reached): 1: 70/73 96% 2: 32/38 84% 3: 21/23 91% 4: 8/10 80% 5: 4/5 80%
+maya ds4 serve: prompt lookup: 8 rounds, 28 of its 40 drafts kept (in the above)
+ds4 slots: saved a 2303-token conversation (0.01 GB in RAM in 0.0 s); 4 in RAM, 1 in /data/ds4/slots
+maya ds4 serve: prompt read: 2048 tokens in 12.2 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 12207 ms (167.8 tok/s), 256 generated in 8905 ms (28.75 tok/s); CPU lane 2.8% of the experts
+maya ds4 serve: drafts 128 of 191 kept; per position (kept / reached): 1: 59/79 75% 2: 36/41 88% 3: 20/22 91% 4: 7/7 100% 5: 3/3 100% 6: 1/1 100% 7: 1/1 100% 8: 1/1 100%
+maya ds4 serve: prompt lookup: 4 rounds, 14 of its 30 drafts kept (in the above)
+ds4 slots: saved a 2303-token conversation (0.01 GB in RAM in 0.0 s); 4 in RAM, 2 in /data/ds4/slots
+maya ds4 serve: prompt read: 2048 tokens in 12.0 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 12049 ms (170.0 tok/s), 256 generated in 8177 ms (31.31 tok/s); CPU lane 2.0% of the experts
+maya ds4 serve: drafts 122 of 145 kept; per position (kept / reached): 1: 68/77 88% 2: 37/42 88% 3: 13/14 93% 4: 4/4 100%
+maya ds4 serve: prompt lookup: 2 rounds, 2 of its 8 drafts kept (in the above)
+ds4 slots: saved a 2303-token conversation (0.01 GB in RAM in 0.0 s); 4 in RAM, 3 in /data/ds4/slots
+maya ds4 serve: prompt read: 2048 tokens in 12.0 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 12038 ms (170.1 tok/s), 256 generated in 7487 ms (34.19 tok/s); CPU lane 2.1% of the experts
+maya ds4 serve: drafts 148 of 183 kept; per position (kept / reached): 1: 73/81 90% 2: 43/49 88% 3: 18/22 82% 4: 11/13 85% 5: 3/3 100%
+maya ds4 serve: prompt lookup: 10 rounds, 22 of its 40 drafts kept (in the above)
+ds4 slots: saved a 2303-token conversation (0.01 GB in RAM in 0.0 s); 4 in RAM, 4 in /data/ds4/slots
+maya ds4 serve: prompt read: 2048 tokens in 12.1 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 12152 ms (168.5 tok/s), 256 generated in 8704 ms (29.41 tok/s); CPU lane 2.6% of the experts
+maya ds4 serve: drafts 116 of 150 kept; per position (kept / reached): 1: 64/75 85% 2: 33/39 85% 3: 13/16 81% 4: 4/5 80% 5: 2/2 100%
+maya ds4 serve: prompt lookup: 3 rounds, 4 of its 12 drafts kept (in the above)
+ds4 slots: saved a 2303-token conversation (0.01 GB in RAM in 0.0 s); 4 in RAM, 5 in /data/ds4/slots
+maya ds4 serve: prompt read: 2048 tokens in 12.3 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 12340 ms (166.0 tok/s), 256 generated in 7889 ms (32.45 tok/s); CPU lane 2.5% of the experts
+maya ds4 serve: drafts 142 of 182 kept; per position (kept / reached): 1: 61/73 84% 2: 40/46 87% 3: 24/24 100% 4: 14/15 93% 5: 3/5 60%
+maya ds4 serve: prompt lookup: 11 rounds, 29 of its 48 drafts kept (in the above)
+ds4 slots: saved a 2303-token conversation (0.01 GB in RAM in 0.0 s); 4 in RAM, 6 in /data/ds4/slots
+maya ds4 serve: prompt read: 2048 tokens in 12.0 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 11990 ms (170.8 tok/s), 256 generated in 7579 ms (33.78 tok/s); CPU lane 2.1% of the experts
+maya ds4 serve: drafts 136 of 161 kept; per position (kept / reached): 1: 68/80 85% 2: 41/43 95% 3: 19/23 83% 4: 6/8 75% 5: 2/3 67%
+maya ds4 serve: prompt lookup: 1 rounds, 3 of its 3 drafts kept (in the above)
+ds4 slots: saved a 2303-token conversation (0.01 GB in RAM in 0.0 s); 4 in RAM, 7 in /data/ds4/slots
+maya ds4 serve: prompt read: 2048 tokens in 12.3 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 12319 ms (166.2 tok/s), 256 generated in 8263 ms (30.98 tok/s); CPU lane 2.6% of the experts
+maya ds4 serve: drafts 124 of 154 kept; per position (kept / reached): 1: 73/81 90% 2: 34/46 74% 3: 12/14 86% 4: 4/5 80% 5: 1/1 100%
+maya ds4 serve: prompt lookup: 2 rounds, 3 of its 8 drafts kept (in the above)
+ds4 slots: saved a 2303-token conversation (0.01 GB in RAM in 0.0 s); 4 in RAM, 8 in /data/ds4/slots
+maya ds4 serve: prompt read: 2048 tokens in 12.0 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 12025 ms (170.3 tok/s), 256 generated in 8089 ms (31.65 tok/s); CPU lane 1.7% of the experts
+maya ds4 serve: drafts 119 of 154 kept; per position (kept / reached): 1: 68/81 84% 2: 32/40 80% 3: 14/14 100% 4: 3/4 75% 5: 2/2 100%
+maya ds4 serve: prompt lookup: 3 rounds, 8 of its 13 drafts kept (in the above)
+ds4 slots: saved a 2303-token conversation (0.01 GB in RAM in 0.0 s); 4 in RAM, 9 in /data/ds4/slots
+maya ds4 serve: prompt read: 4096 tokens in 16.4 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 4096 tokens = 0 reused + 4096 read in 16403 ms (249.7 tok/s), 256 generated in 7315 ms (35.00 tok/s); CPU lane 1.4% of the experts
+maya ds4 serve: drafts 149 of 188 kept; per position (kept / reached): 1: 67/76 88% 2: 43/51 84% 3: 21/25 84% 4: 12/13 92% 5: 6/8 75%
+maya ds4 serve: prompt lookup: 2 rounds, 6 of its 10 drafts kept (in the above)
+ds4 slots: saved a 4351-token conversation (0.02 GB in RAM in 0.0 s); 4 in RAM, 10 in /data/ds4/slots
+maya ds4 serve: prompt read: 8192 tokens in 24.9 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 8192 tokens = 0 reused + 8192 read in 24913 ms (328.8 tok/s), 256 generated in 8491 ms (30.15 tok/s); CPU lane 0.7% of the experts
+maya ds4 serve: drafts 122 of 151 kept; per position (kept / reached): 1: 67/75 89% 2: 33/35 94% 3: 19/21 90% 4: 3/5 60% 5: 0/1 0%
+maya ds4 serve: prompt lookup: 1 rounds, 0 of its 5 drafts kept (in the above)
+ds4 slots: saved a 8447-token conversation (0.02 GB in RAM in 0.0 s); 4 in RAM, 11 in /data/ds4/slots
+maya ds4 serve: prompt read: 16384 tokens in 43.9 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 16384 tokens = 0 reused + 16384 read in 43880 ms (373.4 tok/s), 256 generated in 8423 ms (30.39 tok/s); CPU lane 0.4% of the experts
+maya ds4 serve: drafts 125 of 145 kept; per position (kept / reached): 1: 70/78 90% 2: 37/42 88% 3: 13/13 100% 4: 5/6 83% 5: 0/1 0%
+ds4 slots: saved a 16639-token conversation (0.03 GB in RAM in 0.0 s); 4 in RAM, 12 in /data/ds4/slots
+maya ds4 serve: prompt read: 32768 tokens in 77.8 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 32768 tokens = 0 reused + 32768 read in 77787 ms (421.3 tok/s), 256 generated in 8918 ms (28.70 tok/s); CPU lane 0.2% of the experts
+maya ds4 serve: drafts 125 of 176 kept; per position (kept / reached): 1: 69/84 82% 2: 34/48 71% 3: 14/19 74% 4: 7/8 88% 5: 1/1 100%
+maya ds4 serve: prompt lookup: 3 rounds, 4 of its 15 drafts kept (in the above)
+ds4 slots: saved a 33023-token conversation (0.04 GB in RAM in 0.0 s); 4 in RAM, 13 in /data/ds4/slots
+maya ds4 serve: prompt read: 2048 tokens in 12.1 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 2048 tokens = 0 reused + 2048 read in 12063 ms (169.8 tok/s), 256 generated in 8753 ms (29.25 tok/s); CPU lane 2.1% of the experts
+maya ds4 serve: drafts 112 of 142 kept; per position (kept / reached): 1: 63/77 82% 2: 33/39 85% 3: 11/12 92% 4: 4/4 100% 5: 1/1 100%
+maya ds4 serve: prompt lookup: 1 rounds, 1 of its 5 drafts kept (in the above)
+ds4 slots: saved a 2303-token conversation (0.01 GB in RAM in 0.0 s); 4 in RAM, 14 in /data/ds4/slots
+maya ds4 serve: prompt read: 4096 tokens in 17.5 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 4096 tokens = 0 reused + 4096 read in 17510 ms (233.9 tok/s), 256 generated in 8331 ms (30.73 tok/s); CPU lane 1.0% of the experts
+maya ds4 serve: drafts 119 of 138 kept; per position (kept / reached): 1: 77/86 90% 2: 30/33 91% 3: 11/12 92% 4: 1/2 50%
+ds4 slots: saved a 4351-token conversation (0.02 GB in RAM in 0.0 s); 4 in RAM, 15 in /data/ds4/slots
+maya ds4 serve: prompt read: 8192 tokens in 24.3 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 8192 tokens = 0 reused + 8192 read in 24344 ms (336.5 tok/s), 256 generated in 7279 ms (35.17 tok/s); CPU lane 0.9% of the experts
+maya ds4 serve: drafts 160 of 201 kept; per position (kept / reached): 1: 68/78 87% 2: 43/48 90% 3: 24/29 83% 4: 17/19 89% 5: 8/9 89%
+maya ds4 serve: prompt lookup: 7 rounds, 15 of its 33 drafts kept (in the above)
+ds4 slots: saved a 8447-token conversation (0.02 GB in RAM in 0.0 s); 4 in RAM, 16 in /data/ds4/slots
+maya ds4 serve: prompt read: 16384 tokens in 42.8 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 16384 tokens = 0 reused + 16384 read in 42806 ms (382.8 tok/s), 256 generated in 8705 ms (29.41 tok/s); CPU lane 0.3% of the experts
+maya ds4 serve: drafts 108 of 134 kept; per position (kept / reached): 1: 60/74 81% 2: 32/37 86% 3: 13/15 87% 4: 3/3 100% 5: 0/1 0%
+maya ds4 serve: prompt lookup: 3 rounds, 4 of its 9 drafts kept (in the above)
+ds4 slots: saved a 16639-token conversation (0.03 GB in RAM in 0.1 s); 4 in RAM, 17 in /data/ds4/slots
+maya ds4 serve: prompt read: 32768 tokens in 76.0 s; VRAM free CUDA0 2.7 of 32.0, CUDA1 0.4 of 32.0, CUDA2 0.4 of 32.0, CUDA3 0.4 of 32.0 GB before, 2.7, 0.4, 0.4, 0.4 after
+maya ds4 serve: prompt 32768 tokens = 0 reused + 32768 read in 76048 ms (430.9 tok/s), 256 generated in 9150 ms (27.98 tok/s); CPU lane 0.2% of the experts
+maya ds4 serve: drafts 129 of 182 kept; per position (kept / reached): 1: 62/77 81% 2: 38/48 79% 3: 18/18 100% 4: 8/8 100% 5: 3/4 75%
+maya ds4 serve: prompt lookup: 2 rounds, 6 of its 10 drafts kept (in the above)
+ds4 slots: saved a 33023-token conversation as the engine ended (0.04 GB in RAM in 0.1 s); 4 in RAM, 18 in /data/ds4/slots
+ds4 slots: wrote 4 conversation(s) to /data/ds4/slots; 22 there in all
