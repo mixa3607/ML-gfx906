@@ -27,6 +27,10 @@
     "MAYA_DS4_DRAFT_DEV": "1,2,3",
     "MAYA_DS4_PROMPT_SKIP": "2",
     "MAYA_DS4_SLOT_KEEP": "0",
-    "MAYA_DS4_SLOT_CAP": "4"
+    "MAYA_DS4_SLOT_CAP": "4",
+    "DS4_SKIP_UNPICKED": "1",
+    "DS4_HIP_ATTN_SWIZZLE": "1",
+    "MAYA_DS4_HC_FUSE": "2",
+    "MAYA_DS4_ROUTE_FUSE": "2"
   }
 }

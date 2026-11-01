@@ -54,7 +54,7 @@ class ConfigurationTests(unittest.TestCase):
     def test_exact_five_variants_and_baseline(self):
         self.assertEqual(list(analysis.ARMS), ['draft-cost', 'decode-trim', 'hc-mix', 'engram-cache', 'markov-q8'])
         baseline = analysis.read_json(analysis.BASE_CONFIG)
-        self.assertEqual(baseline, analysis.read_json(analysis.ACTIVE_CONFIG))
+        self.assertEqual(baseline, analysis.read_json(analysis.REFERENCE / 'maya-config.json'))
         for arm, overrides in analysis.ARMS.items():
             self.assertEqual(len(overrides), 1)
             expected = copy.deepcopy(baseline)

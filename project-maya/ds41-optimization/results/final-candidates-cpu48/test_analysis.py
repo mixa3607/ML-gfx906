@@ -49,7 +49,7 @@ class ConfigurationTests(unittest.TestCase):
         })
         self.assertEqual(analysis.ARMS['six-hc-mix'], {**analysis.ARMS['six'], 'MAYA_DS4_HC_MIX_SPLIT': '1'})
         baseline = analysis.read_json(analysis.BASE_CONFIG)
-        self.assertEqual(baseline, analysis.read_json(analysis.ACTIVE_CONFIG))
+        self.assertEqual(baseline, analysis.read_json(analysis.REFERENCE / 'maya-config.json'))
         for arm in analysis.ARMS:
             config = analysis.config_for(arm)
             expected = copy.deepcopy(baseline)

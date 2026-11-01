@@ -53,7 +53,7 @@ histories can affect small differences. No statistical-significance or
 whole-answer parity claim, automatic flag acceptance or baseline/best-tested
 change is made.
 
-## Subsequent user selection
+## Intermediate user selection
 
 Accept `MAYA_DS4_DRAFT_COST=1` and `MAYA_DS4_DECODE_TRIM=15` as individually
 selected values. Retain `DS4_ENGRAM_CACHE_MB=256` and unset/default-off
@@ -62,6 +62,12 @@ selected values. Retain `DS4_ENGRAM_CACHE_MB=256` and unset/default-off
 This is a separate user decision, not a threshold applied by the benchmark.
 The raw data and primary pooled summaries, including the slow PP32768 request,
 remain unchanged. The active baseline is not automatically updated.
+
+The final user decision supersedes that intermediate selection: retain
+**CPU48 plus the original four flags**, without draft cost, decode trim or
+HC mix/split. See the [selected baseline](../../base-params/README.md).
+Cache `256` and unset/default-off Markov Q8 are retained. Historical results
+and hash manifests are unchanged.
 
 ## Approved scope
 

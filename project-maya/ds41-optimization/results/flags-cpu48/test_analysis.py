@@ -18,7 +18,6 @@ class ConfigurationTests(unittest.TestCase):
     def test_order_and_isolated_overrides(self):
         self.assertEqual(list(analysis.ARMS), ['control', 'skip', 'swizzle', 'hcfuse', 'routefuse'])
         baseline = analysis.read_json(analysis.ROOT / 'baseline-config.json')
-        self.assertEqual(baseline, analysis.read_json(analysis.ACTIVE_CONFIG))
         self.assertEqual(baseline, analysis.read_json(analysis.REFERENCE / 'maya-config.json'))
         for arm, overrides in analysis.ARMS.items():
             config = analysis.config_for(arm)

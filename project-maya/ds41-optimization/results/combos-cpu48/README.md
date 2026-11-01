@@ -1,5 +1,16 @@
 # CPU48 combinations: two pairs and all four flags
 
+## Final selection
+
+After the [six-/seven-flag comparison](../final-candidates-cpu48/README.md),
+the user selected CPU48 plus all four flags as the final research outcome.
+The active [baseline JSON](../../base-params/maya-config.json) now matches
+[`all/maya-config.json`](all/maya-config.json) exactly: pooled PP 410.83 and
+TG 35.88 tok/s, +19.19%/+2.34% versus saved CPU48 control. Draft cost,
+decode trim and HC mix/split are not included. This subsequent explicit
+selection does not alter the historical runs, inputs or hash manifests below.
+It is not a universal optimum or the highest measured TG configuration.
+
 **Completed:** 2026-11-01 13:42:00–14:28:10 UTC, about 46 minutes from the
 first suite start through the last suite shutdown, including inter-arm gaps.
 All three runners exited with code 0. All 66 requests completed TG256 with

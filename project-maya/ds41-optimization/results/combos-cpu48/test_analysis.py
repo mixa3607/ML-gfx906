@@ -40,12 +40,24 @@ class ConfigurationTests(unittest.TestCase):
         self.assertFalse(set(pairs[0]) & set(pairs[1]))
         self.assertEqual(pairs[0] | pairs[1], analysis.ARMS['all'])
         baseline = analysis.read_json(analysis.BASE_CONFIG)
-        self.assertEqual(baseline, analysis.read_json(analysis.ACTIVE_CONFIG))
+        self.assertEqual(baseline, analysis.read_json(analysis.REFERENCE / 'maya-config.json'))
         for arm in analysis.ARMS:
             config = analysis.config_for(arm)
             expected = copy.deepcopy(baseline)
             expected['env'].update(analysis.ARMS[arm])
             self.assertEqual(config, expected)
+
+    def test_final_baseline_matches_measured_four_flags(self):
+        active = analysis.read_json(analysis.ACTIVE_CONFIG)
+        self.assertEqual(active, analysis.config_for('all'))
+        self.assertEqual(active, analysis.read_json(analysis.ROOT / 'all/maya-config.json'))
+        self.assertEqual(active['args'][active['args'].index('--cpu-threads') + 1], '48')
+        self.assertEqual(active['args'][active['args'].index('--tp') + 1], '4')
+        self.assertEqual(active['env']['DS4_ENGRAM_CACHE_MB'], '256')
+        self.assertEqual(active['env']['MAYA_DS4_SLOT_KEEP'], '0')
+        for flag in ('MAYA_DS4_DRAFT_COST', 'MAYA_DS4_DECODE_TRIM',
+                     'MAYA_DS4_HC_MIX_SPLIT', 'MAYA_DS4_MARKOV_Q8'):
+            self.assertNotIn(flag, active['env'])
 
     def test_both_fusion_aliases(self):
         env = analysis.expected_env({}, 'all')

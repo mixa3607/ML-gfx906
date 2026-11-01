@@ -1,5 +1,15 @@
 # CPU48 final candidates: six flags with and without HC mix/split
 
+## Subsequent final decision
+
+The user selected **CPU48 plus the four original flags**, without draft cost,
+decode trim or HC mix/split, as the final research outcome. The active
+[baseline](../../base-params/README.md) now matches the saved
+[`combos-cpu48/all`](../combos-cpu48/README.md) configuration. This supersedes
+the intermediate individual draft-cost/trim selection and resolves HC mix as
+not included. The report below describes the completed two-run experiment;
+all raw artifacts, inputs, scripts and hash manifests remain unchanged.
+
 ## Results
 
 Both approved runs completed on 2026-11-01 with exit code 0: `six` at
@@ -27,8 +37,9 @@ in pooled PP or TG. This does not isolate draft cost versus trim or establish
 that either flag is guaranteed harmful: both were added together, and the
 four-flag reference ran at 14:14:40–14:28:10 UTC, before these candidates.
 The control ran at 11:54:36–12:11:42 UTC. No new control, rerun, exclusion or
-additional variant was performed. HC mix remains undecided, and the active
-baseline and individually selected values remain unchanged.
+additional variant was performed. At experiment completion HC mix was still
+undecided, and the baseline and individual selections had not yet changed;
+the subsequent final decision is recorded above.
 
 ### Validation and limitations
 

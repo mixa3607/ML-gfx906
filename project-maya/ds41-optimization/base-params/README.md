@@ -6,26 +6,38 @@ See the [complete discussed flag inventory](../README.md) for classification,
 current/default values, candidate values, decision statuses and fixed or best
 tested values. Defaults are not measured optima.
 
-The [selected CPU48 baseline result](../results/cpu-threads/README.md) records
-pooled prefill 347.64 tok/s and decode 35.67 tok/s on `ds41f-ru-long`, with
-TP4, `spec=1`, disabled conversation slots and no KV reuse. CPU48 is selected
-by task agreement: +3.91% PP and +18.61% TG versus the CPU74 reference.
-CPU56 and CPU48 differ by less than 0.2% in pooled PP/TG; this selection is
-not a claim that CPU48 is a unique or universal optimum.
-The [five-arm flag block](../results/flags-cpu48/README.md) compares four
-individual flags with a fresh CPU48 control. It does not change this baseline;
-`DS4_SKIP_UNPICKED=1`, `DS4_HIP_ATTN_SWIZZLE=1`, `MAYA_DS4_HC_FUSE=2` and
-`MAYA_DS4_ROUTE_FUSE=2` are accepted as individually best-tested values in the
-inventory, not enabled here. The [combination block](../results/combos-cpu48/README.md)
-also measures two pairs and all four together against the saved control;
-it does not promote a combined configuration into this baseline.
-The [remaining top-five block](../results/top5-cpu48/README.md) separately
-tests draft-cost, trim mask 15, HC mix/split, cache 4096 and Markov Q8, using
-the saved control. By subsequent agreement, draft-cost `1` and trim `15` join
-the accepted individual values, not this active baseline. Retain cache `256`
-and unset/default-off Markov Q8; HC mix/split is undecided. The
-[two final candidates](../results/final-candidates-cpu48/README.md) test six
-selected flags together, with HC mix/split added only in the second run.
+## Final selected baseline
+
+By final task agreement, [maya-config.json](maya-config.json) selects **CPU48
+plus four flags**: `DS4_SKIP_UNPICKED=1`, `DS4_HIP_ATTN_SWIZZLE=1`,
+`MAYA_DS4_HC_FUSE=2` and `MAYA_DS4_ROUTE_FUSE=2`. It exactly matches the
+measured [all-four configuration](../results/combos-cpu48/all/maya-config.json).
+On `ds41f-ru-long`, pooled prefill is **410.83 tok/s** and decode **35.88 tok/s**:
++19.19% PP and +2.34% TG versus the saved CPU48 control (344.69/35.06).
+This is the selected combined result, not the sum of individual gains or a
+universal optimum; HC alone had higher pooled TG. The suite covers prompts
+through 32768 tokens, not the full configured 512K context.
+
+Keep Engram cache `256` and unset/default-off Markov Q8, draft cost, decode
+trim and HC mix/split. The [six-/seven-flag comparison](../results/final-candidates-cpu48/README.md)
+did not improve both pooled rates over four flags; draft cost/trim's earlier
+individual selection is superseded by this final combined choice. Old
+references are not contemporaneous controls, so this is not proof that a
+particular extra flag is always harmful. No further runs are selected.
+
+The [CPU-thread comparison](../results/cpu-threads/README.md),
+[individual flags](../results/flags-cpu48/README.md),
+[combinations](../results/combos-cpu48/README.md) and
+[top-five block](../results/top5-cpu48/README.md) retain the research history.
+This change updates the repository baseline only: no deployment, new GPU run,
+image build or publication is performed.
+
+CPU-only validation of the final selection passed: 66 tests across the
+benchmark runner and five result-analysis suites, including exact equality
+with the measured all-four config. Archived flag-result launchers still guard
+against changing their original control baseline and will refuse this new
+active config; they are not entry points for a new campaign without a new
+approved plan. CPU-only analysis uses the captured historical inputs.
 
 ## Baseline settings
 
@@ -41,6 +53,10 @@ The baseline explicitly sets:
 | --- | --- | --- |
 | `MAYA_DS4_TP_GGUF_UNEVEN` | `1` | Permit whole-quant-block expert partitions so the requested TP4 is not reduced to TP2 by the ordinary path's 128-value FFN alignment rule. |
 | `--cpu-threads` | `48` | Selected CPU48 baseline; pin the CPU lane instead of rerunning automatic thread selection. |
+| `DS4_SKIP_UNPICKED` | `1` | Stream only prompt experts picked by the chunk. |
+| `DS4_HIP_ATTN_SWIZZLE` | `1` | Enable the selected HIP attention LDS layout. |
+| `MAYA_DS4_HC_FUSE` | `2` | Enable HC fusion, including verify windows and shared-expert FFN input. |
+| `MAYA_DS4_ROUTE_FUSE` | `2` | Enable route fusion, including verify windows; retain default `DS4_AHEAD=1`. |
 | `MAYA_DS4_PROMPT_SKIP` | `2` | DeepSeek's own approximate prompt skip: full work in layers 20-39 on the last 128 tokens, subject to the active path's chunk boundaries. This is intentionally not bit-exact. |
 | `MAYA_DS4_SLOT_KEEP` | `0` | Disable conversation-slot save/load and disk spill for independent benchmark requests. |
 | `MAYA_DS4_SLOT_CAP` | `4` | Inactive while `SLOT_KEEP=0`. |
@@ -56,7 +72,7 @@ setting is added.
 - Classify exactness using the documentation, not hypothetical engine bugs.
   `MAYA_DS4_MARKOV_Q8=1` is accepted as bit-exact at the verified-answer level:
   drafter outputs may change, but the documented verified answer does not. It
-  remains a candidate and is not enabled in this baseline.
+  is not selected for the final baseline.
 - The target host has two NUMA nodes with SMT disabled. Keep `DS4_COPY_NUMA=2`.
   CPU-thread candidates 48 and 56 were measured; 48 is the selected baseline.
   A meaningful difference can warrant

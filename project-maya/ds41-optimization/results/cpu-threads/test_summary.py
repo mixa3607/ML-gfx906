@@ -23,10 +23,12 @@ launcher.CONFIG = launcher.BASELINE / 'maya-config.json'
 
 
 class SummaryTests(unittest.TestCase):
-    def test_selected_baseline_matches_cpu48(self):
+    def test_selected_baseline_retains_cpu48_arguments(self):
         active = REPO / 'project-maya/ds41-optimization/base-params/maya-config.json'
         captured = HERE / 'cpu48/maya-config.json'
-        self.assertEqual(json.loads(active.read_text()), json.loads(captured.read_text()))
+        self.assertEqual(json.loads(active.read_text())['args'], json.loads(captured.read_text())['args'])
+        control = HERE.parent / 'flags-cpu48/baseline-config.json'
+        self.assertEqual(json.loads(control.read_text()), json.loads(captured.read_text()))
 
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(dir='/tmp/opencode')
