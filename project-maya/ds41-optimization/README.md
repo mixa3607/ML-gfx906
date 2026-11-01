@@ -53,7 +53,11 @@ The [five-arm CPU48 flag block](results/flags-cpu48/README.md) measured a fresh
 control plus skip, swizzle, HC fuse and route fuse separately. By task agreement,
 their individually best-tested values are `1`, `1`, `2` and `2`, respectively.
 Per-length/per-request deltas and regressions remain recorded. The active
-baseline is unchanged, and the combination has not been tested.
+baseline is unchanged. The [combination block](results/combos-cpu48/README.md)
+measured skip+swizzle, HC+route and all four: pooled PP/TG changes versus the
+saved control are +16.42%/+1.46%, +3.72%/+4.09% and +19.19%/+2.34%,
+respectively. No fresh control or automatic combination acceptance was added;
+individual best-tested values are unchanged.
 
 ## Fixed baseline and inherited placement
 

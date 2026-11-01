@@ -54,11 +54,13 @@ By task agreement, record the following in the inventory's best-tested column:
 - `MAYA_DS4_HC_FUSE=2`
 - `MAYA_DS4_ROUTE_FUSE=2`
 
-These are accepted results of separate single-flag tests, not an automatically
-updated baseline or a tested combined configuration. The skip selection accepts
+These entries describe accepted results of separate single-flag tests, not an
+automatically updated baseline. The skip selection accepts
 the observed PP/TG tradeoff, including pooled TG -0.79% and PP16384 TG -5.87%.
-Small gains in other arms do not establish statistical significance. No new
-run or combined-speedup claim accompanies this documentation decision.
+Small gains in other arms do not establish statistical significance.
+The [separate combination block](../combos-cpu48/README.md) measures two pairs
+and all four together; those measurements do not automatically change this
+individual selection or the baseline.
 
 ## Approved scope
 

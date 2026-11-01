@@ -16,7 +16,9 @@ The [five-arm flag block](../results/flags-cpu48/README.md) compares four
 individual flags with a fresh CPU48 control. It does not change this baseline;
 `DS4_SKIP_UNPICKED=1`, `DS4_HIP_ATTN_SWIZZLE=1`, `MAYA_DS4_HC_FUSE=2` and
 `MAYA_DS4_ROUTE_FUSE=2` are accepted as individually best-tested values in the
-inventory, not enabled here. Their combination has not been tested.
+inventory, not enabled here. The [combination block](../results/combos-cpu48/README.md)
+also measures two pairs and all four together against the saved control;
+it does not promote a combined configuration into this baseline.
 
 ## Baseline settings
 
