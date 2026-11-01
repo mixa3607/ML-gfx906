@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: maya-ds41-top5-hc-mix
+  namespace: apps-ml
+  labels:
+    app.kubernetes.io/name: maya-ds41-top5-hc-mix
+spec:
+  restartPolicy: Never
+  enableServiceLinks: false
+  nodeSelector:
+    kubernetes.io/hostname: kube-worker6.arkprojects.lan
+  tolerations:
+    - key: feature.node.kubernetes.io/amd-gpu
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
+    - key: feature.node.kubernetes.io/nvidia-gpu
+      operator: Equal
+      value: "true"
+      effect: NoSchedule
+  imagePullSecrets:
+    - name: harbor-registry-pull-secret
+  containers:
+    - name: benchmark
+      image: docker.io/mixa3607/maya-gfx906@sha256:50210b2fdec9c2e36b57fe0c8de2d3a9dd2d1fb33bb99757b37f229e824d51d2
+      imagePullPolicy: IfNotPresent
+      command: ["/bin/bash", "-lc", "exec sleep infinity"]
+      securityContext:
+        privileged: true
+        runAsUser: 0
+        capabilities:
+          add: ["IPC_LOCK"]
+      resources:
+        requests:
+          cpu: "4"
+          memory: 8Gi
+        limits:
+          memory: 220Gi
+      env:
+        - name: HF_HUB_OFFLINE
+          value: "1"
+        - name: TRANSFORMERS_OFFLINE
+          value: "1"
+        - name: PYTHONDONTWRITEBYTECODE
+          value: "1"
+      volumeMounts:
+        - name: hf-cache
+          mountPath: /root/.cache/huggingface
+          readOnly: true
+        - name: prepared
+          mountPath: /prepared
+          readOnly: true
+        - name: data
+          mountPath: /data
+        - name: shm
+          mountPath: /dev/shm
+        - name: dev-kfd
+          mountPath: /dev/kfd
+        - name: dev-dri
+          mountPath: /dev/dri
+  volumes:
+    - name: hf-cache
+      persistentVolumeClaim:
+        claimName: worker6-hf-cache
+        readOnly: true
+    - name: prepared
+      persistentVolumeClaim:
+        claimName: maya-ds41
+        readOnly: true
+    - name: data
+      emptyDir:
+        sizeLimit: 8Gi
+    - name: shm
+      emptyDir:
+        medium: Memory
+        sizeLimit: 8Gi
+    - name: dev-kfd
+      hostPath:
+        path: /dev/kfd
+    - name: dev-dri
+      hostPath:
+        path: /dev/dri

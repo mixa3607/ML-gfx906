@@ -1,0 +1,50 @@
+{
+  "exe": "/opt/maya/build-hip/maya-ds4",
+  "cwd": "/opt/maya",
+  "backend": "hip",
+  "gpu": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "model_name": "deepseek-v4.1-flash",
+  "tokenizer": "/data/ds4/tokenizer",
+  "log": "/data/dspark.log",
+  "lib_dirs": [
+    "/opt/rocm/lib"
+  ],
+  "args": [
+    "--pack",
+    "/data/ds4",
+    "--gpus",
+    "0,1,2,3",
+    "--max-context",
+    "524288",
+    "--tp",
+    "4",
+    "--cpu-threads",
+    "48",
+    "--prefill-chunk",
+    "4096",
+    "--mmap-experts",
+    "off",
+    "--dspark",
+    "on",
+    "--vision",
+    "on",
+    "--expert-profile",
+    "/data/expert-profile.bin"
+  ],
+  "env": {
+    "HIP_VISIBLE_DEVICES": "1,0,3,2",
+    "DS4_ENGRAM_CACHE_MB": "256",
+    "DS4_COPY_NUMA": "2",
+    "MAYA_DS4_TP_GGUF_UNEVEN": "1",
+    "MAYA_DS4_DRAFT_DEV": "1,2,3",
+    "MAYA_DS4_PROMPT_SKIP": "2",
+    "MAYA_DS4_SLOT_KEEP": "0",
+    "MAYA_DS4_SLOT_CAP": "4",
+    "MAYA_DS4_HC_MIX_SPLIT": "1"
+  }
+}

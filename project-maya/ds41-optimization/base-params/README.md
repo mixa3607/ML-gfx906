@@ -19,6 +19,9 @@ individual flags with a fresh CPU48 control. It does not change this baseline;
 inventory, not enabled here. The [combination block](../results/combos-cpu48/README.md)
 also measures two pairs and all four together against the saved control;
 it does not promote a combined configuration into this baseline.
+The [remaining top-five block](../results/top5-cpu48/README.md) separately
+tests draft-cost, trim mask 15, HC mix/split, cache 4096 and Markov Q8, using
+the saved control without changing this baseline or accepted best-tested values.
 
 ## Baseline settings
 

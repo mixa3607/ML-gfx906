@@ -1,0 +1,151 @@
+'CTRL' + 'C' to stop watching output:
+[
+    {
+        "timestamp": 1793547633,
+        "gpu": 0,
+        "xcp": 0,
+        "hotspot_temperature": {
+            "value": 47,
+            "unit": "C"
+        },
+        "memory_temperature": {
+            "value": 46,
+            "unit": "C"
+        },
+        "gfx_clk": {
+            "value": 930,
+            "unit": "MHz"
+        },
+        "gfx": {
+            "value": 0,
+            "unit": "%"
+        },
+        "vram_used": {
+            "value": 10,
+            "unit": "MB"
+        },
+        "vram_free": {
+            "value": 32742,
+            "unit": "MB"
+        },
+        "vram_total": {
+            "value": 32752,
+            "unit": "MB"
+        },
+        "vram_percent": {
+            "value": 0.03,
+            "unit": "%"
+        }
+    },
+    {
+        "timestamp": 1793547633,
+        "gpu": 1,
+        "xcp": 0,
+        "hotspot_temperature": {
+            "value": 51,
+            "unit": "C"
+        },
+        "memory_temperature": {
+            "value": 47,
+            "unit": "C"
+        },
+        "gfx_clk": {
+            "value": 930,
+            "unit": "MHz"
+        },
+        "gfx": {
+            "value": 0,
+            "unit": "%"
+        },
+        "vram_used": {
+            "value": 10,
+            "unit": "MB"
+        },
+        "vram_free": {
+            "value": 32742,
+            "unit": "MB"
+        },
+        "vram_total": {
+            "value": 32752,
+            "unit": "MB"
+        },
+        "vram_percent": {
+            "value": 0.03,
+            "unit": "%"
+        }
+    },
+    {
+        "timestamp": 1793547633,
+        "gpu": 2,
+        "xcp": 0,
+        "hotspot_temperature": {
+            "value": 50,
+            "unit": "C"
+        },
+        "memory_temperature": {
+            "value": 49,
+            "unit": "C"
+        },
+        "gfx_clk": {
+            "value": 930,
+            "unit": "MHz"
+        },
+        "gfx": {
+            "value": 0,
+            "unit": "%"
+        },
+        "vram_used": {
+            "value": 10,
+            "unit": "MB"
+        },
+        "vram_free": {
+            "value": 32742,
+            "unit": "MB"
+        },
+        "vram_total": {
+            "value": 32752,
+            "unit": "MB"
+        },
+        "vram_percent": {
+            "value": 0.03,
+            "unit": "%"
+        }
+    },
+    {
+        "timestamp": 1793547633,
+        "gpu": 3,
+        "xcp": 0,
+        "hotspot_temperature": {
+            "value": 49,
+            "unit": "C"
+        },
+        "memory_temperature": {
+            "value": 45,
+            "unit": "C"
+        },
+        "gfx_clk": {
+            "value": 930,
+            "unit": "MHz"
+        },
+        "gfx": {
+            "value": 0,
+            "unit": "%"
+        },
+        "vram_used": {
+            "value": 10,
+            "unit": "MB"
+        },
+        "vram_free": {
+            "value": 32742,
+            "unit": "MB"
+        },
+        "vram_total": {
+            "value": 32752,
+            "unit": "MB"
+        },
+        "vram_percent": {
+            "value": 0.03,
+            "unit": "%"
+        }
+    }
+]

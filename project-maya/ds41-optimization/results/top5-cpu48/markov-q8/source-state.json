@@ -1,0 +1,27 @@
+{
+  "repository_head": "6063bdc87667c2d8f3a30e415c435e209c8366f5",
+  "arm": "markov-q8",
+  "overrides": {
+    "MAYA_DS4_MARKOV_Q8": "1"
+  },
+  "comparison_control": "../../flags-cpu48/control",
+  "fresh_control": false,
+  "input_sha256": {
+    "runner": "3d33a1da5f086414833a2ff9139979640e4b9029e372d07eaddd3974041a0018",
+    "cases": "3195a02e90078b366c00dce429652b386fe3616d879cdd25c1a6f288435b46c3",
+    "config": "5566af1bbc5040825d4a3db329827a87b09bd1d550796f879b15386e9af9c4da"
+  },
+  "script_sha256": {
+    "../scripts/run.py": "26de265630fe7befc988df8ef308206f43a316c17066bfc66b0768bdf7131036",
+    "../scripts/remote.py": "1a51129223e9f0883dad8ad2cf169239db38c65abcc3c36967dddc892330e7dc",
+    "../memory_probe.py": "3da9ec68180c0aa18772eeabcd4be1ca0dfd103423adb80dfcb7d6b937c001e9",
+    "../analysis.py": "33169b88fc791bceb6baf969fd05b1802283538ea4896d14109cb80f38cd9663",
+    "../../flags-cpu48/analysis.py": "d7fe4a18faaffe0935c4b1310f6e6340181b9502c71ce0ff85e2d1b359cb1056",
+    "../../flags-cpu48/baseline-config.json": "ee71559ddfad465301487e20d9f1fa4ef4346ee947054e4e506e4795b0b3d15e",
+    "../../cpu-threads/scripts/run.py": "b9ff797415cc8572d3927ecb7e32b46e23c6cbc2da22f019fc80879776eaa325",
+    "../../cpu-threads/scripts/remote.py": "d93d02beac6b0763783935513353dfc19dc1ca38652759334957560fc127a635",
+    "../../cpu-threads/summarize.py": "40ab588cd2f5e995ef81fb14f842af1d9e8b07a8a6839ad6c712c76d5961a2a7",
+    "../../baseline/scripts/remote.py": "8f30d2d0eae787488d93b3da493cf3837f05ed1811838280dc2e7a437ef4700a",
+    "../../baseline/scripts/pod.yaml": "caf3c8852e6e8afe194515c25e2f2c754552d62eca057b613fc9e3f1468fa576"
+  }
+}
