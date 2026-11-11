@@ -1,6 +1,15 @@
 # export STRATA_IMAGE=registry.arkprojects.space/apps/strata-gfx906:YOUR_TAG
 # export RENDER_GID=$(getent group render | cut -d: -f3)
 # docker compose -f docker-compose.example.yaml up -d
+#
+# FAMILY selects the model (entrypoint: strata launch --family).
+#   Qwen3.8, this file:  FAMILY=unsloth  MODEL=UD-Q4_K_XL
+#   ISTA Qwen packs:     FAMILY=qwen
+#   DeepSeek-V4.1-Flash: FAMILY=deepseek41  MODEL=IST-DAS-2.00bpw
+#     Needs an image built from preset.deepseek41-rocm-10.1.sh.
+#     CONTEXT=256k is the engine --max-context 262144, not a quality claim.
+#     VISION=on runs the DeepSeek tower on the GPU. There is no CPU vision.
+#     STRATA_SET: "dspark=none profile-readonly=on"
 
 services:
   strata:

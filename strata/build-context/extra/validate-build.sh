@@ -23,4 +23,14 @@ for component in "${components[@]}"; do
             exit 1
         fi
     done
+    # Present only in an image built with STRATA_BUILD_DSV41=1. The Qwen image has no such file.
+    if [ -e "$component/strata-dsv41" ]; then
+        binary="$component/strata-dsv41"
+        [ -x "$binary" ] || { echo "missing $binary" >&2; exit 1; }
+        dependencies="$(ldd "$binary" || true)"
+        if [[ "$dependencies" == *"not found"* ]]; then
+            printf '%s:\n%s\n' "$binary" "$dependencies" >&2
+            exit 1
+        fi
+    fi
 done

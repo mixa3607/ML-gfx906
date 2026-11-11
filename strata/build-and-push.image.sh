@@ -17,6 +17,7 @@ source ../.build/build-common.sh
 : "${STRATA_CMAKE_HIP_FLAGS:=""}"
 : "${STRATA_CCACHE_MAXSIZE:="2G"}"
 : "${STRATA_PATCH:="v0.2.3.1.patch"}"
+: "${STRATA_BUILD_DSV41:="0"}"
 : "${STRATA_IS_RELEASE:="0"}"
 : "${STRATA_PUSH:="1"}"
 : "${STRATA_PRESET_NAME:="${STRATA_BRANCH}-rocm-${STRATA_ROCM_VERSION}"}"
@@ -53,6 +54,7 @@ function build {
   print INFO "STRATA_BRANCH:   ${STRATA_BRANCH}"
   print INFO "STRATA_COMMIT:   ${STRATA_COMMIT}"
   print INFO "STRATA_PATCH:    ${STRATA_PATCH}"
+  print INFO "BUILD_DSV41:     ${STRATA_BUILD_DSV41}"
   print INFO "ROCM_ARCH:       ${ROCM_ARCH}"
   print INFO "ROCM_VERSION:    ${STRATA_ROCM_VERSION}"
   print INFO "CMAKE_HIP_FLAGS: ${STRATA_CMAKE_HIP_FLAGS}"
@@ -76,6 +78,7 @@ function build {
     --build-arg STRATA_BRANCH="${STRATA_BRANCH}"
     --build-arg STRATA_COMMIT="${STRATA_COMMIT}"
     --build-arg STRATA_PATCH="${STRATA_PATCH}"
+    --build-arg STRATA_BUILD_DSV41="${STRATA_BUILD_DSV41}"
     --build-arg CMAKE_HIP_FLAGS="${STRATA_CMAKE_HIP_FLAGS}"
     --build-arg CCACHE_MAXSIZE="${STRATA_CCACHE_MAXSIZE}"
     --progress plain

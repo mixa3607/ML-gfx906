@@ -49,13 +49,15 @@ FROM rocm_base AS build_strata
 ARG ROCM_ARCH
 ARG CMAKE_HIP_FLAGS
 ARG CCACHE_MAXSIZE
+ARG STRATA_BUILD_DSV41="0"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends build-essential cmake ninja-build ccache && \
     rm -rf /var/lib/apt/lists/*
 COPY --from=files_strata /opt/strata /opt/strata
 
-ENV CCACHE_DIR=/ccache CCACHE_MAXSIZE=${CCACHE_MAXSIZE}
+ENV CCACHE_DIR=/ccache CCACHE_MAXSIZE=${CCACHE_MAXSIZE} \
+    STRATA_BUILD_DSV41=${STRATA_BUILD_DSV41}
 RUN --mount=type=cache,target=/ccache <<'EOF_DOCKERFILE' bash
 set -eo pipefail
 
@@ -87,8 +89,28 @@ CMAKE_ARGS=(
   -DSTRATA_BUILD_TESTS=OFF
   -DSTRATA_GGML_DIR="$PWD/third_party/llama.cpp"
 )
+# DeepSeek is its own executable. The flag stays off unless the build asks, so
+# the Qwen engine configure is the one this image already used.
+if [ "${STRATA_BUILD_DSV41:-0}" = "1" ]; then
+  CMAKE_ARGS+=(
+    -DSTRATA_BUILD_DSV41=ON
+    -DSTRATA_NATIVE_EXPERTS=ON
+    -DSTRATA_BUILD_ID="$(cut -c1-12 SOURCE_COMMIT 2>/dev/null || echo unknown)"
+  )
+fi
 cmake -S . -B build -G Ninja "${CMAKE_ARGS[@]}"
 cmake --build build --target strata --parallel "$(nproc)"
+if [ "${STRATA_BUILD_DSV41:-0}" = "1" ]; then
+  cmake --build build --target strata-dsv41 --parallel "$(nproc)"
+  if [ ! -x build/strata-dsv41 ]; then
+    echo "strata-dsv41 was not linked" >&2
+    exit 1
+  fi
+  grep -a -q 'amdgcn-amd-amdhsa--gfx906' build/strata-dsv41 || {
+    echo "strata-dsv41 is missing amdgcn-amd-amdhsa--gfx906" >&2
+    exit 1
+  }
+fi
 
 CMAKE_ARGS=(
   "${CMAKE_COMMON_ARGS[@]}"
@@ -109,6 +131,9 @@ cmake --build build-vision-hip --target strata-vision --parallel "$(nproc)"
 
 mkdir -p engine
 cp build/strata build-vision/bin/strata-vision build-vision-hip/bin/strata-vision-hip engine/
+if [ "${STRATA_BUILD_DSV41:-0}" = "1" ]; then
+  cp build/strata-dsv41 engine/
+fi
 
 # Let upstream setup reuse the precompiled engines instead of rebuilding them.
 python3 - <<'PY'
@@ -137,6 +162,8 @@ EOF_DOCKERFILE
 
 RUN build_id="$(cat SOURCE_COMMIT 2>/dev/null || echo unknown)" && \
     python3 packaging/stage_tuning.py --stage engine --archs "$ROCM_ARCH" --rocm "$ROCM_PATH" && \
+    dsv41_args="" && \
+    if [ -x engine/strata-dsv41 ]; then dsv41_args="--require-dsv41"; fi && \
     python3 packaging/package_engine.py \
       --src engine --backend hip --arch "$ROCM_ARCH" \
       --version "$(python3 -c 'import setup; print(setup.source_version())')" \
@@ -144,7 +171,8 @@ RUN build_id="$(cat SOURCE_COMMIT 2>/dev/null || echo unknown)" && \
       --build-id "$build_id" \
       --allow-lib libhipblas.so.3 \
       --allow-lib librocblas.so.5 \
-      --allow-lib libamdhip64.so.7 && \
+      --allow-lib libamdhip64.so.7 \
+      $dsv41_args && \
     mkdir -p /out/seed/third_party/llama.cpp/ggml && \
     cp third_party/llama.cpp/ggml/CMakeLists.txt /out/seed/third_party/llama.cpp/ggml/ && \
     cp -a third_party/llama.cpp/gguf-py /out/seed/third_party/llama.cpp/
