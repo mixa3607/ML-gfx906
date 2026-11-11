@@ -34,3 +34,7 @@ for component in "${components[@]}"; do
         fi
     fi
 done
+
+# The monitor's disk reading uses the system Python. The venv has its own
+# psutil; this image also installs the Ubuntu python3-psutil package.
+/usr/bin/python3 -c 'import psutil'

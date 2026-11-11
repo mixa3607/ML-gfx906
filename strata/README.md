@@ -64,10 +64,18 @@ merged commit. Keep `STRATA_BUILD_DSV41=1`.
 
 ## Run
 
-The entrypoint is the one shipped in the Strata tree
-(`docker/entrypoint.sh`). It runs `strata launch` and listens on port 8080.
-`strata launch` starts `serve/server.py` in front of the engine that
-`FAMILY` selects.
+The entrypoint is `gfx906-entrypoint.sh`. It stamps `"backend": "hip"` onto a
+run config already stored on the volume, then runs the entrypoint shipped in
+the Strata tree (`docker/entrypoint.sh`). That runs `strata launch` and
+listens on port 8080. `strata launch` starts `serve/server.py` in front of
+the engine that `FAMILY` selects.
+
+`GPUS` is also written into that config. `GPUS=0,1` becomes `"gpu": [0, 1]`.
+`GPUS=0` becomes `"gpu": 0`. Empty or `all` leaves the card list as it is.
+The monitor then reads load, VRAM, temperature, power and the PCIe link from
+the amdgpu sysfs files. This image installs Ubuntu `python3-psutil` from the
+Tsinghua apt mirror, so disk read and write are filled too. The default
+lives only in this gfx906 image.
 
 [upstream Docker documentation](https://github.com/Niko1221/Strata/blob/v0.2.3.1/docs/DOCKER.md).
 

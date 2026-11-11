@@ -10,6 +10,8 @@
 #     CONTEXT=256k is the engine --max-context 262144, not a quality claim.
 #     VISION=on runs the DeepSeek tower on the GPU. There is no CPU vision.
 #     STRATA_SET: "dspark=none profile-readonly=on"
+# The gfx906 entrypoint sets the run config's backend to hip.
+# gpu comes from GPUS: "0,1" is [0, 1], and one index stays one index.
 
 services:
   strata:

@@ -12,9 +12,28 @@ ARG CCACHE_MAXSIZE="2G"
 ############# Base image #############
 FROM ${ROCM_IMAGE} AS rocm_base
 
-RUN apt-get update && \
+# Ubuntu packages come from the Tsinghua mirror. The gfx906 apt repo is left
+# in the image; if that repo refuses the connection, the update is retried
+# without it and the source file is put back.
+RUN set -eu; \
+    for f in /etc/apt/sources.list /etc/apt/sources.list.d/*; do \
+      [ -f "$f" ] || continue; \
+      sed -i \
+        -e 's|http://archive.ubuntu.com/ubuntu|https://mirrors.tuna.tsinghua.edu.cn/ubuntu|g' \
+        -e 's|http://security.ubuntu.com/ubuntu|https://mirrors.tuna.tsinghua.edu.cn/ubuntu|g' \
+        "$f"; \
+    done; \
+    if ! apt-get update; then \
+      if [ -f /etc/apt/sources.list.d/gfx906.sources ]; then \
+        mv /etc/apt/sources.list.d/gfx906.sources /tmp/gfx906.sources.bak; \
+        apt-get update; \
+        mv /tmp/gfx906.sources.bak /etc/apt/sources.list.d/gfx906.sources; \
+      else \
+        exit 1; \
+      fi; \
+    fi; \
     apt-get install -y --no-install-recommends \
-      ca-certificates libatomic1 libgomp1 python3 tini git python3-venv && \
+      ca-certificates libatomic1 libgomp1 python3 python3-psutil tini git python3-venv && \
     rm -rf /var/lib/apt/lists/*
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -51,7 +70,16 @@ ARG CMAKE_HIP_FLAGS
 ARG CCACHE_MAXSIZE
 ARG STRATA_BUILD_DSV41="0"
 
-RUN apt-get update && \
+RUN set -eu; \
+    if ! apt-get update; then \
+      if [ -f /etc/apt/sources.list.d/gfx906.sources ]; then \
+        mv /etc/apt/sources.list.d/gfx906.sources /tmp/gfx906.sources.bak; \
+        apt-get update; \
+        mv /tmp/gfx906.sources.bak /etc/apt/sources.list.d/gfx906.sources; \
+      else \
+        exit 1; \
+      fi; \
+    fi; \
     apt-get install -y --no-install-recommends build-essential cmake ninja-build ccache && \
     rm -rf /var/lib/apt/lists/*
 COPY --from=files_strata /opt/strata /opt/strata
@@ -185,7 +213,7 @@ WORKDIR /opt/strata/terminal
 COPY --from=files_strata /opt/strata /opt/strata/terminal
 COPY --from=build_strata /out/ /opt/strata/
 COPY extra/ /opt/strata/
-RUN /opt/strata/install-python-deps.sh && /opt/strata/validate-build.sh
+RUN chmod +x /opt/strata/gfx906-entrypoint.sh && /opt/strata/install-python-deps.sh && /opt/strata/validate-build.sh
 
 ENV STRATA_COMPONENTS_DIR=/opt/strata/components \
     STRATA_INSTALL_DIR=/data/install \
@@ -199,5 +227,5 @@ ENV STRATA_COMPONENTS_DIR=/opt/strata/components \
 EXPOSE 8080
 VOLUME ["/data"]
 HEALTHCHECK --interval=30s --timeout=8s --start-period=2h --retries=3 CMD ["/opt/strata/terminal/docker/healthcheck.sh"]
-ENTRYPOINT ["/usr/bin/tini", "--", "/opt/strata/terminal/docker/entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/tini", "--", "/opt/strata/gfx906-entrypoint.sh"]
 CMD ["run"]
