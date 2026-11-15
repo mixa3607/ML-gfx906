@@ -36,15 +36,16 @@ docker run --rm \
 
 Environment variables:
 
-| Variable                              | Description                                                                                                                        |
-| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `PERSISTENCE_PATH`                    | Copy `models`, `custom_nodes`, `input`, `output` there; use it as `--base-directory` and store the SQLite DB                       |
-| `VENV_NAME`                           | Create/activate a virtual environment (with `--system-site-packages`) at `/data/<venv>` (with persistence) or `/comfyui/<venv>`    |
-| `BOOTSTRAP_ONLY`                      | Set to `1` to only prepare persistence/venv and exit without starting ComfyUI                                                      |
-| `PYTORCH_TUNABLEOP_ENABLED`           | Default `1`: use saved TunableOp algorithm selections when available                                                               |
-| `PYTORCH_TUNABLEOP_TUNING`            | Default `0`: do not search for new algorithms; set to `1` for a tuning session                                                     |
-| `PYTORCH_TUNABLEOP_HIPBLASLT_ENABLED` | Default `0`: exclude hipBLASLt candidates, whose installed kernels do not support gfx906                                           |
-| `PYTORCH_TUNABLEOP_FILENAME`          | Default `/data/tunableop_results.csv`: base path for persistent tuning results; PyTorch adds the visible GPU ordinal before `.csv` |
+| Variable                                 | Description                                                                                                                        |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `PERSISTENCE_PATH`                       | Copy `models`, `custom_nodes`, `input`, `output` there; use it as `--base-directory` and store the SQLite DB                       |
+| `VENV_NAME`                              | Create/activate a virtual environment (with `--system-site-packages`) at `/data/<venv>` (with persistence) or `/comfyui/<venv>`    |
+| `BOOTSTRAP_ONLY`                         | Set to `1` to only prepare persistence/venv and exit without starting ComfyUI                                                      |
+| `PYTORCH_TUNABLEOP_ENABLED`              | Default `1`: use saved TunableOp algorithm selections when available                                                               |
+| `PYTORCH_TUNABLEOP_TUNING`               | Default `0`: do not search for new algorithms; set to `1` for a tuning session                                                     |
+| `PYTORCH_TUNABLEOP_HIPBLASLT_ENABLED`    | Default `0`: exclude hipBLASLt candidates, whose installed kernels do not support gfx906                                           |
+| `PYTORCH_TUNABLEOP_ROTATING_BUFFER_SIZE` | Default `0`: disabled because cause exceptions on gfx906                                                                           |
+| `PYTORCH_TUNABLEOP_FILENAME`             | Default `/data/tunableop_results.csv`: base path for persistent tuning results; PyTorch adds the visible GPU ordinal before `.csv` |
 
 Behavior:
 
