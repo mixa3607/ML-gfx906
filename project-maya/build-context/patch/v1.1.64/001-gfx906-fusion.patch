@@ -5,7 +5,7 @@ Preserve every startup parity check and the logical-32 wave64 compatibility.
 diff --git a/src/ds4/ds4_model.cu b/src/ds4/ds4_model.cu
 --- a/src/ds4/ds4_model.cu
 +++ b/src/ds4/ds4_model.cu
-@@ -3244,6 +3244,21 @@ struct Model::Impl {
+@@ -3695,6 +3695,21 @@ struct Model::Impl {
                      if (!gg::q8_batch_check(id, err)) return false;
              }
          }
@@ -27,7 +27,7 @@ diff --git a/src/ds4/ds4_model.cu b/src/ds4/ds4_model.cu
          if (const char* v = ds4_env("DS4_HC_FUSE")) {   // (MAYA_DS4_HC_FUSE)
              if (std::strcmp(v, "1") != 0 && std::strcmp(v, "2") != 0 && std::strcmp(v, "0") != 0) {
                  err = std::string("DS4_HC_FUSE=") + v + ": 2, 1 or 0";
-@@ -3252,7 +3267,7 @@ struct Model::Impl {
+@@ -3703,7 +3718,7 @@ struct Model::Impl {
              hc_fuse = std::strcmp(v, "1") == 0 || std::strcmp(v, "2") == 0;
              hc_fuse_win = std::strcmp(v, "2") == 0;
  #ifdef STRATA_HIP_WAVE64
@@ -36,7 +36,7 @@ diff --git a/src/ds4/ds4_model.cu b/src/ds4/ds4_model.cu
                  err = std::string("DS4_HC_FUSE=") + v + " on a wave64 build";
                  return false;
              }
-@@ -3315,7 +3330,7 @@ struct Model::Impl {
+@@ -3766,7 +3781,7 @@ struct Model::Impl {
              }
              decode_trim = (int) b;
  #ifdef STRATA_HIP_WAVE64
@@ -45,7 +45,7 @@ diff --git a/src/ds4/ds4_model.cu b/src/ds4/ds4_model.cu
                  err = std::string("DS4_DECODE_TRIM=") + v + ": bits 1 / 2 on a wave64 build";
                  return false;
              }
-@@ -3341,7 +3356,7 @@ struct Model::Impl {
+@@ -3792,7 +3807,7 @@ struct Model::Impl {
              route_fuse = std::strcmp(v, "1") == 0 || std::strcmp(v, "2") == 0;
              route_fuse_win = std::strcmp(v, "2") == 0;
  #ifdef STRATA_HIP_WAVE64
