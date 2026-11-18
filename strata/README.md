@@ -17,4 +17,4 @@ export STRATA_CMAKE_HIP_FLAGS="-mllvm -amdgpu-sched-strategy=max-ilp"
 
 ## Run
 
-[upstream Docker documentation](https://github.com/Niko1221/Strata/blob/v0.2.3.1/docs/DOCKER.md).
+[upstream Docker documentation](https://github.com/Niko1221/Strata/blob/v0.2.15/docs/DOCKER.md).

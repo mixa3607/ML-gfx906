@@ -3,7 +3,7 @@
 ARG ROCM_IMAGE="docker.io/mixa3607/rocm-gfx906:10.1-complete"
 ARG ROCM_ARCH="gfx906"
 ARG STRATA_REPO="https://github.com/Niko1221/Strata.git"
-ARG STRATA_BRANCH="v0.2.3.1"
+ARG STRATA_BRANCH="v0.2.15"
 ARG STRATA_COMMIT=""
 ARG STRATA_PATCH="empty.patch"
 ARG CMAKE_HIP_FLAGS=""
@@ -42,6 +42,8 @@ EOF
 
 COPY patch/${STRATA_PATCH} /tmp/strata.patch
 RUN git apply --allow-empty /tmp/strata.patch && rm -rf .git bench/results/ docs/
+# Downloads llama.cpp into third_party/llama.cpp for the release trees that still
+# need it; a no-op on v0.2.15, which vendors its ggml and llama trees.
 RUN python3 -c 'import setup; setup.get_llama_cpp()'
 
 ############# Build #############
@@ -80,21 +82,32 @@ CMAKE_HIP_ARGS=(
   -DCMAKE_PREFIX_PATH="$ROCM_PATH"
 )
 
+# v0.2.15 vendors third_party/strata-ggml and third_party/strata-llama and
+# setup.get_llama_cpp() downloads nothing any more, so third_party/llama.cpp only
+# exists for the older release trees (v0.2.3.1 and before). Pass the override
+# only when the tree is there: pointing -DSTRATA_GGML_DIR / -DLLAMA_DIR at a
+# directory that is never created fails the configure step.
+LLAMA_OVERRIDE="$PWD/third_party/llama.cpp"
+
 CMAKE_ARGS=(
   "${CMAKE_HIP_ARGS[@]}"
   -DSTRATA_HIP_GFX906=ON
   -DSTRATA_ENABLE_HIP=OFF
   -DSTRATA_BUILD_TESTS=OFF
-  -DSTRATA_GGML_DIR="$PWD/third_party/llama.cpp"
 )
+if [ -f "$LLAMA_OVERRIDE/ggml/CMakeLists.txt" ]; then
+  CMAKE_ARGS+=(-DSTRATA_GGML_DIR="$LLAMA_OVERRIDE")
+fi
 cmake -S . -B build -G Ninja "${CMAKE_ARGS[@]}"
 cmake --build build --target strata --parallel "$(nproc)"
 
 CMAKE_ARGS=(
   "${CMAKE_COMMON_ARGS[@]}"
   -DSTRATA_VISION_CUDA=OFF
-  -DLLAMA_DIR="$PWD/third_party/llama.cpp"
 )
+if [ -f "$LLAMA_OVERRIDE/ggml/CMakeLists.txt" ]; then
+  CMAKE_ARGS+=(-DLLAMA_DIR="$LLAMA_OVERRIDE")
+fi
 cmake -S tools/vision -B build-vision -G Ninja "${CMAKE_ARGS[@]}"
 cmake --build build-vision --target strata-vision --parallel "$(nproc)"
 
@@ -102,8 +115,10 @@ CMAKE_ARGS=(
   "${CMAKE_HIP_ARGS[@]}"
   -DSTRATA_VISION_HIP=ON
   -DSTRATA_VISION_HIP_ARCHS="$ROCM_ARCH"
-  -DLLAMA_DIR="$PWD/third_party/llama.cpp"
 )
+if [ -f "$LLAMA_OVERRIDE/ggml/CMakeLists.txt" ]; then
+  CMAKE_ARGS+=(-DLLAMA_DIR="$LLAMA_OVERRIDE")
+fi
 cmake -S tools/vision -B build-vision-hip -G Ninja "${CMAKE_ARGS[@]}"
 cmake --build build-vision-hip --target strata-vision --parallel "$(nproc)"
 
@@ -143,11 +158,14 @@ RUN build_id="$(cat SOURCE_COMMIT 2>/dev/null || echo unknown)" && \
       --variant "$ROCM_ARCH" --out /out/components/engine \
       --build-id "$build_id" \
       --allow-lib libhipblas.so.3 \
+      --allow-lib libhipblaslt.so.1 \
       --allow-lib librocblas.so.5 \
       --allow-lib libamdhip64.so.7 && \
-    mkdir -p /out/seed/third_party/llama.cpp/ggml && \
-    cp third_party/llama.cpp/ggml/CMakeLists.txt /out/seed/third_party/llama.cpp/ggml/ && \
-    cp -a third_party/llama.cpp/gguf-py /out/seed/third_party/llama.cpp/
+    if [ -f third_party/llama.cpp/ggml/CMakeLists.txt ]; then \
+      mkdir -p /out/seed/third_party/llama.cpp/ggml && \
+      cp third_party/llama.cpp/ggml/CMakeLists.txt /out/seed/third_party/llama.cpp/ggml/ && \
+      cp -a third_party/llama.cpp/gguf-py /out/seed/third_party/llama.cpp/; \
+    fi
 
 ############# Copy and install all #############
 FROM rocm_base AS final
