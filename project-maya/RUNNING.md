@@ -1,9 +1,5 @@
 # Running Maya
 
-The image contains prebuilt HIP text engines (`maya`, `maya-ds4`), the CPU
-`maya-vision` helper, upstream tools and their Python dependencies. Model
-weights are not part of the image.
-
 Use the same cache and data mount paths during preparation and serving. The
 language model is read from a Hugging Face cache mounted where the HF library
 expects it, `/root/.cache/huggingface`; `/data` is writable persistent storage.

@@ -103,7 +103,7 @@ CMAKE_ARGS=(
   -DSTRATA_GGML_DIR="$PWD/third_party/llama.cpp"
 )
 cmake -S . -B build-hip -G Ninja "${CMAKE_ARGS[@]}"
-cmake --build build-hip --target maya maya-ds4 maya-mm3 --parallel "${MAYA_BUILD_JOBS:-$(nproc)}"
+cmake --build build-hip --target maya maya-ds4 maya-mm3 maya-hy4 --parallel "${MAYA_BUILD_JOBS:-$(nproc)}"
 
 CMAKE_ARGS=(
   "${CMAKE_COMMON_ARGS[@]}"
@@ -129,7 +129,7 @@ meta = {
   'gpu_ids': [0],
   'llama': str(Path('third_party/llama.cpp').resolve()),
   'lib_dirs': [rocm + '/lib'],
-  'targets': ['maya', 'maya-ds4', 'maya-mm3'],
+  'targets': ['maya', 'maya-ds4', 'maya-mm3', 'maya-hy4'],
 }
 Path('build-hip/MAYA-BUILD.json').write_text(json.dumps(meta, indent=1) + '\n')
 PY
@@ -141,7 +141,7 @@ ENV CMAKE_GENERATOR=Ninja
 RUN python3 -m venv .venv
 ENV PATH="/opt/maya/.venv/bin:${PATH}"
 COPY --from=files_maya /opt/maya /opt/maya
-COPY --from=build_maya /opt/maya/build-hip/maya /opt/maya/build-hip/maya-ds4 /opt/maya/build-hip/maya-mm3 /opt/maya/build-hip/MAYA-BUILD.json ./build-hip/
+COPY --from=build_maya /opt/maya/build-hip/maya /opt/maya/build-hip/maya-ds4 /opt/maya/build-hip/maya-mm3 /opt/maya/build-hip/maya-hy4 /opt/maya/build-hip/MAYA-BUILD.json ./build-hip/
 COPY --from=build_maya /opt/maya/build-vision-cpu/bin/maya-vision ./build-vision-cpu/bin/
 COPY extra/ /opt/maya/
 RUN /opt/maya/install-python-deps.sh && /opt/maya/validate-build.sh
