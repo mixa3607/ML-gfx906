@@ -32,7 +32,7 @@ jobs:
             profile_suffix: ""
             rocm_version: "10.1"
     env:
-      BUILD_REF: "20261122014204"
+      BUILD_REF: "20261123223821"
       MAYA_REPO: "${{ matrix.build.repo }}"
       MAYA_LATEST_TYPE: "${{ matrix.build.latest_type }}"
       MAYA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
