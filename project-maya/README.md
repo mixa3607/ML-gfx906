@@ -15,7 +15,7 @@ Requires Docker Buildx and the [ROCm base image](../rocm/README.md).
 Log in to the destination registry and run from this directory:
 
 ```bash
-source ./preset.v1.1.72-rocm-10.1.sh
+source ./preset.v1.1.75-rocm-10.1.sh
 export MAYA_IMAGE=registry.example.com/apps/maya-gfx906
 ./build-and-push.image.sh
 ```
