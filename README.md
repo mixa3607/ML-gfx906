@@ -49,5 +49,8 @@ sudo apt-get update
 | ComfyUI                 | ComfyUI                                        | image        | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/comfyui-build.yaml?style=flat-square)        | [readme](./comfyui/README.md)                 |
 | ROCm Bandwidth Test     | ROCm Bandwidth Test                            | deb          | Paused                                                                                                                                                  | [readme](./rocm-bandwidth-test/README.md)     |
 | vLLM                    | vLLM                                           | image        | Paused                                                                                                                                                  | [readme](./vllm-v2/README.md)                 |
-| ROCm tensile            | gfx906 tensile files                           | files        | Deprecated                                                                                                                                              | [readme](./rocm-tensile/readme.md)            |
+| ROCm tensile            | gfx906 tensile files                           | files        | Deprecated  | [readme](./rocm-tensile/readme.md)            |
+| Strata                  | Strata engine                                  | image        | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/shjszwh/ML-gfx906/strata-build.yaml?style=flat-square)         | [readme](./strata/README.md)                  |
 | Project Maya            | Project Maya                                   | image        | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mixa3607/ML-gfx906/maya-build.yaml?style=flat-square)           | [readme](./project-maya/README.md)            |
+
+> AI生成
