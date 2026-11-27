@@ -26,3 +26,69 @@ index ee9b22599..d55092174 100644
  #define cudaDeviceGetStreamPriorityRange hipDeviceGetStreamPriorityRange
  #define cudaDriverGetVersion hipDriverGetVersion
  #define cudaRuntimeGetVersion hipRuntimeGetVersion
+diff --git a/engine/src/hy4flash/run/hy4_gpu.h b/engine/src/hy4flash/run/hy4_gpu.h
+--- a/engine/src/hy4flash/run/hy4_gpu.h
++++ b/engine/src/hy4flash/run/hy4_gpu.h
+@@ -351,6 +351,21 @@ __device__ __forceinline__ const void* shfl_ptr(const void* p, int src) {
+ #define HY4_MMA 1
+ #endif
+ #endif
++#if defined(__gfx906__) || defined(__gfx908__) || defined(__gfx90a__) || (defined(STRATA_HIP_GFX906) && STRATA_HIP_GFX906)
++// CDNA1/2 (MI50/MI60/Radeon VII gfx906, MI100 gfx908, MI200 gfx90a) run 64-lane
++// wavefronts: sdot4/fdot2 are there, WMMA matrix cores are not, so every dispatch
++// goes to the RDNA2-style simple kernels (HY4_MMA 0), like the gfx103x build.
++// STRATA_HIP_GFX906 (a CMake compile definition on the whole TU) makes this true
++// in the HOST pass too: __gfx906__ alone is only defined in the device pass, and
++// a host that still sees HY4_MMA 1 reaches WMMA launchers (k_gemm, launch_moe
++// WMMA, k_attend_wmma) whose kernels the device pass never compiled — the
++// runtime hy4_is_rdna2() route covers most dispatch sites but not all of them.
++// HY4_RDNA2 stays 0: it marks gfx10 specifics, not the no-WMMA dispatch (which
++// checks !HY4_MMA directly); the wmma_f16() stub under !HY4_DEV_WMMA would
++// otherwise compute nothing and silently produce garbage output.
++#undef HY4_MMA
++#define HY4_MMA 0
++#endif
+ #if defined(__gfx1200__) || defined(__gfx1201__)
+ #define HY4_GFX12 1
+ #else
+@@ -369,6 +384,22 @@ __device__ __forceinline__ const void* shfl_ptr(const void* p, int src) {
+ #include <hip/hip_fp16.h>
+ #include <hip/hip_runtime.h>
+ 
++#if defined(__gfx906__) || defined(__gfx908__) || defined(__gfx90a__)
++// CDNA wave64: the same "logical 32-lane half-wave" contract the Strata engine uses
++// (strata_hip.h). A bare two-argument shuffle defaults to width 32 (the caller's own
++// 32-lane half of the 64-lane wavefront); a width the caller gives wins. The width is
++// picked by argument count (HY4_SHFL_W: 3rd argument when there is one, else 32), and
++// the shuffle macros are self-referential on purpose: the name inside the expansion is
++// the real HIP function (a macro never expands its own name), so the real overloaded
++// function is called with (var, mask, width) either way.
++#define HY4_SHFL_W(...) HY4_SHFL_W_I(__VA_ARGS__, 32, 32)
++#define HY4_SHFL_W_I(_1, _2, _3, ...) _3
++#define __shfl(v, o, ...) __shfl(v, o, HY4_SHFL_W(v, o, ##__VA_ARGS__))
++#define __shfl_xor(v, o, ...) __shfl_xor(v, o, HY4_SHFL_W(v, o, ##__VA_ARGS__))
++#define __shfl_up(v, d, ...) __shfl_up(v, d, HY4_SHFL_W(v, d, ##__VA_ARGS__))
++#define __shfl_down(v, d, ...) __shfl_down(v, d, HY4_SHFL_W(v, d, ##__VA_ARGS__))
++#endif
++
+ #if defined(_WIN32)
+ #include <cstdlib>
+ namespace hy4 {
+@@ -401,11 +432,16 @@ inline bool hy4_is_rdna2() {
+ #if HY4_RDNA2
+     return true;
+ #else
++    // The "no-WMMA kernel set" runtime predicate: true on RDNA2 (gfx10, no WMMA
++    // instructions) and on CDNA1/2 (gfx906 gfx908 gfx90a: wave64, no WMMA f16
++    // path compiled here) — every dispatch site then picks the sdot4/fdot2
++    // kernels, which work on both.
+     static int cached = -1;
+     if (cached < 0) {
+         hipDeviceProp_t dp{};
+         if (hipGetDeviceProperties(&dp, 0) == hipSuccess)
+-            cached = (std::strncmp(dp.gcnArchName, "gfx10", 5) == 0) ? 1 : 0;
++            cached = (std::strncmp(dp.gcnArchName, "gfx10", 5) == 0 ||
++                      std::strncmp(dp.gcnArchName, "gfx90", 5) == 0) ? 1 : 0;
+         else
+             cached = 0;
+     }

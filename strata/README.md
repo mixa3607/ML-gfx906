@@ -39,7 +39,9 @@ peer-access code added after `v0.2.16` uses
 (`engine/src/core/peer_experts.cpp`). It also keeps `strata-hy4`'s GPU sources
 (`*.hip.cpp`, HIP code already) from being handed to nvcc on gfx906: with
 `STRATA_HIP_GFX906` the `STRATA_ENABLE_CUDA` flag that selects them would pick
-`LANGUAGE CUDA` (`engine/CMakeLists.txt:968`). `build-context/patch/empty.patch`
+`LANGUAGE CUDA` (`engine/CMakeLists.txt:968`). The third hunk is
+`engine/src/hy4flash/run/hy4_gpu.h`, the Hy4-Flash kernel routing for gfx906
+(see "Hy4-Flash engine" below). `build-context/patch/empty.patch`
 is for a release that needs none; a release that needs another one gets a patch
 file named after it and a preset bump.
 
@@ -52,9 +54,13 @@ engine's `components/engine/` — the layout upstream's release images use. `0`
 builds and ships `strata` alone.
 
 The engine is built, packaged and start-checked (`strata-hy4 --version` in the
-image); it has **not** been run on a gfx906 card, so the wave64 code paths
-(`HY4_DEV_WMMA` is 0 there, `HY4_HAVE_SDOT4` is 1; `engine/src/hy4flash/run/hy4_gpu.h`)
-are compiled but unverified. Run it with `strata-hy4 --gpus 0,1` as
+image), and **verified on real gfx906 hardware** (2× MI50): the patch's
+`hy4_gpu.h` hunk routes it to the sdot4/fdot2 kernel set (`HY4_MMA` 0 in both
+compile passes) and adds the logical 32-lane shuffle contract the Strata engine
+itself uses, and Hy4-Flash SQ-128 then serves correct Chinese at about
+10 tok/s decode and 37 tok/s prefill with the dfly2 drafter active. Without it
+the `!HY4_DEV_WMMA` wmma stub computes nothing on gfx906 and the model answers
+in random tokens. Run it with `strata-hy4 --gpus 0,1` as
 [`docs/AMD_HIP.md`](https://github.com/Niko1221/Strata/blob/v0.2.22/docs/AMD_HIP.md#hy4-flash-experts-on-multiple-amd-gpus)
 describes. A package with no picture reader is what a shape component gets, so
 the image's component check starts `strata-hy4` instead of requiring a reader.
