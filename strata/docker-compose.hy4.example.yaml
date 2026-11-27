@@ -1,0 +1,79 @@
+# Hy4-Flash test stack for the gfx906 image (strata-hy4 is packaged as its own
+# component under components/shapes/hy4/engine/, see README.md "Hy4-Flash engine").
+#
+#   export STRATA_IMAGE=docker.io/mixa3607/strata-gfx906:v0.2.22-rocm-10.1-YOUR_TAG
+#   export RENDER_GID=$(getent group render | cut -d: -f3)
+#   mkdir -p models data
+#   docker compose -f docker-compose.hy4.example.yaml up strata-hy4
+#
+# The model files go in ./models, read-only (upstream docs/MODELS.md, Hy4-Flash):
+#   Hy4-Flash-SQ-64.strata        62 GB     the build the Terminal starts (MODEL: SQ-64)
+#   Hy4-Flash-Vision.strata       0.93 GB   the picture reader; the engine loads it on
+#                                           the first request that carries a picture
+#   Hy4-Flash-Engram-Q8.strata    67.6 GB   optional Engram shard
+# The Terminal downloads what is missing when MODEL_PATH is not given; with
+# MODEL_PATH set and a file absent, the start stops with "is missing" instead.
+
+services:
+  # The normal path: the Terminal starts the Hy4-Flash engine of this image
+  # (the shape component under components/shapes/hy4/engine/) and serves the
+  # HTTP API on PORT.
+  strata-hy4:
+    image: ${STRATA_IMAGE:?set STRATA_IMAGE}
+    container_name: strata-hy4
+    devices:
+      - /dev/kfd:/dev/kfd
+      - /dev/dri:/dev/dri
+    group_add:
+      - video
+      - "${RENDER_GID:?set RENDER_GID}"
+    # The upstream gfx906 run line uses --ipc=host and an unlimited memlock
+    # instead of a fixed shm size: experts live in host memory and the peer
+    # fallback bounces activations through pinned buffers.
+    ipc: host
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    stop_grace_period: 120s
+    volumes:
+      - ./models:/models:ro
+      - ./data:/data
+    environment:
+      FAMILY: hy4-flash
+      MODEL: SQ-64
+      MODEL_PATH: /models
+      GPUS: "0,1"
+      CONTEXT: 128k
+      # on: the engine reads pictures through its Vision shard (--vision
+      # Hy4-Flash-Vision.strata); off starts text only.
+      VISION: "on"
+      # DRAFTING: the engine's own drafter, left at its default here.
+    ports:
+      - "127.0.0.1:8080:8080"
+
+  # A one-shot check that does not start a server: the engine reads the model
+  # header and the Vision shard and reports what it can do (images=0|1).
+  #   docker compose -f docker-compose.hy4.example.yaml run --rm hy4-info
+  hy4-info:
+    image: ${STRATA_IMAGE:?set STRATA_IMAGE}
+    container_name: strata-hy4-info
+    profiles: ["check"]
+    devices:
+      - /dev/kfd:/dev/kfd
+      - /dev/dri:/dev/dri
+    group_add:
+      - video
+      - "${RENDER_GID:?set RENDER_GID}"
+    volumes:
+      - ./models:/models:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        for f in /models/Hy4-Flash-Vision.strata /models/Hy4-Flash-SQ-64.strata; do
+          [ -f "$$f" ] || { echo "missing: $$f" >&2; exit 1; }
+        done
+        exec /opt/strata/components/shapes/hy4/engine/*-hy4/strata-hy4 \
+          --info /models/Hy4-Flash-SQ-64.strata \
+          --vision /models/Hy4-Flash-Vision.strata

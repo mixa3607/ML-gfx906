@@ -1,0 +1,126 @@
+name: Daily Strata build
+
+on:
+  workflow_dispatch:
+    inputs:
+      strata_tag:
+        description: "Strata tag to build (empty = the latest Strata release, resolved when the run starts). A tag such as v0.2.22; the image preset v0.2.22-rocm-10.1 is not a Strata ref."
+        required: false
+        default: ""
+      force_build:
+        description: "Rebuild even if the image is already published"
+        type: boolean
+        default: false
+  schedule:
+    - cron: "0 16 * * *"
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    name: Build Strata (ROCm ${{ matrix.build.rocm_version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build:
+          - rocm_version: "10.1"
+            # This fork builds its own master: the upstream checkpoint tags
+            # (2026xxxx) only exist in mixa3607/ML-gfx906, and the source tree
+            # below them predates the v0.2.16 layout.
+            release_tag: "master"
+    env:
+      STRATA_REPO: "https://github.com/Niko1221/Strata.git"
+      STRATA_ROCM_VERSION: "${{ matrix.build.rocm_version }}"
+      # Empty input: "Resolve build parameters" asks the GitHub API for the latest
+      # Strata release and builds that tag, so a new upstream release is picked up
+      # without a commit here. Since v0.2.17 upstream carries the two fixes gfx906
+      # needed first (the stream-priority aliases and gfx906 in the Terminal's AMD
+      # architectures); the patch below adds the four peer-access names v0.2.22
+      # still misses. A release that moves the tree again needs a patch file here,
+      # re-checked with STRATA_FORCE_BUILD=1, and a preset bump.
+      STRATA_BRANCH: "${{ inputs.strata_tag }}"
+      STRATA_PATCH: "v0.2.22.patch"
+      # Empty: the gfx906 build was built and checked without the scheduling
+      # flag; set it to "-mllvm -amdgpu-sched-strategy=max-ilp" to A/B it.
+      STRATA_CMAKE_HIP_FLAGS: ""
+      # cpu: the component carries the CPU picture reader (what a card under
+      # 24 GB of VRAM uses by default), gpu: strata-vision-hip, both: the two.
+      STRATA_PICTURE_READER: "cpu"
+      # 1: the image carries strata-hy4 (the Hy4-Flash engine) as its own component
+      # next to strata; 0: strata only, when hy4 keeps the build from finishing.
+      STRATA_BUILD_HY4: "1"
+      STRATA_FORCE_BUILD: "${{ inputs.force_build && '1' || '0' }}"
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ vars.BUILD_REF || matrix.build.release_tag }}
+          fetch-depth: 0
+
+      - name: Install yq
+        uses: ./.github/workflows/actions/install-yq-action
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Select registry and log in
+        id: registry
+        uses: ./.github/workflows/actions/registry-login
+        with:
+          dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Resolve build parameters
+        env:
+          GITHUB_TOKEN: "${{ github.token }}"
+          REGISTRY_ROOT: "${{ steps.registry.outputs.registry_root }}"
+        run: |
+          source ./.build/git-common.sh
+          if [ "$STRATA_BRANCH" == "" ]; then
+            STRATA_BRANCH="$("$GITHUB_WORKSPACE/.github/scripts/github_get_last" --type release --repo "$STRATA_REPO" --github-token "$GITHUB_TOKEN")"
+          fi
+          # Fail here, not inside the image build, when the name is not a Strata ref:
+          # the image preset (v0.2.16-rocm-10.1) is derived from the branch and is
+          # not something the Strata repository can be cloned at.
+          if ! git ls-remote --exit-code "$STRATA_REPO" \
+                 "refs/tags/$STRATA_BRANCH" "refs/heads/$STRATA_BRANCH" >/dev/null; then
+            echo "STRATA_BRANCH='$STRATA_BRANCH' is neither a tag nor a branch of $STRATA_REPO." >&2
+            echo "Give a Strata tag such as v0.2.16 (or leave the input empty)." >&2
+            exit 1
+          fi
+          echo "STRATA_BRANCH '$STRATA_BRANCH' resolves in $STRATA_REPO"
+          : "${REPO_GIT_REF:="$(git_get_current_ref)"}"
+          : "${STRATA_IMAGE:="$REGISTRY_ROOT/strata-gfx906"}"
+          : "${STRATA_IS_RELEASE:="$([ -n "$(git_get_current_tag)" ] && echo 1 || echo 0)"}"
+          : "${STRATA_BASE_IMAGE:="docker.io/mixa3607/rocm-gfx906:$STRATA_ROCM_VERSION-complete"}"
+          : "${STRATA_PRESET_NAME:="$STRATA_BRANCH-rocm-$STRATA_ROCM_VERSION"}"
+
+          echo "REPO_GIT_REF=$REPO_GIT_REF"             >> "$GITHUB_ENV"
+          echo "STRATA_IMAGE=$STRATA_IMAGE"             >> "$GITHUB_ENV"
+          echo "STRATA_IS_RELEASE=$STRATA_IS_RELEASE"   >> "$GITHUB_ENV"
+          echo "STRATA_BRANCH=$STRATA_BRANCH"           >> "$GITHUB_ENV"
+          echo "STRATA_PRESET_NAME=$STRATA_PRESET_NAME" >> "$GITHUB_ENV"
+          echo "STRATA_BASE_IMAGE=$STRATA_BASE_IMAGE"   >> "$GITHUB_ENV"
+
+      - name: Check build
+        id: check
+        run: |
+          needed="$(./strata/build-and-push.image.sh check)"
+          echo "needed=$needed" >> "$GITHUB_OUTPUT"
+
+      - name: Check base images
+        if: steps.check.outputs.needed == 'true'
+        run: |
+          source ./.build/build-common.sh
+          build_require_images "$STRATA_BASE_IMAGE"
+
+      - name: Aggressive cleanup
+        if: steps.check.outputs.needed == 'true'
+        uses: ./.github/workflows/actions/cleanup-space-action
+
+      - name: Build Strata image
+        if: steps.check.outputs.needed == 'true'
+        run: ./strata/build-and-push.image.sh build

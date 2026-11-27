@@ -1,0 +1,32 @@
+# export STRATA_IMAGE=registry.arkprojects.space/apps/strata-gfx906:YOUR_TAG
+# export RENDER_GID=$(getent group render | cut -d: -f3)
+# docker compose -f docker-compose.example.yaml up -d
+
+services:
+  strata:
+    image: ${STRATA_IMAGE:?set STRATA_IMAGE}
+    container_name: strata
+    devices:
+      - /dev/kfd:/dev/kfd
+      - /dev/dri:/dev/dri
+    group_add:
+      - video
+      - "${RENDER_GID:?set RENDER_GID}"
+    shm_size: 2gb
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    stop_grace_period: 120s
+    volumes:
+      - ./models:/models:ro
+      - ./data:/data
+    environment:
+      FAMILY: unsloth
+      MODEL: UD-Q4_K_XL
+      MODEL_PATH: /models
+      GPUS: "0,1"
+      CONTEXT: 32k
+      VISION: "off"
+    ports:
+      - "127.0.0.1:8080:8080"
