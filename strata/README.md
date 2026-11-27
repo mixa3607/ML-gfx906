@@ -4,6 +4,12 @@
 The engine, the Hy4-Flash engine and a picture reader are built from source into
 the image; model weights are downloaded separately.
 
+> **Community-maintained subproject.** This `strata/` subproject is **not
+> maintained by the repository owner ([mixa3607](https://github.com/mixa3607))**;
+> it is maintained by [@shjszwh](https://github.com/shjszwh) as a community
+> contribution, and issues and updates for it are tracked in the
+> [shjszwh/ML-gfx906 fork](https://github.com/shjszwh/ML-gfx906).
+
 ## Build
 
 Requires Docker Buildx and a ROCm base image that still ships gfx906 kernels
@@ -40,9 +46,10 @@ file named after it and a preset bump.
 ## Hy4-Flash engine
 
 `STRATA_BUILD_HY4=1` (the default) builds `strata-hy4` next to `strata` and
-packages it as its own component (`0.1.69-…-hip-gfx906-hy4`,
-`package_engine.py --shape hy4`), which is the layout upstream's release images
-use. `0` builds and ships `strata` alone.
+packages it as its own component under `components/shapes/hy4/engine/`
+(`0.1.69-…-hip-gfx906-hy4`, `package_engine.py --shape hy4`), beside the Strata
+engine's `components/engine/` — the layout upstream's release images use. `0`
+builds and ships `strata` alone.
 
 The engine is built, packaged and start-checked (`strata-hy4 --version` in the
 image); it has **not** been run on a gfx906 card, so the wave64 code paths
@@ -106,5 +113,3 @@ from the ROCm runtime, takes no VRAM from the experts (the GPU reader keeps abou
 - A running container keeps its prepared settings: after this reader appears,
   the Terminal re-runs setup because the saved settings still say pictures are
   off. When it does not, start once with `VISION=cpu`.
-
-> AI生成

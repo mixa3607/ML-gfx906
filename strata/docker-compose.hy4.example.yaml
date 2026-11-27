@@ -1,7 +1,7 @@
-# Hy4-Flash test stack for the gfx906 image (strata-hy4 is packaged next to
-# strata, see README.md "Hy4-Flash engine").
+# Hy4-Flash test stack for the gfx906 image (strata-hy4 is packaged as its own
+# component under components/shapes/hy4/engine/, see README.md "Hy4-Flash engine").
 #
-#   export STRATA_IMAGE=ghcr.io/shjszwh/strata-gfx906:v0.2.22-rocm-10.1-YOUR_TAG
+#   export STRATA_IMAGE=docker.io/mixa3607/strata-gfx906:v0.2.22-rocm-10.1-YOUR_TAG
 #   export RENDER_GID=$(getent group render | cut -d: -f3)
 #   mkdir -p models data
 #   docker compose -f docker-compose.hy4.example.yaml up strata-hy4
@@ -16,7 +16,8 @@
 
 services:
   # The normal path: the Terminal starts the Hy4-Flash engine of this image
-  # (component 0.1.69-…-hip-gfx906-hy4) and serves the HTTP API on PORT.
+  # (the shape component under components/shapes/hy4/engine/) and serves the
+  # HTTP API on PORT.
   strata-hy4:
     image: ${STRATA_IMAGE:?set STRATA_IMAGE}
     container_name: strata-hy4
@@ -73,6 +74,6 @@ services:
         for f in /models/Hy4-Flash-Vision.strata /models/Hy4-Flash-SQ-64.strata; do
           [ -f "$$f" ] || { echo "missing: $$f" >&2; exit 1; }
         done
-        exec /opt/strata/components/engine/*-hy4/strata-hy4 \
+        exec /opt/strata/components/shapes/hy4/engine/*-hy4/strata-hy4 \
           --info /models/Hy4-Flash-SQ-64.strata \
           --vision /models/Hy4-Flash-Vision.strata

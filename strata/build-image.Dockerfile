@@ -16,9 +16,10 @@ ARG CCACHE_MAXSIZE="2G"
 # upstream checks on no gfx906 card (docs/AMD_HIP.md).
 ARG STRATA_PICTURE_READER="cpu"
 # 1: the image also carries strata-hy4 (the Hy4-Flash engine) as its own component
-# next to strata, the layout upstream's release images use.  0: strata only.  hy4's
-# GPU sources are HIP already, so gfx906 needs the one CMake line the patch carries
-# and no compat layer; the engine is compiled and packaged, not run on a card here.
+# under components/shapes/hy4/engine/, beside the Strata engine's components/engine/
+# (the layout upstream's release images use).  0: strata only.  hy4's GPU sources
+# are HIP already, so gfx906 needs the one CMake line the patch carries and no
+# compat layer; the engine is compiled and packaged, not run on a card here.
 ARG STRATA_BUILD_HY4="1"
 
 ############# Base image #############
@@ -210,13 +211,17 @@ python3 tools/packaging/package_engine.py \
   --allow-lib librocblas.so.5 \
   --allow-lib libamdhip64.so.7
 
-# The Hy4-Flash engine as its own component (strata_control/shape_engine.py:
-# --shape hy4 names the program strata-hy4, skips the picture reader and the
-# hipBLASLt checks, and writes "shape": "hy4" into the manifest).  It carries the
-# same ROCm libraries as the engine, so no tuning table and no reader go with it.
+# The Hy4-Flash engine as its own component under components/shapes/hy4/engine/
+# (strata_control/shape_engine.py: a shape engine's place is <components>/shapes/
+# <shape>/engine/<package>/, beside the Strata engine's components/engine/ and
+# never inside it; --shape hy4 names the program strata-hy4, skips the picture
+# reader and the hipBLASLt checks, and writes "shape": "hy4" into the manifest).
+# It carries the same ROCm libraries as the engine, so no tuning table and no
+# reader go with it.
+mkdir -p /out/components/shapes
 if [ "$hy4" = "ON" ]; then
   [ -x build/strata-hy4 ] || { echo "STRATA_BUILD_HY4=1 but build/strata-hy4 is missing" >&2; exit 1; }
-  mkdir -p /stage-hy4
+  mkdir -p /stage-hy4 /out/components/shapes/hy4/engine
   cp build/strata-hy4 /stage-hy4/
   cat > /stage-hy4/BUILD.json <<JSON
 {"version": "${version:-dev}", "source": "docker build", "archs": "$ROCM_ARCH", "shape": "hy4"}
@@ -225,7 +230,7 @@ JSON
   python3 tools/packaging/package_engine.py \
     --src /stage-hy4 --backend hip --arch "$ROCM_ARCH" --shape hy4 \
     --version "${version:-dev}" --variant "${ROCM_ARCH}-hy4" \
-    --out /out/components/engine \
+    --out /out/components/shapes/hy4/engine \
     --build-id "$(cat SOURCE_COMMIT 2>/dev/null || echo unknown)" \
     --allow-lib libhipblas.so.3 \
     --allow-lib libhipblaslt.so.1 \
@@ -245,6 +250,7 @@ RUN apt-get update && \
 
 COPY --from=files_strata /src/terminal /opt/strata/terminal
 COPY --from=build_strata /out/components/engine/ /opt/strata/components/engine/
+COPY --from=build_strata /out/components/shapes/ /opt/strata/components/shapes/
 COPY --from=files_strata /src/tools/docker/entrypoint.sh /opt/strata/entrypoint.sh
 COPY --from=files_strata /src/tools/docker/healthcheck.sh /opt/strata/healthcheck.sh
 COPY --from=files_strata /src/tools/docker/strata-wrapper.sh /usr/local/bin/strata
@@ -261,9 +267,11 @@ RUN set -eux; \
 # The component manifest hashes, every library of the programs resolves against
 # the package or the base image's ROCm, and the programs start: the engine's
 # picture reader (the one this image was built with), and strata-hy4 where the
-# package is the Hy4-Flash component, which carries no reader by design.
+# package is the Hy4-Flash shape component (components/shapes/hy4/engine/),
+# which carries no reader by design.
 RUN set -e; \
-    for d in /opt/strata/components/engine/*/; do \
+    for d in /opt/strata/components/engine/*/ /opt/strata/components/shapes/*/engine/*/; do \
+      [ -d "$d" ] || continue; \
       echo "== $d"; \
       PYTHONPATH=/opt/strata/terminal /opt/strata/terminal/python/bin/python3 -c 'import sys; from pathlib import Path; from strata_control import engine_component as ec; ec.verify(ec.read_manifest_any(Path(sys.argv[1])), full=True)' "$d"; \
       readers=0; hy4=0; \
